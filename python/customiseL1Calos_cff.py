@@ -33,7 +33,7 @@ def customiseUCT2015(process, runOnMC):
         getattr(process,'gtReEmulDigis').EmulateBxInEvent = cms.int32(1)
 
     if hasattr(process,'l1NtupleProducer') :
-        print "[L1TMenu]: Configuring Ntuple to use UCT2015 information"
+        print "[L1TMenu]:\tConfiguring Ntuple to use UCT2015 information"
  
         ntuple = getattr(process,'l1NtupleProducer')
         ntuple.gctCentralJetsSource = cms.InputTag("none")

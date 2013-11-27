@@ -2,30 +2,40 @@ import FWCore.ParameterSet.Config as cms
 
 def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 
+    print "[L1TMenu]: Setting up overall re-emulation"        
+
     if patchNtuple and hasattr(process,'l1NtupleProducer') :
-        print "[L1TMenu]: Configuring Ntuple to use re-emulated information"        
+        print "[L1TMenu]:\tConfiguring Ntuple to use re-emulated information"        
         ntuple = getattr(process,'l1NtupleProducer')
     else:
-        print "[L1TMenu]: FAILED to find ntuple! switching patchNtuple to False"        
+        print "[L1TMenu]:\tERROR: FAILED to find ntuple! switching patchNtuple to False"        
         patchNtuple=False
 
     if reEmulMuons :
-        print "[L1TMenu]: Setting up muon re-emulation"        
+        print "[L1TMenu]:\tSetting up muon re-emulation"        
         
         from L1Trigger.DTTrackFinder.dttfDigis_cfi import dttfDigis
         from L1Trigger.CSCTrackFinder.csctfTrackDigis_cfi import csctfTrackDigis
+        from L1Trigger.CSCTrackFinder.csctfDigis_cfi import csctfDigis
         from L1Trigger.RPCTrigger.rpcTriggerDigis_cfi import rpcTriggerDigis
         from L1Trigger.GlobalMuonTrigger.gmtDigis_cfi import gmtDigis
 
 
         process.dttfReEmulDigis       = dttfDigis.clone()
-        process.csctfReEmulDigis      = csctfTrackDigis.clone()
+        process.csctfReEmulTrackDigis = csctfTrackDigis.clone()
         process.rpcTriggerReEmulDigis = rpcTriggerDigis.clone()
-
+        process.csctfReEmulDigis      = csctfDigis.clone()
+        
         process.gmtReEmulDigis  = gmtDigis.clone()
 
         process.dttfReEmulDigis.DTDigi_Source  = cms.InputTag("dttfDigis")
-        process.dttfReEmulDigis.CSCStub_Source = cms.InputTag("csctfReEmulDigis")
+        process.dttfReEmulDigis.CSCStub_Source = cms.InputTag("csctfReEmulTrackDigis")
+
+        process.csctfReEmulTrackDigis.readDtDirect        = True
+        process.csctfReEmulTrackDigis.SectorReceiverInput = cms.untracked.InputTag("csctfDigis")
+        process.csctfReEmulTrackDigis.DtDirectProd        = cms.untracked.InputTag("csctfDigis","DT")
+        process.csctfReEmulDigis.CSCTrackProducer         = cms.untracked.InputTag("csctfReEmulTrackDigis")
+        #process.csctfReEmulDigis.SectorProcessor.initializeFromPSet = True
 
         process.gmtReEmulDigis.DTCandidates   = cms.InputTag("dttfReEmulDigis","DT")
         process.gmtReEmulDigis.CSCCandidates  = cms.InputTag("csctfReEmulDigis","CSC")
@@ -33,54 +43,23 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
         process.gmtReEmulDigis.RPCfCandidates = cms.InputTag("rpcTriggerReEmulDigis","RPCf")
         process.gmtReEmulDigis.MipIsoData     = cms.InputTag("none")
         
-        process.csctfReEmulDigis.readDtDirect                       = True
-        process.csctfReEmulDigis.SectorReceiverInput                 = cms.untracked.InputTag("csctfDigis")
-        process.csctfReEmulDigis.DtDirectProd                        = cms.untracked.InputTag("csctfDigis","DT")
-        #process.csctfReEmulDigis.SectorProcessor.initializeFromPSet = True
 
         if patchNtuple :
             ntuple.gmtSource          = cms.InputTag("gmtReEmulDigis")
             ntuple.dttfSource         = cms.InputTag("dttfReEmulDigis")
-            ntuple.csctfTrkSource     = cms.InputTag("csctfReEmulDigis")
-            ntuple.csctfStatusSource  = cms.InputTag("csctfReEmulDigis")
+            ntuple.csctfTrkSource     = cms.InputTag("csctfReEmulTrackDigis")
+            ntuple.csctfStatusSource  = cms.InputTag("csctfReEmulTrackDigis")
 
         process.reEmulMuonChain = cms.Sequence(
             process.rpcTriggerReEmulDigis
+            *process.csctfReEmulTrackDigis
             *process.csctfReEmulDigis
             *process.dttfReEmulDigis
             *process.gmtReEmulDigis
             )
 
     if reEmulCalos :
-        print "[L1TMenu]: Setting up calo re-emulation"        
-        print "[L1TMenu]: \tUPDATING GCT/GT CONFIGURATION TO RUN2012C"
-
-        process.GlobalTag.toGet = cms.VPSet(
-            cms.PSet(record = cms.string("L1GtTriggerMenuRcd"),
-                     tag = cms.string("L1GtTriggerMenu_L1Menu_Collisions2012_v2_mc"),
-                     connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                     ),
-            cms.PSet(record = cms.string("L1GctChannelMaskRcd"),
-                     tag = cms.string("L1GctChannelMask_AllEnergySumsMaskedFromHF_jetCentresToEta3Allowed_mc"),
-                     connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                     ),
-            cms.PSet(record = cms.string("L1GctJetFinderParamsRcd"),
-                     tag = cms.string("L1GctJetFinderParams_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                     connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                     ),
-            cms.PSet(record = cms.string("L1HfRingEtScaleRcd"),
-                     tag = cms.string("L1HfRingEtScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                     connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                     ),
-            cms.PSet(record = cms.string("L1JetEtScaleRcd"),
-                     tag = cms.string("L1JetEtScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                     connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                     ),
-            cms.PSet(record = cms.string("L1HtMissScaleRcd"),
-                     tag = cms.string("L1HtMissScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                     connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                     )
-            )
+        print "[L1TMenu]:\tSetting up calo re-emulation"        
 
         # In MC HCAL need to be re-run as there is no TPG information stored
         process.load("SimCalorimetry.HcalSimProducers.hcalUnsuppressedDigis_cfi")
@@ -138,3 +117,45 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
         process.reEmul = cms.Sequence(process.reEmulCaloChain + process.gtReEmulDigis)
     else :
         process.reEmul = cms.Sequence(process.gtReEmulDigis)
+
+
+def run2012CConfiguration(process):
+
+        print "[L1TMenu]: Setting up muon/calo configuration to correspond to RUN2012C"
+
+        process.GlobalTag.toGet.extend(
+            cms.VPSet(cms.PSet(record = cms.string("L1GtTriggerMenuRcd"),
+                               tag = cms.string("L1GtTriggerMenu_L1Menu_Collisions2012_v2_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1GctChannelMaskRcd"),
+                               tag = cms.string("L1GctChannelMask_AllEnergySumsMaskedFromHF_jetCentresToEta3Allowed_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1GctJetFinderParamsRcd"),
+                               tag = cms.string("L1GctJetFinderParams_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1HfRingEtScaleRcd"),
+                               tag = cms.string("L1HfRingEtScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1JetEtScaleRcd"),
+                               tag = cms.string("L1JetEtScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1HtMissScaleRcd"),
+                               tag = cms.string("L1HtMissScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1MuCSCPtLutRcd"),
+                               tag = cms.string("L1MuCSCPtLut_key-11_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1MuDTTFParametersRcd"),
+                               tag = cms.string("L1MuDTTFParameters_dttf12_TSC_03_csc_col_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               )
+                      )
+            )
+
