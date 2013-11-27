@@ -1,0 +1,9 @@
+27/11/2012
+Tested for 2012 and 2015
+	(a) RPC/CSC work fine
+	(b) DT/GMT work fine but few events in barrel to test new pT luts
+	(c) UCT 2015 works, need to test further:
+		(c.1) EG iso bit
+		(c.2) EG et distribution
+		(c.3) tau jet bit
+
