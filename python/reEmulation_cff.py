@@ -7,7 +7,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
     if patchNtuple and hasattr(process,'l1NtupleProducer') :
         print "[L1TMenu]:\tConfiguring Ntuple to use re-emulated information"        
         ntuple = getattr(process,'l1NtupleProducer')
-    else:
+    elif patchNtuple :
         print "[L1TMenu]:\tERROR: FAILED to find ntuple! switching patchNtuple to False"        
         patchNtuple=False
 

@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def customiseL1Muons(process, customDTTF=True, customCSCTF=True, customPACT=True):
+def customiseL1Muons(process, customDTTF=True, customCSCTF=True, customPACT=True, dttfFile = "sqlite_file:crab/dttf_config.db"):
 
     print "[L1TMenu]: Customising muon chain with 2015 improvements"
 
@@ -8,28 +8,27 @@ def customiseL1Muons(process, customDTTF=True, customCSCTF=True, customPACT=True
         
         print "[L1TMenu]:\tCustomising DTTF LUTs"
         
-        connectFile = "sqlite_file:../data/dttf_config.db"
 
         process.GlobalTag.toGet.extend(
             cms.VPSet(cms.PSet(record = cms.string("L1MuDTEtaPatternLutRcd"),
                                tag = cms.string("L1MuDTEtaPatternLut_CRAFT09_hlt"),
-                               connect = cms.untracked.string(connectFile)
+                               connect = cms.untracked.string(dttfFile)
                            ),
                       cms.PSet(record = cms.string("L1MuDTExtLutRcd"),
                                tag = cms.string("L1MuDTExtLut_CRAFT09_hlt"),
-                               connect = cms.untracked.string(connectFile)
+                               connect = cms.untracked.string(dttfFile)
                            ),
                       cms.PSet(record = cms.string("L1MuDTPhiLutRcd"),
                                tag = cms.string("L1MuDTPhiLut_CRAFT09_hlt"),
-                               connect = cms.untracked.string(connectFile)
+                               connect = cms.untracked.string(dttfFile)
                            ),
                       cms.PSet(record = cms.string("L1MuDTPtaLutRcd"),
                                tag = cms.string("L1MuDTPtaLut_CRAFT09_hlt"),
-                               connect = cms.untracked.string(connectFile)
+                               connect = cms.untracked.string(dttfFile)
                            ),
                       cms.PSet(record = cms.string("L1MuDTQualPatternLutRcd"),
                                tag = cms.string("L1MuDTQualPatternLut_CRAFT09_hlt"),
-                               connect = cms.untracked.string(connectFile)
+                               connect = cms.untracked.string(dttfFile)
                            )
                  )
         )
