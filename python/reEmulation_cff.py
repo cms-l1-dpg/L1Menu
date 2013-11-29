@@ -122,6 +122,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 def run2012CConfiguration(process):
 
         print "[L1TMenu]: Setting up muon/calo configuration to correspond to RUN2012C"
+        print "[L1TMenu]: Forcing RPC muon to switch off HSCP BX extension"
 
         process.GlobalTag.toGet.extend(
             cms.VPSet(cms.PSet(record = cms.string("L1GtTriggerMenuRcd"),
@@ -154,6 +155,23 @@ def run2012CConfiguration(process):
                                ),
                       cms.PSet(record = cms.string("L1MuDTTFParametersRcd"),
                                tag = cms.string("L1MuDTTFParameters_dttf12_TSC_03_csc_col_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      # Forcing RPCs without HSCP (also in 50 ns as it has minor impact in rates there)
+                      cms.PSet(record = cms.string("L1RPCBxOrConfigRcd"),
+                               tag = cms.string("L1RPCBxOrConfig_LHC8_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1RPCConeDefinitionRcd"),
+                               tag = cms.string("L1RPCConeDefinition_LHC8_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1RPCConfigRcd"),
+                               tag = cms.string("L1RPCConfig_LHC8_mc"),
+                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
+                               ),
+                      cms.PSet(record = cms.string("L1RPCHsbConfigRcd"),
+                               tag = cms.string("L1RPCHsbConfig_LHC8_mc"),
                                connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
                                )
                       )

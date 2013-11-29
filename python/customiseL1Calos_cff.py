@@ -25,25 +25,25 @@ def customiseUCT2015(process, runOnMC):
                                            mhtSource = cms.InputTag("UCT2015Producer","MHTUnpacked")
         )
 
-        process.uctReEmulDigis = cms.Sequence(process.emulationSequence + process.uctGctDigis)
+        process.reEmulUctChain = cms.Sequence(process.emulationSequence + process.uctGctDigis)
 
-        getattr(process,'reEmul').replace(process.reEmulCaloChain, process.uctReEmulDigis)
+        getattr(process,'reEmul').replace(process.reEmulCaloChain, process.reEmulUctChain)
     
         getattr(process,'gtReEmulDigis').GctInputTag = cms.InputTag("uctGctDigis")
         getattr(process,'gtReEmulDigis').EmulateBxInEvent = cms.int32(1)
+
+    else :
+       print "[L1TMenu]: ERROR: Can't customise calo chain with UCT2015, reEmulCaloChain is missing!"
 
     if hasattr(process,'l1NtupleProducer') :
         print "[L1TMenu]:\tConfiguring Ntuple to use UCT2015 information"
  
         ntuple = getattr(process,'l1NtupleProducer')
-        ntuple.gctCentralJetsSource = cms.InputTag("none")
-        ntuple.gctNonIsoEmSource    = cms.InputTag("none")
-        ntuple.gctForwardJetsSource = cms.InputTag("none")
-        ntuple.gctIsoEmSource       = cms.InputTag("none")
-        ntuple.gctEnergySumsSource  = cms.InputTag("none")
-        ntuple.gctTauJetsSource     = cms.InputTag("none")
+        ntuple.gctCentralJetsSource = cms.InputTag("uctGctDigis","cenJets")
+        ntuple.gctNonIsoEmSource    = cms.InputTag("uctGctDigis","rlxEm")
+        ntuple.gctForwardJetsSource = cms.InputTag("uctGctDigis","forJets")
+        ntuple.gctIsoEmSource       = cms.InputTag("uctGctDigis","isoEm")
+        ntuple.gctEnergySumsSource  = cms.InputTag("uctGctDigis","")
+        ntuple.gctTauJetsSource     = cms.InputTag("uctGctDigis","isoTau")
         ntuple.rctSource            = cms.InputTag("none")
-
-    else :
-       print "[L1TMenu]: ERROR: Can't customise calo chain with UCT2015, reEmulCaloChain is missing!"
 

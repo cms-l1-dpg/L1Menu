@@ -131,7 +131,8 @@ if options.keepEDMOutput :
                                                                              'keep *_gmtReEmulDigis_*_*',
                                                                              'keep *_rpcTriggerReEmulDigis_*_*',
                                                                              'keep *_csctfReEmulDigis_*_*',
-                                                                             'keep *_dttfReEmulDigis_*_*')
+                                                                             'keep *_dttfReEmulDigis_*_*',
+                                                                             'keep *_uctGctDigis_*_*')
                                   )
 
     process.out = cms.EndPath(process.output)
