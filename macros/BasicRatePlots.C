@@ -475,46 +475,46 @@ void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, in
 
       hTH1F["nMuVsEta"]->Fill(muEta);
 
-      for(int ptCut=1; ptCut<256; ++ptCut) {
-	if(jetPt>=ptCut)
+      for(int ptCut=0; ptCut<256; ++ptCut) {
+	if(jetPt>ptCut)
 	  hTH1F["nJetVsPt"]->Fill(ptCut);
-	if(jetCenPt>=ptCut)
+	if(jetCenPt>ptCut)
 	  hTH1F["nJetCenVsPt"]->Fill(ptCut);
       }
 
-      for(int ptCut=1; ptCut<65; ++ptCut) {
-	if(egPt>=ptCut)
+      for(int ptCut=0; ptCut<65; ++ptCut) {
+	if(egPt>ptCut)
 	  hTH1F["nEGVsPt"]->Fill(ptCut);
       }
       
-      for(int ptCut=1; ptCut<131; ++ptCut) {
-	if (muPt>=ptCut)
+      for(int ptCut=0; ptCut<131; ++ptCut) {
+	if (muPt>ptCut)
 	  hTH1F["nMuVsPt"]->Fill(ptCut);
-	if (muErPt>=ptCut)
+	if (muErPt>ptCut)
 	  hTH1F["nMuErVsPt"]->Fill(ptCut);
-	if (dttfPt>=ptCut)
+	if (dttfPt>ptCut)
 	  hTH1F["nDttfVsPt"]->Fill(ptCut);
-	if (rpcbPt>=ptCut)
+	if (rpcbPt>ptCut)
 	  hTH1F["nRpcbVsPt"]->Fill(ptCut);
-	if (rpcfPt>=ptCut)
+	if (rpcfPt>ptCut)
 	  hTH1F["nRpcfVsPt"]->Fill(ptCut);
-	if (csctfPt>=ptCut)
+	if (csctfPt>ptCut)
 	  hTH1F["nCsctfVsPt"]->Fill(ptCut);
 	for(int ptCut2=1; ptCut2<=ptCut; ++ptCut2) {
-	  if (doubleMuPt1>=ptCut && doubleMuPt2>=ptCut2)
+	  if (doubleMuPt1>ptCut && doubleMuPt2>ptCut2)
 	    hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
-	  if (oniaMuPt1>=ptCut && oniaMuPt2>=ptCut2)
+	  if (oniaMuPt1>ptCut && oniaMuPt2>ptCut2)
 	    hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
 	}
       }
       
-      for(int httCut=1; httCut<512; ++httCut) {
-	if(htt>=httCut)
+      for(int httCut=0; httCut<512; ++httCut) {
+	if(htt>httCut)
 	  hTH1F["nHTTVsHTT"]->Fill(httCut);
       }
       
-      for(int ettCut=1; ettCut<512; ++ettCut) {
-	if(ett>=ettCut)
+      for(int ettCut=0; ettCut<512; ++ettCut) {
+	if(ett>ettCut)
 	  hTH1F["nETTVsETT"]->Fill(ettCut);
       }  
 
@@ -560,25 +560,35 @@ void goRatePlots(std::string fileType, int nEvents = 0)
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/h/heistera/scratch1/L1Ntuples/L1TreeL1Accept_207477_LS_57_133.root");
       basicRatePlots.run(true,1368,"DATA_207477",nEvents);
     }
-  else if (fileType == "PLAIN_RE-EMUL")
+  else if (fileType == "13TEV_25PU_PLAIN_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_v1.root");
-      basicRatePlots.run(false,2500,"PLAIN_RE-EMUL",nEvents);
+      basicRatePlots.run(false,2500,"13TEV_25PU_PLAIN_RE-EMUL",nEvents);
     }
-  else if (fileType == "2012_RE-EMUL" )
+  else if (fileType == "13TEV_25PU_2012_RE-EMUL" )
     {
-      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_ReEmul2012_v1.root");
-      basicRatePlots.run(false,2500,"2012_RE-EMUL",nEvents);
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_ReEmul2012_v2.root");
+      basicRatePlots.run(false,2500,"13TEV_25PU_2012_RE-EMUL",nEvents);
     }
-  else if (fileType == "2015_RE-EMUL")
+  else if (fileType == "13TEV_25PU_2015_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_ReEmul2015_v1.root"); 
-      basicRatePlots.run(false,2500,"2015_RE-EMUL",nEvents);
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_ReEmul2015_v2.root"); 
+      basicRatePlots.run(false,2500,"13TEV_25PU_2015_RE-EMUL",nEvents);
+    }
+  else if (fileType == "8TEV_TF_2012_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_8TeV_53X_ReEmul2012_v2.root"); 
+      basicRatePlots.run(false,1368,"8TEV_TF_2012_RE-EMUL",nEvents);
+    }
+  else if (fileType == "8TEV_TF_DATA")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_8TeV_53X_202299_v2.root"); 
+      basicRatePlots.run(true,1368,"TF_DATA_202299",nEvents);
     }
   else 
     {
       std::cout << "Config param " << fileType << " invalid! \n"
-		<< "Valid fileType values are : DATA, PLAIN_RE-EMUL, 2012_RE-EMUL, 2015_RE-EMUL\n";
+		<< "Valid fileType values are : DATA, 8TEV_TF_DATA, 8TEV_TF_2012_RE-EMUL, 13TEV_25PU_PLAIN_RE-EMUL, 13TEV_25PU_2012_RE-EMUL, 13TEV_25PU_2015_RE-EMUL\n";
     }
     
 }
