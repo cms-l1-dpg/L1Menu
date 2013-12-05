@@ -8,6 +8,8 @@
 #include <cmath>
 #include <stdlib.h>
 
+#include "TH1F.h"
+#include "TH2F.h"
 #include "TH1D.h"
 #include "TFile.h"
 #include "TList.h"
@@ -82,71 +84,78 @@ void plot( std::vector<TH1*> plots,
       TCanvas *c = new TCanvas();
 
       c->cd();
-      
-      TPad *pPlot = ( plots.size()>1 ) ? new TPad("pPlot","",0.01,0.26,0.99,0.99) :
-	new TPad("pPlot","",0.01,0.01,0.99,0.99) ;
-      
-      pPlot->Draw();
-      pPlot->SetGrid();
-      
-      c->cd();
-      
-      TPad *pRatio = ( plots.size()>1 ) ? new TPad("pRatio","",0.01,0.01,0.99,0.25) : 0;
-      if(pRatio)
+
+      if (dynamic_cast<TH1F*>(plots.at(0))) 
 	{
-	  pRatio->Draw();
-	  pRatio->SetGrid();
-	}
-      
-      for (size_t iPlot=0; iPlot<plots.size(); ++iPlot) 
-	{
-	  pPlot->cd();
-	  plots.at(iPlot)->SetLineColor( iPlot+1 );
-	  plots.at(iPlot)->SetMarkerColor( iPlot+1 );
-	  plots.at(iPlot)->SetMarkerStyle( 21 + iPlot );
-	  plots.at(iPlot)->GetYaxis()->SetRangeUser( 100, plots.at(iPlot)->GetMaximum()*1.2 );
-	  plots.at(iPlot)->Draw( iPlot ? "sameP" : "P" );
 	  
-	  if ( iPlot>0 ) 
+	  TPad *pPlot = ( plots.size()>1 ) ? new TPad("pPlot","",0.01,0.26,0.99,0.99) :
+	    new TPad("pPlot","",0.01,0.01,0.99,0.99) ;
+	  
+	  pPlot->Draw();
+	  pPlot->SetGrid();
+	  
+	  c->cd();
+	  
+	  TPad *pRatio = ( plots.size()>1 ) ? new TPad("pRatio","",0.01,0.01,0.99,0.25) : 0;
+	  if(pRatio)
 	    {
-	      pRatio->cd();
-	      TH1* den = plots.at(0);
-	      std::string name = std::string(plots.at(iPlot)->GetName()) + "_Eff";
-	      TH1* eff = static_cast<TH1*>( plots.at(iPlot)->Clone( name.c_str() ) );
-	      eff->Divide(den);
-	      eff->SetTitle(";;Ratio");
-	      
-	      eff->SetLineColor( iPlot+1 );
-	      eff->SetMarkerColor( iPlot+1 );
-	      eff->SetMarkerStyle( 21 + iPlot );
-	      eff->GetYaxis()->SetRangeUser( .1, 10.);
-	      
-	      eff->Draw( iPlot>1 ? "sameP" : "P" );
+	      pRatio->Draw();
+	      pRatio->SetGrid();
 	    }
+	  
+	  for (size_t iPlot=0; iPlot<plots.size(); ++iPlot) 
+	    {
+	      pPlot->cd();
+	      plots.at(iPlot)->SetLineColor( iPlot+1 );
+	      plots.at(iPlot)->SetMarkerColor( iPlot+1 );
+	      plots.at(iPlot)->SetMarkerStyle( 21 + iPlot );
+	      plots.at(iPlot)->GetYaxis()->SetRangeUser( 100, plots.at(iPlot)->GetMaximum()*1.2 );
+	      plots.at(iPlot)->Draw( iPlot ? "sameP" : "P" );
+	      
+	      if ( iPlot>0 ) 
+		{
+		  pRatio->cd();
+		  TH1* den = plots.at(0);
+		  std::string name = std::string(plots.at(iPlot)->GetName()) + "_Eff";
+		  TH1* eff = static_cast<TH1*>( plots.at(iPlot)->Clone( name.c_str() ) );
+		  eff->Divide(den);
+		  eff->SetTitle(";;Ratio");
+		  
+		  eff->SetLineColor( iPlot+1 );
+		  eff->SetMarkerColor( iPlot+1 );
+		  eff->SetMarkerStyle( 21 + iPlot );
+		  eff->GetYaxis()->SetRangeUser( .1, 10.);
+		  eff->GetYaxis()->SetLabelSize( .09);
+		  
+		  eff->Draw( iPlot>1 ? "sameP" : "P" );
+		}
+	    }
+	  
+	  pPlot->SetLogy();
 	}
-      
-      pPlot->SetLogy();
-      pRatio->SetLogy();
-      
-      //   CB Handle legend
-      //   // TLegend
-      //   TLegend * leg = new TLegend(.65, 0.7, 0.9, 0.9 );
-      //   leg->SetFillColor( 0 );
-      //   leg->SetFillStyle( 0 );
-      //   leg->SetTextSize( 0.035 );
-      //   leg->SetBorderSize( 1 );
-      
-      //   leg->AddEntry(firstPlot, "2011 e#mu data", "p");
-      //   leg->AddEntry(secondPlot,"t#bar{t} e#mu", "F");
+      else if(dynamic_cast<TH2F*>(plots.at(0)) && plots.size() == 2) 
+	{ 
+	  c->SetGrid();
+	  
+	  TH1* den = plots.at(0);
+	  std::string name = std::string(plots.at(1)->GetName()) + "_Eff";
+	  TH1* eff = static_cast<TH1*>( plots.at(1)->Clone( name.c_str() ) );
+	  eff->Divide(den);
+	  eff->SetTitle(";;Ratio");
+	  eff->SetMinimum(1);
+	  eff->SetMaximum(2.5);
+	  eff->Draw("colz");
+	}
       
       std::string path = baseDir + "/" + outputDir;
       system( (std::string("mkdir -p ") + path).c_str() );
       
       c->Update();
-      std::string gifname = path + "/" + plots.at(0)->GetName();
-      c->Print ( ( gifname + ".gif" ).c_str() ); 
+      std::string printname = path + "/" + plots.at(0)->GetName();
+      c->Print ( ( printname + ".gif" ).c_str() ); 
+      c->Print ( ( printname + ".C" ).c_str() ); 
     }
-
+  
 }
 
 void plotAll(std::vector<std::string> &files,
