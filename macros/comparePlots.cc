@@ -109,7 +109,8 @@ void plot( std::vector<TH1*> plots,
 	      plots.at(iPlot)->SetLineColor( iPlot+1 );
 	      plots.at(iPlot)->SetMarkerColor( iPlot+1 );
 	      plots.at(iPlot)->SetMarkerStyle( 21 + iPlot );
-	      plots.at(iPlot)->GetYaxis()->SetRangeUser( 100, plots.at(iPlot)->GetMaximum()*1.2 );
+	      plots.at(iPlot)->GetYaxis()->SetRangeUser( plots.at(iPlot)->GetMinimum() > 0. ? plots.at(iPlot)->GetMinimum()*0.25 : 10E-7, 
+							 plots.at(iPlot)->GetMaximum()*4 );
 	      plots.at(iPlot)->Draw( iPlot ? "sameP" : "P" );
 	      
 	      if ( iPlot>0 ) 
