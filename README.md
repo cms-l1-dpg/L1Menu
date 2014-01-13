@@ -15,6 +15,9 @@ git cms-addpkg L1Trigger/RegionalCaloTrigger
 git cms-addpkg DataFormats/L1CaloTrigger
 git cms-addpkg L1TriggerConfig/L1ScalesProducers
 git clone https://github.com/uwcms/UCT2015.git L1Trigger/UCT2015
+cd L1Trigger/UCT2015
+git checkout 2014-Menus-V0
+cd ..
 git clone https://github.com/cms-l1-dpg/L1Ntuples.git L1TriggerDPG/L1Ntuples
 git clone https://github.com/cms-l1-dpg/L1TMenu.git L1TriggerDPG/L1TMenu
 
