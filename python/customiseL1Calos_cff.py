@@ -3,13 +3,13 @@ import FWCore.ParameterSet.Config as cms
 def customiseUCT2015(process, runOnMC):
 
     if hasattr(process,'reEmulCaloChain') :
-        print "[L1TMenu]: Customising calo chain with UCT2015"
+        print "[L1Menu]: Customising calo chain with UCT2015"
 
         if runOnMC :
-            print "[L1TMenu]:\tUsing MC configuration"
+            print "[L1Menu]:\tUsing MC configuration"
             process.load("L1Trigger.UCT2015.emulationMC_cfi")
         else :
-            print "[L1TMenu]:\tUsing DATA configuration"
+            print "[L1Menu]:\tUsing DATA configuration"
             process.load("L1Trigger.UCT2015.emulation_cfi") # For running on data
 
         process.uctGctDigis =cms.EDProducer("UCT2015GctCandsProducer",
@@ -33,10 +33,10 @@ def customiseUCT2015(process, runOnMC):
         getattr(process,'gtReEmulDigis').EmulateBxInEvent = cms.int32(1)
 
     else :
-       print "[L1TMenu]: ERROR: Can't customise calo chain with UCT2015, reEmulCaloChain is missing!"
+       print "[L1Menu]: ERROR: Can't customise calo chain with UCT2015, reEmulCaloChain is missing!"
 
     if hasattr(process,'l1NtupleProducer') :
-        print "[L1TMenu]:\tConfiguring Ntuple to use UCT2015 information"
+        print "[L1Menu]:\tConfiguring Ntuple to use UCT2015 information"
  
         ntuple = getattr(process,'l1NtupleProducer')
         ntuple.gctCentralJetsSource = cms.InputTag("uctGctDigis","cenJets")

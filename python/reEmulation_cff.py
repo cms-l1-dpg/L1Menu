@@ -2,17 +2,17 @@ import FWCore.ParameterSet.Config as cms
 
 def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 
-    print "[L1TMenu]: Setting up overall re-emulation"        
+    print "[L1Menu]: Setting up overall re-emulation"        
 
     if patchNtuple and hasattr(process,'l1NtupleProducer') :
-        print "[L1TMenu]:\tConfiguring Ntuple to use re-emulated information"        
+        print "[L1Menu]:\tConfiguring Ntuple to use re-emulated information"        
         ntuple = getattr(process,'l1NtupleProducer')
     elif patchNtuple :
-        print "[L1TMenu]:\tERROR: FAILED to find ntuple! switching patchNtuple to False"        
+        print "[L1Menu]:\tERROR: FAILED to find ntuple! switching patchNtuple to False"        
         patchNtuple=False
 
     if reEmulMuons :
-        print "[L1TMenu]:\tSetting up muon re-emulation"        
+        print "[L1Menu]:\tSetting up muon re-emulation"        
         
         from L1Trigger.DTTrackFinder.dttfDigis_cfi import dttfDigis
         from L1Trigger.CSCTrackFinder.csctfTrackDigis_cfi import csctfTrackDigis
@@ -59,7 +59,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
             )
 
     if reEmulCalos :
-        print "[L1TMenu]:\tSetting up calo re-emulation"        
+        print "[L1Menu]:\tSetting up calo re-emulation"        
 
         # In MC HCAL need to be re-run as there is no TPG information stored
         process.load("SimCalorimetry.HcalSimProducers.hcalUnsuppressedDigis_cfi")
@@ -121,8 +121,8 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 
 def run2012CConfiguration(process):
 
-        print "[L1TMenu]: Setting up muon/calo configuration to correspond to RUN2012C"
-        print "[L1TMenu]: Forcing RPC muon to switch off HSCP BX extension"
+        print "[L1Menu]: Setting up muon/calo configuration to correspond to RUN2012C"
+        print "[L1Menu]: Forcing RPC muon to switch off HSCP BX extension"
 
         process.GlobalTag.toGet.extend(
             cms.VPSet(cms.PSet(record = cms.string("L1GtTriggerMenuRcd"),

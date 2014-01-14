@@ -19,7 +19,7 @@ cd L1Trigger/UCT2015
 git checkout 2014-Menus-V0
 cd ../..
 git clone https://github.com/cms-l1-dpg/L1Ntuples.git L1TriggerDPG/L1Ntuples
-git clone https://github.com/cms-l1-dpg/L1TMenu.git L1TriggerDPG/L1Menu
+git clone https://github.com/cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
 
 patch -N -p0 < L1Trigger/UCT2015/eic9bit.patch
 

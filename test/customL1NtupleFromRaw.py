@@ -92,7 +92,7 @@ from L1TriggerDPG.L1Ntuples.l1Ntuple_cfg import *
 readFiles.extend(["file:///data2/battilan/L1Trigger/202299_RAW-RECO.root"])
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
-print "[L1TMenu]: Using GlobalTag", options.globalTag
+print "[L1Menu]: Using GlobalTag", options.globalTag
 process.GlobalTag.globaltag = options.globalTag
 process.GlobalTag.toGet     = cms.VPSet()
 
@@ -105,18 +105,18 @@ process.p.remove(process.l1MenuTreeProducer)
 # re-emulation customisations
 
 if options.reEmulation :
-    from L1TriggerDPG.L1TMenu.reEmulation_cff import *
+    from L1TriggerDPG.L1Menu.reEmulation_cff import *
     reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple)
     process.p.replace(process.l1NtupleProducer, process.reEmul + process.l1NtupleProducer)
     if options.force2012Config :
          run2012CConfiguration(process)
 
 if options.reEmulation and (options.customDTTF or options.customCSCTF or options.customPACT) :
-    from L1TriggerDPG.L1TMenu.customiseL1Muons_cff import *
+    from L1TriggerDPG.L1Menu.customiseL1Muons_cff import *
     customiseL1Muons(process, options.customDTTF, options.customCSCTF, options.customPACT, options.dttfLutsFile)
 
 if options.reEmulation and options.useUct2015 :
-    from L1TriggerDPG.L1TMenu.customiseL1Calos_cff import *
+    from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
     customiseUCT2015(process, options.runOnMC)
 
 # EDM keep statement

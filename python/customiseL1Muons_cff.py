@@ -2,11 +2,11 @@ import FWCore.ParameterSet.Config as cms
 
 def customiseL1Muons(process, customDTTF=True, customCSCTF=True, customPACT=True, dttfFile = "sqlite_file:crab/dttf_config.db"):
 
-    print "[L1TMenu]: Customising muon chain with 2015 improvements"
+    print "[L1Menu]: Customising muon chain with 2015 improvements"
 
     if customDTTF and hasattr(process,"dttfReEmulDigis") :
         
-        print "[L1TMenu]:\tCustomising DTTF LUTs"
+        print "[L1Menu]:\tCustomising DTTF LUTs"
         
 
         process.GlobalTag.toGet.extend(
@@ -35,9 +35,9 @@ def customiseL1Muons(process, customDTTF=True, customCSCTF=True, customPACT=True
 
     if customPACT and hasattr(process,"rpcTriggerReEmulDigis") :
 
-        print "[L1TMenu]:\tCustomising PACT patterns"
+        print "[L1Menu]:\tCustomising PACT patterns"
 
-        patternDirectory = "L1TriggerDPG/L1TMenu/data/rpc_patterns/xml/"
+        patternDirectory = "L1TriggerDPG/L1Menu/data/rpc_patterns/xml/"
         
         process.load("L1TriggerConfig.RPCTriggerConfig.RPCConeDefinition_cff")
         process.load("L1TriggerConfig.RPCTriggerConfig.L1RPCConfig_cff")
