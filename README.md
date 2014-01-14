@@ -6,8 +6,8 @@ Package to put togheter code and configuration file to prepare Winter13 version 
 Installation instructions:
 
 <pre><code>
-cmsrel CMSSW_5_3_13_patch2
-cd CMSSW_5_3_13_patch2/src
+cmsrel CMSSW_5_3_14_patch2
+cd CMSSW_5_3_14_patch2/src
 
 cmsenv
 
