@@ -40,6 +40,12 @@ options.register('force2012Config',
                  VarParsing.VarParsing.varType.bool,
                  "Force Run2012C/D config in re-emulation")
 
+options.register('jetSeedThr10GeV',
+                 False, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Switches on 10 GeV jet Seed Thresholds for 2012 GCT")
+
 options.register('runOnMC',
                  False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -98,6 +104,7 @@ process.GlobalTag.toGet     = cms.VPSet()
 
 # make ntuples from RAW (ie. remove RECO)
 
+process.p.remove(process.muonDTDigis)
 process.p.remove(process.l1RecoTreeProducer)
 process.p.remove(process.l1MuonRecoTreeProducer)
 process.p.remove(process.l1MenuTreeProducer)
@@ -110,6 +117,10 @@ if options.reEmulation :
     process.p.replace(process.l1NtupleProducer, process.reEmul + process.l1NtupleProducer)
     if options.force2012Config :
          run2012CConfiguration(process)
+
+if options.reEmulation and not options.useUct2015 and options.jetSeedThr10GeV :
+    from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
+    customiseL1Calos(process, True)
 
 if options.reEmulation and (options.customDTTF or options.customCSCTF or options.customPACT) :
     from L1TriggerDPG.L1Menu.customiseL1Muons_cff import *
