@@ -61,25 +61,34 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
     if reEmulCalos :
         print "[L1Menu]:\tSetting up calo re-emulation"        
 
-        # In MC HCAL need to be re-run as there is no TPG information stored
-        process.load("SimCalorimetry.HcalSimProducers.hcalUnsuppressedDigis_cfi")
-        process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
+        print "[L1Menu]:\tWARNING! Just patching GCT sequence, RCT can't be re-emulated after UCT2015 SW patches"        
+
+        # Need to have RCT emulator configurable and not UCT 2015 patches
+        # in order to run 2012 RCT emulator correctly
         
-        from L1Trigger.RegionalCaloTrigger.rctDigis_cfi import rctDigis
+        #	# In MC HCAL need to be re-run as there is no TPG information stored
+        #	process.load("SimCalorimetry.HcalSimProducers.hcalUnsuppressedDigis_cfi")
+        #	process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
+        #	
+        #	from L1Trigger.RegionalCaloTrigger.rctDigis_cfi import rctDigis
+        #	from L1Trigger.GlobalCaloTrigger.gctDigis_cfi import gctDigis
+        #	
+        #	process.hcalReEmulDigis = process.simHcalTriggerPrimitiveDigis.clone()
+        #	process.rctReEmulDigis  = rctDigis.clone()
+        #	process.gctReEmulDigis  = gctDigis.clone()
+        #	
+        #	process.hcalReEmulDigis.inputLabel = cms.VInputTag(cms.InputTag('hcalDigis'), cms.InputTag('hcalDigis'))
+        #	#process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(False)
+        #	
+        #	process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
+        #	process.rctReEmulDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalReEmulDigis' ) )
+        #	
+        #	process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
+
         from L1Trigger.GlobalCaloTrigger.gctDigis_cfi import gctDigis
-        from L1Trigger.GlobalTrigger.gtDigis_cfi import gtDigis    
 
-        process.hcalReEmulDigis = process.simHcalTriggerPrimitiveDigis.clone()
-        process.rctReEmulDigis  = rctDigis.clone()
-        process.gctReEmulDigis  = gctDigis.clone()
-    
-        process.hcalReEmulDigis.inputLabel = cms.VInputTag(cms.InputTag('hcalDigis'), cms.InputTag('hcalDigis'))
-        #process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(False)
-
-        process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
-        process.rctReEmulDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalReEmulDigis' ) )
-
-        process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
+        process.gctReEmulDigis = gctDigis.clone()        
+        process.gctReEmulDigis.inputLabel = cms.InputTag("gctDigis")
     
         if patchNtuple :
             ntuple.gctCentralJetsSource = cms.InputTag("gctReEmulDigis","cenJets")
@@ -88,12 +97,17 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
             ntuple.gctIsoEmSource       = cms.InputTag("gctReEmulDigis","isoEm")
             ntuple.gctEnergySumsSource  = cms.InputTag("gctReEmulDigis","")
             ntuple.gctTauJetsSource     = cms.InputTag("gctReEmulDigis","tauJets")
-            ntuple.rctSource            = cms.InputTag("rctReEmulDigis")
+            # Need to have RCT emulator configurable and not UCT 2015 patches
+            # in order to run 2012 RCT emulator correctly
+            #    ntuple.rctSource            = cms.InputTag("rctReEmulDigis")
 
         process.reEmulCaloChain = cms.Sequence(
-            process.hcalReEmulDigis
-            + process.rctReEmulDigis
-            + process.gctReEmulDigis
+            # Need to have RCT emulator configurable and not UCT 2015 patches
+            # in order to run 2012 RCT emulator correctly
+        
+            #process.hcalReEmulDigis
+            #+ process.rctReEmulDigis
+            process.gctReEmulDigis
         )
 
 
@@ -122,7 +136,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 def run2012CConfiguration(process):
 
         print "[L1Menu]: Setting up muon/calo configuration to correspond to RUN2012C"
-        print "[L1Menu]: Forcing RPC muon to switch off HSCP BX extension"
+        print "[L1Menu]: Forcing RPC muon trigger to switch off HSCP BX extension"
 
         process.GlobalTag.toGet.extend(
             cms.VPSet(cms.PSet(record = cms.string("L1GtTriggerMenuRcd"),
