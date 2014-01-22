@@ -52,6 +52,12 @@ options.register('runOnMC',
                  VarParsing.VarParsing.varType.bool,
                  "Set to True when running on MC")
 
+options.register('runOnPostLS1',
+                 False, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Set to True when running on MC and this postLS1")
+
 options.register('keepEDMOutput',
                  True, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -128,7 +134,7 @@ if options.reEmulation and (options.customDTTF or options.customCSCTF or options
 
 if options.reEmulation and options.useUct2015 :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
-    customiseUCT2015(process, options.runOnMC)
+    customiseUCT2015(process, options.runOnMC, options.runOnPostLS1)
 
 # EDM keep statement
 

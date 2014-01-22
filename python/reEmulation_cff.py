@@ -4,13 +4,38 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 
     print "[L1Menu]: Setting up overall re-emulation"        
 
-    if patchNtuple and hasattr(process,'l1NtupleProducer') :
+    if patchNtuple and hasattr(process,'l1NtupleProducer') and hasattr(process,'l1ExtraTreeProducer') :
         print "[L1Menu]:\tConfiguring Ntuple to use re-emulated information"        
-        ntuple = getattr(process,'l1NtupleProducer')
+        ntuple        = getattr(process,'l1NtupleProducer')
+        l1ExtraNtuple = getattr(process,'l1ExtraTreeProducer')
     elif patchNtuple :
         print "[L1Menu]:\tERROR: FAILED to find ntuple! switching patchNtuple to False"        
         patchNtuple=False
 
+    process.l1ExtraReEmul = cms.EDProducer(
+        "L1ExtraParticlesProd",
+        muonSource = cms.InputTag("gtDigis"),
+        isolatedEmSource    = cms.InputTag("gctDigis","isoEm"),
+        nonIsolatedEmSource = cms.InputTag("gctDigis","nonIsoEm"),
+        
+        forwardJetSource = cms.InputTag("gctDigis","forJets"),
+        centralJetSource = cms.InputTag("gctDigis","cenJets"),
+        tauJetSource     = cms.InputTag("gctDigis","tauJets"),
+        
+        etTotalSource = cms.InputTag("gctDigis"),
+        etHadSource   = cms.InputTag("gctDigis"),
+        etMissSource  = cms.InputTag("gctDigis"),
+        htMissSource  = cms.InputTag("gctDigis"),
+        
+        hfRingEtSumsSource    = cms.InputTag("gctDigis"),
+        hfRingBitCountsSource = cms.InputTag("gctDigis"),
+        
+        produceMuonParticles = cms.bool(True),
+        produceCaloParticles = cms.bool(True),
+        centralBxOnly = cms.bool(True),
+        ignoreHtMiss = cms.bool(False)
+        )
+        
     if reEmulMuons :
         print "[L1Menu]:\tSetting up muon re-emulation"        
         
@@ -43,12 +68,15 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
         process.gmtReEmulDigis.RPCfCandidates = cms.InputTag("rpcTriggerReEmulDigis","RPCf")
         process.gmtReEmulDigis.MipIsoData     = cms.InputTag("none")
         
+        process.l1ExtraReEmul.muonSource = cms.InputTag("gmtReEmulDigis")            
 
         if patchNtuple :
             ntuple.gmtSource          = cms.InputTag("gmtReEmulDigis")
             ntuple.dttfSource         = cms.InputTag("dttfReEmulDigis")
             ntuple.csctfTrkSource     = cms.InputTag("csctfReEmulTrackDigis")
             ntuple.csctfStatusSource  = cms.InputTag("csctfReEmulTrackDigis")
+
+            l1ExtraNtuple.muonLabel = cms.untracked.InputTag("l1ExtraReEmul")
 
         process.reEmulMuonChain = cms.Sequence(
             process.rpcTriggerReEmulDigis
@@ -89,7 +117,22 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 
         process.gctReEmulDigis = gctDigis.clone()        
         process.gctReEmulDigis.inputLabel = cms.InputTag("gctDigis")
-    
+
+        process.l1ExtraReEmul.isolatedEmSource    = cms.InputTag("gctReEmulDigis","isoEm")
+        process.l1ExtraReEmul.nonIsolatedEmSource = cms.InputTag("gctReEmulDigis","nonIsoEm")
+
+        process.l1ExtraReEmul.forwardJetSource = cms.InputTag("gctReEmulDigis","forJets")
+        process.l1ExtraReEmul.centralJetSource = cms.InputTag("gctReEmulDigis","cenJets")
+        process.l1ExtraReEmul.tauJetSource     = cms.InputTag("gctReEmulDigis","tauJets")
+            
+        process.l1ExtraReEmul.etTotalSource = cms.InputTag("gctDigis")
+        process.l1ExtraReEmul.etHadSource   = cms.InputTag("gctReEmulDigis")
+        process.l1ExtraReEmul.etMissSource  = cms.InputTag("gctReEmulDigis")
+        process.l1ExtraReEmul.htMissSource  = cms.InputTag("gctReEmulDigis")
+
+        process.l1ExtraReEmul.hfRingEtSumsSource    = cms.InputTag("gctReEmulDigis")
+        process.l1ExtraReEmul.hfRingBitCountsSource = cms.InputTag("gctReEmulDigis")
+
         if patchNtuple :
             ntuple.gctCentralJetsSource = cms.InputTag("gctReEmulDigis","cenJets")
             ntuple.gctNonIsoEmSource    = cms.InputTag("gctReEmulDigis","nonIsoEm")
@@ -97,6 +140,15 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
             ntuple.gctIsoEmSource       = cms.InputTag("gctReEmulDigis","isoEm")
             ntuple.gctEnergySumsSource  = cms.InputTag("gctReEmulDigis","")
             ntuple.gctTauJetsSource     = cms.InputTag("gctReEmulDigis","tauJets")
+
+            l1ExtraNtuple.nonIsoEmLabel = cms.untracked.InputTag("l1ExtraReEmul:NonIsolated")
+            l1ExtraNtuple.isoEmLabel    = cms.untracked.InputTag("l1ExtraReEmul:Isolated")
+            l1ExtraNtuple.tauJetLabel   = cms.untracked.InputTag("l1ExtraReEmul:Tau")
+            l1ExtraNtuple.cenJetLabel   = cms.untracked.InputTag("l1ExtraReEmul:Central")
+            l1ExtraNtuple.fwdJetLabel   = cms.untracked.InputTag("l1ExtraReEmul:Forward")
+            l1ExtraNtuple.metLabel      = cms.untracked.InputTag("l1ExtraReEmul:MET")
+            l1ExtraNtuple.mhtLabel      = cms.untracked.InputTag("l1ExtraReEmul:MHT")
+
             # Need to have RCT emulator configurable and not UCT 2015 patches
             # in order to run 2012 RCT emulator correctly
             #    ntuple.rctSource            = cms.InputTag("rctReEmulDigis")
@@ -122,15 +174,16 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 
     if patchNtuple :
         ntuple.gtSource = cms.InputTag("gtReEmulDigis")
+        
 
     if reEmulMuons and reEmulCalos :
-        process.reEmul = cms.Sequence(process.reEmulCaloChain + process.reEmulMuonChain + process.gtReEmulDigis)
+        process.reEmul = cms.Sequence(process.reEmulCaloChain + process.reEmulMuonChain + process.gtReEmulDigis + process.l1ExtraReEmul)
     elif reEmulMuons :
-        process.reEmul = cms.Sequence(process.reEmulMuonChain + process.gtReEmulDigis)
+        process.reEmul = cms.Sequence(process.reEmulMuonChain + process.gtReEmulDigis + process.l1ExtraReEmul)
     elif reEmulCalos :
-        process.reEmul = cms.Sequence(process.reEmulCaloChain + process.gtReEmulDigis)
+        process.reEmul = cms.Sequence(process.reEmulCaloChain + process.gtReEmulDigis + process.l1ExtraReEmul)
     else :
-        process.reEmul = cms.Sequence(process.gtReEmulDigis)
+        process.reEmul = cms.Sequence(process.gtReEmulDigis + process.l1ExtraReEmul)
 
 
 def run2012CConfiguration(process):
