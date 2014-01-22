@@ -37,6 +37,8 @@ private :
   float ETT();
   
   float SingleEGPt();
+  float SingleIsoEGPt();
+
   float SingleMuPt();
   float SingleMuErPt();
 
@@ -49,7 +51,9 @@ private :
   float RpcbPt();
   float RpcfPt();
   float CsctfPt();
-  
+
+  void setRateError(TH1F* histo);
+
   bool PhysicsBits[128];
 
   std::map<std::string,TH1F*> hTH1F;
@@ -329,6 +333,8 @@ float BasicRatePlots::SingleJetCentralPt() {
     if (bx != 0) continue; 
     Bool_t isFwdJet = gt_ -> Fwdjet[ue];
     if (isFwdJet) continue;
+    Bool_t isTauJet = gt_ -> Taujet[ue];
+    if (isTauJet) continue;
     Float_t rank = gt_ -> Rankjet[ue];
     Float_t pt = rank*4.;
     if (pt >= maxPt) maxPt = pt;
@@ -391,6 +397,39 @@ float BasicRatePlots::SingleEGPt() {
 }
 
 
+float BasicRatePlots::SingleIsoEGPt() {
+
+  float maxPt = -10; 
+
+  Int_t Nele = gt_ -> Nele;
+  for (Int_t ue=0; ue < Nele; ue++) {               
+    Int_t bx = gt_ -> Bxel[ue];        		
+    if (bx != 0) continue;
+    Bool_t iso = gt_ -> Isoel[ue];
+    if (! iso) continue;
+    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
+    Float_t pt = rank ; 
+    if (pt >= maxPt) maxPt = pt;
+  }  // end loop over EM objects
+  
+  return maxPt; 
+  
+}
+
+
+void BasicRatePlots::setRateError(TH1F* histo) {
+
+  int nBins = histo->GetNbinsX();
+
+  for (int iBin=1; iBin<=nBins; ++iBin) {
+    float value = histo->GetBinContent(iBin);
+    float error = sqrt(value);
+
+    histo->SetBinError(iBin,error);
+  }
+
+}
+
 // --------------------------------------------------------------------
 //                             run function 
 // --------------------------------------------------------------------
@@ -410,7 +449,9 @@ void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, in
   hTH1F["nHTTVsHTT"] = new TH1F("nHTTVsHTT","HTT; HTT cut; rate [Hz]",512,-.5,511.5);
   hTH1F["nETTVsETT"] = new TH1F("nETTVsETT","ETT; ETT cut; rate [Hz]",512,-.5,511.5);
 
-  hTH1F["nEGVsPt"]   = new TH1F("nEGVsPt","SingleEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hTH1F["nEGVsPt"]    = new TH1F("nEGVsPt","SingleEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hTH1F["nIsoEGVsPt"] = new TH1F("nIsoEGVsPt","SingleIsoEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+
   hTH1F["nMuVsPt"]   = new TH1F("nMuVsPt","SingleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nMuErVsPt"] = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
 
@@ -467,7 +508,9 @@ void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, in
       float htt       = HTT();
       float ett       = ETT();
 
-      float egPt     = SingleEGPt();
+      float egPt    = SingleEGPt();
+      float isoEgPt = SingleIsoEGPt();
+
       float muPt     = SingleMuPt();
       float muErPt   = SingleMuErPt();
 
@@ -500,6 +543,8 @@ void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, in
       for(int ptCut=0; ptCut<65; ++ptCut) {
 	if(egPt>ptCut)
 	  hTH1F["nEGVsPt"]->Fill(ptCut);
+	if(isoEgPt>ptCut)
+	  hTH1F["nIsoEGVsPt"]->Fill(ptCut);
       }
       
       for(int ptCut=0; ptCut<131; ++ptCut) {
@@ -547,26 +592,21 @@ void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, in
   if (isCrossSec) 
     scaleFactor /= (avgLumi*10000) ; // CB lumi is in 1E34 units
 
-  hTH1F["nJetVsPt"]->Scale(scaleFactor);
-  hTH1F["nJetCenVsPt"]->Scale(scaleFactor);
+  map<string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
+  map<string,TH1F*>::iterator hTH1FEnd = hTH1F.end();
 
-  hTH1F["nHTTVsHTT"]->Scale(scaleFactor);
-  hTH1F["nETTVsETT"]->Scale(scaleFactor);
+  for(; hTH1FIt!=hTH1FEnd; ++hTH1FIt) 
+    {
 
-  hTH1F["nEGVsPt"]->Scale(scaleFactor);
-  hTH1F["nMuVsPt"]->Scale(scaleFactor);
-  hTH1F["nMuErVsPt"]->Scale(scaleFactor);
+      TH1F* histo = hTH1FIt->second;
+      setRateError(histo);
+      histo->Scale(scaleFactor);
+
+    }
 
   hTH2F["nMuPtVsPt"]->Scale(scaleFactor);
   hTH2F["nOniaMuPtVsPt"]->Scale(scaleFactor);
   
-  hTH1F["nMuVsEta"]->Scale(scaleFactor);
-
-  hTH1F["nDttfVsPt"]->Scale(scaleFactor);
-  hTH1F["nRpcbVsPt"]->Scale(scaleFactor);
-  hTH1F["nRpcfVsPt"]->Scale(scaleFactor);
-  hTH1F["nCsctfVsPt"]->Scale(scaleFactor);
-
   outFile->Write();
   outFile->Close();
   delete outFile;
@@ -583,19 +623,24 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/h/heistera/scratch1/L1Ntuples/L1TreeL1Accept_207477_LS_57_133.root");
       basicRatePlots.run(true,1368,"DATA_207477",57,133,0.7301,isCrossSec,nEvents);
     }
-  else if (fileType == "13TEV_25PU_PLAIN_RE-EMUL")
+  else if (fileType == "13TEV_25PU_ORIG_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_v1.root");
-      basicRatePlots.run(false,2590,"13TEV_25PU_PLAIN_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_OrigEmul_v3.root");
+      basicRatePlots.run(false,2590,"13TEV_25PU_ORIG_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_25PU_2012_RE-EMUL" )
     {
-      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_ReEmul2012_v2.root");
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_ReEmul2012_v3.root");
       basicRatePlots.run(false,2590,"13TEV_25PU_2012_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_25PU_2012GCT10GEV_RE-EMUL" )
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_ReEmul2012Gct10GeV_v3.root");
+      basicRatePlots.run(false,2590,"13TEV_25PU_2012GCT10GEV_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_25PU_2015_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_ReEmul2015_v2.root"); 
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_ReEmul2015_v3.root"); 
       basicRatePlots.run(false,2590,"13TEV_25PU_2015_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
     }
   else if (fileType == "8TEV_TF_2012_RE-EMUL")
@@ -608,16 +653,32 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_8TeV_53X_202299_v2.root"); 
       basicRatePlots.run(true,1368,"TF_DATA_202299",70,550,0.5587,isCrossSec,nEvents);
     }
+  else if (fileType == "8TEV_25PU_ORIG_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_OrigEmul_v3.root"); 
+      basicRatePlots.run(false,2590,"8TEV_25PU_ORIG_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
+    }
   else if (fileType == "8TEV_25PU_2012_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_8TeV_53X_25PU_ReEmul2012_v2.root"); 
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2012_v3.root"); 
       basicRatePlots.run(false,2590,"8TEV_25PU_2012_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
+    }
+  else if (fileType == "8TEV_25PU_2012GCT10GEV_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2012Gct10GeV_v3.root"); 
+      basicRatePlots.run(false,2590,"8TEV_25PU_2012GCT10GEV_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
+    }
+  else if (fileType == "8TEV_25PU_2015_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2015_v3.root"); 
+      basicRatePlots.run(false,2590,"8TEV_25PU_2015_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
     }
   else 
     {
       std::cout << "Config param " << fileType << " invalid! \n"
-		<< "Valid fileType values are : DATA, 8TEV_TF_DATA, 8TEV_TF_2012_RE-EMUL, 8TEV_25PU_2012_RE-EMUL, " 
-		<< "13TEV_25PU_PLAIN_RE-EMUL, 13TEV_25PU_2012_RE-EMUL, 13TEV_25PU_2015_RE-EMUL\n";
+		<< "Valid fileType values are : DATA, 8TEV_TF_DATA, 8TEV_TF_2012_RE-EMUL, "
+		<< "8TEV_25PU_ORIG_RE-EMUL, 8TEV_25PU_2012_RE-EMUL, 8TEV_25PU_2012GCT10GEV_RE-EMUL, 8TEV_25PU_2015_RE-EMUL, "
+		<< "13TEV_25PU_ORIG_RE-EMUL, 13TEV_25PU_2012_RE-EMUL, 13TEV_25PU_2012GCT10GEV_RE-EMUL, 13TEV_25PU_2015_RE-EMUL\n";
     }
     
 }
