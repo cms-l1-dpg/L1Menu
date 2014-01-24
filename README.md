@@ -11,9 +11,10 @@ cd CMSSW_5_3_14_patch2/src
 
 cmsenv
 
-git cms-addpkg L1Trigger/RegionalCaloTrigger       
 git cms-addpkg DataFormats/L1CaloTrigger
 git cms-addpkg L1TriggerConfig/L1ScalesProducers
+git cms-cvs-history import  UCT2015_v4 L1Trigger/RegionalCaloTrigger
+
 git clone https://github.com/uwcms/UCT2015.git L1Trigger/UCT2015
 cd L1Trigger/UCT2015
 git checkout 2014-Menus-V0
