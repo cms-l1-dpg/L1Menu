@@ -72,6 +72,31 @@ void getPlotList( const std::string & fileName,
 }
 
 
+void getRange( TH1* plot, float & minY, float & maxY )
+{
+
+  minY = 1E10;
+  maxY = 0.;
+
+  int nBins = plot->GetNbinsX();
+  
+  for ( int iBin=0; iBin<=nBins; ++iBin )
+    {
+
+      float val = plot->GetBinContent( iBin );
+      minY = ( val > 0.001 && val < minY ) ? val : minY;
+      maxY = ( val > 0.001 && val > maxY ) ? val : maxY;
+
+    }
+
+  minY = ( fabs(minY - 1E10) > 0.01 ) ? minY*0.5 : 0.;
+  maxY = ( fabs(maxY - 0.  ) > 0.01 ) ? maxY*2.  : 1.;
+
+  return;
+
+}
+
+
 void plot( std::vector<TH1*> plots,
 	   std::string &baseDir, std::string outputDir ) 
 {
@@ -107,11 +132,16 @@ void plot( std::vector<TH1*> plots,
 	    {
 	      pPlot->cd();
 	      plots.at(iPlot)->SetLineColor( iPlot+1 );
+	      plots.at(iPlot)->SetFillColor( iPlot+1 );
 	      plots.at(iPlot)->SetMarkerColor( iPlot+1 );
 	      plots.at(iPlot)->SetMarkerStyle( 21 + iPlot );
-	      plots.at(iPlot)->GetYaxis()->SetRangeUser( plots.at(iPlot)->GetMinimum() > 0. ? plots.at(iPlot)->GetMinimum()*0.25 : 10E-7, 
-							 plots.at(iPlot)->GetMaximum()*4 );
-	      plots.at(iPlot)->Draw( iPlot ? "sameP" : "P" );
+	      
+	      float minY = 0;
+	      float maxY = 0;
+	      getRange( plots.at(iPlot), minY, maxY );
+ 
+	      plots.at(iPlot)->GetYaxis()->SetRangeUser( minY, maxY );
+	      plots.at(iPlot)->Draw( iPlot ? "samePE1" : "PE1" );
 	      
 	      if ( iPlot>0 ) 
 		{
@@ -123,12 +153,13 @@ void plot( std::vector<TH1*> plots,
 		  eff->SetTitle(";;Ratio");
 		  
 		  eff->SetLineColor( iPlot+1 );
+		  eff->SetFillColor( iPlot+1 );
 		  eff->SetMarkerColor( iPlot+1 );
 		  eff->SetMarkerStyle( 21 + iPlot );
 		  eff->GetYaxis()->SetRangeUser( .1, 10.);
-		  eff->GetYaxis()->SetLabelSize( .09);
+		  eff->GetYaxis()->SetLabelSize( .11);
 		  
-		  eff->Draw( iPlot>1 ? "sameP" : "P" );
+		  eff->Draw( iPlot>1 ? "samePE1" : "PE1" );
 		}
 	    }
 	  
