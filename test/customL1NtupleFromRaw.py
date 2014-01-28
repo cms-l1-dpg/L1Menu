@@ -59,7 +59,7 @@ options.register('runOnPostLS1',
                  "Set to True when running on MC and this postLS1")
 
 options.register('keepEDMOutput',
-                 True, #default value
+                 False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  "When True keeps also EDM GMT/GT skimmmed collections")
