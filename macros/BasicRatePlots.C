@@ -21,8 +21,8 @@ public :
   BasicRatePlots()  {}
   ~BasicRatePlots() {}
   
-  void run(bool runOnData, int nBunches, std::string resultTag, 
-	   int minLs, int maxLs, float avgLumi, int isCrossSec, int nEvents = 0);
+  void run(bool runOnData, std::string resultTag, int minLs, int maxLs, 
+	   float crossSec, float avPU, int nBunches, int isCrossSec, int nEvents = 0);
   
 private :
   
@@ -53,6 +53,8 @@ private :
   float CsctfPt();
 
   void setRateError(TH1F* histo);
+
+  float computeAvgLumi(float xSec, float avPU, int nBunches) { return 11246. * avPU * nBunches / (1E7 * xSec); };
 
   bool PhysicsBits[128];
 
@@ -435,7 +437,7 @@ void BasicRatePlots::setRateError(TH1F* histo) {
 // --------------------------------------------------------------------
 
 
-void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, int minLs, int maxLs, float avgLumi, int isCrossSec, int nEvents) {
+void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int maxLs, float crossSec, float avPU, int nBunches, int isCrossSec, int nEvents) {
 
   system("mkdir -p results");
   std::string resultName = "results_" + resultTag + (isCrossSec ? "_XSEC" : "_RATE") + ".root";
@@ -590,7 +592,7 @@ void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, in
   float scaleFactor = ScaleFactor(nZeroBias,nBunches);
 
   if (isCrossSec) 
-    scaleFactor /= (avgLumi*10000) ; // CB lumi is in 1E34 units
+    scaleFactor /= (computeAvgLumi(crossSec,avPU,nBunches)*10000) ; // CB lumi is in 1E34 units
 
   map<string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
   map<string,TH1F*>::iterator hTH1FEnd = hTH1F.end();
@@ -618,59 +620,65 @@ void BasicRatePlots::run(bool runOnData, int nBunches, std::string resultTag, in
 void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0) 
 {
 
+  int nBunches50ns = 1368;
+  int nBunches25ns = 2508; //2508 is what agreed with TSG for # bunches
+
+  float xSec13TeV = isCrossSec ? 78.26 : 80.; // Using McM for cross section comparison and 80 (agreed with TSG) for rates)
+  float xSec8TeV  = 72.7; 
+
   if (fileType == "DATA") {
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/h/heistera/scratch1/L1Ntuples/L1TreeL1Accept_207477_LS_57_133.root");
-      basicRatePlots.run(true,1368,"DATA_207477",57,133,0.7301,isCrossSec,nEvents);
+      basicRatePlots.run(true,"DATA_207477",57,133,xSec8TeV,999.,nBunches50ns,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
     }
   else if (fileType == "13TEV_25PU_ORIG_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_OrigEmul_v4.root");
-      basicRatePlots.run(false,2590,"13TEV_25PU_ORIG_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_25PU_ORIG_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_25PU_2012_RE-EMUL" )
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_ReEmul2012_v4.root");
-      basicRatePlots.run(false,2590,"13TEV_25PU_2012_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_25PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_25PU_2012GCT10GEV_RE-EMUL" )
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_ReEmul2012Gct10GeV_v4.root");
-      basicRatePlots.run(false,2590,"13TEV_25PU_2012GCT10GEV_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_25PU_2012GCT10GEV_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_25PU_2015_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_13TeV_25PU_53X_ReEmul2015_v4.root"); 
-      basicRatePlots.run(false,2590,"13TEV_25PU_2015_RE-EMUL",0,500000000,0.9305,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_25PU_2015_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "8TEV_TF_2012_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_8TeV_53X_ReEmul2012_v2.root"); 
-      basicRatePlots.run(false,1368,"8TEV_TF_2012_RE-EMUL",0,500000000,999,isCrossSec,nEvents); // CB need to find PU for lumi calculation
+      basicRatePlots.run(false,"8TEV_TF_2012_RE-EMUL",0,500000000,xSec8TeV,999.,nBunches50ns,isCrossSec,nEvents);  // 999 is dummy do not use for cross-section
     }
   else if (fileType == "8TEV_TF_DATA")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_8TeV_53X_202299_v2.root"); 
-      basicRatePlots.run(true,1368,"TF_DATA_202299",70,550,0.5587,isCrossSec,nEvents);
+      basicRatePlots.run(true,"TF_DATA_202299",70,550,xSec8TeV,999.,nBunches50ns,isCrossSec,nEvents); // CB need to find PU for lumi calculation
     }
   else if (fileType == "8TEV_25PU_ORIG_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_OrigEmul_v4.root"); 
-      basicRatePlots.run(false,2590,"8TEV_25PU_ORIG_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
+      basicRatePlots.run(false,"8TEV_25PU_ORIG_RE-EMUL",0,500000000,xSec8TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "8TEV_25PU_2012_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2012_v4.root"); 
-      basicRatePlots.run(false,2590,"8TEV_25PU_2012_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
+      basicRatePlots.run(false,"8TEV_25PU_2012_RE-EMUL",0,500000000,xSec8TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "8TEV_25PU_2012GCT10GEV_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2012Gct10GeV_v4.root"); 
-      basicRatePlots.run(false,2590,"8TEV_25PU_2012GCT10GEV_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
+      basicRatePlots.run(false,"8TEV_25PU_2012GCT10GEV_RE-EMUL",0,500000000,xSec8TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "8TEV_25PU_2015_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2015_v4.root"); 
-      basicRatePlots.run(false,2590,"8TEV_25PU_2015_RE-EMUL",0,500000000,1.001,isCrossSec,nEvents);
+      basicRatePlots.run(false,"8TEV_25PU_2015_RE-EMUL",0,500000000,xSec8TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else 
     {
