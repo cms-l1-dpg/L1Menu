@@ -1,3 +1,4 @@
+
 L1TMenu
 =======
 
@@ -20,6 +21,8 @@ cd ../..
 
 git clone https://github.com/cms-l1-dpg/L1Ntuples.git L1TriggerDPG/L1Ntuples
 git clone https://github.com/cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
+
+export USER_CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"
 
 scramv1 b -j 9
 </code></pre>
