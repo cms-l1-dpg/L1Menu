@@ -94,6 +94,12 @@ options.register('useUct2015',
                  VarParsing.VarParsing.varType.bool,
                  "Enables UCT2015 emulation for calos")
 
+options.register('puReweightingFile',
+                 'none', #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.string,
+                 "InputFile to be used for PU reweighting (for example to scale luminosity)")
+
 options.parseArguments()
 
 
@@ -101,7 +107,7 @@ options.parseArguments()
 from L1TriggerDPG.L1Ntuples.l1Ntuple_cfg import *
 
 # ntuple configuration parameters
-readFiles.extend(["file:///data2/battilan/L1Trigger/202299_RAW-RECO.root"])
+readFiles.extend(["file:///data2/battilan/L1Trigger/24B0123E-6B85-E311-9D90-002618943980.root"])
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 print "[L1Menu]: Using GlobalTag", options.globalTag
@@ -135,6 +141,11 @@ if options.reEmulation and (options.customDTTF or options.customCSCTF or options
 if options.reEmulation and options.useUct2015 :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
     customiseUCT2015(process, options.runOnMC, options.runOnPostLS1)
+
+if options.puReweightingFile != "none" :
+    from L1TriggerDPG.L1Menu.pileUpReweighting_cff import *
+    pileUpReweighting(process,options.puReweightingFile, "productionPileUpHisto", "targetPileUpHisto")
+
 
 # EDM keep statement
 
