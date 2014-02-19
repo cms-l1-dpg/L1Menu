@@ -1,4 +1,4 @@
-#include "../../macros/L1Ntuple.h"
+#include "../../L1Ntuples/macros/L1Ntuple.h"
 
 size_t ETAMUBINS = 65;
 Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
@@ -295,7 +295,7 @@ void BasicRatePlots::Onia(Float_t & muPt1, Float_t & muPt2, Float_t etacut, Int_
       
       bool hasCorrCond = ( fabs(ieta1 - ieta2) <= delta);
 
-      if (hasCorrCond) muonPairs.push_back(std::make_pair<Float_t,Float_t>(pt,pt2));
+      if (hasCorrCond) muonPairs.push_back(std::make_pair<Float_t& ,Float_t&>(pt,pt2));
       
     }
     
@@ -679,6 +679,11 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2015_v4.root"); 
       basicRatePlots.run(false,"8TEV_25PU_2015_RE-EMUL",0,500000000,xSec8TeV,25,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2012_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012/L1Tree.root"); 
+      basicRatePlots.run(false,"13TEV_25PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else 
     {
