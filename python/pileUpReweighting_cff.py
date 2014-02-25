@@ -11,5 +11,9 @@ def pileUpReweighting(process, fileName, origHisto, targetHisto ):
         ntuple.puMCHist   = cms.untracked.string(origHisto)
         ntuple.puDataHist = cms.untracked.string(targetHisto)
 
+        ntuple.useAvgVtx        = cms.untracked.bool(False) # for MC reweighting use exact num of PU vertices
+        ntuple.maxAllowedWeight = cms.untracked.double(10)  # CB 10 for now, wors scaling 40 to 45 only!
+
+
     else :
         print "[L1Menu]: Ntuple configuration not found. Can't customise PU reweighting!"

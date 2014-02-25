@@ -45,8 +45,8 @@ void genPUReweightinFile(double origAvPU, double targetAvPU,
   
   outputFile->cd();
   
-  TH1F *orig   = getPoissonTH1F(origAvPU,"productionPileHupHisto"); 
-  TH1F *target = getPoissonTH1F(targetAvPU,"targetPileHupHisto");
+  TH1F *orig   = getPoissonTH1F(origAvPU,"productionPileUpHisto"); 
+  TH1F *target = getPoissonTH1F(targetAvPU,"targetPileUpHisto");
 
   printHisto(orig);
   printHisto(target);

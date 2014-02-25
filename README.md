@@ -7,13 +7,16 @@ Package to put togheter code and configuration file to prepare Winter13 version 
 Installation instructions:
 
 <pre><code>
-export MY_CMSSW_VERSION="CMSSW_5_3_14_patch2"
+export MY_CMSSW_VERSION="CMSSW_6_2_5"
 cmsrel $MY_CMSSW_VERSION 
 cd $MY_CMSSW_VERSION/src
 
 cmsenv
 
-git cms-cvs-history import  UCT2015_v4 L1Trigger/RegionalCaloTrigger
+# The PR for the RCT in 62X from Maria
+git cms-merge-topic 2525
+
+# The UCT2015 code
 git clone https://github.com/uwcms/UCT2015.git L1Trigger/UCT2015
 cd L1Trigger/UCT2015
 git checkout 2014-Menus-V1

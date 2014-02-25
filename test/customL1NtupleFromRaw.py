@@ -106,6 +106,14 @@ options.parseArguments()
 #L1 ntuple
 from L1TriggerDPG.L1Ntuples.l1Ntuple_cfg import *
 
+if options.runOnMC and hasattr(process,'l1NtupleProducer') :
+    print "[L1Menu]: Running on MC reading also PileUpSummary info"
+    
+    ntuple                  = getattr(process,'l1NtupleProducer')
+    ntuple.simulationSource = cms.InputTag("addPileupInfo")
+
+    
+
 # ntuple configuration parameters
 readFiles.extend(["file:///data2/battilan/L1Trigger/24B0123E-6B85-E311-9D90-002618943980.root"])
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )

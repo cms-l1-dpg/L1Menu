@@ -1,4 +1,5 @@
 #include "../../macros/L1Ntuple.h"
+#include<map>
 
 size_t ETAMUBINS = 65;
 Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
@@ -295,7 +296,7 @@ void BasicRatePlots::Onia(Float_t & muPt1, Float_t & muPt2, Float_t etacut, Int_
       
       bool hasCorrCond = ( fabs(ieta1 - ieta2) <= delta);
 
-      if (hasCorrCond) muonPairs.push_back(std::make_pair<Float_t,Float_t>(pt,pt2));
+      if (hasCorrCond) muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
       
     }
     
@@ -477,7 +478,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	  hTH1FIt->second->GetYaxis()->SetTitle("cross section [#mubarn]");
 	}
     }
-      
+
+  hTH1F["nPUvsPU"]  = new TH1F("nPUvsPU","Num. of PU iteractions; Num of iteractions; Reweighted couns [arb units]",101,-0.5,100.5);
 
   float nZeroBias = 0;
 
@@ -497,6 +499,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       }
       
       if ( event_->lumi < minLs || event_->lumi > maxLs ) continue;
+
+      double weight = event_->puWeight > -0.001 ? event_->puWeight : 1; 
       
       FillBits();
 
@@ -533,35 +537,37 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       float rpcfPt   = RpcfPt();
       float csctfPt  = CsctfPt();
 
-      hTH1F["nMuVsEta"]->Fill(muEta);
+      hTH1F["nPUvsPU"]->Fill(simulation_->actualInt,weight);
+
+      hTH1F["nMuVsEta"]->Fill(muEta,weight);
 
       for(int ptCut=0; ptCut<256; ++ptCut) {
 	if(jetPt>ptCut)
-	  hTH1F["nJetVsPt"]->Fill(ptCut);
+	  hTH1F["nJetVsPt"]->Fill(ptCut,weight);
 	if(jetCenPt>ptCut)
-	  hTH1F["nJetCenVsPt"]->Fill(ptCut);
+	  hTH1F["nJetCenVsPt"]->Fill(ptCut,weight);
       }
 
       for(int ptCut=0; ptCut<65; ++ptCut) {
 	if(egPt>ptCut)
-	  hTH1F["nEGVsPt"]->Fill(ptCut);
+	  hTH1F["nEGVsPt"]->Fill(ptCut,weight);
 	if(isoEgPt>ptCut)
-	  hTH1F["nIsoEGVsPt"]->Fill(ptCut);
+	  hTH1F["nIsoEGVsPt"]->Fill(ptCut,weight);
       }
       
       for(int ptCut=0; ptCut<131; ++ptCut) {
 	if (muPt>ptCut)
-	  hTH1F["nMuVsPt"]->Fill(ptCut);
+	  hTH1F["nMuVsPt"]->Fill(ptCut,weight);
 	if (muErPt>ptCut)
-	  hTH1F["nMuErVsPt"]->Fill(ptCut);
+	  hTH1F["nMuErVsPt"]->Fill(ptCut,weight);
 	if (dttfPt>ptCut)
-	  hTH1F["nDttfVsPt"]->Fill(ptCut);
+	  hTH1F["nDttfVsPt"]->Fill(ptCut,weight);
 	if (rpcbPt>ptCut)
-	  hTH1F["nRpcbVsPt"]->Fill(ptCut);
+	  hTH1F["nRpcbVsPt"]->Fill(ptCut,weight);
 	if (rpcfPt>ptCut)
-	  hTH1F["nRpcfVsPt"]->Fill(ptCut);
+	  hTH1F["nRpcfVsPt"]->Fill(ptCut,weight);
 	if (csctfPt>ptCut)
-	  hTH1F["nCsctfVsPt"]->Fill(ptCut);
+	  hTH1F["nCsctfVsPt"]->Fill(ptCut,weight);
       }
 
       for(int iCut=0; iCut<41; ++iCut) {
@@ -569,20 +575,20 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	  float ptCut = iCut*0.5;
 	  float ptCut2 = iCut2*0.5;
 	  if (doubleMuPt1>ptCut && doubleMuPt2>ptCut2)
-	    hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
+	    hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
 	  if (oniaMuPt1>ptCut && oniaMuPt2>ptCut2)
-	    hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
+	    hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
 	}
       }
       
       for(int httCut=0; httCut<512; ++httCut) {
 	if(htt>httCut)
-	  hTH1F["nHTTVsHTT"]->Fill(httCut);
+	  hTH1F["nHTTVsHTT"]->Fill(httCut,weight);
       }
       
       for(int ettCut=0; ettCut<512; ++ettCut) {
 	if(ett>ettCut)
-	  hTH1F["nETTVsETT"]->Fill(ettCut);
+	  hTH1F["nETTVsETT"]->Fill(ettCut,weight);
       }  
 
     } // end event loop
@@ -600,7 +606,11 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   for(; hTH1FIt!=hTH1FEnd; ++hTH1FIt) 
     {
 
+      if (hTH1FIt->first == "nPUvsPU")
+	continue;
+      
       TH1F* histo = hTH1FIt->second;
+      
       setRateError(histo);
       histo->Scale(scaleFactor);
 
@@ -679,6 +689,21 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_8TeV_25PU_53X_ReEmul2015_v4.root"); 
       basicRatePlots.run(false,"8TEV_25PU_2015_RE-EMUL",0,500000000,xSec8TeV,25,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2012_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_v5_62X_13TeV_40PU_25bx_ReEmul2012.root"); 
+      basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_45p4PU_2012_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_v5_62X_13TeV_45p4PU_25bx_ReEmul2012.root"); 
+      basicRatePlots.run(false,"13TEV_45p4PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "TEST")
+    {
+      BasicRatePlots basicRatePlots("../test/L1Tree.root"); 
+      basicRatePlots.run(false,"TEST",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else 
     {
