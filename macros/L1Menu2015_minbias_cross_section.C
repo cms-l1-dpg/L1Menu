@@ -4278,6 +4278,15 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
     L1JetCorrection=false;
     Energy = 13;
   }
+  if (whichFileAndLumiToUse==5) {
+    // 13 TeV ZeroBias 62X sample, 2015 re-emulation
+    NumberOfBunches = 2590; 
+    AverageLumi = 0.9305;
+    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree.root";
+    AveragePU = 40;
+    L1JetCorrection=false;
+    Energy = 13;
+  }
   else {
     std::cout << std::endl << "ERROR: Please define a ntuple file which is in the allowed range! You did use: whichFileAndLumiToUse = " << whichFileAndLumiToUse << " This is not in the allowed range" << std::endl << std::endl;
   }

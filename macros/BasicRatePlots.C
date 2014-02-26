@@ -683,7 +683,17 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
   else if (fileType == "13TEV_40PU_2012_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012/L1Tree.root"); 
-      basicRatePlots.run(false,"13TEV_25PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2012Gct10GeV_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012Gct10GeV/L1Tree.root"); 
+      basicRatePlots.run(false,"13TEV_40PU_2012Gct10GeV_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2015_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree.root"); 
+      basicRatePlots.run(false,"13TEV_40PU_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
     }
   else 
     {
