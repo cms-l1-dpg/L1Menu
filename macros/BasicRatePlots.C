@@ -87,7 +87,7 @@ void BasicRatePlots::FillBits() {
 // scale factor computed w.r.t. ZeroBias rate fratcion and # bunches 
 float BasicRatePlots::ScaleFactor(float nZeroBias, float nBunches) {
 
-  float scal = 11246.; // ZB per bunch in kHz
+  static const float scal = 11246.; // ZB per bunch in kHz
   scal /= nZeroBias;
   scal *= nBunches;
 
@@ -591,7 +591,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
   float scaleFactor = ScaleFactor(nZeroBias,nBunches);
 
-  if (isCrossSec) 
+ if (isCrossSec) 
     scaleFactor /= (computeAvgLumi(crossSec,avPU,nBunches)*10000) ; // CB lumi is in 1E34 units
 
   map<string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
