@@ -98,7 +98,7 @@ void BasicRatePlots::FillBits() {
 // scale factor computed w.r.t. ZeroBias rate fratcion and # bunches 
 float BasicRatePlots::ScaleFactor(float nZeroBias, float nBunches) {
 
-  static const float scal = 11246.; // ZB per bunch in kHz
+  float scal = 11246.; // ZB per bunch in kHz
   scal /= nZeroBias;
   scal *= nBunches;
 
