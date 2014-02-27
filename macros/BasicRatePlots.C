@@ -1,4 +1,5 @@
 #include "../../L1Ntuples/macros/L1Ntuple.h"
+#include <algorithm>
 
 size_t ETAMUBINS = 65;
 Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
@@ -32,6 +33,10 @@ private :
   float SingleJetCentralPt();
   float SingleJetCentralEta(Float_t cut );
   float SingleJetPt();
+  float SingleTauPt();
+
+  float DoubleJetCentral();
+  float QuadJetCentral();
 
   float HTT();
   float ETT();
@@ -54,12 +59,18 @@ private :
 
   void setRateError(TH1F* histo);
 
+  vector<float> SortJets(bool doCentral, bool doTau);
+  vector<float> SortEGs(bool doIsol);
+
+
   float computeAvgLumi(float xSec, float avPU, int nBunches) { return 11246. * avPU * nBunches / (1E7 * xSec); };
 
   bool PhysicsBits[128];
 
   std::map<std::string,TH1F*> hTH1F;
   std::map<std::string,TH2F*> hTH2F;
+
+  vector<float> sortedCenJets,sortedJets,sortedTaus,sortedEGs,sortedIsolEGs;
 
 };
 
@@ -335,8 +346,27 @@ float BasicRatePlots::SingleJetCentralPt() {
     if (bx != 0) continue; 
     Bool_t isFwdJet = gt_ -> Fwdjet[ue];
     if (isFwdJet) continue;
+    //Bool_t isTauJet = gt_ -> Taujet[ue];
+    //if (isTauJet) continue;
+    Float_t rank = gt_ -> Rankjet[ue];
+    Float_t pt = rank*4.;
+    if (pt >= maxPt) maxPt = pt;
+  } 
+  
+  return maxPt;
+  
+}
+
+float BasicRatePlots::SingleTauPt() {
+  
+  float maxPt = -10;
+
+  Int_t Nj = gt_ -> Njet ;
+  for (Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = gt_ -> Bxjet[ue];        		
+    if (bx != 0) continue; 
     Bool_t isTauJet = gt_ -> Taujet[ue];
-    if (isTauJet) continue;
+    if (! isTauJet) continue;
     Float_t rank = gt_ -> Rankjet[ue];
     Float_t pt = rank*4.;
     if (pt >= maxPt) maxPt = pt;
@@ -347,6 +377,22 @@ float BasicRatePlots::SingleJetCentralPt() {
 }
 
 float BasicRatePlots::SingleJetPt() {
+
+  float maxPt = -10;
+  Int_t Nj = gt_ -> Njet ;
+  for (Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = gt_ -> Bxjet[ue];        		
+    if (bx != 0) continue;
+    Float_t rank = gt_ -> Rankjet[ue];
+    Float_t pt = rank*4.;
+    if (pt >= maxPt) maxPt = pt;
+  }
+  
+  return maxPt;
+  
+}
+
+float BasicRatePlots::DoubleJetCentral() {
 
   float maxPt = -10;
   Int_t Nj = gt_ -> Njet ;
@@ -418,6 +464,78 @@ float BasicRatePlots::SingleIsoEGPt() {
   
 }
 
+vector<float> BasicRatePlots::SortJets(bool doCentral, bool doTau){
+
+  if (doCentral && doTau){
+    cout << "Incompatible arguements to SortJets -- Exiting macro" << endl;
+    exit(1);
+  }
+  vector<float> theJets, theSortedJets;
+
+  Int_t Nj = gt_ -> Njet ;
+  for (Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = gt_ -> Bxjet[ue];        		
+    if (bx != 0) continue; 
+    if (doCentral){
+      Bool_t isFwdJet = gt_ -> Fwdjet[ue];
+      if (isFwdJet) continue;
+    }else if (doTau){
+      Bool_t isTauJet = gt_ -> Taujet[ue];
+      if (! isTauJet) continue;
+    }
+    Float_t rank = gt_ -> Rankjet[ue];
+    Float_t pt = rank*4.;
+    theJets.push_back(float(pt));
+  } 
+  //cout << "Size of jets: " << Nj << " central: " << theJets.size() << endl;
+  
+  theSortedJets=theJets;
+  for (unsigned i=0; i < theJets.size(); i++) {
+    if (theJets[i] != theSortedJets[i] ){
+      cout << "\t ERROR XXXX: " << i << "\t " << theSortedJets[i] << "\t " << theJets[i] << "\t " << theJets.size() << "\t " << theSortedJets.size() << endl;
+      //}else{
+      //cout << "\t " << theSortedJets[i] << "\t " << theJets[i] << endl;
+    }
+  }
+  std::stable_sort(theSortedJets.begin(),theSortedJets.end(),std::greater<float>());
+  return theSortedJets;
+
+}
+
+vector<float> BasicRatePlots::SortEGs(bool doIsol){
+
+  vector<float> theEGs, theSortedEGs;
+
+
+  Int_t Nele = gt_ -> Nele;
+  for (Int_t ue=0; ue < Nele; ue++) {               
+    Int_t bx = gt_ -> Bxel[ue];        		
+    if (bx != 0) continue;
+
+    if (doIsol){
+      Bool_t iso = gt_ -> Isoel[ue];
+      if (! iso) continue;
+    }
+
+    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
+    Float_t pt = rank ; 
+    // if (pt >= maxPt) maxPt = pt;
+    theEGs.push_back(float(pt));
+  }  // end loop over EM objects
+
+  
+  theSortedEGs=theEGs;
+  for (unsigned i=0; i < theEGs.size(); i++) {
+    if (theEGs[i] != theSortedEGs[i] ){
+      cout << "\t ERROR XXXX: " << i << "\t " << theSortedEGs[i] << "\t " << theEGs[i] << "\t " << theEGs.size() << "\t " << theSortedEGs.size() << endl;
+      //}else{
+      //cout << "\t " << theSortedEGs[i] << "\t " << theEGs[i] << endl;
+    }
+  }
+  std::stable_sort(theSortedEGs.begin(),theSortedEGs.end(),std::greater<float>());
+  return theSortedEGs;
+
+}
 
 void BasicRatePlots::setRateError(TH1F* histo) {
 
@@ -446,13 +564,24 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   outFile->cd();
 
   hTH1F["nJetVsPt"]    = new TH1F("nJetVsPt","SingleJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
+  hTH1F["nTauVsPt"]    = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hTH1F["nJetCenVsPt"] = new TH1F("nJetCenVsPt","SingleJetCentral; E_{T} cut; rate [Hz]",256,-0.5,255.5);
+
+  hTH1F["nDiJetVsPt"]    = new TH1F("nDiJetVsPt","DiJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
+  hTH1F["nDiTauVsPt"]    = new TH1F("nDiTauVsPt","DiTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
+  hTH1F["nDiCenJetVsPt"]    = new TH1F("nDiCenJetVsPt","DiCenJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
+
+  hTH1F["nQuadJetVsPt"]    = new TH1F("nQuadJetVsPt","QuadJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
+  hTH1F["nQuadCenJetVsPt"]    = new TH1F("nQuadCenJetVsPt","QuadCenJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
 
   hTH1F["nHTTVsHTT"] = new TH1F("nHTTVsHTT","HTT; HTT cut; rate [Hz]",512,-.5,511.5);
   hTH1F["nETTVsETT"] = new TH1F("nETTVsETT","ETT; ETT cut; rate [Hz]",512,-.5,511.5);
 
   hTH1F["nEGVsPt"]    = new TH1F("nEGVsPt","SingleEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hTH1F["nIsoEGVsPt"] = new TH1F("nIsoEGVsPt","SingleIsoEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+
+  hTH1F["nDiEGVsPt"]    = new TH1F("nDiEGVsPt","DiEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hTH1F["nDiIsoEGVsPt"] = new TH1F("nDiIsoEGVsPt","DiIsoEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
 
   hTH1F["nMuVsPt"]   = new TH1F("nMuVsPt","SingleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nMuErVsPt"] = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
@@ -463,6 +592,9 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH1F["nRpcbVsPt"]  = new TH1F("nRpcbVsPt","RPCb; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nRpcfVsPt"]  = new TH1F("nRpcfVsPt","RPCf; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nCsctfVsPt"] = new TH1F("nCsctfVsPt","CSCTF; p_{T} cut; rate [Hz]",131,-0.5,130.5);
+
+  hTH2F["nElePtVsPt"]    = new TH2F("nElePtVsPt","DoubleEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",41,-0.25,20.25,41,-0.25,20.25);
+  hTH2F["nIsolElePtVsPt"]    = new TH2F("nIsolElePtVsPt","DoubleIsolEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",41,-0.25,20.25,41,-0.25,20.25);
 
   hTH2F["nMuPtVsPt"]    = new TH2F("nMuPtVsPt","DoubleMu; p_{T} cut mu_{1}; p_{T} cut mu_{2}",41,-0.25,20.25,41,-0.25,20.25);
   hTH2F["nOniaMuPtVsPt"]= new TH2F("nOniaMuPtVsPt","DoubleMu_Er_HighQ_WdEta22 (Quarkonia); p_{T} cut mu_{1}; p_{T} cut mu_{2}",41,-0.25,20.25,41,-0.25,20.25);
@@ -504,8 +636,11 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       
       nZeroBias += 1 ;
 
+
       float jetPt     = SingleJetPt();
       float jetCenPt  = SingleJetCentralPt();
+
+      float tauPt     = SingleTauPt();
 
       float htt       = HTT();
       float ett       = ETT();
@@ -540,6 +675,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	  hTH1F["nJetVsPt"]->Fill(ptCut);
 	if(jetCenPt>ptCut)
 	  hTH1F["nJetCenVsPt"]->Fill(ptCut);
+	if(tauPt>ptCut)
+	  hTH1F["nTauVsPt"]->Fill(ptCut);
       }
 
       for(int ptCut=0; ptCut<65; ++ptCut) {
@@ -564,6 +701,56 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	  hTH1F["nCsctfVsPt"]->Fill(ptCut);
       }
 
+
+      // creates sorted jet vectors for all jet cands and central jets
+      sortedJets = SortJets(false,false);  // no cuts --> doCentral=false, doTau=false
+      sortedCenJets = SortJets(true,false); // for central jet rate  --> doCentral=true, doTau=false
+      sortedTaus = SortJets(false,true); // for tau jet rate  --> doCentral=false, doTau=true
+
+
+      // DiJets and DiCentralJets
+      bool dijets=sortedJets.size()>1;
+      if (dijets){
+	float dijetPt=sortedJets.at(1);
+	for(int ptCut=0; ptCut<256; ++ptCut) {
+	  if(dijetPt>ptCut)
+	    hTH1F["nDiJetVsPt"]->Fill(ptCut);
+	}
+      }
+      bool dijetsC=sortedCenJets.size()>1;
+      if (dijetsC){
+	float dijetPt=sortedCenJets.at(1);
+	for(int ptCut=0; ptCut<256; ++ptCut) {
+	  if(dijetPt>ptCut)
+	    hTH1F["nDiCenJetVsPt"]->Fill(ptCut);
+	}
+      }
+      bool ditaus=sortedTaus.size()>1;
+      if (ditaus){
+	float dijetPt=sortedTaus.at(1);
+	for(int ptCut=0; ptCut<256; ++ptCut) {
+	  if(dijetPt>ptCut)
+	    hTH1F["nDiTauVsPt"]->Fill(ptCut);
+	}
+      }
+
+      bool quadjets=sortedJets.size()>3;
+      if (quadjets){
+	float quadjetPt=sortedJets.at(3);
+	for(int ptCut=0; ptCut<256; ++ptCut) {
+	  if(quadjetPt>ptCut)
+	    hTH1F["nQuadJetVsPt"]->Fill(ptCut);
+	}
+      }
+      bool quadjetsC=sortedCenJets.size()>3;
+      if (quadjetsC){
+	float quadjetPt=sortedCenJets.at(3);
+	for(int ptCut=0; ptCut<256; ++ptCut) {
+	  if(quadjetPt>ptCut)
+	    hTH1F["nQuadCenJetVsPt"]->Fill(ptCut);
+	}
+      }
+
       for(int iCut=0; iCut<41; ++iCut) {
 	for(int iCut2=0; iCut2<=iCut; ++iCut2) {
 	  float ptCut = iCut*0.5;
@@ -572,6 +759,48 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	    hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
 	  if (oniaMuPt1>ptCut && oniaMuPt2>ptCut2)
 	    hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
+	}
+      }
+
+      //ccla
+      sortedEGs     = SortEGs(false);
+      sortedIsolEGs = SortEGs(true);
+      //if (sortedEGs.size() > 1) 
+      //cout << "Electron Sizes: " << sortedEGs.size() << "\t" << sortedIsolEGs.size() << endl;
+
+      bool diEG=sortedEGs.size()>1;
+      if (diEG){
+	for(int ptCut=0; ptCut<65; ++ptCut) {
+	  if(sortedEGs[1]>ptCut)
+	    hTH1F["nDiEGVsPt"]->Fill(ptCut);
+	}
+
+	// now for asymetric thresholds
+	for(int iCut=0; iCut<41; ++iCut) {
+	  for(int iCut2=0; iCut2<=iCut; ++iCut2) {
+	    float ptCut = iCut*0.5;
+	    float ptCut2 = iCut2*0.5;
+	    if (sortedEGs[0]>ptCut && sortedEGs[1]>ptCut2)
+	      hTH2F["nElePtVsPt"]->Fill(ptCut,ptCut2);
+	  }
+	}
+      }
+
+      bool diIsolEG=sortedIsolEGs.size()>1;
+      if (diIsolEG){
+	for(int ptCut=0; ptCut<65; ++ptCut) {
+	  if(sortedIsolEGs[1]>ptCut)
+	    hTH1F["nDiIsoEGVsPt"]->Fill(ptCut);
+	}
+
+	// now for asymetric thresholds
+	for(int iCut=0; iCut<41; ++iCut) {
+	  for(int iCut2=0; iCut2<=iCut; ++iCut2) {
+	    float ptCut = iCut*0.5;
+	    float ptCut2 = iCut2*0.5;
+	    if (sortedIsolEGs[0]>ptCut && sortedIsolEGs[1]>ptCut2)
+	      hTH2F["nIsolElePtVsPt"]->Fill(ptCut,ptCut2);
+	  }
 	}
       }
       
@@ -609,6 +838,9 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH2F["nMuPtVsPt"]->Scale(scaleFactor);
   hTH2F["nOniaMuPtVsPt"]->Scale(scaleFactor);
   
+  hTH2F["nElePtVsPt"]->Scale(scaleFactor);
+  hTH2F["nIsolElePtVsPt"]->Scale(scaleFactor);
+
   outFile->Write();
   outFile->Close();
   delete outFile;
