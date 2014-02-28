@@ -1,10 +1,7 @@
 #include "L1Ntuple.h"
-#include "hist.C"
 #include "Style.C"
 
-#include "TLegend.h"
 #include "TMath.h"
-#include "TText.h"
 #include "TH2.h"
 #include "TAxis.h"
 #include "TString.h"
@@ -18,15 +15,15 @@
 // huge prescale value for seeds changed on-the-fly
 #define INFTY 262139
 
-TH1F *h_Cross,*h_Cross_8TeV;
-TH1F *h_MultiCross,*h_MultiCross_8TeV;
-TH1F *h_Jets,*h_Jets_8TeV;
-TH1F *h_MultiJets,*h_MultiJets_8TeV;
-TH1F *h_Sums,*h_Sums_8TeV;
-TH1F *h_Egamma,*h_Egamma_8TeV;
-TH1F *h_MultiEgamma,*h_MultiEgamma_8TeV;
-TH1F *h_Muons,*h_Muons_8TeV;
-TH1F *h_MultiMuons,*h_MultiMuons_8TeV;
+TH1F *h_Cross;
+TH1F *h_MultiCross;
+TH1F *h_Jets;
+TH1F *h_MultiJets;
+TH1F *h_Sums;
+TH1F *h_Egamma;
+TH1F *h_MultiEgamma;
+TH1F *h_Muons;
+TH1F *h_MultiMuons;
 
 TH1F *h_Block;
 TH2F *cor_Block;
@@ -45,13 +42,13 @@ TH1F *h_TRIGPHYS_shared;
 const Int_t N128 = 128;			// could be > 128 for "test seeds"
 Int_t kOFFSET = 0;
 Bool_t TheTriggerBits[N128];	// contains the emulated triggers for each event
-TH1F *h_All,*h_All_8TeV;		// one bin for each trigger. Fill bin i if event fires trigger i.
-TH1F *h_Pure,*h_Pure_8TeV;		// one bin for each trigger. Fill bin i if event fires trigger i and NO OTHER TRIGGER.
+TH1F *h_All;		// one bin for each trigger. Fill bin i if event fires trigger i.
+TH1F *h_Pure;		// one bin for each trigger. Fill bin i if event fires trigger i and NO OTHER TRIGGER.
 
 // Methods to scale L1 jets for new HCAL LUTs and estimate the rate changes 
 
 // correction by 5% overall (from HCAL January 2012)
-Double_t CorrectedL1JetPtByFactor(Double_t JetPt, Bool_t theL1JetCorrection=false) {
+inline Double_t CorrectedL1JetPtByFactor(Double_t JetPt, Bool_t theL1JetCorrection=false) {
 
   Double_t JetPtcorr = JetPt;
 
@@ -62,23 +59,21 @@ Double_t CorrectedL1JetPtByFactor(Double_t JetPt, Bool_t theL1JetCorrection=fals
 }
 
 // correction by 8% for forward jets (from HCAL January 2012)
-Double_t CorrectedL1FwdJetPtByFactor(Bool_t isFwdJet, Double_t JetPt, Bool_t theL1JetCorrection=false) {
+inline Double_t CorrectedL1FwdJetPtByFactor(Bool_t isFwdJet, Double_t JetPt, Bool_t theL1JetCorrection=false) {
 
   Double_t JetPtcorr = JetPt;
 
-  if (theL1JetCorrection) {
-    if (isFwdJet) { JetPtcorr = JetPt*1.08; }
-  }
+  if (theL1JetCorrection && isFwdJet) JetPtcorr = JetPt*1.08;
+
   return JetPtcorr;
 }
 
 // correction for HF bins (from HCAL January 2012)
 Double_t CorrectedL1JetPtByHFtowers(Double_t JetiEta,Double_t JetPt, Bool_t theL1JetCorrection=false) {
 
-  Size_t   JetHFiEtabins   = 13;
-  Int_t    JetHFiEtabin[]  = {29,30,31,32,33,34,35,36,37,38,39,40,41};
-  Double_t JetHFiEtacorr[] = {0.982,0.962,0.952, 0.943,0.947,0.939, 0.938,0.935,0.934, 0.935,0.942,0.923,0.914};
-
+  static const Size_t   JetHFiEtabins   = 13;
+  static const Int_t    JetHFiEtabin[]  = {29,30,31,32,33,34,35,36,37,38,39,40,41};
+  static const Double_t JetHFiEtacorr[] = {0.982,0.962,0.952, 0.943,0.947,0.939, 0.938,0.935,0.934, 0.935,0.942,0.923,0.914};
 
   Double_t JetPtcorr   = JetPt;
 
@@ -90,6 +85,7 @@ Double_t CorrectedL1JetPtByHFtowers(Double_t JetiEta,Double_t JetPt, Bool_t theL
       }
     }
   }
+
   return JetPtcorr;
 }
 
@@ -97,7 +93,7 @@ Double_t CorrectedL1JetPtByHFtowers(Double_t JetiEta,Double_t JetPt, Bool_t theL
 // HF from 29-41, first 3 HF trigger towers 3 iEtas, last highest eta HF trigger tower 4 iEtas; each trigger tower is 0.5 eta, RCT iEta from 0->21 (left->right)
 Double_t CorrectedL1JetPtByGCTregions(Double_t JetiEta,Double_t JetPt, Bool_t theL1JetCorrection=false) {
 
-  Double_t JetRCTHFiEtacorr[]  = {0.965,0.943,0.936,0.929}; // from HF iEta=29 to 41 (smaller->higher HF iEta)
+  static const Double_t JetRCTHFiEtacorr[]  = {0.965,0.943,0.936,0.929}; // from HF iEta=29 to 41 (smaller->higher HF iEta)
 
   Double_t JetPtcorr   = JetPt;
 
@@ -129,18 +125,12 @@ Double_t CorrectedL1JetPtByGCTregions(Double_t JetiEta,Double_t JetPt, Bool_t th
 }
 
 // methods for the correlation conditions
-size_t PHIBINS = 18;
-Double_t PHIBIN[] = {10,30,50,70,90,110,130,150,170,190,210,230,250,270,290,310,330,350};
-
-size_t ETABINS = 23;
-Double_t ETABIN[] = {-5.,-4.5,-4.,-3.5,
-	-3.,-2.172,-1.74,-1.392,-1.044,-0.696,-0.348,
-	0,
-	0.348,0.696,1.044,1.392,1.74,2.172,3.,
-	3.5,4.,4.5,5.};
-
-size_t ETAMUBINS = 65;
-Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
+const size_t PHIBINS = 18;
+const Double_t PHIBIN[] = {10,30,50,70,90,110,130,150,170,190,210,230,250,270,290,310,330,350};
+const size_t ETABINS = 23;
+const Double_t ETABIN[] = {-5.,-4.5,-4.,-3.5,-3.,-2.172,-1.74,-1.392,-1.044,-0.696,-0.348,0,0.348,0.696,1.044,1.392,1.74,2.172,3.,3.5,4.,4.5,5.};
+const size_t ETAMUBINS = 65;
+const Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
 
 Int_t etaMuIdx(Double_t eta) {
   size_t etaIdx = 0.;
@@ -148,6 +138,7 @@ Int_t etaMuIdx(Double_t eta) {
     if (eta>=ETAMU[idx] and eta<ETAMU[idx+1])
       etaIdx = idx;
   }
+
   return int(etaIdx);
 }
 
@@ -157,10 +148,11 @@ Int_t etaINjetCoord(Double_t eta) {
     if (eta>=ETABIN[idx] and eta<ETABIN[idx+1])
       etaIdx = idx;
   }
+
   return int(etaIdx);
 }
 
-Double_t degree(Double_t radian) {
+inline Double_t degree(Double_t radian) {
   if (radian<0)
     return 360.+(radian/TMath::Pi()*180.);
   else
@@ -178,17 +170,17 @@ Int_t phiINjetCoord(Double_t phi) {
   }
   phiIdx = phiIdx + 1;
   if (phiIdx == 18)  phiIdx = 0;
+
   return int(phiIdx);
 }
 
-Bool_t correlateInPhi(Int_t jetphi, Int_t muphi, Int_t delta=1) {
+inline Bool_t correlateInPhi(Int_t jetphi, Int_t muphi, Int_t delta=1) {
 
   Bool_t correlationINphi = fabs(muphi-jetphi)<fabs(2 +delta-1) || fabs(muphi-jetphi)>fabs(PHIBINS-2 - (delta-1) );
   return correlationINphi;
-
 }
 
-Bool_t correlateInEta(Int_t mueta, Int_t jeteta, Int_t delta=1) {
+inline Bool_t correlateInEta(Int_t mueta, Int_t jeteta, Int_t delta=1) {
   Bool_t correlationINeta = fabs(mueta-jeteta)<2 + delta-1;
   return correlationINeta;
 }
@@ -225,7 +217,6 @@ class L1Menu2012 : public L1Ntuple {
   ~L1Menu2012() {}
 
   Int_t theL1Menu;
-
 
   // the setting below are/will be specific for each L1Ntuple file used
   Float_t theNumberOfBunches;
@@ -428,7 +419,6 @@ void L1Menu2012::MyInit() {
   setTOP.insert("L1_HTT150") ;
   setTOP.insert("L1_HTT175") ;
   setTOP.insert("L1_HTT200") ;
-  //	setTOP.insert("L1_SingleEG18er") ;
   setTOP.insert("L1_SingleIsoEG18er") ;
   setTOP.insert("L1_SingleEG20") ;
   setTOP.insert("L1_SingleIsoEG20er") ;
@@ -438,6 +428,7 @@ void L1Menu2012::MyInit() {
   setTOP.insert("L1_DoubleEG_13_7") ;
   setTOP.insert("L1_QuadJetC36") ;
   setTOP.insert("L1_QuadJetC40") ;
+  setTOP.insert("L1_QuadJetC50") ;
   setTOP.insert("L1_Mu12_EG7") ;
   setTOP.insert("L1_Mu3p5_EG12") ;
   setTOP.insert("L1_SingleMu14er") ;
@@ -453,7 +444,6 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_ETM40") ;
   setHIGGS.insert("L1_SingleEG7") ;
   setHIGGS.insert("L1_SingleEG12") ;
-  //	setHIGGS.insert("L1_SingleEG18er") ;
   setHIGGS.insert("L1_SingleIsoEG18er") ;
   setHIGGS.insert("L1_SingleEG20") ;
   setHIGGS.insert("L1_SingleIsoEG20er") ;
@@ -474,10 +464,6 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12") ;
   setHIGGS.insert("L1_Mu10er_JetC32") ;
   setHIGGS.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12") ;
-  //	setHIGGS.insert("L1_EG18er_JetC_Cen28_Tau20_dPhi1") ;
-  //	setHIGGS.insert("L1_IsoEG18er_JetC_Cen32_Tau24_dPhi1") ;
-  //	setHIGGS.insert("L1_IsoEG18er_JetC_Cen36_Tau28_dPhi1") ;
-  //	setHIGGS.insert("L1_EG18er_JetC_Cen36_Tau28_dPhi1") ;
   setHIGGS.insert("L1_Mu12_EG7") ;
   setHIGGS.insert("L1_MuOpen_EG12") ;
   setHIGGS.insert("L1_Mu3p5_EG12") ;
@@ -490,7 +476,6 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_Mu7er_ETM20");
   setHIGGS.insert("L1_IsoEG12er_ETM30");
 
-  //	setSUSY.insert("L1_HTT75") ;
   setSUSY.insert("L1_HTT100") ;
   setSUSY.insert("L1_HTT125") ;
   setSUSY.insert("L1_HTT150") ;
@@ -506,14 +491,13 @@ void L1Menu2012::MyInit() {
   setSUSY.insert("L1_DoubleJetC52") ;
   setSUSY.insert("L1_DoubleJetC56") ;
   setSUSY.insert("L1_DoubleJetC64") ;
-  //	setSUSY.insert("L1_QuadJetC32") ;
   setSUSY.insert("L1_QuadJetC36") ;
   setSUSY.insert("L1_QuadJetC40") ;
+  setSUSY.insert("L1_QuadJetC50") ;
   setSUSY.insert("L1_Mu0_HTT50") ;
   setSUSY.insert("L1_Mu0_HTT100") ;
   setSUSY.insert("L1_Mu4_HTT125") ;
   setSUSY.insert("L1_Mu8_DoubleJetC20") ;
-  //	setSUSY.insert("L1_DoubleEG6_HTT25") ;
   setSUSY.insert("L1_DoubleEG6_HTT100") ;
   setSUSY.insert("L1_DoubleEG6_HTT125") ;
   setSUSY.insert("L1_EG8_DoubleJetC20") ;
@@ -556,6 +540,7 @@ void L1Menu2012::MyInit() {
   setEXO.insert("L1_SingleJet128") ;
   setEXO.insert("L1_QuadJetC36") ;
   setEXO.insert("L1_QuadJetC40") ;
+  setEXO.insert("L1_QuadJetC50") ;
   setEXO.insert("L1_Mu12_EG7") ;
   setEXO.insert("L1_Mu3p5_EG12") ;
   setEXO.insert("L1_SingleMu16er") ;
@@ -565,7 +550,6 @@ void L1Menu2012::MyInit() {
   setEXO.insert("L1_DoubleMu0er_HighQ") ;
   setEXO.insert("L1_DoubleMu_10_3p5") ;
   setEXO.insert("L1_TripleMu0_HighQ") ;
-  setEXO.insert("L1_SingleJetC32_NotBptxOR") ;
   setEXO.insert("L1_SingleJetC20_NotBptxOR") ;
   setEXO.insert("L1_SingleMu6_NotBptxOR") ;
   setEXO.insert("L1_DoubleMu3er_HighQ_WdEta22");
@@ -644,7 +628,6 @@ void L1Menu2012::MyInit() {
   setMuon.insert("L1_DoubleMu_10_3p5");
   setHadronic.insert("L1_ETT80");
   setEG.insert("L1_SingleEG5");
-  //		setEG.insert("L1_SingleEG18er");
   setEG.insert("L1_SingleEG22");
   setEG.insert("L1_SingleEG12");
   setEG.insert("L1_SingleEG24");
@@ -674,52 +657,36 @@ void L1Menu2012::MyInit() {
   setMuonHadronic.insert("L1_Mu10er_JetC32");
   setHadronic.insert("L1_DoubleJetC64");
   setMuonHadronic.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12");
-  setHadronic.insert("L1_SingleJetC32_NotBptxOR");
   setHadronic.insert("L1_ETM40");
   setMuonHadronic.insert("L1_Mu0_HTT50");
   setMuonHadronic.insert("L1_Mu0_HTT100");
   setEG.insert("L1_DoubleEG5");
-  //		setHadronic.insert("L1_DoubleJet24");
-  //		setHadronic.insert("L1_DoubleEG6_HTT25");
   setMuon.insert("L1_SingleMu16er");
   setMuon.insert("L1_SingleMu12er");
-  //		setHadronic.insert("L1_DoubleJet20_RomanPotsOR");
   setMuon.insert("L1_SingleMu6_NotBptxOR");
   setMuonHadronic.insert("L1_Mu8_DoubleJetC20");
   setMuon.insert("L1_DoubleMu0");
   setMuon.insert("L1_DoubleMu_3er_0er_HighQ_WdEta22");
   setEGHadronic.insert("L1_EG8_DoubleJetC20");
-  //		setMuon.insert("L1_DoubleMu5");
   setHadronic.insert("L1_DoubleJetC56");
   setMuon.insert("L1_TripleMu0_HighQ");
   setMuon.insert("L1_TripleMu_5_5_0");
   setHadronic.insert("L1_ETT140");
   setHadronic.insert("L1_DoubleJetC36");
   setHadronic.insert("L1_DoubleJetC36_ETM30");
-  //		setHadronic.insert("L1_SingleJet36_FwdVeto5");
   setHadronic.insert("L1_TripleJet_64_44_24_VBF");
   setHadronic.insert("L1_TripleJet_64_48_28_VBF");
   setHadronic.insert("L1_TripleJet_68_48_32_VBF");
-  setHadronic.insert("L1_QuadJetC40");
   setHadronic.insert("L1_QuadJetC36");
+  setHadronic.insert("L1_QuadJetC40");
+  setHadronic.insert("L1_QuadJetC50");
   setHadronic.insert("L1_TripleJetC_52_28_28");
-  //		setHadronic.insert("L1_QuadJetC32");
   setHadronic.insert("L1_DoubleForJet16_EtaOpp");
   setEG.insert("L1_DoubleEG3_FwdVeto");
-  setHadronic.insert("L1_SingleJet20_Central_NotBptxOR");
-  setHadronic.insert("L1_SingleJet16_FwdVeto5");
-  setHadronic.insert("L1_SingleForJet16");
-  //		setHadronic.insert("L1_DoubleJetC36_RomanPotsOR");
-  //		setHadronic.insert("L1_SingleMu20_RomanPotsOR");
-  //		setHadronic.insert("L1_SingleEG20_RomanPotsOR");
-  //		setHadronic.insert("L1_DoubleMu5_RomanPotsOR");
-  //		setHadronic.insert("L1_DoubleEG5_RomanPotsOR");
-  //		setHadronic.insert("L1_SingleJet52_RomanPotsOR");
   setMuon.insert("L1_SingleMu18er");
   setMuonEG.insert("L1_MuOpen_EG5");
   setMuon.insert("L1_DoubleMu_12_5");
   setEG.insert("L1_TripleEG7");
-  //		setHadronic.insert("L1_HTT75");
   setMuonHadronic.insert("L1_Mu7er_ETM20");
   setEGHadronic.insert("L1_IsoEG12er_ETM30");
 
@@ -813,7 +780,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_Mu10er_JetC32"] = 75 ;
   BitMapping["L1_DoubleJetC64"] = 76 ;
   BitMapping["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 77 ;
-  BitMapping["L1_SingleJetC32_NotBptxOR"] = 78 ;
+  BitMapping["FREE78"] = 78 ;
   BitMapping["L1_ETM40"] = 79 ;
   BitMapping["L1_Mu0_HTT50"] = 80 ;
   BitMapping["L1_Mu0_HTT100"] = 81 ;
@@ -843,12 +810,12 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_QuadJetC40"] = 106 ;
   BitMapping["L1_QuadJetC36"] = 107 ;
   BitMapping["L1_TripleJetC_52_28_28"] = 108 ;
-  BitMapping["L1_QuadJetC32"] = 109 ;
+  BitMapping["L1_QuadJetC50"] = 109 ;
   BitMapping["L1_DoubleForJet16_EtaOpp"] = 110 ;
   BitMapping["L1_DoubleEG3_FwdVeto"] = 111 ;
-  BitMapping["L1_SingleJet20_Central_NotBptxOR"] = 112 ;
-  BitMapping["L1_SingleJet16_FwdVeto5"] = 113 ;
-  BitMapping["L1_SingleForJet16"] = 114 ;
+  BitMapping["FREE112"] = 112 ;
+  BitMapping["FREE113"] = 113 ;
+  BitMapping["FREE114"] = 114 ;
   BitMapping["L1_DoubleJetC36_RomanPotsOR"] = 115 ;
   BitMapping["L1_SingleMu20_RomanPotsOR"] = 116 ;
   BitMapping["L1_SingleEG20_RomanPotsOR"] = 117 ;
@@ -864,846 +831,9 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_Mu7er_ETM20"] = 200;
   BitMapping["L1_IsoEG12er_ETM30"] = 201;
 
-  // target lumi = 1e32 (outdated do not use)
-  if (theL1Menu == 1) {
-
-    // -- Cross 
-    Prescales["L1_Mu0_HTT50"] = 1;
-    Prescales["L1_Mu0_HTT100"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-
-    Prescales["L1_Mu12er_ETM20"] = 1;
-
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = 1;
-    Prescales["L1_Mu10er_JetC32"] = 1 ;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 1;  
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 1;
-    // Prescales["L1_Mu16_Jet24_Central_dPhi1"] = 1;
-
-    Prescales["L1_EG22_ForJet24"] = 1;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleEG6_HTT25"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-
-    Prescales["L1_SingleMu12er"] = 1;
-    // Prescales["L1_EG18er_CentralJet32_or_TauJet24_deltaPhi1"] = 1;
-    Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_DoubleJet24"] = 1;
-    //		Prescales["L1_EG18er_JetC_Cen36_Tau28_dPhi1"] = 1;
-
-    Prescales["L1_EG8_DoubleJetC20"] = 15 ;  
-
-    Prescales["L1_Mu12_EG7"] = 1;
-
-    Prescales["L1_DoubleMu3p5_EG5"] = 1;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-
-    // Prescales["L1_Mu3p5_DoubleEG5"] = 0;
-    Prescales["L1_Mu5_DoubleEG5"] = 1 ;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-
-    Prescales["L1_MuOpen_EG12"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-
-    Prescales["L1_DoubleJetC36_ETM30"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-
-
-    // -- Jets 
-    Prescales["L1_SingleJet16"] = 1111;
-    Prescales["L1_SingleJet36"] = 11;
-    Prescales["L1_SingleJet52"] = 1;
-    Prescales["L1_SingleJet68"] = 1;
-    Prescales["L1_SingleJet92"] = 1 ;
-    Prescales["L1_SingleJet128"] =1;
-
-    Prescales["L1_DoubleJetC36"] = 1;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC52"] = 1;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC56"] = 1;
-    Prescales["L1_DoubleJetC64"] = 1;
-
-    Prescales["L1_TripleJet_64_44_24_VBF"] = 1;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = 1;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-
-    // Prescales["L1_TripleJet28_Central"] = 500; 
-    Prescales["L1_TripleJetC_52_28_28"] = 1;
-
-    Prescales["L1_QuadJetC32"] = 1;            
-    Prescales["L1_QuadJetC36"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-
-    Prescales["L1_DoubleTauJet44er"] = 1;
-
-    // -- Sums
-    Prescales["L1_ETM30"] = 1;
-    Prescales["L1_ETM36"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETM100"] = 1;
-
-    Prescales["L1_HTT75"] = 1;
-    Prescales["L1_HTT100"] = 1;
-    Prescales["L1_HTT125"] = 1;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-
-    Prescales["L1_ETT300"] = 1;
-
-
-    // -- Egamma
-    Prescales["L1_SingleEG5"] = 123;
-    Prescales["L1_SingleEG7"] = 41;
-    Prescales["L1_SingleEG12"] = 1;
-    //		Prescales["L1_SingleEG18er"] = 1;
-    // Prescales["L1_SingleIsoEG18er"] = 10;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleIsoEG20er"] = 0;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-
-    // Prescales["L1_DoubleEG_15_5"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-
-    Prescales["L1_TripleEG7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-
-
-    // -- Muons 
-
-    Prescales["L1_SingleMu12"] = 0;
-
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu12"] = 1;
-    Prescales["L1_SingleMu7"] = 1;
-    Prescales["L1_SingleMu3"] = 53;
-    Prescales["L1_SingleMuOpen"] = 106;
-    Prescales["L1_DoubleMu0"] = 1;
-
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    Prescales["L1_SingleMu14er"] =  1;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_DoubleMu5"] = 1;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1 ;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_TripleMu0"] = 1;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-
-  }
-
-  // target lumi = 2e32 (outdated do not use)
-  if (theL1Menu == 2) {
-
-    // -- Cross 
-    Prescales["L1_Mu0_HTT50"] = 1;
-    Prescales["L1_Mu0_HTT100"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-
-    Prescales["L1_Mu12er_ETM20"] = 1;
-
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = 1;
-    Prescales["L1_Mu10er_JetC32"] = 1 ;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 1;  
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 1;
-    // Prescales["L1_Mu16_Jet24_Central_dPhi1"] = 1;
-
-    Prescales["L1_EG22_ForJet24"] = 1;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleEG6_HTT25"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-
-    Prescales["L1_SingleMu12er"] = 1;
-    // Prescales["L1_EG18er_CentralJet32_or_TauJet24_deltaPhi1"] = 1;
-    Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_DoubleJet24"] = 1;
-    //		Prescales["L1_EG18er_JetC_Cen36_Tau28_dPhi1"] = 1;
-
-    Prescales["L1_EG8_DoubleJetC20"] = 30 ;  
-
-    Prescales["L1_Mu12_EG7"] = 1;
-
-    Prescales["L1_DoubleMu3p5_EG5"] = 1;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-
-    // Prescales["L1_Mu3p5_DoubleEG5"] = 0;
-    Prescales["L1_Mu5_DoubleEG5"] = 1 ;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-
-    Prescales["L1_MuOpen_EG12"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-
-    Prescales["L1_DoubleJetC36_ETM30"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-
-
-    // -- Jets 
-    Prescales["L1_SingleJet16"] = 1111;
-    Prescales["L1_SingleJet36"] = 12;
-    Prescales["L1_SingleJet52"] = 1;
-    Prescales["L1_SingleJet68"] = 1;
-    Prescales["L1_SingleJet92"] = 1 ;
-    Prescales["L1_SingleJet128"] =1;
-
-    Prescales["L1_DoubleJetC36"] = 1;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC52"] = 1;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC56"] = 1;
-    Prescales["L1_DoubleJetC64"] = 1;
-
-    Prescales["L1_TripleJet_64_44_24_VBF"] = 1;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = 1;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-
-    // Prescales["L1_TripleJet28_Central"] = 500; 
-    Prescales["L1_TripleJetC_52_28_28"] = 1;
-
-    Prescales["L1_QuadJetC32"] = 1;            
-    Prescales["L1_QuadJetC36"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-
-    Prescales["L1_DoubleTauJet44er"] = 1;
-
-    // -- Sums
-    Prescales["L1_ETM30"] = 1;
-    Prescales["L1_ETM36"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETM100"] = 1;
-
-    Prescales["L1_HTT75"] = 1;
-    Prescales["L1_HTT100"] = 1;
-    Prescales["L1_HTT125"] = 1;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-
-    Prescales["L1_ETT300"] = 1;
-
-
-    // -- Egamma
-    Prescales["L1_SingleEG5"] = 160;
-    Prescales["L1_SingleEG7"] = 40;
-    Prescales["L1_SingleEG12"] = 1;
-    //		Prescales["L1_SingleEG18er"] = 1;
-    // Prescales["L1_SingleIsoEG18er"] = 10;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleIsoEG20er"] = 0;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-
-    // Prescales["L1_DoubleEG_15_5"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-
-    Prescales["L1_TripleEG7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-
-
-    // -- Muons 
-
-
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu12"] = 1;
-    Prescales["L1_SingleMu7"] = 1;
-    Prescales["L1_SingleMu3"] = 100;
-    Prescales["L1_SingleMuOpen"] = 150;
-    Prescales["L1_DoubleMu0"] = 1;
-
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    Prescales["L1_SingleMu14er"] =  1;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_DoubleMu5"] = 1;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1 ;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_TripleMu0"] = 1;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-
-  }
-
-  // target lumi = 2e33 (outdated do not use)
-  if (theL1Menu == 20) {
-
-    // -- Cross 
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-
-    Prescales["L1_Mu12er_ETM20"] = 1;
-
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = 1;
-    Prescales["L1_Mu10er_JetC32"] = 1 ;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 20;  
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 50;
-    // Prescales["L1_Mu16_Jet24_Central_dPhi1"] = 1;
-
-    Prescales["L1_EG22_ForJet24"] = 1;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleEG6_HTT25"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-
-    Prescales["L1_SingleMu12er"] = 1;
-    // Prescales["L1_EG18er_CentralJet32_or_TauJet24_deltaPhi1"] = 1;
-    Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_DoubleJet24"] = 1;
-    //			Prescales["L1_EG18er_JetC_Cen36_Tau28_dPhi1"] = 1;
-
-    Prescales["L1_EG8_DoubleJetC20"] = 50 ;  
-
-    Prescales["L1_Mu12_EG7"] = 1;
-
-    Prescales["L1_DoubleMu3p5_EG5"] = 1;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-
-    // Prescales["L1_Mu3p5_DoubleEG5"] = 0;
-    Prescales["L1_Mu5_DoubleEG5"] = 1 ;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-
-    Prescales["L1_MuOpen_EG12"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-
-    Prescales["L1_DoubleJetC36_ETM30"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-
-
-    // -- Jets 
-    Prescales["L1_SingleJet16"] = 15000;
-    Prescales["L1_SingleJet36"] = 1000;
-    Prescales["L1_SingleJet52"] = 5;
-    Prescales["L1_SingleJet68"] = 1;
-    Prescales["L1_SingleJet92"] = 1;
-    Prescales["L1_SingleJet128"] =1;
-
-    Prescales["L1_DoubleJetC36"] = 40;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC56"] = 1;
-    Prescales["L1_DoubleJetC64"] = 1;
-
-    Prescales["L1_TripleJet_64_44_24_VBF"] = 1;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = 1;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-
-    // Prescales["L1_TripleJet28_Central"] = 500; 
-    Prescales["L1_TripleJetC_52_28_28"] = 1;
-
-    Prescales["L1_QuadJetC32"] = INFTY;            
-    Prescales["L1_QuadJetC36"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-
-    Prescales["L1_DoubleTauJet44er"] = 1;
-
-    // -- Sums
-    Prescales["L1_ETM30"] = 1;
-    Prescales["L1_ETM36"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETM100"] = 1;
-
-    Prescales["L1_HTT75"] = 1;
-    Prescales["L1_HTT100"] = 1;
-    Prescales["L1_HTT125"] = 1;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-
-    Prescales["L1_ETT300"] = 1;
-
-
-    // -- Egamma
-    Prescales["L1_SingleEG5"] = 200;
-    Prescales["L1_SingleEG7"] = 20;
-    Prescales["L1_SingleEG12"] = 2;
-    //			Prescales["L1_SingleEG18er"] = 1;
-    // Prescales["L1_SingleIsoEG18er"] = 10;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleIsoEG20er"] = 0;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-
-    // Prescales["L1_DoubleEG_15_5"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-
-    Prescales["L1_TripleEG7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-
-
-    // -- Muons 
-
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu12"] = 10;
-    Prescales["L1_SingleMu7"] = 50;
-    Prescales["L1_SingleMu3"] = 500;
-    Prescales["L1_SingleMuOpen"] = 1000;
-    Prescales["L1_DoubleMu0"] = 5;
-
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    Prescales["L1_SingleMu14er"] =  1;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_DoubleMu5"] = 5;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1 ;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_TripleMu0"] = INFTY;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-
-
-
-  }
-
-  // target lumi = 3e33 (outdated do not use)
-  if (theL1Menu == 30) {
-
-    // -- Cross 
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-
-    Prescales["L1_Mu12er_ETM20"] = 1;
-
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = 1;
-    Prescales["L1_Mu10er_JetC32"] = 1 ;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] =40;  
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 50;
-    // Prescales["L1_Mu16_Jet24_Central_dPhi1"] = 1;
-
-    Prescales["L1_EG22_ForJet24"] = 1;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleEG6_HTT25"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-
-    Prescales["L1_SingleMu12er"] = 1;
-    // Prescales["L1_EG18er_CentralJet32_or_TauJet24_deltaPhi1"] = 1;
-    Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_DoubleJet24"] = 1;
-    //		Prescales["L1_EG18er_JetC_Cen36_Tau28_dPhi1"] = 1;
-
-    Prescales["L1_EG8_DoubleJetC20"] = 100 ;  
-
-    Prescales["L1_Mu12_EG7"] = 1;
-
-    Prescales["L1_DoubleMu3p5_EG5"] = 1;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-
-    // Prescales["L1_Mu3p5_DoubleEG5"] = 0;
-    Prescales["L1_Mu5_DoubleEG5"] = 1 ;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-
-    Prescales["L1_MuOpen_EG12"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-
-    Prescales["L1_DoubleJetC36_ETM30"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-
-
-    // -- Jets 
-    Prescales["L1_SingleJet16"] = 20000;
-    Prescales["L1_SingleJet36"] = 1200;
-    Prescales["L1_SingleJet52"] = 100;
-    Prescales["L1_SingleJet68"] = 1;
-    Prescales["L1_SingleJet92"] = 1;
-    Prescales["L1_SingleJet128"] =1;
-
-    Prescales["L1_DoubleJetC36"] = 80;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC56"] = 1;
-    Prescales["L1_DoubleJetC64"] = 1;
-
-    Prescales["L1_TripleJet_64_44_24_VBF"] = 1;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = 1;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-
-    // Prescales["L1_TripleJet28_Central"] = 500; 
-    Prescales["L1_TripleJetC_52_28_28"] = 1;
-
-    Prescales["L1_QuadJetC32"] = INFTY;            
-    Prescales["L1_QuadJetC36"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-
-    Prescales["L1_DoubleTauJet44er"] = 1;
-
-    // -- Sums
-    Prescales["L1_ETM30"] = 100;
-    Prescales["L1_ETM36"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETM100"] = 1;
-
-    Prescales["L1_HTT75"] = 1;
-    Prescales["L1_HTT100"] = 1;
-    Prescales["L1_HTT125"] = 1;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-
-    Prescales["L1_ETT300"] = 1;
-
-
-    // -- Egamma
-    Prescales["L1_SingleEG5"] = 500;
-    Prescales["L1_SingleEG7"] = 50;
-    Prescales["L1_SingleEG12"] = 10;
-    //		Prescales["L1_SingleEG18er"] = 1;
-    // Prescales["L1_SingleIsoEG18er"] = 10;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleIsoEG20er"] = 0;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-
-    // Prescales["L1_DoubleEG_15_5"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-
-    Prescales["L1_TripleEG7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-
-
-    // -- Muons 
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu16"] = 100;
-    Prescales["L1_SingleMu12"] = 100;
-    Prescales["L1_SingleMu7"] = 100;
-    Prescales["L1_SingleMu3"] = 500;
-    Prescales["L1_SingleMuOpen"] = 2000;
-    Prescales["L1_DoubleMu0"] = 50;
-
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    Prescales["L1_SingleMu14er"] =  1;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_DoubleMu5"] = 50;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1 ;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_TripleMu0"] = INFTY;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-
-
-
-  }
-
-  // target lumi = 5e33 (outdated do not use)
-  if (theL1Menu == 50) {
-    Prescales["L1_ZeroBias"] = 9973;
-    Prescales["L1_AlwaysTrue"] = 211;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = 1000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 5000;
-    Prescales["L1_InterBunch_Bptx"] = 1048573;
-    Prescales["L1_BeamHalo"] = 1;
-    Prescales["L1_TripleMu0"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-    Prescales["L1_MuOpen_EG12"] = 1;
-    Prescales["L1_Mu12_EG7"] = 1;
-    Prescales["L1_SingleJet16"] = 30000;
-    Prescales["L1_SingleJet36"] = 2000;
-    Prescales["L1_SingleJet52"] = 100;
-    Prescales["L1_SingleJet68"] = 20;
-    Prescales["L1_SingleJet92"] = 1;
-    Prescales["L1_SingleJet128"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-    Prescales["L1_Mu5_DoubleEG5"] = 1;
-    Prescales["L1_DoubleMu3p5_EG5"] = 1;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 80;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 1;
-    Prescales["L1_SingleEG7"] = 400;
-    Prescales["L1_SingleIsoEG20er"] = 1;
-    Prescales["L1_EG22_ForJet24"] = 1;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 3;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleTauJet44er"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-    Prescales["L1_HTT125"] = 1;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_SingleMu14er"] = 1;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_ETT80"] = INFTY;
-    Prescales["L1_SingleEG5"] = 3000;
-    //		Prescales["L1_SingleEG18er"] = 10;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG12"] = 200;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMuOpen"] = 3500;
-    Prescales["L1_SingleMu16"] = 100;
-    Prescales["L1_SingleMu3"] = 2000;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMu7"] = 400;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12"] = 200;
-    Prescales["L1_SingleMu20"] = 100;
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_ETM100"] = 1;
-    Prescales["L1_ETM36"] = 1;
-    Prescales["L1_ETM30"] = 100;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETT300"] = 1;
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = 1;
-    Prescales["L1_Mu10er_JetC32"] = 1;
-    Prescales["L1_DoubleJetC64"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = 1;
-    Prescales["L1_DoubleEG5"] = INFTY;
-    Prescales["L1_DoubleJet24"] = INFTY;
-    Prescales["L1_DoubleEG6_HTT25"] = INFTY;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 100;
-    Prescales["L1_DoubleMu0"] = 150;
-    Prescales["L1_EG8_DoubleJetC20"] = 650;
-    Prescales["L1_DoubleMu5"] = 50;
-    Prescales["L1_DoubleJetC56"] = 1;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_DoubleJetC36"] = 160;
-    Prescales["L1_DoubleJetC36_ETM30"] = 1;
-    Prescales["L1_SingleJet36_FwdVeto5"] = INFTY;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = 1;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = 1;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-    Prescales["L1_QuadJetC36"] = 1;
-    Prescales["L1_TripleJetC_52_28_28"] = 40;
-    Prescales["L1_QuadJetC32"] = INFTY;
-    Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleJet20_Central_NotBptxOR"] = 10;
-    Prescales["L1_SingleJet16_FwdVeto5"] = INFTY;
-    Prescales["L1_SingleForJet16"] = INFTY;
-    Prescales["L1_DoubleJetC36_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu20_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleEG20_RomanPotsOR"] = INFTY;
-    Prescales["L1_DoubleMu5_RomanPotsOR"] = INFTY;
-    Prescales["L1_DoubleEG5_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleJet52_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_MuOpen_EG5"] = INFTY;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_TripleEG7"] = 1;
-    Prescales["L1_HTT75"] = INFTY;
-  }
-
-  // target lumi = 6e33
-  if (theL1Menu == 60) {
-    Prescales["L1_ZeroBias"] = 9973;
-    Prescales["L1_AlwaysTrue"] = 241;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = 1000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 5000;
-    Prescales["L1_InterBunch_Bptx"] = 1048573;
-    Prescales["L1_TripleMu0"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-    Prescales["L1_MuOpen_EG12"] = INFTY;
-    Prescales["L1_Mu12_EG7"] = 1;
-    Prescales["L1_SingleJet16"] = 150000;
-    Prescales["L1_SingleJet36"] = 6000;
-    Prescales["L1_SingleJet52"] = 7500;
-    Prescales["L1_SingleJet68"] = 200;
-    Prescales["L1_SingleJet92"] = 40;
-    Prescales["L1_SingleJet128"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-    Prescales["L1_Mu5_DoubleEG5"] = INFTY;
-    Prescales["L1_DoubleMu3p5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 300;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
-    Prescales["L1_SingleEG7"] = 800;
-    Prescales["L1_SingleIsoEG20er"] = 1;
-    Prescales["L1_EG22_ForJet24"] = INFTY;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 6;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleTauJet44er"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_SingleMu14er"] = 1;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_ETT80"] = INFTY;
-    Prescales["L1_SingleEG5"] = 4000;
-    //		Prescales["L1_SingleEG18er"] = 40;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG12"] = 1500;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMuOpen"] = 7000;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu3"] = 4000;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMu7"] = 600;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12"] = 900;
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_ETM100"] = 1;
-    Prescales["L1_ETM36"] = 1;
-    Prescales["L1_ETM30"] = 12000;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETT300"] = 1;
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = 1;
-    Prescales["L1_Mu10er_JetC32"] = 40;
-    Prescales["L1_DoubleJetC64"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = 1;
-    Prescales["L1_DoubleEG5"] = INFTY;
-    //		Prescales["L1_DoubleJet24"] = INFTY;
-    //		Prescales["L1_DoubleEG6_HTT25"] = INFTY;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    //		Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 200;
-    Prescales["L1_DoubleMu0"] = INFTY;
-    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    //		Prescales["L1_DoubleMu5"] = 1;
-    Prescales["L1_DoubleJetC56"] = 1;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_DoubleJetC36"] = 320;
-    Prescales["L1_DoubleJetC36_ETM30"] = 1;
-    //		Prescales["L1_SingleJet36_FwdVeto5"] = INFTY;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = 1;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-    Prescales["L1_QuadJetC36"] = 1;
-    Prescales["L1_TripleJetC_52_28_28"] = 300;
-    //		Prescales["L1_QuadJetC32"] = 1;
-    Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleJet20_Central_NotBptxOR"] = 10;
-    Prescales["L1_SingleJet16_FwdVeto5"] = INFTY;
-    Prescales["L1_SingleForJet16"] = INFTY;
-    //		Prescales["L1_DoubleJetC36_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleMu20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleEG20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleMu5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleEG5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleJet52_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_MuOpen_EG5"] = INFTY;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_TripleEG7"] = 1;
-    //		Prescales["L1_HTT75"] = INFTY;
-    Prescales["L1_Mu7er_ETM20"] = INFTY;
-    Prescales["L1_IsoEG12er_ETM30"] = INFTY;
-
-  }
-
   // target lumi = 7e33
   if (theL1Menu == 70) {
-    Prescales["L1_ZeroBias"] = 9973;
+    Prescales["L1_ZeroBias"] = 10000;
     Prescales["L1_AlwaysTrue"] = 241;
     Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = 1000;
     Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 5000;
@@ -1736,9 +866,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_EG22_ForJet32"] = 1;
     Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 6;
     Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    ////
-    //		Prescales["L1_SingleTauJet62er"] = 1;
-    ////
     Prescales["L1_DoubleTauJet44er"] = 1;
     Prescales["L1_DoubleEG_13_7"] = 1;
     Prescales["L1_TripleEG_12_7_5"] = 1;
@@ -1750,7 +877,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_DoubleMu_10_3p5"] = 1;
     Prescales["L1_ETT80"] = INFTY;
     Prescales["L1_SingleEG5"] = 4500;
-    //		Prescales["L1_SingleEG18er"] = 40;
     Prescales["L1_SingleEG22"] = 1;
     Prescales["L1_SingleEG12"] = 1800;
     Prescales["L1_SingleEG24"] = 1;
@@ -1780,572 +906,280 @@ void L1Menu2012::MyInit() {
     Prescales["L1_Mu10er_JetC32"] = INFTY;
     Prescales["L1_DoubleJetC64"] = 1;
     Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
     Prescales["L1_ETM40"] = 1;
     Prescales["L1_Mu0_HTT50"] = INFTY;
     Prescales["L1_Mu0_HTT100"] = INFTY;
     Prescales["L1_DoubleEG5"] = INFTY;
-    //		Prescales["L1_DoubleJet24"] = INFTY;
-    //		Prescales["L1_DoubleEG6_HTT25"] = INFTY;
     Prescales["L1_SingleMu16er"] = 1;
     Prescales["L1_SingleMu12er"] = 1;
-    //		Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
     Prescales["L1_SingleMu6_NotBptxOR"] = 1;
     Prescales["L1_Mu8_DoubleJetC20"] = 200;
     Prescales["L1_DoubleMu0"] = INFTY;
     Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
     Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    //		Prescales["L1_DoubleMu5"] = 1;
     Prescales["L1_DoubleJetC56"] = INFTY;
     Prescales["L1_TripleMu0_HighQ"] = 1;
     Prescales["L1_TripleMu_5_5_0"] = 1;
     Prescales["L1_ETT140"] = INFTY;
     Prescales["L1_DoubleJetC36"] = 320;
     Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    //		Prescales["L1_SingleJet36_FwdVeto5"] = INFTY;
     Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
     Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
     Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
     Prescales["L1_QuadJetC40"] = 1;
     Prescales["L1_QuadJetC36"] = INFTY;
     Prescales["L1_TripleJetC_52_28_28"] = 300;
-    //		Prescales["L1_QuadJetC32"] = 1;
     Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
     Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleJet20_Central_NotBptxOR"] = 10;
-    Prescales["L1_SingleJet16_FwdVeto5"] = INFTY;
-    Prescales["L1_SingleForJet16"] = INFTY;
-    //		Prescales["L1_DoubleJetC36_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleMu20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleEG20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleMu5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleEG5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleJet52_RomanPotsOR"] = INFTY;
     Prescales["L1_SingleMu18er"] = 1;
     Prescales["L1_MuOpen_EG5"] = INFTY;
     Prescales["L1_DoubleMu_12_5"] = 1;
     Prescales["L1_TripleEG7"] = 1;
-    //		Prescales["L1_HTT75"] = INFTY;
     Prescales["L1_Mu7er_ETM20"] = INFTY;
     Prescales["L1_IsoEG12er_ETM30"] = INFTY;
-
   }
 
-  // full 7e33 menu updated to work with 1.4e34 lumi
+  // full 13 TeV 1.4 menu
   if (theL1Menu == 140) {
-    Prescales["L1_ZeroBias"] = 9973;
-    Prescales["L1_AlwaysTrue"] = 241;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = 1000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 5000;
-    Prescales["L1_InterBunch_Bptx"] = 1048573;
-    Prescales["L1_TripleMu0"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-    Prescales["L1_MuOpen_EG12"] = INFTY;
-    Prescales["L1_Mu12_EG7"] = 1;
-    Prescales["L1_SingleJet16"] = 150000;
-    Prescales["L1_SingleJet36"] = 6000;
-    Prescales["L1_SingleJet52"] = 7500;
-    Prescales["L1_SingleJet68"] = 200;
-    Prescales["L1_SingleJet92"] = 40;
-    Prescales["L1_SingleJet128"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-    Prescales["L1_Mu5_DoubleEG5"] = INFTY;
-    Prescales["L1_DoubleMu3p5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
+    Prescales["L1_ZeroBias"]                      = 10000;
+    Prescales["L1_AlwaysTrue"]                    = 300;
+    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"]  = 10000;
+    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 10000;
+    Prescales["L1_InterBunch_Bptx"]               = INFTY;
+
+    //Muons
+    Prescales["L1_SingleMuOpen"]      = 10000;
+    Prescales["L1_SingleMu3"]         = 8000;
+    Prescales["L1_SingleMu7"]         = 2000;
+    Prescales["L1_SingleMu12"]        = 1000;
+    Prescales["L1_SingleMu12er"]      = 200;
+    Prescales["L1_SingleMu14er"]      = 100;
+    Prescales["L1_SingleMu16"]        = 100;
+    Prescales["L1_SingleMu16er"]      = 100;
+    Prescales["L1_SingleMu18er"]      = 100;
+    Prescales["L1_SingleMu20er"]      = 80;
+    Prescales["L1_SingleMu20"]        = 1;
+    Prescales["L1_SingleMu25er"]      = 1;
+    Prescales["L1_DoubleMu0"]         = INFTY;
     Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 300;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
-    Prescales["L1_SingleEG7"] = 800;
-    Prescales["L1_SingleIsoEG20er"] = 1;
-    Prescales["L1_EG22_ForJet24"] = INFTY;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 6;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    ////
-    //		Prescales["L1_SingleTauJet62er"] = 1;
-    ////
-    Prescales["L1_DoubleTauJet44er"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_SingleMu14er"] = 1;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_ETT80"] = INFTY;
-    Prescales["L1_SingleEG5"] = 4500;
-    //		Prescales["L1_SingleEG18er"] = 40;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG12"] = 1800;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMuOpen"] = 7000;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu3"] = 4000;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMu7"] = 600;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12"] = 900;
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_ETM100"] = 1;
-    Prescales["L1_ETM36"] = INFTY;
-    Prescales["L1_ETM30"] = 12000;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETT300"] = 1;
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
-    Prescales["L1_Mu10er_JetC32"] = INFTY;
-    Prescales["L1_DoubleJetC64"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG5"] = INFTY;
-    //		Prescales["L1_DoubleJet24"] = INFTY;
-    //		Prescales["L1_DoubleEG6_HTT25"] = INFTY;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    //		Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 200;
-    Prescales["L1_DoubleMu0"] = INFTY;
+    Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 1;
     Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    //		Prescales["L1_DoubleMu5"] = 1;
-    Prescales["L1_DoubleJetC56"] = INFTY;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_DoubleJetC36"] = 320;
-    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    //		Prescales["L1_SingleJet36_FwdVeto5"] = INFTY;
+    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
+    Prescales["L1_DoubleMu_10_Open"]    = 1;
+    Prescales["L1_DoubleMu_10_3p5"]     = 1;
+    Prescales["L1_DoubleMu_12_5"]       = 1;
+    Prescales["L1_TripleMu0"]           = 1;
+    Prescales["L1_TripleMu0_HighQ"]     = 1;
+    Prescales["L1_TripleMu_5_5_0"]      = 1;
+    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
+
+    //Electrons
+    Prescales["L1_SingleEG5"]         = 20000;
+    Prescales["L1_SingleEG7"]         = 20000;
+    Prescales["L1_SingleEG12"]        = 5000;
+    Prescales["L1_SingleEG20"]        = 200;
+    Prescales["L1_SingleEG22"]        = 100;
+    Prescales["L1_SingleEG24"]        = 80;
+    Prescales["L1_SingleEG30"]        = 1;
+    Prescales["L1_SingleIsoEG18er"]   = 1;
+    Prescales["L1_SingleIsoEG20er"]   = 1;
+    Prescales["L1_EG22_ForJet24"]     = INFTY;
+    Prescales["L1_EG22_ForJet32"]     = 1;
+    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
+    Prescales["L1_DoubleEG5"]         = INFTY;
+    Prescales["L1_DoubleEG_13_7"]     = 1;
+    Prescales["L1_TripleEG7"]         = 200;
+    Prescales["L1_TripleEG_12_7_5"]   = 1;
+
+    //Jets
+    Prescales["L1_SingleJet16"]          = INFTY;
+    Prescales["L1_SingleJet36"]          = 100000;
+    Prescales["L1_SingleJet52"]          = 10000;
+    Prescales["L1_SingleJet68"]          = 300;
+    Prescales["L1_SingleJet92"]          = 100;
+    Prescales["L1_SingleJet128"]         = 1;
+    Prescales["L1_DoubleForJet16_EtaOpp"]  = INFTY;
+    Prescales["L1_DoubleJetC36"]         = INFTY;
+    Prescales["L1_DoubleJetC52"]         = INFTY;
+    Prescales["L1_DoubleJetC56"]         = INFTY;
+    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 10;
+    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
+    Prescales["L1_DoubleJetC64"]           = 1;
+    Prescales["L1_DoubleTauJet44er"]       = 1;
+    Prescales["L1_TripleJetC_52_28_28"]    = 300;
     Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
     Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
     Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-    Prescales["L1_QuadJetC36"] = INFTY;
-    Prescales["L1_TripleJetC_52_28_28"] = 300;
-    //		Prescales["L1_QuadJetC32"] = 1;
-    Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleJet20_Central_NotBptxOR"] = 10;
-    Prescales["L1_SingleJet16_FwdVeto5"] = INFTY;
-    Prescales["L1_SingleForJet16"] = INFTY;
-    //		Prescales["L1_DoubleJetC36_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleMu20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleEG20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleMu5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleEG5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleJet52_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_MuOpen_EG5"] = INFTY;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_TripleEG7"] = 1;
-    //		Prescales["L1_HTT75"] = INFTY;
-    Prescales["L1_Mu7er_ETM20"] = INFTY;
-    Prescales["L1_IsoEG12er_ETM30"] = INFTY;
+    Prescales["L1_QuadJetC36"]             = INFTY;
+    Prescales["L1_QuadJetC40"]             = 1000;
+    Prescales["L1_QuadJetC50"]             = 1;
 
-  }
-
-
-  // target lumi = 7e33 for upgrades i.e. "reduced" menu
-  if (theL1Menu == 700) {
-    Prescales["L1_ZeroBias"] = 9973;
-    Prescales["L1_AlwaysTrue"] = INFTY;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = INFTY;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = INFTY;
-    Prescales["L1_InterBunch_Bptx"] = INFTY;
-    Prescales["L1_TripleMu0"] = INFTY;
-    Prescales["L1_Mu4_HTT125"] = INFTY;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-    Prescales["L1_MuOpen_EG12"] = INFTY;
-    Prescales["L1_Mu12_EG7"] = 1;
-    Prescales["L1_SingleJet16"] = INFTY;
-    Prescales["L1_SingleJet36"] = INFTY;
-    Prescales["L1_SingleJet52"] = INFTY;
-    Prescales["L1_SingleJet68"] = INFTY;
-    Prescales["L1_SingleJet92"] = INFTY;
-    Prescales["L1_SingleJet128"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG6_HTT125"] = INFTY;
-    Prescales["L1_Mu5_DoubleEG5"] = INFTY;
-    Prescales["L1_DoubleMu3p5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu0er_HighQ"] = INFTY;
-    Prescales["L1_Mu5_DoubleEG6"] = INFTY;
-    Prescales["L1_DoubleJetC44_ETM30"] = INFTY;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = INFTY;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = INFTY;
-    Prescales["L1_SingleEG7"] = INFTY;
-    Prescales["L1_SingleIsoEG20er"] = INFTY;
-    Prescales["L1_EG22_ForJet24"] = INFTY;
-    Prescales["L1_EG22_ForJet32"] = INFTY;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = INFTY;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = INFTY;
-    Prescales["L1_DoubleTauJet44er"] = 1;
-    /////
-    //		Prescales["L1_SingleTauJet62er"] = 1;
-    /////
-    Prescales["L1_DoubleEG_13_7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = INFTY;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_SingleMu14er"] = INFTY;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1;
-    Prescales["L1_DoubleMu_10_3p5"] = INFTY;
-    Prescales["L1_ETT80"] = INFTY;
-    Prescales["L1_SingleEG5"] = INFTY;
-    //		Prescales["L1_SingleEG18er"] = 40;
-    Prescales["L1_SingleEG22"] = INFTY;
-    Prescales["L1_SingleEG12"] = INFTY;
-    Prescales["L1_SingleEG24"] = INFTY;
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleEG30"] = INFTY;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = INFTY;
-    Prescales["L1_SingleMuOpen"] = INFTY;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu3"] = INFTY;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = INFTY;
-    Prescales["L1_SingleMu7"] = INFTY;
-    Prescales["L1_SingleMu20er"] = INFTY;
-    Prescales["L1_SingleMu12"] = INFTY;
-    Prescales["L1_SingleMu20"] = INFTY;
-    Prescales["L1_SingleMu25er"] = INFTY;
-    Prescales["L1_ETM100"] = INFTY;
-    Prescales["L1_ETM36"] = INFTY;
-    Prescales["L1_ETM30"] = INFTY;
-    Prescales["L1_ETM50"] = INFTY;
-    Prescales["L1_ETM70"] = INFTY;
-    Prescales["L1_ETT300"] = INFTY;
+    //Sums
     Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = INFTY;
-    Prescales["L1_HTT200"] = INFTY;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
-    Prescales["L1_Mu10er_JetC32"] = INFTY;
-    Prescales["L1_DoubleJetC64"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = INFTY;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = INFTY;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG5"] = INFTY;
-    //		Prescales["L1_DoubleJet24"] = INFTY;
-    //		Prescales["L1_DoubleEG6_HTT25"] = INFTY;
-    Prescales["L1_SingleMu16er"] = INFTY;
-    Prescales["L1_SingleMu12er"] = INFTY;
-    //		Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu6_NotBptxOR"] = INFTY;
-    Prescales["L1_Mu8_DoubleJetC20"] = INFTY;
-    Prescales["L1_DoubleMu0"] = INFTY;
-    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = INFTY;
-    Prescales["L1_EG8_DoubleJetC20"] = INFTY;
-    //		Prescales["L1_DoubleMu5"] = 1;
-    Prescales["L1_DoubleJetC56"] = INFTY;
-    Prescales["L1_TripleMu0_HighQ"] = INFTY;
-    Prescales["L1_TripleMu_5_5_0"] = INFTY;
+    Prescales["L1_HTT125"] = INFTY;
+    Prescales["L1_HTT150"] = 10000;
+    Prescales["L1_HTT175"] = 1000;
+    Prescales["L1_HTT200"] = 1;
+    Prescales["L1_ETT80"]  = INFTY;
+    Prescales["L1_ETM30"]  = INFTY;
+    Prescales["L1_ETM36"]  = 20000;
+    Prescales["L1_ETM40"]  = 15000;
+    Prescales["L1_ETM50"]  = 1000;
+    Prescales["L1_ETM70"]  = 2;
+    Prescales["L1_ETM100"] = 1;
     Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_DoubleJetC36"] = INFTY;
-    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    //		Prescales["L1_SingleJet36_FwdVeto5"] = INFTY;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = INFTY;
-    Prescales["L1_QuadJetC40"] = 1;
-    Prescales["L1_QuadJetC36"] = INFTY;
-    Prescales["L1_TripleJetC_52_28_28"] = INFTY;
-    //		Prescales["L1_QuadJetC32"] = 1;
-    Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleJet20_Central_NotBptxOR"] = INFTY;
-    Prescales["L1_SingleJet16_FwdVeto5"] = INFTY;
-    Prescales["L1_SingleForJet16"] = INFTY;
-    //		Prescales["L1_DoubleJetC36_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleMu20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleEG20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleMu5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleEG5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleJet52_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu18er"] = INFTY;
-    Prescales["L1_MuOpen_EG5"] = INFTY;
-    Prescales["L1_DoubleMu_12_5"] = INFTY;
-    Prescales["L1_TripleEG7"] = INFTY;
-    //		Prescales["L1_HTT75"] = INFTY;
-    Prescales["L1_Mu7er_ETM20"] = INFTY;
-    Prescales["L1_IsoEG12er_ETM30"] = INFTY;
+    Prescales["L1_ETT300"] = 1;
 
+    //Cross
+    Prescales["L1_MuOpen_EG5"]           = INFTY;
+    Prescales["L1_MuOpen_EG12"]          = INFTY;
+    Prescales["L1_Mu3p5_EG12"]           = 1;
+    Prescales["L1_Mu12_EG7"]             = 1;
+    Prescales["L1_Mu5_DoubleEG5"]        = INFTY;
+    Prescales["L1_Mu5_DoubleEG6"]        = 1;
+    Prescales["L1_DoubleMu3p5_EG5"]      = INFTY;
+    Prescales["L1_DoubleMu5_EG5"]        = 1;
+    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 500;
+    Prescales["L1_Mu8_DoubleJetC20"]     = 200;
+    Prescales["L1_Mu10er_JetC32"]        = INFTY;
+    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
+    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
+    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
+    Prescales["L1_Mu0_HTT50"]    = INFTY;
+    Prescales["L1_Mu0_HTT100"]   = INFTY;
+    Prescales["L1_Mu4_HTT125"]   = 1;
+    Prescales["L1_Mu7er_ETM20"]  = INFTY;
+    Prescales["L1_Mu12er_ETM20"]         = 1;
+
+    Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
+    Prescales["L1_EG8_DoubleJetC20"] = 1000;
+    Prescales["L1_DoubleEG6_HTT100"] = 500;
+    Prescales["L1_DoubleEG6_HTT125"] = 1;
+
+    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
+    Prescales["L1_DoubleJetC44_ETM30"] = 1;
   }
 
-  // 7e33 menu for upgrades i.e. "reduced" menu updated so that it could run at 1.4e34
+  // BACKUP OF full 13 TeV 1.4 menu
   if (theL1Menu == 1400) {
-    Prescales["L1_ZeroBias"] = 9973;
-    Prescales["L1_AlwaysTrue"] = INFTY;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = INFTY;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = INFTY;
-    Prescales["L1_InterBunch_Bptx"] = INFTY;
-    Prescales["L1_TripleMu0"] = INFTY;
-    Prescales["L1_Mu4_HTT125"] = INFTY;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-    Prescales["L1_MuOpen_EG12"] = INFTY;
-    Prescales["L1_Mu12_EG7"] = 1;
-    Prescales["L1_SingleJet16"] = INFTY;
-    Prescales["L1_SingleJet36"] = INFTY;
-    Prescales["L1_SingleJet52"] = INFTY;
-    Prescales["L1_SingleJet68"] = INFTY;
-    Prescales["L1_SingleJet92"] = INFTY;
-    Prescales["L1_SingleJet128"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG6_HTT125"] = INFTY;
-    Prescales["L1_Mu5_DoubleEG5"] = INFTY;
-    Prescales["L1_DoubleMu3p5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu0er_HighQ"] = INFTY;
-    Prescales["L1_Mu5_DoubleEG6"] = INFTY;
-    Prescales["L1_DoubleJetC44_ETM30"] = INFTY;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = INFTY;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = INFTY;
-    Prescales["L1_SingleEG7"] = INFTY;
-    Prescales["L1_SingleIsoEG20er"] = INFTY;
-    Prescales["L1_EG22_ForJet24"] = INFTY;
-    Prescales["L1_EG22_ForJet32"] = INFTY;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = INFTY;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = INFTY;
-    Prescales["L1_DoubleTauJet44er"] = 1;
-    /////
-    //		Prescales["L1_SingleTauJet62er"] = 1;
-    /////
-    Prescales["L1_DoubleEG_13_7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = INFTY;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_SingleMu14er"] = INFTY;
-    Prescales["L1_SingleIsoEG18er"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1;
-    Prescales["L1_DoubleMu_10_3p5"] = INFTY;
-    Prescales["L1_ETT80"] = INFTY;
-    Prescales["L1_SingleEG5"] = INFTY;
-    //		Prescales["L1_SingleEG18er"] = 40;
-    Prescales["L1_SingleEG22"] = INFTY;
-    Prescales["L1_SingleEG12"] = INFTY;
-    Prescales["L1_SingleEG24"] = INFTY;
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleEG30"] = INFTY;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = INFTY;
-    Prescales["L1_SingleMuOpen"] = INFTY;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu3"] = INFTY;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = INFTY;
-    Prescales["L1_SingleMu7"] = INFTY;
-    Prescales["L1_SingleMu20er"] = INFTY;
-    Prescales["L1_SingleMu12"] = INFTY;
-    Prescales["L1_SingleMu20"] = INFTY;
-    Prescales["L1_SingleMu25er"] = INFTY;
-    Prescales["L1_ETM100"] = INFTY;
-    Prescales["L1_ETM36"] = INFTY;
-    Prescales["L1_ETM30"] = INFTY;
-    Prescales["L1_ETM50"] = INFTY;
-    Prescales["L1_ETM70"] = INFTY;
-    Prescales["L1_ETT300"] = INFTY;
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = INFTY;
-    Prescales["L1_HTT200"] = INFTY;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
-    Prescales["L1_Mu10er_JetC32"] = INFTY;
-    Prescales["L1_DoubleJetC64"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = INFTY;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = INFTY;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG5"] = INFTY;
-    //		Prescales["L1_DoubleJet24"] = INFTY;
-    //		Prescales["L1_DoubleEG6_HTT25"] = INFTY;
-    Prescales["L1_SingleMu16er"] = INFTY;
-    Prescales["L1_SingleMu12er"] = INFTY;
-    //		Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu6_NotBptxOR"] = INFTY;
-    Prescales["L1_Mu8_DoubleJetC20"] = INFTY;
-    Prescales["L1_DoubleMu0"] = INFTY;
-    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = INFTY;
-    Prescales["L1_EG8_DoubleJetC20"] = INFTY;
-    //		Prescales["L1_DoubleMu5"] = 1;
-    Prescales["L1_DoubleJetC56"] = INFTY;
-    Prescales["L1_TripleMu0_HighQ"] = INFTY;
-    Prescales["L1_TripleMu_5_5_0"] = INFTY;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_DoubleJetC36"] = INFTY;
-    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    //		Prescales["L1_SingleJet36_FwdVeto5"] = INFTY;
+    Prescales["L1_ZeroBias"]                      = 10000;
+    Prescales["L1_AlwaysTrue"]                    = 300;
+    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"]  = 10000;
+    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 10000;
+    Prescales["L1_InterBunch_Bptx"]               = INFTY;
+
+    //Muons
+    Prescales["L1_SingleMuOpen"]      = 7000;
+    Prescales["L1_SingleMu3"]         = 4000;
+    Prescales["L1_SingleMu7"]         = 2000;
+    Prescales["L1_SingleMu12"]        = 1000;
+    Prescales["L1_SingleMu12er"]      = 1;
+    Prescales["L1_SingleMu14er"]      = 1;
+    Prescales["L1_SingleMu16"]        = 1;
+    Prescales["L1_SingleMu16er"]      = 1;
+    Prescales["L1_SingleMu18er"]      = 1;
+    Prescales["L1_SingleMu20er"]      = 1;
+    Prescales["L1_SingleMu20"]        = 1;
+    Prescales["L1_SingleMu25er"]      = 1;
+    Prescales["L1_DoubleMu0"]         = INFTY;
+    Prescales["L1_DoubleMu0er_HighQ"] = 1;
+    Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 1;
+    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
+    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
+    Prescales["L1_DoubleMu_10_Open"]    = 1;
+    Prescales["L1_DoubleMu_10_3p5"]     = 1;
+    Prescales["L1_DoubleMu_12_5"]       = 1;
+    Prescales["L1_TripleMu0"]           = 1;
+    Prescales["L1_TripleMu0_HighQ"]     = 1;
+    Prescales["L1_TripleMu_5_5_0"]      = 1;
+    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
+
+    //Electrons
+    Prescales["L1_SingleEG5"]         = 5000;
+    Prescales["L1_SingleEG7"]         = 2500;
+    Prescales["L1_SingleEG12"]        = 2000;
+    Prescales["L1_SingleEG20"]        = 1;
+    Prescales["L1_SingleEG22"]        = 1;
+    Prescales["L1_SingleEG24"]        = 1;
+    Prescales["L1_SingleEG30"]        = 1;
+    Prescales["L1_SingleIsoEG18er"]   = 1;
+    Prescales["L1_SingleIsoEG20er"]   = 1;
+    Prescales["L1_EG22_ForJet24"]     = INFTY;
+    Prescales["L1_EG22_ForJet32"]     = 1;
+    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
+    Prescales["L1_DoubleEG5"]         = INFTY;
+    Prescales["L1_DoubleEG_13_7"]     = 1;
+    Prescales["L1_TripleEG7"]         = 1;
+    Prescales["L1_TripleEG_12_7_5"]   = 1;
+
+    //Jets
+    Prescales["L1_SingleJet16"]          = 150000;
+    Prescales["L1_SingleJet36"]          = 10000;
+    Prescales["L1_SingleJet52"]          = 8000;
+    Prescales["L1_SingleJet68"]          = 200;
+    Prescales["L1_SingleJet92"]          = 50;
+    Prescales["L1_SingleJet128"]         = 1;
+    Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
+    Prescales["L1_DoubleForJet16_EtaOpp"]  = INFTY;
+    Prescales["L1_DoubleJetC36"]         = INFTY;
+    Prescales["L1_DoubleJetC52"]         = INFTY;
+    Prescales["L1_DoubleJetC56"]         = INFTY;
+    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 10;
+    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
+    Prescales["L1_DoubleJetC64"]           = 1;
+    Prescales["L1_DoubleTauJet44er"]       = 1;
+    Prescales["L1_TripleJetC_52_28_28"]    = 300;
     Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
     Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = INFTY;
-    Prescales["L1_QuadJetC40"] = 1;
-    Prescales["L1_QuadJetC36"] = INFTY;
-    Prescales["L1_TripleJetC_52_28_28"] = INFTY;
-    //		Prescales["L1_QuadJetC32"] = 1;
-    Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleJet20_Central_NotBptxOR"] = INFTY;
-    Prescales["L1_SingleJet16_FwdVeto5"] = INFTY;
-    Prescales["L1_SingleForJet16"] = INFTY;
-    //		Prescales["L1_DoubleJetC36_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleMu20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleEG20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleMu5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleEG5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleJet52_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu18er"] = INFTY;
-    Prescales["L1_MuOpen_EG5"] = INFTY;
-    Prescales["L1_DoubleMu_12_5"] = INFTY;
-    Prescales["L1_TripleEG7"] = INFTY;
-    //		Prescales["L1_HTT75"] = INFTY;
-    Prescales["L1_Mu7er_ETM20"] = INFTY;
-    Prescales["L1_IsoEG12er_ETM30"] = INFTY;
+    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
+    Prescales["L1_QuadJetC36"]             = INFTY;
+    Prescales["L1_QuadJetC40"]             = 1;
+    Prescales["L1_QuadJetC50"]             = 1;
 
-  }
+    //Sums
+    Prescales["L1_HTT100"] = INFTY;
+    Prescales["L1_HTT125"] = INFTY;
+    Prescales["L1_HTT150"] = 1;
+    Prescales["L1_HTT175"] = 1;
+    Prescales["L1_HTT200"] = 1;
+    Prescales["L1_ETT80"]  = INFTY;
+    Prescales["L1_ETM30"]  = INFTY;
+    Prescales["L1_ETM36"]  = 15000;
+    Prescales["L1_ETM40"]  = 1;
+    Prescales["L1_ETM50"]  = 1;
+    Prescales["L1_ETM70"]  = 1;
+    Prescales["L1_ETM100"] = 1;
+    Prescales["L1_ETT140"] = INFTY;
+    Prescales["L1_ETT300"] = 1;
 
-  // target lumi = 8e33
-  if (theL1Menu == 80) {
-    Prescales["L1_ZeroBias"] = 9973;
-    Prescales["L1_AlwaysTrue"] = 241;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = 1000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 5000;
-    Prescales["L1_InterBunch_Bptx"] = 1048573;
-    Prescales["L1_TripleMu0"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-    Prescales["L1_MuOpen_EG12"] = INFTY;
-    Prescales["L1_Mu12_EG7"] = 1;
-    Prescales["L1_SingleJet16"] = 150000;
-    Prescales["L1_SingleJet36"] = 6000;
-    Prescales["L1_SingleJet52"] = 7500;
-    Prescales["L1_SingleJet68"] = 200;
-    Prescales["L1_SingleJet92"] = 40;
-    Prescales["L1_SingleJet128"] = 1;
+    //Cross
+    Prescales["L1_MuOpen_EG5"]           = INFTY;
+    Prescales["L1_MuOpen_EG12"]          = INFTY;
+    Prescales["L1_Mu3p5_EG12"]           = 1;
+    Prescales["L1_Mu12_EG7"]             = 1;
+    Prescales["L1_Mu5_DoubleEG5"]        = INFTY;
+    Prescales["L1_Mu5_DoubleEG6"]        = 1;
+    Prescales["L1_DoubleMu3p5_EG5"]      = INFTY;
+    Prescales["L1_DoubleMu5_EG5"]        = 1;
+    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 500;
+    Prescales["L1_Mu8_DoubleJetC20"]     = 200;
+    Prescales["L1_Mu10er_JetC32"]        = INFTY;
+    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
+    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
+    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
+    Prescales["L1_Mu0_HTT50"]    = INFTY;
+    Prescales["L1_Mu0_HTT100"]   = INFTY;
+    Prescales["L1_Mu4_HTT125"]   = 1;
+    Prescales["L1_Mu7er_ETM20"]  = INFTY;
+    Prescales["L1_Mu12er_ETM20"]         = 1;
+
+    Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
+    Prescales["L1_EG8_DoubleJetC20"] = 1000;
     Prescales["L1_DoubleEG6_HTT100"] = 1;
     Prescales["L1_DoubleEG6_HTT125"] = 1;
-    Prescales["L1_Mu5_DoubleEG5"] = INFTY;
-    Prescales["L1_DoubleMu3p5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-    Prescales["L1_DoubleMu0er_HighQ"] = INFTY;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 300;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
-    Prescales["L1_SingleEG7"] = 800;
-    Prescales["L1_SingleIsoEG20er"] = 1;
-    Prescales["L1_EG22_ForJet24"] = INFTY;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = INFTY;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleTauJet44er"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_SingleMu14er"] = 1;
-    Prescales["L1_SingleIsoEG18er"] = INFTY;
-    Prescales["L1_DoubleMu_10_Open"] = INFTY;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_ETT80"] = INFTY;
-    Prescales["L1_SingleEG5"] = 4500;
-    //		Prescales["L1_SingleEG18er"] = 40;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG12"] = 1800;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG20"] = INFTY;
-    Prescales["L1_SingleEG30"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMuOpen"] = 7000;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu3"] = 4000;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMu7"] = 600;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12"] = 900;
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_ETM100"] = 1;
-    Prescales["L1_ETM36"] = INFTY;
-    Prescales["L1_ETM30"] = 12000;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETT300"] = 1;
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;  ////
-    Prescales["L1_Mu10er_JetC32"] = INFTY;
-    Prescales["L1_DoubleJetC64"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG5"] = INFTY;
-    //		Prescales["L1_DoubleJet24"] = INFTY;
-    //		Prescales["L1_DoubleEG6_HTT25"] = INFTY;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_SingleMu12er"] = INFTY;  ////
-    //		Prescales["L1_DoubleJet20_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 200;
-    Prescales["L1_DoubleMu0"] = INFTY;
-    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    //		Prescales["L1_DoubleMu5"] = 1;
-    Prescales["L1_DoubleJetC56"] = INFTY;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_DoubleJetC36"] = 320;
+
     Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    //		Prescales["L1_SingleJet36_FwdVeto5"] = INFTY;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-    Prescales["L1_QuadJetC36"] = INFTY;
-    Prescales["L1_TripleJetC_52_28_28"] = 300;
-    //		Prescales["L1_QuadJetC32"] = 1;
-    Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleJet20_Central_NotBptxOR"] = 10;
-    Prescales["L1_SingleJet16_FwdVeto5"] = INFTY;
-    Prescales["L1_SingleForJet16"] = INFTY;
-    //		Prescales["L1_DoubleJetC36_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleMu20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleEG20_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleMu5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_DoubleEG5_RomanPotsOR"] = INFTY;
-    //		Prescales["L1_SingleJet52_RomanPotsOR"] = INFTY;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_MuOpen_EG5"] = INFTY;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_TripleEG7"] = 1;
-    //		Prescales["L1_HTT75"] = INFTY;
-    Prescales["L1_Mu7er_ETM20"] = INFTY;
-    Prescales["L1_IsoEG12er_ETM30"] = INFTY;	
+    Prescales["L1_DoubleJetC44_ETM30"] = 1;
   }
 
   /*
@@ -2364,12 +1198,12 @@ void L1Menu2012::MyInit() {
 
     // each seed gets a "weight" according to how many PAGS are using it
     Int_t UsedPernPAG = 0;
-    if ( setTOP.count(name) > 0)   UsedPernPAG ++;
-    if ( setHIGGS.count(name) > 0) UsedPernPAG ++;
-    if ( setSUSY.count(name) > 0)  UsedPernPAG ++;
-    if ( setEXO.count(name) > 0)   UsedPernPAG ++;
-    if ( setSMP.count(name) > 0)   UsedPernPAG ++;
-    if ( setBPH.count(name) > 0)   UsedPernPAG ++;
+    if( setTOP.count(name) > 0)   UsedPernPAG ++;
+    if( setHIGGS.count(name) > 0) UsedPernPAG ++;
+    if( setSUSY.count(name) > 0)  UsedPernPAG ++;
+    if( setEXO.count(name) > 0)   UsedPernPAG ++;
+    if( setSMP.count(name) > 0)   UsedPernPAG ++;
+    if( setBPH.count(name) > 0)   UsedPernPAG ++;
     WeightsPAGs[name] = 1./(float)UsedPernPAG;
 
     // each seed gets a "weight" according to how many trigger groups are using it
@@ -2420,8 +1254,6 @@ Bool_t L1Menu2012::SingleMuEta2p1(Float_t ptcut) {
   Bool_t raw = PhysicsBits[0];   // ZeroBias  
   if (! raw) return false;
 
-  Bool_t muon = false;
-
   Int_t Nmu = gmt_ -> N;
   for (Int_t imu=0; imu < Nmu; imu++) { 
     Int_t bx = gmt_ -> CandBx[imu];		
@@ -2431,18 +1263,16 @@ Bool_t L1Menu2012::SingleMuEta2p1(Float_t ptcut) {
     if ( qual < 4) continue;
     Float_t eta = gmt_  -> Eta[imu];        
     if (fabs(eta) > 2.1) continue;
-    if (pt >= ptcut) muon = true;
+    if (pt >= ptcut) return true;
   }
 
-  return muon;
+  return false;
 }
 
 Bool_t L1Menu2012::SingleMu(Float_t ptcut, Int_t qualmin) {
 
   Bool_t raw = PhysicsBits[0];  // ZeroBias
   if (! raw) return false;
-
-  Bool_t muon = false;
 
   Int_t Nmu = gmt_ -> N;
   for (Int_t imu=0; imu < Nmu; imu++) {
@@ -2451,10 +1281,10 @@ Bool_t L1Menu2012::SingleMu(Float_t ptcut, Int_t qualmin) {
     Float_t pt = gmt_ -> Pt[imu];			
     Int_t qual = gmt_ -> Qual[imu];		
     if ( qual < qualmin) continue;
-    if (pt >= ptcut) muon = true;
+    if (pt >= ptcut) return true;
   }
 
-  return muon;
+  return false;
 }
 
 Bool_t L1Menu2012::DoubleMuHighQEtaCut(Float_t ptcut, Float_t etacut) {
@@ -2473,9 +1303,10 @@ Bool_t L1Menu2012::DoubleMuHighQEtaCut(Float_t ptcut, Float_t etacut) {
     Float_t eta = gmt_  -> Eta[imu];		
     if (fabs(eta) > etacut) continue;
     if (pt >= ptcut) nmu ++;
+    if(nmu >= 2) return true;
   }
 
-  return (nmu >= 2 ) ;
+  return false;
 }
 
 Bool_t L1Menu2012::Onia(Float_t ptcut1, Float_t ptcut2, Float_t etacut, Int_t delta) {
@@ -2499,8 +1330,6 @@ Bool_t L1Menu2012::Onia(Float_t ptcut1, Float_t ptcut2, Float_t etacut, Int_t de
   if (! ok) return false;
 
   // -- now the CORRELATION condition
-  Bool_t CORREL = false;
-
   for (Int_t imu=0; imu < Nmu; imu++) {
     Int_t bx = gmt_ -> CandBx[imu];		
     if (bx != 0) continue;
@@ -2526,13 +1355,11 @@ Bool_t L1Menu2012::Onia(Float_t ptcut1, Float_t ptcut2, Float_t etacut, Int_t de
 
       Float_t deta = ieta1 - ieta2; 
       // std::cout << "eta 1 2 delta " << ieta1 << " " << ieta2 << " " << deta << std::endl;
-      if ( fabs(deta) <= delta)  CORREL = true;
-      // if (fabs ( eta - eta2) <=  1.7) CORREL = true; 
+      if ( fabs(deta) <= delta)  return true;
     }
-
   }
 
-  return CORREL;
+  return false;
 }
 
 Bool_t L1Menu2012::DoubleMu(Float_t cut1, Float_t cut2) {
@@ -2554,9 +1381,7 @@ Bool_t L1Menu2012::DoubleMu(Float_t cut1, Float_t cut2) {
     if (pt >= cut2) n2 ++;
   }
 
-  Bool_t ok = (n1 >= 1 && n2 >= 2 );
-  return ok;
-
+  return (n1 >= 1 && n2 >= 2 );
 }
 
 Bool_t L1Menu2012::TripleMu(Float_t cut1, Float_t cut2, Float_t cut3, Int_t qualmin) {
@@ -2579,8 +1404,7 @@ Bool_t L1Menu2012::TripleMu(Float_t cut1, Float_t cut2, Float_t cut3, Int_t qual
     if (pt >= cut3) n3 ++;
   }
 
-  Bool_t ok = ( n1 >= 1 && n2 >= 2 && n3 >= 3 );
-  return ok;
+  return ( n1 >= 1 && n2 >= 2 && n3 >= 3 );
 }
 
 Bool_t L1Menu2012::DoubleMuXOpen(Float_t cut) {
@@ -2600,8 +1424,7 @@ Bool_t L1Menu2012::DoubleMuXOpen(Float_t cut) {
     if ( pt >= 0 ) n2 ++;
   }
 
-  Bool_t ok = ( n1 >= 1 && n2 >= 2 );
-  return ok;
+  return ( n1 >= 1 && n2 >= 2 );
 }
 
 Bool_t L1Menu2012::Muons() {
@@ -2662,7 +1485,6 @@ Bool_t L1Menu2012::MultiMuons() {
   InsertInMenu("L1_DoubleMu3er_HighQ_WdEta22",Onia(3.,3.,2.1,22));
   InsertInMenu("L1_DoubleMu_5er_0er_HighQ_WdEta22",Onia(5.,0.,2.1,22));
 
-  //	InsertInMenu("L1_DoubleMu5",DoubleMu(5.,5.));
   InsertInMenu("L1_DoubleMu_12_5",DoubleMu(12.,5.));
   InsertInMenu("L1_DoubleMu_10_Open",DoubleMuXOpen(10.));
   InsertInMenu("L1_DoubleMu_10_3p5",DoubleMu(10.,3.5));
@@ -2709,7 +1531,6 @@ Bool_t L1Menu2012::Mu_EG(Float_t mucut, Float_t EGcut ) {
   Bool_t raw = PhysicsBits[0];    // ZeroBias
   if (! raw) return false;
 
-  Bool_t eg =false;
   Bool_t muon = false;
 
   Int_t Nmu = gmt_ -> N;
@@ -2722,16 +1543,18 @@ Bool_t L1Menu2012::Mu_EG(Float_t mucut, Float_t EGcut ) {
     if (pt >= mucut) muon = true;
   }
 
+  if(!muon) return false;
+
   Int_t Nele = gt_ -> Nele;
   for (Int_t ue=0; ue < Nele; ue++) {
     Int_t bx = gt_ -> Bxel[ue];        		
     if (bx != 0) continue;
     Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
     Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
+    if (pt >= EGcut) return true;
   }  // end loop over EM objects
 
-  return muon && eg;
+  return false;
 }
 
 Bool_t L1Menu2012::DoubleMu_EG(Float_t mucut, Float_t EGcut ) {
@@ -2739,7 +1562,6 @@ Bool_t L1Menu2012::DoubleMu_EG(Float_t mucut, Float_t EGcut ) {
   Bool_t raw = PhysicsBits[0]; 	// ZeroBias
   if (! raw) return false;
 
-  Bool_t eg =false;
   Bool_t muon = false;
   Int_t  Nmuons = 0;
 
@@ -2755,16 +1577,18 @@ Bool_t L1Menu2012::DoubleMu_EG(Float_t mucut, Float_t EGcut ) {
   }
   if (Nmuons >= 2) muon = true;
 
+  if(!muon) return false;
+
   Int_t Nele = gt_ -> Nele;
   for (Int_t ue=0; ue < Nele; ue++) {
     Int_t bx = gt_ -> Bxel[ue];        		
     if (bx != 0) continue;
     Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
     Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
+    if (pt >= EGcut) return true;
   }  // end loop over EM objects
 
-  return muon && eg;
+  return false;
 }
 
 Bool_t L1Menu2012::Mu_DoubleEG(Float_t mucut, Float_t EGcut ) {
@@ -2772,7 +1596,6 @@ Bool_t L1Menu2012::Mu_DoubleEG(Float_t mucut, Float_t EGcut ) {
   Bool_t raw = PhysicsBits[0];  // ZeroBias..
   if (! raw) return false;
 
-  Bool_t eg =false;
   Bool_t muon = false;
   Int_t  Nmuons = 0;
   Int_t Nelectrons = 0;
@@ -2788,6 +1611,8 @@ Bool_t L1Menu2012::Mu_DoubleEG(Float_t mucut, Float_t EGcut ) {
   }
   if (Nmuons >= 1) muon = true;
 
+  if(!muon) return false;
+
   Int_t Nele = gt_ -> Nele;
   for (Int_t ue=0; ue < Nele; ue++) {
     Int_t bx = gt_ -> Bxel[ue];        		
@@ -2796,9 +1621,9 @@ Bool_t L1Menu2012::Mu_DoubleEG(Float_t mucut, Float_t EGcut ) {
     Float_t pt = rank ;
     if (pt >= EGcut) Nelectrons ++;
   }  // end loop over EM objects
-  if (Nelectrons >= 2) eg = true;
+  if (Nelectrons >= 2) return true;
 
-  return muon && eg;
+  return false;
 }
 
 Bool_t L1Menu2012::MuOpen_EG(Float_t mucut, Float_t EGcut ) {
@@ -2806,8 +1631,6 @@ Bool_t L1Menu2012::MuOpen_EG(Float_t mucut, Float_t EGcut ) {
   Bool_t raw = PhysicsBits[0];   // ZeroBias  
   if (! raw) return false;
 
-
-  Bool_t eg =false;
   Bool_t muon = false;
 
   Int_t Nmu = gmt_ -> N;
@@ -2818,16 +1641,18 @@ Bool_t L1Menu2012::MuOpen_EG(Float_t mucut, Float_t EGcut ) {
     if (pt >= mucut) muon = true;
   }
 
+  if(!muon) return false;
+
   Int_t Nele = gt_ -> Nele;
   for (Int_t ue=0; ue < Nele; ue++) {
     Int_t bx = gt_ -> Bxel[ue];        		
     if (bx != 0) continue;
     Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
     Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
+    if (pt >= EGcut) return true;
   }  // end loop over EM objects
 
-  return muon && eg;
+  return false;
 }
 
 Bool_t L1Menu2012::Mu_JetCentral(Float_t mucut, Float_t jetcut ) {
@@ -2835,19 +1660,7 @@ Bool_t L1Menu2012::Mu_JetCentral(Float_t mucut, Float_t jetcut ) {
   Bool_t raw = PhysicsBits[0];   // ZeroBias  
   if (! raw) return false;
 
-  Bool_t jet=false;
   Bool_t muon = false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) jet = true;
-  }
 
   Int_t Nmu = gmt_ -> N;
   for (Int_t imu=0; imu < Nmu; imu++) {
@@ -2859,7 +1672,20 @@ Bool_t L1Menu2012::Mu_JetCentral(Float_t mucut, Float_t jetcut ) {
     if (pt >= mucut) muon = true;
   }
 
-  return muon && jet;
+  if(!muon) return false;
+
+  Int_t Nj = gt_ -> Njet ;
+  for (Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = gt_ -> Bxjet[ue];        		
+    if (bx != 0) continue;
+    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
+    if (isFwdJet) continue;
+    Float_t rank = gt_ -> Rankjet[ue];
+    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
+    if (pt >= jetcut) return true;
+  }
+
+  return false;
 }
 
 Bool_t L1Menu2012::Mu_DoubleJetCentral(Float_t mucut, Float_t jetcut ) {
@@ -2867,8 +1693,19 @@ Bool_t L1Menu2012::Mu_DoubleJetCentral(Float_t mucut, Float_t jetcut ) {
   Bool_t raw = PhysicsBits[0];   // ZeroBias  
   if (! raw) return false;
 
-  Bool_t jet=false;
   Bool_t muon = false;
+
+  Int_t Nmu = gmt_ -> N;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = gmt_ -> CandBx[imu];		
+    if (bx != 0) continue;
+    Float_t pt = gmt_ -> Pt[imu];			
+    Int_t qual = gmt_ -> Qual[imu];        
+    if ( qual < 4) continue;
+    if (pt >= mucut) muon = true;
+  }
+
+  if(!muon) return false;
 
   Int_t n1 = 0;
   Int_t Nj = gt_ -> Njet ;
@@ -2880,20 +1717,10 @@ Bool_t L1Menu2012::Mu_DoubleJetCentral(Float_t mucut, Float_t jetcut ) {
     Float_t rank = gt_ -> Rankjet[ue];
     Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
     if (pt >= jetcut) n1 ++;
-  }
-  jet = ( n1 >= 2 );
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
+    if(n1 >= 2) return true;
   }
 
-  return muon && jet;
+  return false;
 }
 
 Bool_t L1Menu2012::Mu_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float_t taucut ) {
@@ -2905,6 +1732,18 @@ Bool_t L1Menu2012::Mu_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float
   Bool_t central = false;
   Bool_t tau = false;
   Bool_t muon = false;
+
+  Int_t Nmu = gmt_ -> N;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = gmt_ -> CandBx[imu];		
+    if (bx != 0) continue;
+    Float_t pt = gmt_ -> Pt[imu];			
+    Int_t qual = gmt_ -> Qual[imu];        
+    if ( qual < 4) continue;
+    if (pt >= mucut) muon = true;
+  }
+
+  if(!muon) return false;
 
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
@@ -2924,17 +1763,7 @@ Bool_t L1Menu2012::Mu_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float
   }
   jet = central || tau  ;
 
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  return muon && jet;
+  return jet;
 }
 
 Bool_t L1Menu2012::Muer_JetCentral(Float_t mucut, Float_t jetcut ) {
@@ -2942,19 +1771,7 @@ Bool_t L1Menu2012::Muer_JetCentral(Float_t mucut, Float_t jetcut ) {
   Bool_t raw = PhysicsBits[0];   // ZeroBias  
   if (! raw) return false;
 
-  Bool_t jet=false;
   Bool_t muon = false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) jet = true;
-  }
 
   Int_t Nmu = gmt_ -> N;
   for (Int_t imu=0; imu < Nmu; imu++) {
@@ -2969,7 +1786,20 @@ Bool_t L1Menu2012::Muer_JetCentral(Float_t mucut, Float_t jetcut ) {
     if (pt >= mucut) muon = true;
   }
 
-  return muon && jet;
+  if(!muon) return false;
+
+  Int_t Nj = gt_ -> Njet ;
+  for (Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = gt_ -> Bxjet[ue];        		
+    if (bx != 0) continue;
+    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
+    if (isFwdJet) continue;
+    Float_t rank = gt_ -> Rankjet[ue];
+    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
+    if (pt >= jetcut) return true;
+  }
+
+  return false;
 }
 
 Bool_t L1Menu2012::Muer_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float_t taucut) {
@@ -2981,6 +1811,20 @@ Bool_t L1Menu2012::Muer_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Flo
   Bool_t central = false;
   Bool_t tau = false;
   Bool_t muon = false;
+
+  Int_t Nmu = gmt_ -> N;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = gmt_ -> CandBx[imu];		
+    if (bx != 0) continue;
+    Float_t pt = gmt_ -> Pt[imu];			
+    Int_t qual = gmt_ -> Qual[imu];        
+    if ( qual < 4) continue;
+    Float_t eta = gmt_  -> Eta[imu];        
+    if (fabs(eta) > 2.1) continue;
+    if (pt >= mucut) muon = true;
+  }
+
+  if(!muon) return false;
 
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
@@ -3000,19 +1844,7 @@ Bool_t L1Menu2012::Muer_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Flo
   }
   jet = central || tau  ;
 
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > 2.1) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  return muon && jet;
+  return jet;
 }
 
 Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
@@ -3024,6 +1856,20 @@ Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
   Bool_t muon = false;
   Int_t n1 = 0;
   Int_t n2 = 0;
+
+  Int_t Nmu = gmt_ -> N;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = gmt_ -> CandBx[imu];		
+    if (bx != 0) continue;
+    Float_t pt = gmt_ -> Pt[imu];			
+    Int_t qual = gmt_ -> Qual[imu];        
+    if ( qual < 4) continue;
+    Float_t eta = gmt_  -> Eta[imu];        
+    if (fabs(eta) > 2.1) continue;        
+    if (pt >= mucut) muon = true;
+  } 
+
+  if(!muon) return false;
 
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
@@ -3038,26 +1884,9 @@ Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
   }       
   jet = (n1 >= 1 && n2 >= 2 );
 
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > 2.1) continue;        
-    if (pt >= mucut) muon = true;
-  } 
-
-  Bool_t ok = muon && jet;
-  if (! ok) return false;
+  if (!jet) return false;
 
   // now the CORREL condition
-
-
-  Bool_t CORREL = false;
-
   for (Int_t imu=0; imu < Nmu; imu++) {
     Int_t bx = gmt_ -> CandBx[imu];		
     if (bx != 0) continue;
@@ -3089,12 +1918,11 @@ Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
       Bool_t corr_phi = correlateInPhi(iphi_jet, iphi_mu);
       Bool_t corr_eta = correlateInEta(ieta_jet, ieta_mu);
       Bool_t corr = corr_phi && corr_eta;
-      if (corr) CORREL = true ;
+      if (corr) return true ;
     }
   }
 
-  return CORREL;
-
+  return false;
 }
 
 Bool_t L1Menu2012::Mu_JetCentral_delta(Float_t mucut, Float_t jetcut) {
@@ -3104,6 +1932,18 @@ Bool_t L1Menu2012::Mu_JetCentral_delta(Float_t mucut, Float_t jetcut) {
 
   Bool_t jet=false;
   Bool_t muon = false;
+
+  Int_t Nmu = gmt_ -> N;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = gmt_ -> CandBx[imu];		
+    if (bx != 0) continue;
+    Float_t pt = gmt_ -> Pt[imu];			
+    Int_t qual = gmt_ -> Qual[imu];        
+    if ( qual < 4) continue;
+    if (pt >= mucut) muon = true;
+  }
+
+  if(!muon) return false;
 
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
@@ -3116,23 +1956,9 @@ Bool_t L1Menu2012::Mu_JetCentral_delta(Float_t mucut, Float_t jetcut) {
     if (pt >= jetcut) jet = true;
   }
 
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  Bool_t ok = muon && jet;
-  if (! ok) return false;
+  if (!jet) return false;
 
   //  -- now evaluate the delta condition :
-
-  Bool_t CORREL = false;
-
   for (Int_t imu=0; imu < Nmu; imu++) {
     Int_t bx = gmt_ -> CandBx[imu];		
     if (bx != 0) continue;
@@ -3160,12 +1986,11 @@ Bool_t L1Menu2012::Mu_JetCentral_delta(Float_t mucut, Float_t jetcut) {
       Int_t ieta_jet = (int)etajet;
 
       Bool_t corr = correlateInPhi(iphi_jet, iphi_mu, 2) && correlateInEta(ieta_jet, ieta_mu, 2);
-      if (corr) CORREL = true ;
+      if (corr) return true;
     }
   }
 
-  return CORREL;
-
+  return false;
 }
 
 Bool_t L1Menu2012::Mu_JetCentral_deltaOut(Float_t mucut, Float_t jetcut) {
@@ -3175,6 +2000,18 @@ Bool_t L1Menu2012::Mu_JetCentral_deltaOut(Float_t mucut, Float_t jetcut) {
 
   Bool_t jet=false;
   Bool_t muon = false;
+
+  Int_t Nmu = gmt_ -> N;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = gmt_ -> CandBx[imu];		
+    if (bx != 0) continue;
+    Float_t pt = gmt_ -> Pt[imu];			
+    Int_t qual = gmt_ -> Qual[imu];        
+    if ( qual < 4) continue;
+    if (pt >= mucut) muon = true;
+  }
+
+  if(!muon) return false;
 
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
@@ -3187,23 +2024,9 @@ Bool_t L1Menu2012::Mu_JetCentral_deltaOut(Float_t mucut, Float_t jetcut) {
     if (pt >= jetcut) jet = true;
   }
 
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  Bool_t ok = muon && jet;
-  if (! ok) return false;
+  if (!jet) return false;
 
   //  -- now evaluate the delta condition :
-
-  Bool_t CORREL = false;
-
   for (Int_t imu=0; imu < Nmu; imu++) {
     Int_t bx = gmt_ -> CandBx[imu];		
     if (bx != 0) continue;
@@ -3237,14 +2060,11 @@ Bool_t L1Menu2012::Mu_JetCentral_deltaOut(Float_t mucut, Float_t jetcut) {
       //                  Float_t etajet = gt_ -> Etajet[ue];
       //                  Int_t ieta_jet = (int)etajet;
 
-      if (! correlateInPhi(iphi_jet, iphi_mu, 8)) CORREL = true;
-
-
+      if (! correlateInPhi(iphi_jet, iphi_mu, 8)) return true;
     }
   }
 
-  return CORREL;
-
+  return false;
 }
 
 Bool_t L1Menu2012::Muer_TripleJetCentral(Float_t mucut, Float_t jet1, Float_t jet2, Float_t jet3) {
@@ -3254,6 +2074,20 @@ Bool_t L1Menu2012::Muer_TripleJetCentral(Float_t mucut, Float_t jet1, Float_t je
 
   Bool_t jet=false;
   Bool_t muon = false;
+
+  Int_t Nmu = gmt_ -> N;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = gmt_ -> CandBx[imu];		
+    if (bx != 0) continue;
+    Float_t pt = gmt_ -> Pt[imu];			
+    Int_t qual = gmt_ -> Qual[imu];        
+    if ( qual < 4) continue;
+    Float_t eta = gmt_ -> Eta[imu] ;
+    if (fabs(eta) > 2.1 ) continue;
+    if (pt >= mucut) muon = true;
+  }
+
+  if(!muon) return false;
 
   Int_t n1=0;
   Int_t n2=0;
@@ -3274,21 +2108,7 @@ Bool_t L1Menu2012::Muer_TripleJetCentral(Float_t mucut, Float_t jet1, Float_t je
 
   jet = ( n1 >= 1 && n2 >= 2 && n3 >= 3 ) ;
 
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_ -> Eta[imu] ;
-    if (fabs(eta) > 2.1 ) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  Bool_t ok = muon && jet;
-  return ok;
-
+  return jet;
 }
 
 Bool_t L1Menu2012::Mu_HTT(Float_t mucut, Float_t HTcut ) {
@@ -3309,11 +2129,13 @@ Bool_t L1Menu2012::Mu_HTT(Float_t mucut, Float_t HTcut ) {
     if (pt >= mucut) muon = true;
   }
 
+  if(!muon) return false;
+
   Float_t adc = gt_ -> RankHTT ;
   Float_t TheHTT = adc / 2. ;
   ht = (TheHTT >= HTcut) ;
 
-  return muon && ht;
+  return ht;
 }
 
 Bool_t L1Menu2012::Muer_ETM(Float_t mucut, Float_t ETMcut ) {
@@ -3337,11 +2159,13 @@ Bool_t L1Menu2012::Muer_ETM(Float_t mucut, Float_t ETMcut ) {
     if (pt >= mucut) muon = true;
   }
 
+  if(!muon) return false;
+
   Float_t adc = gt_ -> RankETM ;
   Float_t TheETM = adc / 2. ;
   etm = (TheETM >= ETMcut);
 
-  return muon && etm;
+  return etm;
 }
 
 Bool_t L1Menu2012::SingleIsoEG_Eta2p1_ETM(Float_t egcut, Float_t ETMcut ) {
@@ -3365,11 +2189,13 @@ Bool_t L1Menu2012::SingleIsoEG_Eta2p1_ETM(Float_t egcut, Float_t ETMcut ) {
     if (pt >= egcut) isoeg = true;
   }  // end loop over EM objects
 
+  if(!isoeg) return false;
+
   Float_t adc = gt_ -> RankETM ;
   Float_t TheETM = adc / 2. ;
   etm = (TheETM >= ETMcut);
 
-  return isoeg && etm;
+  return etm;
 }
 
 Bool_t L1Menu2012::EG_FwdJet(Float_t EGcut, Float_t FWcut ) {
@@ -3378,7 +2204,6 @@ Bool_t L1Menu2012::EG_FwdJet(Float_t EGcut, Float_t FWcut ) {
   if (! raw) return false;
 
   Bool_t eg = false;
-  Bool_t jet = false;
 
   Int_t Nele = gt_ -> Nele;
   for (Int_t ue=0; ue < Nele; ue++) {
@@ -3388,6 +2213,8 @@ Bool_t L1Menu2012::EG_FwdJet(Float_t EGcut, Float_t FWcut ) {
     Float_t pt = rank ;
     if (pt >= EGcut) eg = true;
   }  // end loop over EM objects
+
+  if(!eg) return false;
 
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {        
@@ -3397,10 +2224,10 @@ Bool_t L1Menu2012::EG_FwdJet(Float_t EGcut, Float_t FWcut ) {
     if (!isFwdJet) continue;
     Float_t rank = gt_ -> Rankjet[ue];
     Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= FWcut) jet = true;
+    if (pt >= FWcut) return true;
   }
 
-  return ( eg && jet);
+  return false;
 }
 
 Bool_t L1Menu2012::EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut ) {
@@ -3409,7 +2236,6 @@ Bool_t L1Menu2012::EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut ) {
   if (! raw) return false;
 
   Bool_t eg = false;
-  Bool_t jet = false;
 
   Int_t Nele = gt_ -> Nele;
   for (Int_t ue=0; ue < Nele; ue++) {
@@ -3419,6 +2245,8 @@ Bool_t L1Menu2012::EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut ) {
     Float_t pt = rank ;
     if (pt >= EGcut) eg = true;
   }  // end loop over EM objects
+
+  if(!eg) return false;
 
   Int_t Nj = gt_ -> Njet ;
   Int_t njets = 0;
@@ -3430,10 +2258,10 @@ Bool_t L1Menu2012::EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut ) {
     Float_t rank = gt_ -> Rankjet[ue];
     Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
     if (pt >= jetcut) njets ++;
+    if(njets >=2) return true;
   }
-  jet = ( njets >= 2 );
 
-  return ( eg && jet);
+  return false;
 }
 
 Bool_t L1Menu2012::EG_HT(Float_t EGcut, Float_t HTcut ) {
@@ -3453,11 +2281,13 @@ Bool_t L1Menu2012::EG_HT(Float_t EGcut, Float_t HTcut ) {
     if (pt >= EGcut) eg = true;
   }  // end loop over EM objects
 
+  if(!eg) return false;
+
   Float_t adc = gt_ -> RankHTT ;
   Float_t TheHTT = adc / 2. ;
   ht = (TheHTT >= HTcut) ;
 
-  return ( eg && ht);
+  return ht;
 }
 
 Bool_t L1Menu2012::DoubleEG_HT(Float_t EGcut, Float_t HTcut ) {
@@ -3505,6 +2335,8 @@ Bool_t L1Menu2012::EGEta2p1_JetCentral(Float_t EGcut, Float_t jetcut) {
     if (pt >= EGcut) eg = true;
   }  // end loop over EM objects
 
+  if(!eg) return false;
+
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
     Int_t bx = gt_ -> Bxjet[ue];        		
@@ -3516,13 +2348,9 @@ Bool_t L1Menu2012::EGEta2p1_JetCentral(Float_t EGcut, Float_t jetcut) {
     if (pt >= jetcut) jet = true;
   }
 
-  Bool_t ok = (eg && jet);
-  if (! ok) return false;
-
+  if (!jet) return false;
 
   //  -- now evaluate the delta condition :
-
-  Bool_t CORREL = false;
   Int_t PhiOut[3];
 
   for (Int_t ue=0; ue < Nele; ue++) {
@@ -3559,13 +2387,12 @@ Bool_t L1Menu2012::EGEta2p1_JetCentral(Float_t EGcut, Float_t jetcut) {
 
       if ( iphijet != PhiOut[0] && 
 	   iphijet != PhiOut[1] &&
-	   iphijet != PhiOut[2] ) CORREL = true;
+	   iphijet != PhiOut[2] ) return true;
     }  // loop over jets
 
   }  // end loop over EM objects
 
-  return CORREL;
-
+  return false;
 }
 
 Bool_t L1Menu2012::EGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut, Float_t taucut) {
@@ -3589,6 +2416,8 @@ Bool_t L1Menu2012::EGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut, F
     if (pt >= EGcut) eg = true;
   }  // end loop over EM objects
 
+  if(!eg) return false;
+
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
     Int_t bx = gt_ -> Bxjet[ue];        		
@@ -3607,11 +2436,9 @@ Bool_t L1Menu2012::EGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut, F
   }
   jet = tau || central;
 
-  Bool_t ok = (eg && jet);
-  if (! ok) return false;
+  if (!jet) return false;
 
   //  -- now evaluate the delta condition :
-
   Bool_t CORREL_CENTRAL = false;
   Bool_t CORREL_TAU = false;
   Int_t PhiOut[3];
@@ -3696,6 +2523,8 @@ Bool_t L1Menu2012::IsoEGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut
     if (pt >= EGcut) eg = true;
   }  // end loop over EM objects
 
+  if(!eg) return false;
+
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
     Int_t bx = gt_ -> Bxjet[ue];        		
@@ -3714,11 +2543,9 @@ Bool_t L1Menu2012::IsoEGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut
   }
   jet = tau || central;
 
-  Bool_t ok = (eg && jet);
-  if (! ok) return false;
+  if(!jet) return false;
 
   //  -- now evaluate the delta condition :
-
   Bool_t CORREL_CENTRAL = false;
   Bool_t CORREL_TAU = false;
   Int_t PhiOut[3];
@@ -3788,8 +2615,6 @@ Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral(Float_t EGcut, Float_t jetcut) {
   if (! raw) return false;
 
   Bool_t eg = false;
-  Bool_t jet = false;
-  Int_t n2=0;
 
   Int_t Nele = gt_ -> Nele; 
   for (Int_t ue=0; ue < Nele; ue++) { 
@@ -3802,6 +2627,9 @@ Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral(Float_t EGcut, Float_t jetcut) {
     if (pt >= EGcut) eg = true; 
   }  // end loop over EM objects
 
+  if(!eg) return false;
+
+  Int_t n2=0;
   Int_t Nj = gt_ -> Njet ;               
   for (Int_t ue=0; ue < Nj; ue++) {      
     Int_t bx = gt_ -> Bxjet[ue];        		
@@ -3813,14 +2641,10 @@ Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral(Float_t EGcut, Float_t jetcut) {
     if (pt >= jetcut) n2 ++;
   }
 
-  jet = (n2 >= 2);
-
-  Bool_t ok = (eg && jet);
-  if (! ok) return false;
+  Bool_t jet = (n2 >= 2);
+  if (!jet) return false;
 
   //  -- now evaluate the delta condition :
-
-  Bool_t CORREL = false;
   Int_t PhiOut[3];
 
   for (Int_t ue=0; ue < Nele; ue++) {
@@ -3863,12 +2687,11 @@ Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral(Float_t EGcut, Float_t jetcut) {
 
     }  // loop over jets
 
-    if (npair >= 2 ) CORREL = true ;
+    if (npair >= 2 ) return true ;
 
   }  // end loop over EM objects
 
-  return CORREL;
-
+  return false;
 }
 
 Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral_TripleJetCentral(Float_t EGcut, Float_t jetcut2, Float_t jetcut3) {
@@ -3892,6 +2715,8 @@ Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral_TripleJetCentral(Float_t EGcut, Flo
     if (pt >= EGcut) eg = true;  
   }  // end loop over EM objects
 
+  if(!eg) return false;
+
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
     Int_t bx = gt_ -> Bxjet[ue];        		
@@ -3906,7 +2731,7 @@ Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral_TripleJetCentral(Float_t EGcut, Flo
 
   jet = (n2 >= 2 && n3 >= 3 );
 
-  return (eg && jet);
+  return jet;
 }
 
 Bool_t L1Menu2012::HTT_HTM(Float_t HTTcut, Float_t HTMcut) {
@@ -3920,11 +2745,13 @@ Bool_t L1Menu2012::HTT_HTM(Float_t HTTcut, Float_t HTMcut) {
   Float_t TheHTT = (float)adc / 2.   ;          
   htt = ( TheHTT >= HTTcut ) ;
 
+  if(!htt) return false;
+
   Int_t adc_HTM  = gt_  -> RankHTM ; 
   Float_t TheHTM = adc_HTM * 2.  ;           
   htm = ( TheHTM >= HTMcut );
 
-  return (htt && htm);
+  return htm;
 }
 
 Bool_t L1Menu2012::JetCentral_ETM(Float_t jetcut, Float_t ETMcut) {
@@ -3939,6 +2766,8 @@ Bool_t L1Menu2012::JetCentral_ETM(Float_t jetcut, Float_t ETMcut) {
   Float_t TheETM = adc / 2. ;
   etm = (TheETM >= ETMcut);
 
+  if(!etm) return false;
+
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
     Int_t bx = gt_ -> Bxjet[ue];        		
@@ -3950,7 +2779,7 @@ Bool_t L1Menu2012::JetCentral_ETM(Float_t jetcut, Float_t ETMcut) {
     if (pt >= jetcut) jet = true;
   }
 
-  return ( jet && etm );
+  return jet;
 }
 
 Bool_t L1Menu2012::DoubleJetCentral_ETM(Float_t jetcut1, Float_t jetcut2, Float_t ETMcut) {
@@ -3958,14 +2787,15 @@ Bool_t L1Menu2012::DoubleJetCentral_ETM(Float_t jetcut1, Float_t jetcut2, Float_
   Bool_t raw = PhysicsBits[0];   // ZeroBias  
   if (! raw) return false;
 
-  Bool_t etm = false; 
   Bool_t jet = false;
   Int_t n1=0;
   Int_t n2=0;
 
   Float_t adc = gt_ -> RankETM ;
   Float_t TheETM = adc / 2. ;
-  etm = (TheETM >= ETMcut);
+  Bool_t etm = (TheETM >= ETMcut);
+
+  if(!etm) return false;
 
   Int_t Nj = gt_ -> Njet ;
   for (Int_t ue=0; ue < Nj; ue++) {
@@ -3980,7 +2810,7 @@ Bool_t L1Menu2012::DoubleJetCentral_ETM(Float_t jetcut1, Float_t jetcut2, Float_
   }       
   jet = (n1 >= 1 && n2 >= 2);
 
-  return ( jet && etm );
+  return jet;
 }
 
 Bool_t L1Menu2012::Cross() {
@@ -3998,7 +2828,6 @@ Bool_t L1Menu2012::Cross() {
 
   InsertInMenu("L1_EG22_ForJet24", EG_FwdJet(22.,24.) );
   InsertInMenu("L1_EG22_ForJet32", EG_FwdJet(22.,32.) );
-  //	InsertInMenu("L1_DoubleEG6_HTT25", DoubleEG_HT(6.,25.) );
   InsertInMenu("L1_DoubleEG6_HTT100", DoubleEG_HT(6.,100.) );
   InsertInMenu("L1_DoubleEG6_HTT125", DoubleEG_HT(6.,125.) );
 
@@ -4063,11 +2892,6 @@ Bool_t L1Menu2012::MultiCross() {
 
   InsertInMenu("L1_Mu3_JetC16_WdEtaPhi2", Mu_JetCentral_delta(3.,16.) );
   InsertInMenu("L1_Mu3_JetC52_WdEtaPhi2", Mu_JetCentral_delta(3.,52.) );
-
-  //	InsertInMenu("L1_EG18er_JetC_Cen28_Tau20_dPhi1", EGEta2p1_JetCentral_LowTauTh(18.,28.,20.) );
-  //	InsertInMenu("L1_IsoEG18er_JetC_Cen32_Tau24_dPhi1", IsoEGEta2p1_JetCentral_LowTauTh(18.,32.,24.) );
-  //	InsertInMenu("L1_IsoEG18er_JetC_Cen36_Tau28_dPhi1", IsoEGEta2p1_JetCentral_LowTauTh(18.,36.,28.) );
-  //	InsertInMenu("L1_EG18er_JetC_Cen36_Tau28_dPhi1", EGEta2p1_JetCentral_LowTauTh(18.,36.,28.) );
 
   Int_t NN = insert_ibin;
   Int_t kOFFSET_old = kOFFSET;
@@ -4339,7 +3163,6 @@ Bool_t L1Menu2012::QuadJetCentral(Float_t cut1, Float_t cut2, Float_t cut3, Floa
   Bool_t raw = PhysicsBits[0];   // ZeroBias  
   if (! raw) return false;
 
-
   Int_t n1=0;
   Int_t n2=0;
   Int_t n3=0;
@@ -4373,7 +3196,6 @@ Bool_t L1Menu2012::Jets() {
   InsertInMenu("L1_SingleJet92", SingleJet(92.) );
   InsertInMenu("L1_SingleJet128", SingleJet(128.) );
 
-  //	InsertInMenu("L1_SingleTauJet62er", SingleTauJetEta2p17(62.) );
   InsertInMenu("L1_DoubleTauJet44er", DoubleTauJetEta2p17(44.,44.) );
 
   Int_t NN = insert_ibin;
@@ -4428,9 +3250,9 @@ Bool_t L1Menu2012::MultiJets() {
   InsertInMenu("L1_TripleJet_68_48_32_VBF", TripleJet_VBF(68.,48.,32.) );
   InsertInMenu("L1_TripleJetC_52_28_28", TripleJetCentral(52.,28.,28.) );
 
-  //	InsertInMenu("L1_QuadJetC32", QuadJetCentral(32.,32.,32.,32.) );
   InsertInMenu("L1_QuadJetC36", QuadJetCentral(36.,36.,36.,36.) );
   InsertInMenu("L1_QuadJetC40", QuadJetCentral(40.,40.,40.,40.) );
+  InsertInMenu("L1_QuadJetC50", QuadJetCentral(50.,50.,50.,50.) );
 
   Int_t NN = insert_ibin;
 
@@ -4514,7 +3336,6 @@ Bool_t L1Menu2012::Sums() {
   InsertInMenu("L1_ETM70", ETM(70.) );
   InsertInMenu("L1_ETM100", ETM(100.) );
 
-  //	InsertInMenu("L1_HTT75", HTT(75.) );
   InsertInMenu("L1_HTT100", HTT(100.) );
   InsertInMenu("L1_HTT125", HTT(125.) );
   InsertInMenu("L1_HTT150", HTT(150.) );
@@ -4656,8 +3477,6 @@ Bool_t L1Menu2012::TripleEG(Float_t cut1, Float_t cut2, Float_t cut3 ) {
 
   Bool_t ok = ( n1 >= 1 && n2 >= 2 && n3 >= 3) ;
   return ok;
-
-
 }
 
 Bool_t L1Menu2012::EGamma() {
@@ -4667,7 +3486,6 @@ Bool_t L1Menu2012::EGamma() {
   InsertInMenu("L1_SingleEG5", SingleEG(5.) );
   InsertInMenu("L1_SingleEG7", SingleEG(7.) );
   InsertInMenu("L1_SingleEG12", SingleEG(12.) );
-  //	InsertInMenu("L1_SingleEG18er", SingleEG_Eta2p1(18.) );
   InsertInMenu("L1_SingleIsoEG18er", SingleIsoEG_Eta2p1(18.) );
   InsertInMenu("L1_SingleEG20", SingleEG(20.) );
   InsertInMenu("L1_SingleIsoEG20er", SingleIsoEG_Eta2p1(20.) );
@@ -4682,7 +3500,6 @@ Bool_t L1Menu2012::EGamma() {
     TheTriggerBits[k + kOFFSET_old] = insert_val[k];
   }
   kOFFSET += insert_ibin;
-
 
   if (first) {
 
@@ -4713,9 +3530,7 @@ Bool_t L1Menu2012::MultiEGamma() {
 
   insert_ibin = 0;
 
-  // InsertInMenu("L1_DoubleEG_15_5", DoubleEG(15.,5.) );
   InsertInMenu("L1_DoubleEG_13_7", DoubleEG(13.,7.) );
-
   InsertInMenu("L1_TripleEG7", TripleEG(7.,7.,7.) );
   InsertInMenu("L1_TripleEG_12_7_5", TripleEG(12.,7.,5.) );
 
@@ -4758,7 +3573,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  //nevents = 1000;
+  nevents = 500000;
 
   Int_t NPASS = 0; 
 
@@ -4784,10 +3599,10 @@ void L1Menu2012::Loop() {
 
       FilL1Bits();
 
-      if (first) MyInit();
+      if(first) MyInit();
 
       Bool_t raw = PhysicsBits[0];  // check for ZeroBias triggered events
-      if (! raw) continue;
+      if(!raw) continue;
 
       nZeroBiasevents++;
 
@@ -4969,87 +3784,50 @@ void L1Menu2012::Loop() {
   std::cout << std::endl << "... number of zero bias triggered events: " << nZeroBiasevents << std::endl << std::endl;
 
   Float_t scal = 11246.; // ZB per bunch in kHz
-  scal /= nZeroBiasevents;
+  scal /= nZeroBiasevents*1000.;
   scal *= theNumberOfBunches;
-  scal /= (theAverageLumi * 10000)  ; // CB cross section in mubarn
-
-  scal = scal * theZeroBiasPrescale;			        // because ZeroBias was pre-scaled
-
-  Float_t scalefor8TeV = 1; //CB useless now
 
   Float_t extrarate = 5;
 
-  h_Cross_8TeV = (TH1F*)h_Cross->Clone("h_Cross_8TeV");
-  h_Cross_8TeV -> Scale(scal * scalefor8TeV);
   h_Cross -> Scale(scal);
-
-  h_MultiCross_8TeV = (TH1F*)h_MultiCross->Clone("h_MultiCross_8TeV");
-  h_MultiCross_8TeV -> Scale(scal * scalefor8TeV);
   h_MultiCross -> Scale(scal);
-
-  h_Jets_8TeV = (TH1F*)h_Jets->Clone("h_Jets_8TeV");
-  h_Jets_8TeV -> Scale(scal * scalefor8TeV);
   h_Jets -> Scale(scal);
-
-  h_MultiJets_8TeV = (TH1F*)h_MultiJets->Clone("h_MultiJets_8TeV");
-  h_MultiJets_8TeV -> Scale(scal * scalefor8TeV);
   h_MultiJets -> Scale(scal);
-
-  h_Egamma_8TeV = (TH1F*)h_Egamma->Clone("h_Egamma_8TeV");
-  h_Egamma_8TeV -> Scale(scal * scalefor8TeV);
   h_Egamma -> Scale(scal);
-
-  h_MultiEgamma_8TeV = (TH1F*)h_MultiEgamma->Clone("h_MultiEgamma_8TeV");
-  h_MultiEgamma_8TeV -> Scale(scal * scalefor8TeV);
   h_MultiEgamma -> Scale(scal);
-
-  h_Sums_8TeV = (TH1F*)h_Sums->Clone("h_Sums_8TeV");
-  h_Sums_8TeV -> Scale(scal * scalefor8TeV);
   h_Sums -> Scale(scal);
-
-  h_Muons_8TeV = (TH1F*)h_Muons->Clone("h_Muons_8TeV");
-  h_Muons_8TeV -> Scale(scal * scalefor8TeV);
   h_Muons -> Scale(scal);
-
-  h_MultiMuons_8TeV = (TH1F*)h_MultiMuons->Clone("h_MultiMuons_8TeV");
-  h_MultiMuons_8TeV -> Scale(scal * scalefor8TeV);
   h_MultiMuons -> Scale(scal);
-
-  h_All_8TeV = (TH1F*)h_All->Clone("h_All_8TeV");
-  CorrectScale(h_All_8TeV, scal * scalefor8TeV);
   CorrectScale(h_All, scal);
-
-  h_Pure_8TeV = (TH1F*)h_Pure->Clone("h_Pure_8TeV");
-  h_Pure_8TeV  -> Scale(scal * scalefor8TeV);
   h_Pure  -> Scale(scal);
 
   std::cout << " Prescales for: " << theL1Menu << ", L1NtupleFileName = " << theL1NtupleFileName << std::endl;
   std::cout << std::endl << " --------------------------------------------------------- " << std::endl << std::endl;
-  std::cout << " Rate that pass L1 " << NPASS * scal << " kHz  ( claimed by a PAG " << nPAG * scal << " kHz  i.e. " << 100.*(float)nPAG/(float)NPASS << "%. ) " << "scaled to 8 TeV (" << scalefor8TeV << ") and adding " << extrarate << " kHz = " << NPASS * scal * scalefor8TeV + extrarate << " kHz " << std::endl << std::endl;
+  std::cout << " Rate that pass L1 " << NPASS * scal << " kHz  ( claimed by a PAG " << nPAG * scal << " kHz  i.e. " << 100.*(float)nPAG/(float)NPASS << "%. ) " << ") adding " << extrarate << " kHz = " << NPASS * scal + extrarate << " kHz " << std::endl << std::endl;
   std::cout << " --------------------------------------------------------- " << std::endl << std::endl;
-  std::cout << " Rate that pass L1 jets: " << NJETS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NJETS * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 multi-jets: " << MULTINJETS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINJETS * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 EG: " << NEG * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NEG * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 multi-EG: " << MULTINEG * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINEG * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 Sums: " << NSUMS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NSUMS * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 Muons: " << NMUONS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NMUONS * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 multi-Muons: " << MULTINMUONS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINMUONS * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 Cross: " << NCROSS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NCROSS * scal * scalefor8TeV << " kHz"<< std::endl;
-  std::cout << " Rate that pass L1 multi-Cross: " << MULTINCROSS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINCROSS * scal * scalefor8TeV << " kHz"<< std::endl;
+  std::cout << " Rate that pass L1 jets: " << NJETS * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 multi-jets: " << MULTINJETS * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 EG: " << NEG * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 multi-EG: " << MULTINEG * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 Sums: " << NSUMS * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 Muons: " << NMUONS * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 multi-Muons: " << MULTINMUONS * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 Cross: " << NCROSS * scal << " kHz" << std::endl;
+  std::cout << " Rate that pass L1 multi-Cross: " << MULTINCROSS * scal << " kHz" << std::endl;
 
   output << " Prescales for: L1NtupleFileName = " << theL1NtupleFileName << std::endl;
   output << std::endl << " --------------------------------------------------------- " << std::endl << std::endl;
-  output << " Rate that pass L1 " << NPASS * scal << " kHz  ( claimed by a PAG " << nPAG * scal << " kHz  i.e. " << 100.*(float)nPAG/(float)NPASS << "%. ) " << "scaled to 8 TeV (" << scalefor8TeV << ") and adding " << extrarate << " kHz = " << NPASS * scal * scalefor8TeV + extrarate << " kHz " << std::endl << std::endl;
+  output << " Rate that pass L1 " << NPASS * scal << " kHz  ( claimed by a PAG " << nPAG * scal << " kHz  i.e. " << 100.*(float)nPAG/(float)NPASS << "%. ) and adding " << extrarate << " kHz = " << NPASS * scal + extrarate << " kHz " << std::endl << std::endl;
   output << " --------------------------------------------------------- " << std::endl << std::endl;
-  output << " Rate that pass L1 jets: " << NJETS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NJETS * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 multi-jets: " << MULTINJETS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINJETS * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 EG: " << NEG * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NEG * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 multi-EG: " << MULTINEG * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINEG * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 Sums: " << NSUMS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NSUMS * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 Muons: " << NMUONS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NMUONS * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 multi-Muons: " << MULTINMUONS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINMUONS * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 Cross: " << NCROSS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << NCROSS * scal * scalefor8TeV << " kHz"<< std::endl;
-  output << " Rate that pass L1 multi-Cross: " << MULTINCROSS * scal << " kHz" << ", scaled to 8 TeV (" << scalefor8TeV << ") = " << MULTINCROSS * scal * scalefor8TeV << " kHz"<< std::endl;
+  output << " Rate that pass L1 jets: " << NJETS * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 multi-jets: " << MULTINJETS * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 EG: " << NEG * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 multi-EG: " << MULTINEG * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 Sums: " << NSUMS * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 Muons: " << NMUONS * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 multi-Muons: " << MULTINMUONS * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 Cross: " << NCROSS * scal << " kHz" << std::endl;
+  output << " Rate that pass L1 multi-Cross: " << MULTINCROSS * scal << " kHz" << std::endl;
 
   for (Int_t i=1; i<= 5; i++) {
     Float_t nev = h_Block -> GetBinContent(i);
@@ -5153,7 +3931,7 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   if (whichFileAndLumiToUse==3) {
     // 13 TeV ZeroBias 62X sample, 2012 re-emulation
     NumberOfBunches = 2590; 
-    AverageLumi = 0.9305;
+    AverageLumi = 1.;
     L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012/L1Tree.root";
     AveragePU = 40;
     L1JetCorrection=false;
@@ -5162,8 +3940,17 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   if (whichFileAndLumiToUse==4) {
     // 13 TeV ZeroBias 62X sample, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 2590; 
-    AverageLumi = 0.9305;
+    AverageLumi = 1.;
     L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012Gct10GeV/L1Tree.root";
+    AveragePU = 40;
+    L1JetCorrection=false;
+    Energy = 13;
+  }
+  if (whichFileAndLumiToUse==5) {
+    // 13 TeV ZeroBias 62X sample, 2015 re-emulation
+    NumberOfBunches = 2590; 
+    AverageLumi = 1.;
+    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree.root";
     AveragePU = 40;
     L1JetCorrection=false;
     Energy = 13;
@@ -5201,19 +3988,20 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
     TXTOutfile << "  L1NtupleFileName                 = " << L1NtupleFileName << std::endl;
   }
 
-  L1Menu2012 a(usedL1Menu,NumberOfBunches,AverageLumi,L1NtupleFileName,AveragePU,1,L1JetCorrection);
+  L1Menu2012 a(usedL1Menu,NumberOfBunches,AverageLumi,L1NtupleFileName,AveragePU,9973,L1JetCorrection);
   a.Open(L1NtupleFileName);
   a.Loop();
 
   if (drawplots) {
 
     TString YaxisName;
-    if (targetlumi == 1.) YaxisName = "Rate (kHz) at 1e32 (PU = t.b.d)";
-    if (targetlumi == 2.) YaxisName = "Rate (kHz) at 2e32 (PU = t.b.d)";
-    if (targetlumi == 20.) YaxisName = "Rate (kHz) at 2e33 (PU = t.b.d.)";
-    if (targetlumi == 50) YaxisName = "Rate (kHz) at 5e33 (PU = 28)";
-    if (targetlumi == 60.) YaxisName = "Rate (kHz) at 6e33 (PU = 30)";
-    if (targetlumi == 70.) YaxisName = "Rate (kHz) at 7e33 (PU > 30)";
+    if (targetlumi == 1.)   YaxisName = "Rate (kHz) at 1e32 (PU = t.b.d)";
+    if (targetlumi == 2.)   YaxisName = "Rate (kHz) at 2e32 (PU = t.b.d)";
+    if (targetlumi == 20.)  YaxisName = "Rate (kHz) at 2e33 (PU = t.b.d.)";
+    if (targetlumi == 50)   YaxisName = "Rate (kHz) at 5e33 (PU = 28)";
+    if (targetlumi == 60.)  YaxisName = "Rate (kHz) at 6e33 (PU = 30)";
+    if (targetlumi == 70.)  YaxisName = "Rate (kHz) at 7e33 (PU > 30)";
+    if (targetlumi == 140.) YaxisName = "Rate (kHz) at 1.4e34 (PU = 40)";
 
     TCanvas* c1 = new TCanvas("c1","c1");
     c1 -> cd();
@@ -5225,7 +4013,6 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
 
     TCanvas* c2 = new TCanvas("c2","c2");
     c2 -> cd();
-    gStyle -> SetOptStat(0);
     h_MultiCross -> SetLineColor(4);
     h_MultiCross -> GetXaxis() -> SetLabelSize(0.035);
     h_MultiCross -> SetYTitle(YaxisName);
@@ -5394,27 +4181,23 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
 
   }
 
-  std::cout << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@7TeV" << "\t +/- \t" << "error_rate@7TeV" << "\t " << "pure@7TeV" << "\t | \t" << "rate@8TeV" << "\t +/- \t" << "error_rate@8TeV" << "\t " << "pure@8TeV"  << std::endl;
-  TXTOutfile << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@7TeV" << "\t +/- \t" << "error_rate@7TeV" << "\t " << "pure@7TeV" << "\t | \t" << "rate@8TeV" << "\t +/- \t" << "error_rate@8TeV" << "\t " << "pure@8TeV" << std::endl;
+  std::cout << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@13TeV" << "\t +/- \t" << "error_rate@13TeV" << "\t " << "pure@13TeV" << std::endl;
+  TXTOutfile << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@13TeV" << "\t +/- \t" << "error_rate@13TeV" << "\t " << "pure@13TeV" << std::endl;
 
   if (writefiles) { 
-    CSVOutfile << "L1Bit" << ";" << "L1SeedName" << ";" << "AveragePU" << ';' << "pre-scale" << ";" << "rate@7TeV" << ";" << "error_rate@7TeV" << ";" << "pure@7TeV" << ";" << "rate@8TeV" << ";" << "error_rate@8TeV" << ";" << "pure@8TeV" << std::endl; 
+    CSVOutfile << "L1Bit" << ";" << "L1SeedName" << ";" << "AveragePU" << ';' << "pre-scale" << ";" << "rate@13TeV" << ";" << "error_rate@13TeV" << ";" << "pure@13TeV" << std::endl; 
   }
 
   Float_t totalrate     = 0;
-  Float_t totalrate_8TeV = 0;
 
   for (Int_t k=1; k < kOFFSET+1; k++) {  // -- kOFFSET now contains the number of triggers we have calculated
     TString name = h_All -> GetXaxis() -> GetBinLabel(k);
 
     Float_t rate = h_All -> GetBinContent(k);
-    Float_t rate_8TeV = h_All_8TeV -> GetBinContent(k);
 
     Float_t err_rate  = h_All -> GetBinError(k);
-    Float_t err_rate_8TeV  = h_All_8TeV -> GetBinError(k);
 
     Float_t pure = h_Pure -> GetBinContent(k);
-    Float_t pure_8TeV = h_Pure_8TeV -> GetBinContent(k);
 
     std::string L1namest = (std::string)name;
     std::map<std::string, int>::const_iterator it = a.Prescales.find(L1namest);
@@ -5429,32 +4212,27 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
     }
     Bool_t bias = a.Biased[L1namest];
 
-    if (bias) std::cout << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t | \t" << rate_8TeV << "\t +/- \t" << err_rate_8TeV << "\t " << pure_8TeV << "\t" << " ***  BIAS  *** " << std::endl;
+    if (bias) std::cout << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t" << " ***  BIAS  *** " << std::endl;
     else
-      std::cout << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t | \t" << rate_8TeV << "\t +/- \t" << err_rate_8TeV << "\t " << pure_8TeV  << std::endl;
+      std::cout << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << std::endl;
 
     if (writefiles) { 
-      if (bias) { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t | \t"<< rate_8TeV << "\t +/- \t" << err_rate_8TeV << "\t " << pure_8TeV << "\t" << " ***  BIAS  *** " << std::endl; }
-      else { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t | \t" << rate_8TeV << "\t +/- \t" << err_rate_8TeV << "\t " << pure_8TeV << std::endl; }
+      if (bias) { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t" << " ***  BIAS  *** " << std::endl; }
+      else { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << std::endl; }
 
-      CSVOutfile << a.L1BitNumber(L1namest) << ";" << name << ";" << AveragePU << ';' << pre << ";" << rate << ";" << err_rate << ";" << pure << ";" << rate_8TeV << ";" << err_rate_8TeV << ";" << pure_8TeV << std::endl; 
+      CSVOutfile << a.L1BitNumber(L1namest) << ";" << name << ";" << AveragePU << ';' << pre << ";" << rate << ";" << err_rate << ";" << pure << std::endl; 
     }
 
     totalrate +=rate;
-    totalrate_8TeV +=rate_8TeV;
   }
 
   std::cout << std::endl << "Total rate (without overlaps) = " << totalrate << std::endl;
-  std::cout << std::endl << "Total rate @ 8 TeV (without overlaps) = " << totalrate_8TeV << std::endl << std::endl;
 
   if (writefiles) {
     TXTOutfile << std::endl << a.GetPrintout() << std::endl;
     TXTOutfile << std::endl << "Total rate (without overlaps) = " << totalrate << std::endl;
-    TXTOutfile << std::endl << "Total rate @ 8 TeV (without overlaps) = " << totalrate_8TeV << std::endl << std::endl;	
   }
 
   TXTOutfile.close();
   CSVOutfile.close();
 }
-
-
