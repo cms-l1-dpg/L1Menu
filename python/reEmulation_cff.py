@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
+def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, runOnPostLS1 = False):
 
     print "[L1Menu]: Setting up overall re-emulation"        
 
@@ -40,27 +40,53 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
         print "[L1Menu]:\tSetting up muon re-emulation"        
         
         from L1Trigger.DTTrackFinder.dttfDigis_cfi import dttfDigis
-        from L1Trigger.CSCTrackFinder.csctfTrackDigis_cfi import csctfTrackDigis
-        from L1Trigger.CSCTrackFinder.csctfDigis_cfi import csctfDigis
-        from L1Trigger.RPCTrigger.rpcTriggerDigis_cfi import rpcTriggerDigis
-        from L1Trigger.GlobalMuonTrigger.gmtDigis_cfi import gmtDigis
-
-
         process.dttfReEmulDigis       = dttfDigis.clone()
-        process.csctfReEmulTrackDigis = csctfTrackDigis.clone()
-        process.rpcTriggerReEmulDigis = rpcTriggerDigis.clone()
-        process.csctfReEmulDigis      = csctfDigis.clone()
-        
-        process.gmtReEmulDigis  = gmtDigis.clone()
-
         process.dttfReEmulDigis.DTDigi_Source  = cms.InputTag("dttfDigis")
         process.dttfReEmulDigis.CSCStub_Source = cms.InputTag("csctfReEmulTrackDigis")
 
-        process.csctfReEmulTrackDigis.readDtDirect        = True
-        process.csctfReEmulTrackDigis.SectorReceiverInput = cms.untracked.InputTag("csctfDigis")
-        process.csctfReEmulTrackDigis.DtDirectProd        = cms.untracked.InputTag("csctfDigis","DT")
-        process.csctfReEmulDigis.CSCTrackProducer         = cms.untracked.InputTag("csctfReEmulTrackDigis")
-        #process.csctfReEmulDigis.SectorProcessor.initializeFromPSet = True
+        from L1Trigger.RPCTrigger.rpcTriggerDigis_cfi import rpcTriggerDigis
+        process.rpcTriggerReEmulDigis = rpcTriggerDigis.clone()
+
+        if not runOnPostLS1 :
+            from L1Trigger.CSCTrackFinder.csctfTrackDigis_cfi import csctfTrackDigis
+            from L1Trigger.CSCTrackFinder.csctfDigis_cfi import csctfDigis
+
+        
+            process.csctfReEmulTrackDigis = csctfTrackDigis.clone()
+            process.csctfReEmulDigis      = csctfDigis.clone()
+        
+            process.csctfReEmulTrackDigis.readDtDirect        = True
+            process.csctfReEmulTrackDigis.SectorReceiverInput = cms.untracked.InputTag("csctfDigis")
+            process.csctfReEmulTrackDigis.DtDirectProd        = cms.untracked.InputTag("csctfDigis","DT")
+            process.csctfReEmulDigis.CSCTrackProducer         = cms.untracked.InputTag("csctfReEmulTrackDigis")
+            #process.csctfReEmulDigis.SectorProcessor.initializeFromPSet = True
+            
+            process.csctfReEmulSequence = cms.Sequence(
+                process.csctfReEmulTrackDigis
+                * process.csctfReEmulDigis
+            )
+        else :
+            from SLHCUpgradeSimulations.Configuration.muonCustoms import customise_csc_L1Emulator
+            from L1Trigger.CSCTrackFinder.csctfDigis_cfi import csctfDigis
+
+            customise_csc_L1Emulator(process) 
+        
+            process.csctfReEmulTrackDigis = process.simCsctfTrackDigis.clone()
+            process.csctfReEmulDigis      = csctfDigis.clone()
+
+            process.csctfReEmulTrackDigis.DTproducer  = cms.untracked.InputTag("dttfDigis")
+            process.csctfReEmulDigis.CSCTrackProducer         = cms.untracked.InputTag("csctfReEmulTrackDigis")
+
+            process.csctfReEmulSequence = cms.Sequence(
+                process.simCscTriggerPrimitiveDigis
+                * process.csctfReEmulTrackDigis
+                * process.csctfReEmulDigis
+            )
+            
+
+
+        from L1Trigger.GlobalMuonTrigger.gmtDigis_cfi import gmtDigis
+        process.gmtReEmulDigis  = gmtDigis.clone()
 
         process.gmtReEmulDigis.DTCandidates   = cms.InputTag("dttfReEmulDigis","DT")
         process.gmtReEmulDigis.CSCCandidates  = cms.InputTag("csctfReEmulDigis","CSC")
@@ -80,8 +106,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True):
 
         process.reEmulMuonChain = cms.Sequence(
             process.rpcTriggerReEmulDigis
-            *process.csctfReEmulTrackDigis
-            *process.csctfReEmulDigis
+            *process.csctfReEmulSequence
             *process.dttfReEmulDigis
             *process.gmtReEmulDigis
             )

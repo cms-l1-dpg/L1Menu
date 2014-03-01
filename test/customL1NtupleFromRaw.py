@@ -133,7 +133,7 @@ process.p.remove(process.l1MenuTreeProducer)
 
 if options.reEmulation :
     from L1TriggerDPG.L1Menu.reEmulation_cff import *
-    reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple)
+    reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1)
     process.p.replace(process.l1NtupleProducer, process.reEmul + process.l1NtupleProducer)
     if options.force2012Config :
          run2012CConfiguration(process)
