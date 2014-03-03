@@ -8,12 +8,11 @@
 
 #include <iostream>
 #include <sstream>
-#include <vector>
 #include <map>
 #include <set>
 
 // huge prescale value for seeds changed on-the-fly
-#define INFTY 262139
+#define INFTY 300000
 
 TH1F *h_Cross;
 TH1F *h_MultiCross;
@@ -28,12 +27,12 @@ TH1F *h_MultiMuons;
 TH1F *h_Block;
 TH2F *cor_Block;
 
-Int_t NPAGS = 6;
+const Int_t NPAGS = 6;
 TH2F *cor_PAGS;
 TH1F *h_PAGS_pure;
 TH1F *h_PAGS_shared;
 
-Int_t NTRIGPHYS = 6;
+const Int_t NTRIGPHYS = 6;
 TH2F *cor_TRIGPHYS;
 TH1F *h_TRIGPHYS_pure;
 TH1F *h_TRIGPHYS_shared;
@@ -51,10 +50,8 @@ TH1F *h_Pure;		// one bin for each trigger. Fill bin i if event fires trigger i 
 inline Double_t CorrectedL1JetPtByFactor(Double_t JetPt, Bool_t theL1JetCorrection=false) {
 
   Double_t JetPtcorr = JetPt;
+  if (theL1JetCorrection) JetPtcorr = JetPt*1.05;
 
-  if (theL1JetCorrection) {
-    JetPtcorr = JetPt*1.05;
-  }
   return JetPtcorr;
 }
 
@@ -62,7 +59,6 @@ inline Double_t CorrectedL1JetPtByFactor(Double_t JetPt, Bool_t theL1JetCorrecti
 inline Double_t CorrectedL1FwdJetPtByFactor(Bool_t isFwdJet, Double_t JetPt, Bool_t theL1JetCorrection=false) {
 
   Double_t JetPtcorr = JetPt;
-
   if (theL1JetCorrection && isFwdJet) JetPtcorr = JetPt*1.08;
 
   return JetPtcorr;
@@ -77,8 +73,8 @@ Double_t CorrectedL1JetPtByHFtowers(Double_t JetiEta,Double_t JetPt, Bool_t theL
 
   Double_t JetPtcorr   = JetPt;
 
-  if (theL1JetCorrection) {
-    Int_t    iJetiEtabin = 0;
+  if(theL1JetCorrection) {
+    Int_t iJetiEtabin = 0;
     for (iJetiEtabin=0; iJetiEtabin<JetHFiEtabins; iJetiEtabin++) {
       if (JetHFiEtabin[iJetiEtabin]==JetiEta) {
 	JetPtcorr = JetPt * (1+(1-JetHFiEtacorr[iJetiEtabin]));
@@ -681,7 +677,6 @@ void L1Menu2012::MyInit() {
   setHadronic.insert("L1_QuadJetC40");
   setHadronic.insert("L1_QuadJetC50");
   setHadronic.insert("L1_TripleJetC_52_28_28");
-  setHadronic.insert("L1_DoubleForJet16_EtaOpp");
   setEG.insert("L1_DoubleEG3_FwdVeto");
   setMuon.insert("L1_SingleMu18er");
   setMuonEG.insert("L1_MuOpen_EG5");
@@ -811,7 +806,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_QuadJetC36"] = 107 ;
   BitMapping["L1_TripleJetC_52_28_28"] = 108 ;
   BitMapping["L1_QuadJetC50"] = 109 ;
-  BitMapping["L1_DoubleForJet16_EtaOpp"] = 110 ;
+  BitMapping["FREE110"] = 110 ;
   BitMapping["L1_DoubleEG3_FwdVeto"] = 111 ;
   BitMapping["FREE112"] = 112 ;
   BitMapping["FREE113"] = 113 ;
@@ -929,7 +924,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_QuadJetC40"] = 1;
     Prescales["L1_QuadJetC36"] = INFTY;
     Prescales["L1_TripleJetC_52_28_28"] = 300;
-    Prescales["L1_DoubleForJet16_EtaOpp"] = INFTY;
     Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
     Prescales["L1_SingleMu18er"] = 1;
     Prescales["L1_MuOpen_EG5"] = INFTY;
@@ -974,12 +968,12 @@ void L1Menu2012::MyInit() {
     Prescales["L1_SingleMu6_NotBptxOR"] = 1;
 
     //Electrons
-    Prescales["L1_SingleEG5"]         = 20000;
-    Prescales["L1_SingleEG7"]         = 20000;
-    Prescales["L1_SingleEG12"]        = 5000;
-    Prescales["L1_SingleEG20"]        = 200;
-    Prescales["L1_SingleEG22"]        = 100;
-    Prescales["L1_SingleEG24"]        = 80;
+    Prescales["L1_SingleEG5"]         = 40000;
+    Prescales["L1_SingleEG7"]         = 40000;
+    Prescales["L1_SingleEG12"]        = 7000;
+    Prescales["L1_SingleEG20"]        = 800;
+    Prescales["L1_SingleEG22"]        = 400;
+    Prescales["L1_SingleEG24"]        = 200;
     Prescales["L1_SingleEG30"]        = 1;
     Prescales["L1_SingleIsoEG18er"]   = 1;
     Prescales["L1_SingleIsoEG20er"]   = 1;
@@ -992,17 +986,16 @@ void L1Menu2012::MyInit() {
     Prescales["L1_TripleEG_12_7_5"]   = 1;
 
     //Jets
-    Prescales["L1_SingleJet16"]          = INFTY;
-    Prescales["L1_SingleJet36"]          = 100000;
-    Prescales["L1_SingleJet52"]          = 10000;
-    Prescales["L1_SingleJet68"]          = 300;
-    Prescales["L1_SingleJet92"]          = 100;
-    Prescales["L1_SingleJet128"]         = 1;
-    Prescales["L1_DoubleForJet16_EtaOpp"]  = INFTY;
-    Prescales["L1_DoubleJetC36"]         = INFTY;
-    Prescales["L1_DoubleJetC52"]         = INFTY;
-    Prescales["L1_DoubleJetC56"]         = INFTY;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 10;
+    Prescales["L1_SingleJet16"]           = INFTY;
+    Prescales["L1_SingleJet36"]           = 100000;
+    Prescales["L1_SingleJet52"]           = 10000;
+    Prescales["L1_SingleJet68"]           = 800;
+    Prescales["L1_SingleJet92"]           = 200;
+    Prescales["L1_SingleJet128"]          = 1;
+    Prescales["L1_DoubleJetC36"]          = INFTY;
+    Prescales["L1_DoubleJetC52"]          = INFTY;
+    Prescales["L1_DoubleJetC56"]          = INFTY;
+    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 2000;
     Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
     Prescales["L1_DoubleJetC64"]           = 1;
     Prescales["L1_DoubleTauJet44er"]       = 1;
@@ -1011,7 +1004,7 @@ void L1Menu2012::MyInit() {
     Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
     Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
     Prescales["L1_QuadJetC36"]             = INFTY;
-    Prescales["L1_QuadJetC40"]             = 1000;
+    Prescales["L1_QuadJetC40"]             = 4000;
     Prescales["L1_QuadJetC50"]             = 1;
 
     //Sums
@@ -1022,13 +1015,13 @@ void L1Menu2012::MyInit() {
     Prescales["L1_HTT200"] = 1;
     Prescales["L1_ETT80"]  = INFTY;
     Prescales["L1_ETM30"]  = INFTY;
-    Prescales["L1_ETM36"]  = 20000;
+    Prescales["L1_ETM36"]  = 30000;
     Prescales["L1_ETM40"]  = 15000;
     Prescales["L1_ETM50"]  = 1000;
-    Prescales["L1_ETM70"]  = 2;
+    Prescales["L1_ETM70"]  = 6;
     Prescales["L1_ETM100"] = 1;
     Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_ETT300"] = 1;
+    Prescales["L1_ETT300"] = INFTY;
 
     //Cross
     Prescales["L1_MuOpen_EG5"]           = INFTY;
@@ -1052,8 +1045,8 @@ void L1Menu2012::MyInit() {
     Prescales["L1_Mu12er_ETM20"]         = 1;
 
     Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
-    Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    Prescales["L1_DoubleEG6_HTT100"] = 500;
+    Prescales["L1_EG8_DoubleJetC20"] = 20000;
+    Prescales["L1_DoubleEG6_HTT100"] = 2500;
     Prescales["L1_DoubleEG6_HTT125"] = 1;
 
     Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
@@ -1120,7 +1113,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_SingleJet92"]          = 50;
     Prescales["L1_SingleJet128"]         = 1;
     Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
-    Prescales["L1_DoubleForJet16_EtaOpp"]  = INFTY;
     Prescales["L1_DoubleJetC36"]         = INFTY;
     Prescales["L1_DoubleJetC52"]         = INFTY;
     Prescales["L1_DoubleJetC56"]         = INFTY;
@@ -2040,12 +2032,14 @@ Bool_t L1Menu2012::Mu_JetCentral_deltaOut(Float_t mucut, Float_t jetcut) {
     //          Float_t etamu = gmt_ -> Eta[imu];
     //          Int_t ieta_mu = etaINjetCoord(etamu);
 
+    /*
     Int_t PhiOut[3];
     PhiOut[0] = iphi_mu;
     if (iphi_mu< 17) PhiOut[1] = iphi_mu+1;
     if (iphi_mu == 17) PhiOut[1] = 0;
     if (iphi_mu > 0) PhiOut[2] = iphi_mu - 1;
     if (iphi_mu == 0) PhiOut[2] = 17;
+    */
 
     for (Int_t ue=0; ue < Nj; ue++) {
       Int_t bxj = gt_ -> Bxjet[ue];        		
@@ -3573,7 +3567,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  nevents = 500000;
+  //nevents = 500000;
 
   Int_t NPASS = 0; 
 
