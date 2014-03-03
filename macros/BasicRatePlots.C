@@ -836,7 +836,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     {
 
       if (hTH1FIt->first == "nPUvsPU")
-	continue;
+	histo->Scale(1./nZeroBias);
+
       
       TH1F* histo = hTH1FIt->second;
       
