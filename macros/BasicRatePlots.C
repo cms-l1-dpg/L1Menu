@@ -44,10 +44,10 @@ private :
   float SingleMuEta(float eta);
 
   //MultiStuff
-  float DoubleJetCentral();
   float QuadJetCentral();
   void DoubleMu(Float_t & muPt1, Float_t & muPt2);
   void Onia(Float_t & muPt1, Float_t & muPt2, Float_t etacut, Int_t delta);
+  void EGIsoEGPt(Float_t &myIsoEGPt, Float_t &myEGPt);
 
   //Sums
   float HTT();
@@ -363,21 +363,6 @@ float BasicRatePlots::SingleJetPt() {
   return maxPt;  
 }
 
-float BasicRatePlots::DoubleJetCentral() {
-
-  float maxPt = -10;
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = rank*4.;
-    if (pt >= maxPt) maxPt = pt;
-  }
-  
-  return maxPt;  
-}
-
 float BasicRatePlots::HTT() {
   
   Float_t adc = gt_ -> RankHTT ;
@@ -422,13 +407,49 @@ float BasicRatePlots::SingleIsoEGPt() {
     if (bx != 0) continue;
     Bool_t iso = gt_ -> Isoel[ue];
     if (! iso) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ; 
+    Float_t pt = gt_ -> Rankel[ue];    // the rank of the electron
     if (pt >= maxPt) maxPt = pt;
   }  // end loop over EM objects
   
   return maxPt;
 }
+
+
+void BasicRatePlots::EGIsoEGPt(Float_t &myIsoEGPt, Float_t &myEGPt) {
+
+  float maxPtEGIso = -10.; 
+  float maxPtEG    = -10.; 
+
+  Int_t iEGIso = -1;
+
+  Int_t Nele = gt_ -> Nele;
+  for (Int_t ue=0; ue < Nele; ue++) {
+    Int_t bx = gt_ -> Bxel[ue];        		
+    if (bx != 0) continue;
+    Bool_t iso = gt_ -> Isoel[ue];
+    if (! iso) continue;
+    Float_t ptIso = gt_ -> Rankel[ue];    // the rank of the first (isolated) electron
+    if (ptIso >= maxPtEGIso){
+      maxPtEGIso = ptIso;
+      iEGIso = ue;
+    }
+  }
+
+  for (Int_t ue2=0; ue2 < Nele; ue2++) {
+    if(ue2 == iEGIso) continue;
+    Int_t bx2 = gt_ -> Bxel[ue2];
+    if (bx2 != 0) continue;
+
+    Float_t pt2 = gt_ -> Rankel[ue2];    // the rank of the second electron
+    if (pt2 >= maxPtEG) maxPtEG = pt2;
+  }
+  
+  myIsoEGPt = maxPtEGIso;
+  myEGPt = maxPtEG;
+
+  return;
+}
+
 
 void BasicRatePlots::Mu_HTT(Float_t & mymuPt, Float_t & myHTT) {
 
@@ -577,6 +598,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH2F["nIsolElePtVsPt"]    = new TH2F("nIsolElePtVsPt","DoubleIsolEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",61,-0.25,30.25,61,-0.25,30.25);
   hTH2F["nMuPtVsPt"]         = new TH2F("nMuPtVsPt","DoubleMu; p_{T} cut mu_{1}; p_{T} cut mu_{2}",41,-0.25,20.25,41,-0.25,20.25);
   hTH2F["nOniaMuPtVsPt"]     = new TH2F("nOniaMuPtVsPt","DoubleMu_Er_HighQ_WdEta22 (Quarkonia); p_{T} cut mu_{1}; p_{T} cut mu_{2}",41,-0.25,20.25,41,-0.25,20.25);
+  hTH2F["nEGIsoEGVsPt"]      = new TH2F("nEGIsoEGVsPt","IsoEle_Ele; p_{T} cut iso EG_{1}; p_{T} cut EG_{2}",61,-0.25,30.25,61,-0.25,30.25);
 
   //Sums
   hTH1F["nHTTVsHTT"] = new TH1F("nHTTVsHTT","HTT; HTT cut; rate [Hz]",512,-.5,511.5);
@@ -656,6 +678,10 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       float oniaMuPt2 = -10;
       Onia(oniaMuPt1,oniaMuPt2,2.1,22);
 
+      float EGIsoPt1 = -10;
+      float EGPt2    = -10;
+      EGIsoEG(EGIsoPt1,EGPt2);
+
       float dttfPt   = DttfPt();
       float rpcbPt   = RpcbPt();
       float rpcfPt   = RpcfPt();
@@ -682,12 +708,12 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       }
       
       for(int ptCut=0; ptCut<131; ++ptCut) {
-	if (muPt>ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut,weight);
-	if (muErPt>ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut,weight);
-	if (dttfPt>ptCut)  hTH1F["nDttfVsPt"]->Fill(ptCut,weight);
-	if (rpcbPt>ptCut)  hTH1F["nRpcbVsPt"]->Fill(ptCut,weight);
-	if (rpcfPt>ptCut)  hTH1F["nRpcfVsPt"]->Fill(ptCut,weight);
-	if (csctfPt>ptCut) hTH1F["nCsctfVsPt"]->Fill(ptCut,weight);
+	if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut,weight);
+	if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut,weight);
+	if (dttfPt>=ptCut)  hTH1F["nDttfVsPt"]->Fill(ptCut,weight);
+	if (rpcbPt>=ptCut)  hTH1F["nRpcbVsPt"]->Fill(ptCut,weight);
+	if (rpcfPt>=ptCut)  hTH1F["nRpcfVsPt"]->Fill(ptCut,weight);
+	if (csctfPt>=ptCut) hTH1F["nCsctfVsPt"]->Fill(ptCut,weight);
       }
       
       // creates sorted jet vectors for all jet cands and central jets
@@ -783,6 +809,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	    float ptCut = iCut*0.5;
 	    float ptCut2 = iCut2*0.5;
 	    if (sortedEGs[0]>ptCut && sortedEGs[1]>ptCut2) hTH2F["nElePtVsPt"]->Fill(ptCut,ptCut2,weight);
+	    if (EGIsoPt1>ptCut && EGPt2>ptCut2) hTH2F["nEGIsoEGVsPt"]->Fill(ptCut,ptCut2,weight);
 	  }
 	}
       }
