@@ -464,7 +464,6 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_MuOpen_EG12") ;
   setHIGGS.insert("L1_Mu3p5_EG12") ;
   setHIGGS.insert("L1_SingleMu3") ;
-  setHIGGS.insert("L1_SingleMu7") ;
   setHIGGS.insert("L1_SingleMu18er") ;
   setHIGGS.insert("L1_SingleMu20er") ;
   setHIGGS.insert("L1_DoubleMu_10_Open") ;
@@ -570,7 +569,6 @@ void L1Menu2012::MyInit() {
   setSMP.insert("L1_Mu12_EG7") ;
   setSMP.insert("L1_MuOpen_EG12") ;
   setSMP.insert("L1_Mu3p5_EG12") ;
-  setSMP.insert("L1_SingleMu7") ;
   setSMP.insert("L1_SingleMu16er") ;
   setSMP.insert("L1_SingleMu18er") ;
   setSMP.insert("L1_SingleMu20er") ;
@@ -634,7 +632,6 @@ void L1Menu2012::MyInit() {
   setMuon.insert("L1_SingleMu16");
   setMuon.insert("L1_SingleMu3");
   setMuon.insert("L1_DoubleMu_5er_0er_HighQ_WdEta22");
-  setMuon.insert("L1_SingleMu7");
   setMuon.insert("L1_SingleMu20er");
   setMuon.insert("L1_SingleMu12");
   setMuon.insert("L1_SingleMu20");
@@ -756,7 +753,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_SingleMu16"] = 56 ;
   BitMapping["L1_SingleMu3"] = 57 ;
   BitMapping["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 58 ;
-  BitMapping["L1_SingleMu7"] = 59 ;
+  BitMapping["L1_SingleMu25"] = 59 ;
   BitMapping["L1_SingleMu20er"] = 60 ;
   BitMapping["L1_SingleMu12"] = 61 ;
   BitMapping["L1_SingleMu20"] = 62 ;
@@ -882,7 +879,7 @@ void L1Menu2012::MyInit() {
     Prescales["L1_SingleMu16"] = 1;
     Prescales["L1_SingleMu3"] = 4000;
     Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMu7"] = 600;
+    Prescales["L1_SingleMu25"] = 600;
     Prescales["L1_SingleMu20er"] = 1;
     Prescales["L1_SingleMu12"] = 900;
     Prescales["L1_SingleMu20"] = 1;
@@ -944,22 +941,22 @@ void L1Menu2012::MyInit() {
     //Muons
     Prescales["L1_SingleMuOpen"]      = 10000;
     Prescales["L1_SingleMu3"]         = 8000;
-    Prescales["L1_SingleMu7"]         = 2000;
     Prescales["L1_SingleMu12"]        = 1000;
     Prescales["L1_SingleMu12er"]      = 200;
     Prescales["L1_SingleMu14er"]      = 100;
     Prescales["L1_SingleMu16"]        = 100;
     Prescales["L1_SingleMu16er"]      = 100;
     Prescales["L1_SingleMu18er"]      = 100;
-    Prescales["L1_SingleMu20er"]      = 80;
-    Prescales["L1_SingleMu20"]        = 1;
+    Prescales["L1_SingleMu20er"]      = 1;
+    Prescales["L1_SingleMu20"]        = 50;
+    Prescales["L1_SingleMu25"]        = 1;
     Prescales["L1_SingleMu25er"]      = 1;
     Prescales["L1_DoubleMu0"]         = INFTY;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
+    Prescales["L1_DoubleMu0er_HighQ"] = 100;
     Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 1;
     Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
     Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"]    = 1;
+    Prescales["L1_DoubleMu_10_Open"]    = 100;
     Prescales["L1_DoubleMu_10_3p5"]     = 1;
     Prescales["L1_DoubleMu_12_5"]       = 1;
     Prescales["L1_TripleMu0"]           = 1;
@@ -1018,7 +1015,7 @@ void L1Menu2012::MyInit() {
     Prescales["L1_ETM36"]  = 30000;
     Prescales["L1_ETM40"]  = 15000;
     Prescales["L1_ETM50"]  = 1000;
-    Prescales["L1_ETM70"]  = 6;
+    Prescales["L1_ETM70"]  = 100;
     Prescales["L1_ETM100"] = 1;
     Prescales["L1_ETT140"] = INFTY;
     Prescales["L1_ETT300"] = INFTY;
@@ -1424,10 +1421,10 @@ Bool_t L1Menu2012::Muons() {
   insert_ibin = 0;
   InsertInMenu("L1_SingleMuOpen",SingleMu(0.,0));
   InsertInMenu("L1_SingleMu3",SingleMu(3.));
-  InsertInMenu("L1_SingleMu7",SingleMu(7.));
   InsertInMenu("L1_SingleMu12",SingleMu(12.));
   InsertInMenu("L1_SingleMu16",SingleMu(16.));
   InsertInMenu("L1_SingleMu20",SingleMu(20.));
+  InsertInMenu("L1_SingleMu25",SingleMu(25.));
 
   InsertInMenu("L1_SingleMu12er",SingleMuEta2p1(12.));
   InsertInMenu("L1_SingleMu14er",SingleMuEta2p1(14.));
@@ -3567,7 +3564,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  //nevents = 500000;
+  nevents = 500000;
 
   Int_t NPASS = 0; 
 
