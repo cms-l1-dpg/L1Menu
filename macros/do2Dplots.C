@@ -22,6 +22,12 @@
   nMuVsHTT->GetXaxis()->SetRangeUser(2.,15.);
   nMuVsHTT->GetYaxis()->SetRangeUser(60.,200.);
 
+  nAsymDiJetVsPt->GetXaxis()->SetRangeUser(70.,100.);
+  nAsymDiJetVsPt->GetYaxis()->SetRangeUser(50.,100.);
+
+  nAsymDiCenJetVsPt->GetXaxis()->SetRangeUser(70.,100.);
+  nAsymDiCenJetVsPt->GetYaxis()->SetRangeUser(50.,100.);
+
   TCanvas c1; c1.cd();
   nMuPtVsPt->Draw("COLZ");
   c1.SaveAs("results/comparePlots/nMuPtVsPt.gif");

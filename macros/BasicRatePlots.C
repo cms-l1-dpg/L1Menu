@@ -730,6 +730,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	  if(dijetPt<ptCut) continue;
           hTH1F["nDiJetVsPt"]->Fill(ptCut,weight);
 	  for(int ptCut_0=0; ptCut_0<256; ++ptCut_0) {
+	    if(ptCut_0 < ptCut) continue;
 	    if(sortedJets.at(0)>ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	  }
 	}
@@ -742,6 +743,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 	  if(dijetPt<ptCut) continue;
 	    hTH1F["nDiCenJetVsPt"]->Fill(ptCut,weight);
 	  for(int ptCut_0=0; ptCut_0<256; ++ptCut_0) {
+	    if(ptCut_0 < ptCut) continue;
 	    if(sortedJets.at(0)>ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	  }
 	}
