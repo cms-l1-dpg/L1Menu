@@ -680,7 +680,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
       float EGIsoPt1 = -10;
       float EGPt2    = -10;
-      EGIsoEG(EGIsoPt1,EGPt2);
+      EGIsoEGPt(EGIsoPt1,EGPt2);
 
       float dttfPt   = DttfPt();
       float rpcbPt   = RpcbPt();
