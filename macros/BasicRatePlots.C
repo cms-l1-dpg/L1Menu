@@ -2,10 +2,10 @@
 #include <algorithm>
 #include<map>
 
-size_t ETAMUBINS = 65;
-Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
-
 Int_t etaMuIdx(Double_t eta) {
+
+  static const size_t ETAMUBINS = 65;
+  static const Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
   size_t etaIdx = 0.;
   for (size_t idx=0; idx<ETAMUBINS; idx++) {
     if (eta>=ETAMU[idx] and eta<ETAMU[idx+1])
@@ -56,6 +56,7 @@ private :
   //Cross
   void Mu_HTT(Float_t & muPt, Float_t & myHTT);
 
+  //GMT stuff
   float DttfPt();
   float RpcbPt();
   float RpcfPt();
@@ -81,7 +82,6 @@ private :
 void BasicRatePlots::FillBits() {
 
   //Fill the physics bits:
-
   for (int ibit=0; ibit < 128; ibit++) 
     {
       PhysicsBits[ibit] = 0;
@@ -111,15 +111,14 @@ float BasicRatePlots::SingleMuPt(){
   for (int imu=0; imu < Nmu; imu++) 
     {
       int bx = gmt_ -> CandBx[imu];       // BX = 0, +/- 1 or +/- 2
-      if (bx != 0) continue;
+      if(bx != 0) continue;
       int qual = gmt_ -> Qual[imu];
-      if (qual < 4) continue;
+      if(qual < 4) continue;
       float pt = gmt_ -> Pt[imu];         // get pt to get highest pt one
-      if ( pt > maxPt) maxPt = pt;
+      if( pt > maxPt) maxPt = pt;
     }
   
   return maxPt;
-
 }
 
 float BasicRatePlots::SingleMuErPt()  {
@@ -130,13 +129,13 @@ float BasicRatePlots::SingleMuErPt()  {
   for (int imu=0; imu < Nmu; imu++) 
     {
       int bx = gmt_ -> CandBx[imu];       // BX = 0, +/- 1 or +/- 2
-      if (bx != 0) continue;
+      if(bx != 0) continue;
       int qual = gmt_ -> Qual[imu];
-      if (qual < 4) continue;
+      if(qual < 4) continue;
       float eta = gmt_ -> Eta[imu];
-      if (fabs(eta) > 2.1) continue;
+      if(fabs(eta) > 2.1) continue;
       float pt = gmt_ -> Pt[imu];         // get pt to get highest pt one
-      if ( pt > maxPt) maxPt = pt;
+      if( pt > maxPt) maxPt = pt;
     }
   
   return maxPt;
@@ -339,7 +338,7 @@ float BasicRatePlots::SingleTauPt() {
     Int_t bx = gt_ -> Bxjet[ue];        		
     if (bx != 0) continue; 
     Bool_t isTauJet = gt_ -> Taujet[ue];
-    if (! isTauJet) continue;
+    if (!isTauJet) continue;
     Float_t rank = gt_ -> Rankjet[ue];
     Float_t pt = rank*4.;
     if (pt >= maxPt) maxPt = pt;
@@ -363,7 +362,7 @@ float BasicRatePlots::SingleJetPt() {
   return maxPt;  
 }
 
-float BasicRatePlots::HTT() {
+inline float BasicRatePlots::HTT() {
   
   Float_t adc = gt_ -> RankHTT ;
   Float_t theHTT = adc / 2. ;
@@ -371,7 +370,7 @@ float BasicRatePlots::HTT() {
   return theHTT;
 }
 
-Float_t BasicRatePlots::ETT() {
+inline Float_t BasicRatePlots::ETT() {
 
   Float_t adc = gt_ -> RankETT ;
   Float_t theETT = adc / 2. ;
@@ -388,8 +387,7 @@ float BasicRatePlots::SingleEGPt() {
   for (Int_t ue=0; ue < Nele; ue++) {               
     Int_t bx = gt_ -> Bxel[ue];        		
     if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ; 
+    Float_t pt = gt_ -> Rankel[ue];    // the rank of the electron
     if (pt >= maxPt) maxPt = pt;
   }  // end loop over EM objects
   
@@ -524,12 +522,10 @@ vector<float> BasicRatePlots::SortEGs(bool doIsol){
 
     if (doIsol){
       Bool_t iso = gt_ -> Isoel[ue];
-      if (! iso) continue;
+      if (!iso) continue;
     }
 
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ; 
-    // if (pt >= maxPt) maxPt = pt;
+    Float_t pt = gt_ -> Rankel[ue];    // the rank of the electron
     theEGs.push_back(float(pt));
   }  // end loop over EM objects
 
@@ -570,7 +566,6 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   system("mkdir -p results");
   std::string resultName = "results_" + resultTag + (isCrossSec ? "_XSEC" : "_RATE") + ".root";
   TFile *outFile = new TFile(("results/" + resultName).c_str(),"recreate");
-  
   outFile->cd();
 
   //Single stuff
@@ -583,7 +578,6 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH1F["nMuErVsPt"]   = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nMuVsEta"]    = new TH1F("nMuVsEta","nMuVsEta",24,-2.4,2.4);
 
-
   //Multistuff
   hTH1F["nDiJetVsPt"]        = new TH1F("nDiJetVsPt","DiJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hTH1F["nDiCenJetVsPt"]     = new TH1F("nDiCenJetVsPt","DiCenJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
@@ -594,11 +588,11 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH1F["nDiTauVsPt"]        = new TH1F("nDiTauVsPt","DiTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hTH1F["nDiEGVsPt"]         = new TH1F("nDiEGVsPt","DiEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hTH1F["nDiIsoEGVsPt"]      = new TH1F("nDiIsoEGVsPt","DiIsoEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
-  hTH2F["nElePtVsPt"]        = new TH2F("nElePtVsPt","DoubleEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",61,-0.25,30.25,61,-0.25,30.25);
-  hTH2F["nIsolElePtVsPt"]    = new TH2F("nIsolElePtVsPt","DoubleIsolEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",61,-0.25,30.25,61,-0.25,30.25);
+  hTH2F["nEGPtVsPt"]         = new TH2F("nEGPtVsPt","DoubleEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",65,-0.5,64.5,65,-0.5,64.5);
+  hTH2F["nIsoEGPtVsPt"]      = new TH2F("nIsoEGPtVsPt","DoubleIsolEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",65,-0.5,64.5,65,-0.5,64.5);
   hTH2F["nMuPtVsPt"]         = new TH2F("nMuPtVsPt","DoubleMu; p_{T} cut mu_{1}; p_{T} cut mu_{2}",41,-0.25,20.25,41,-0.25,20.25);
   hTH2F["nOniaMuPtVsPt"]     = new TH2F("nOniaMuPtVsPt","DoubleMu_Er_HighQ_WdEta22 (Quarkonia); p_{T} cut mu_{1}; p_{T} cut mu_{2}",41,-0.25,20.25,41,-0.25,20.25);
-  hTH2F["nEGIsoEGVsPt"]      = new TH2F("nEGIsoEGVsPt","IsoEle_Ele; p_{T} cut iso EG_{1}; p_{T} cut EG_{2}",61,-0.25,30.25,61,-0.25,30.25);
+  hTH2F["nEGIsoEGVsPt"]      = new TH2F("nEGIsoEGVsPt","IsoEle_Ele; p_{T} cut iso EG_{1}; p_{T} cut EG_{2}",65,-0.5,64.5,65,-0.5,64.5);
 
   //Sums
   hTH1F["nHTTVsHTT"] = new TH1F("nHTTVsHTT","HTT; HTT cut; rate [Hz]",512,-.5,511.5);
@@ -613,16 +607,15 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH1F["nRpcfVsPt"]  = new TH1F("nRpcfVsPt","RPCf; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nCsctfVsPt"] = new TH1F("nCsctfVsPt","CSCTF; p_{T} cut; rate [Hz]",131,-0.5,130.5);
 
-  if (isCrossSec)
-    {
-      std::map<std::string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
-      std::map<std::string,TH1F*>::iterator hTH1FEnd = hTH1F.end();
+  if (isCrossSec) {
+    std::map<std::string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
+    std::map<std::string,TH1F*>::iterator hTH1FEnd = hTH1F.end();
 
-      for(; hTH1FIt!=hTH1FEnd; ++hTH1FIt)
-	{
-	  hTH1FIt->second->GetYaxis()->SetTitle("cross section [#mubarn]");
-	}
-    }
+    for(; hTH1FIt!=hTH1FEnd; ++hTH1FIt)
+      {
+	hTH1FIt->second->GetYaxis()->SetTitle("cross section [#mubarn]");
+      }
+  }
 
   hTH1F["nPUvsPU"]  = new TH1F("nPUvsPU","Num. of PU iteractions; Num of iteractions; Reweighted couns [arb units]",101,-0.5,100.5);
 
@@ -631,216 +624,178 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   int nevents = nEvents == 0 ? GetEntries() : nEvents;
     
   std::cout << "Running on " << nevents << " events." << std::endl;
-  for (Long64_t event=0; event<nevents; ++event)
-    { 
-      Long64_t eventEntry = LoadTree(event); 
-      if (eventEntry < 0) break;
-      GetEntry(event);
+  for (Long64_t event=0; event<nevents; ++event) { 
+    Long64_t eventEntry = LoadTree(event); 
+    if (eventEntry < 0) break;
+    GetEntry(event);
       
-      //if ( event_->lumi < FIRST_VALID_LS || event_->lumi > LAST_VALID_LS ) continue;
+    //if ( event_->lumi < FIRST_VALID_LS || event_->lumi > LAST_VALID_LS ) continue;
       
-      if (event%200000 == 0) {
-	std::cout << "Processed " << event << " events." << std::endl;
-      }
+    if (event%200000 == 0) {
+      std::cout << "Processed " << event << " events." << std::endl;
+    }
       
-      if ( event_->lumi < minLs || event_->lumi > maxLs ) continue;
+    if ( event_->lumi < minLs || event_->lumi > maxLs ) continue;
 
-      double weight = event_->puWeight > -0.001 ? event_->puWeight : 1; 
+    double weight = event_->puWeight > -0.001 ? event_->puWeight : 1; 
       
-      FillBits();
+    FillBits();
 
-      if(runOnData && !PhysicsBits[0]) continue;
+    if(runOnData && !PhysicsBits[0]) continue;
       
-      nZeroBias += weight;
+    nZeroBias += weight;
 
+    float jetPt     = SingleJetPt();
+    float jetCenPt  = SingleJetCentralPt();
 
-      float jetPt     = SingleJetPt();
-      float jetCenPt  = SingleJetCentralPt();
+    float tauPt     = SingleTauPt();
 
-      float tauPt     = SingleTauPt();
+    float htt       = HTT();
+    float ett       = ETT();
 
-      float htt       = HTT();
-      float ett       = ETT();
+    float egPt      = SingleEGPt();
+    float isoEgPt   = SingleIsoEGPt();
 
-      float egPt    = SingleEGPt();
-      float isoEgPt = SingleIsoEGPt();
+    float muPt     = SingleMuPt();
+    float muErPt   = SingleMuErPt();
 
-      float muPt     = SingleMuPt();
-      float muErPt   = SingleMuErPt();
-
-      float muEta    = SingleMuEta(16.);
+    float muEta    = SingleMuEta(16.);
       
-      float doubleMuPt1 = -10;
-      float doubleMuPt2 = -10;
-      DoubleMu(doubleMuPt1,doubleMuPt2);
+    float doubleMuPt1 = -10;
+    float doubleMuPt2 = -10;
+    DoubleMu(doubleMuPt1,doubleMuPt2);
 
-      float oniaMuPt1 = -10;
-      float oniaMuPt2 = -10;
-      Onia(oniaMuPt1,oniaMuPt2,2.1,22);
+    float oniaMuPt1 = -10;
+    float oniaMuPt2 = -10;
+    Onia(oniaMuPt1,oniaMuPt2,2.1,22);
 
-      float EGIsoPt1 = -10;
-      float EGPt2    = -10;
-      EGIsoEGPt(EGIsoPt1,EGPt2);
+    float EGIsoPt1 = -10;
+    float EGPt2    = -10;
+    EGIsoEGPt(EGIsoPt1,EGPt2);
 
-      float dttfPt   = DttfPt();
-      float rpcbPt   = RpcbPt();
-      float rpcfPt   = RpcfPt();
-      float csctfPt  = CsctfPt();
+    float dttfPt   = DttfPt();
+    float rpcbPt   = RpcbPt();
+    float rpcfPt   = RpcfPt();
+    float csctfPt  = CsctfPt();
 
-      float muPt_forHTT = -10.;
-      float HTT_forMu = -10.;
-      Mu_HTT(muPt_forHTT,HTT_forMu);
+    float muPt_forHTT = -10.;
+    float HTT_forMu = -10.;
+    Mu_HTT(muPt_forHTT,HTT_forMu);
 
+    // creates sorted jet vectors for all jet cands and central jets
+    sortedJets = SortJets(false,false);  // no cuts --> doCentral=false, doTau=false
+    sortedCenJets = SortJets(true,false); // for central jet rate  --> doCentral=true, doTau=false
+    sortedTaus = SortJets(false,true); // for tau jet rate  --> doCentral=false, doTau=true
 
-      hTH1F["nPUvsPU"]->Fill(simulation_->actualInt,weight);
+    sortedEGs     = SortEGs(false);
+    sortedIsolEGs = SortEGs(true);
 
-      hTH1F["nMuVsEta"]->Fill(muEta,weight);
+    bool dijets    = sortedJets.size()>1;
+    bool dijetsC   = sortedCenJets.size()>1;
+    bool ditaus    = sortedTaus.size()>1;
+    bool quadjets  = sortedJets.size()>3;
+    bool quadjetsC = sortedCenJets.size()>3;
 
-      for(int ptCut=0; ptCut<256; ++ptCut) {
-	if(jetPt>ptCut)	   hTH1F["nJetVsPt"]->Fill(ptCut,weight);
-	if(jetCenPt>ptCut) hTH1F["nJetCenVsPt"]->Fill(ptCut,weight);
-	if(tauPt>ptCut)	   hTH1F["nTauVsPt"]->Fill(ptCut,weight);
-      }
-      
-      for(int ptCut=0; ptCut<65; ++ptCut) {
-	if(egPt>ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut,weight);
-	if(isoEgPt>ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut,weight);
-      }
-      
-      for(int ptCut=0; ptCut<131; ++ptCut) {
-	if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut,weight);
-	if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut,weight);
-	if (dttfPt>=ptCut)  hTH1F["nDttfVsPt"]->Fill(ptCut,weight);
-	if (rpcbPt>=ptCut)  hTH1F["nRpcbVsPt"]->Fill(ptCut,weight);
-	if (rpcfPt>=ptCut)  hTH1F["nRpcfVsPt"]->Fill(ptCut,weight);
-	if (csctfPt>=ptCut) hTH1F["nCsctfVsPt"]->Fill(ptCut,weight);
-      }
-      
-      // creates sorted jet vectors for all jet cands and central jets
-      sortedJets = SortJets(false,false);  // no cuts --> doCentral=false, doTau=false
-      sortedCenJets = SortJets(true,false); // for central jet rate  --> doCentral=true, doTau=false
-      sortedTaus = SortJets(false,true); // for tau jet rate  --> doCentral=false, doTau=true
+    bool diEG     = sortedEGs.size()>1;
+    bool diIsolEG = sortedIsolEGs.size()>1;
 
+    float dijetPt    = -10.;
+    float diCenjetPt = -10.;
+    float ditauPt    = -10.;
+    float quadjetPt  = -10.;
+    float quadjetCPt = -10.;
+    if(dijets)    dijetPt     = sortedJets.at(1);
+    if(dijetsC)   diCenjetPt  = sortedCenJets.at(1);
+    if(ditaus)    ditauPt     = sortedTaus.at(1);
+    if(quadjets)  quadjetPt   = sortedJets.at(3);
+    if(quadjetsC) quadjetCPt  = sortedCenJets.at(3);
 
-      // DiJets and DiCentralJets
-      bool dijets=sortedJets.size()>1;
-      if (dijets){
-	float dijetPt=sortedJets.at(1);
-	for(int ptCut=0; ptCut<256; ++ptCut) {
-	  if(dijetPt<ptCut) continue;
-          hTH1F["nDiJetVsPt"]->Fill(ptCut,weight);
-	  for(int ptCut_0=0; ptCut_0<256; ++ptCut_0) {
-	    if(ptCut_0 < ptCut) continue;
-	    if(sortedJets.at(0)>ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut,weight);
-	  }
+    hTH1F["nPUvsPU"]->Fill(simulation_->actualInt,weight);
+    hTH1F["nMuVsEta"]->Fill(muEta,weight);
+
+    for(int ptCut=0; ptCut<256; ++ptCut) {
+      if(jetPt>ptCut)	   hTH1F["nJetVsPt"]->Fill(ptCut,weight);
+      if(jetCenPt>ptCut) hTH1F["nJetCenVsPt"]->Fill(ptCut,weight);
+      if(tauPt>ptCut)	   hTH1F["nTauVsPt"]->Fill(ptCut,weight);
+
+      if(dijetPt>ptCut){
+	hTH1F["nDiJetVsPt"]->Fill(ptCut,weight);
+
+	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
+	  if(sortedJets.at(0)>ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	}
       }
 
-      bool dijetsC=sortedCenJets.size()>1;
-      if (dijetsC){
-	float dijetPt=sortedCenJets.at(1);
-	for(int ptCut=0; ptCut<256; ++ptCut) {
-	  if(dijetPt<ptCut) continue;
-	    hTH1F["nDiCenJetVsPt"]->Fill(ptCut,weight);
-	  for(int ptCut_0=0; ptCut_0<256; ++ptCut_0) {
-	    if(ptCut_0 < ptCut) continue;
-	    if(sortedJets.at(0)>ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut,weight);
-	  }
-	}
-      }
-      bool ditaus=sortedTaus.size()>1;
-      if (ditaus){
-	float dijetPt=sortedTaus.at(1);
-	for(int ptCut=0; ptCut<256; ++ptCut) {
-	  if(dijetPt>ptCut) hTH1F["nDiTauVsPt"]->Fill(ptCut,weight);
+      if(diCenjetPt>ptCut){
+	hTH1F["nDiCenJetVsPt"]->Fill(ptCut,weight);
+
+	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
+	  if(sortedCenJets.at(0)>ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	}
       }
 
-      bool quadjets=sortedJets.size()>3;
-      if (quadjets){
-	float quadjetPt=sortedJets.at(3);
-	for(int ptCut=0; ptCut<256; ++ptCut) {
-	  if(quadjetPt>ptCut) hTH1F["nQuadJetVsPt"]->Fill(ptCut,weight);
-	}
-      }
-      bool quadjetsC=sortedCenJets.size()>3;
-      if (quadjetsC){
-	float quadjetPt=sortedCenJets.at(3);
-	for(int ptCut=0; ptCut<256; ++ptCut) {
-	  if(quadjetPt>ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut,weight);
-	}
-      }
+      if(ditauPt>ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut,weight);
+      if(quadjetPt>ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut,weight);
+      if(quadjetCPt>ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut,weight);
 
-      for(int iCut=0; iCut<41; ++iCut) {
-	for(int iCut2=0; iCut2<=iCut; ++iCut2) {
-	  float ptCut = iCut*0.5;
-	  float ptCut2 = iCut2*0.5;
-	  if (doubleMuPt1>ptCut && doubleMuPt2>ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
-	  if (oniaMuPt1>ptCut && oniaMuPt2>ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
-	}
-      }
-
-      for(int iCut=0; iCut<61; ++iCut) {
-	for(int httCut=0; httCut<=512; ++httCut) {
-	  float ptCut = iCut*0.5;
-	  if (muPt_forHTT>ptCut && HTT_forMu>httCut) hTH2F["nMuVsHTT"]->Fill(ptCut,httCut,weight);
-	}
-      }
-
-      for(int ptCutMu=0; ptCutMu<61; ++ptCutMu){
-	for(int ptCutEG=0; ptCutEG<65; ++ptCutEG){
-	  if(muPt>ptCutMu && egPt>ptCutEG) hTH2F["nMuVsEG"]->Fill(ptCutMu,ptCutEG,weight);
-	}
-      }
+    }//loop on 256
       
-      //ccla
-      sortedEGs     = SortEGs(false);
-      sortedIsolEGs = SortEGs(true);
-      //if (sortedEGs.size() > 1) 
-      //cout << "Electron Sizes: " << sortedEGs.size() << "\t" << sortedIsolEGs.size() << endl;
+    for(int ptCut=0; ptCut<65; ++ptCut) {
+      if(egPt>ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut,weight);
+      if(isoEgPt>ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut,weight);
 
-      bool diEG=sortedEGs.size()>1;
-      if (diEG){
-	for(int ptCut=0; ptCut<65; ++ptCut) {
-	  if(sortedEGs[1]>ptCut) hTH1F["nDiEGVsPt"]->Fill(ptCut,weight);
-	}
+      if(diEG && sortedEGs[1]>ptCut)         hTH1F["nDiEGVsPt"]->Fill(ptCut,weight);
+      if(diIsolEG && sortedIsolEGs[1]>ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut,weight);
 
-	// now for asymetric thresholds
-	for(int iCut=0; iCut<61; ++iCut) {
-	  for(int iCut2=0; iCut2<=iCut; ++iCut2) {
-	    float ptCut = iCut*0.5;
-	    float ptCut2 = iCut2*0.5;
-	    if (sortedEGs[0]>ptCut && sortedEGs[1]>ptCut2) hTH2F["nElePtVsPt"]->Fill(ptCut,ptCut2,weight);
-	    if (EGIsoPt1>ptCut && EGPt2>ptCut2) hTH2F["nEGIsoEGVsPt"]->Fill(ptCut,ptCut2,weight);
-	  }
-	}
+
+      for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
+	if(diEG && sortedEGs[0]>ptCut && sortedEGs[1]>ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if(diIsolEG && sortedIsolEGs[0]>ptCut && sortedIsolEGs[1]>ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if(EGIsoPt1>ptCut && EGPt2>ptCut2) hTH2F["nEGIsoEGVsPt"]->Fill(ptCut,ptCut2,weight);
       }
 
-      bool diIsolEG=sortedIsolEGs.size()>1;
-      if (diIsolEG){
-	for(int ptCut=0; ptCut<65; ++ptCut) {
-	  if(sortedIsolEGs[1]>ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut,weight);
-	}
-
-	// now for asymetric thresholds
-	for(int iCut=0; iCut<61; ++iCut) {
-	  for(int iCut2=0; iCut2<=iCut; ++iCut2) {
-	    float ptCut = iCut*0.5;
-	    float ptCut2 = iCut2*0.5;
-	    if (sortedIsolEGs[0]>ptCut && sortedIsolEGs[1]>ptCut2) hTH2F["nIsolElePtVsPt"]->Fill(ptCut,ptCut2,weight);
-	  }
-	}
-      }
+    }//loop on 65
       
-      for(int httCut=0; httCut<512; ++httCut) {
-	if(htt>httCut) hTH1F["nHTTVsHTT"]->Fill(httCut,weight);
-      }
+    for(int ptCut=0; ptCut<131; ++ptCut) {
+      if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut,weight);
+      if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut,weight);
+      if (dttfPt>=ptCut)  hTH1F["nDttfVsPt"]->Fill(ptCut,weight);
+      if (rpcbPt>=ptCut)  hTH1F["nRpcbVsPt"]->Fill(ptCut,weight);
+      if (rpcfPt>=ptCut)  hTH1F["nRpcfVsPt"]->Fill(ptCut,weight);
+      if (csctfPt>=ptCut) hTH1F["nCsctfVsPt"]->Fill(ptCut,weight);
+    }
       
-      for(int ettCut=0; ettCut<512; ++ettCut) {
-	if(ett>ettCut) hTH1F["nETTVsETT"]->Fill(ettCut,weight);
-      }  
 
-    } // end event loop
+    for(int iCut=0; iCut<41; ++iCut) {
+      for(int iCut2=0; iCut2<=iCut; ++iCut2) {
+	float ptCut = iCut*0.5;
+	float ptCut2 = iCut2*0.5;
+	if (doubleMuPt1>ptCut && doubleMuPt2>ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if (oniaMuPt1>ptCut && oniaMuPt2>ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
+      }
+    }
+
+    for(int iCut=0; iCut<61; ++iCut) {
+      float ptCutMu = iCut*0.5;
+
+      for(int httCut=0; httCut<=512; ++httCut) {
+	if (muPt_forHTT>ptCutMu && HTT_forMu>httCut) hTH2F["nMuVsHTT"]->Fill(ptCutMu,httCut,weight);
+      }
+
+      for(int ptCutEG=0; ptCutEG<65; ++ptCutEG){
+	if(muPt>ptCutMu && egPt>ptCutEG) hTH2F["nMuVsEG"]->Fill(ptCutMu,ptCutEG,weight);
+      }
+
+    }
+
+      
+    for(int httCut=0; httCut<512; ++httCut) {
+      if(htt>httCut) hTH1F["nHTTVsHTT"]->Fill(httCut,weight);
+      if(ett>httCut) hTH1F["nETTVsETT"]->Fill(httCut,weight);
+    }
+      
+
+  } // end event loop
 
   cout << "# of zero bias events (weighted) used for rate computation : " << nZeroBias << std::endl;
 
