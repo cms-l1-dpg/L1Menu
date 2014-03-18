@@ -236,7 +236,7 @@ int main(int argc, char* argv[])
 
   setTDRStyle();
   
-  if ( argc<3 ) {
+  if ( argc<2 ) {
     std::cout << "Error in number of arguments: " << argc << std::endl;
     std::cout << "Passed args: " << argc << std::endl;
     for ( int i = 1; i < argc; ++i ) {

@@ -18,19 +18,22 @@
 
   nMuPtVsPt->GetXaxis()->SetRangeUser(5.,30.);
 
-  nElePtVsPt->GetXaxis()->SetRangeUser(13.,30.);
-  nElePtVsPt->GetYaxis()->SetRangeUser(3.,30.);
+  nEGPtVsPt->GetXaxis()->SetRangeUser(17.,30.);
+  nEGPtVsPt->GetYaxis()->SetRangeUser(3.,30.);
 
-  nMuVsHTT->GetXaxis()->SetRangeUser(2.,15.);
+  nMuVsHTT->GetXaxis()->SetRangeUser(5.,15.);
   nMuVsHTT->GetYaxis()->SetRangeUser(60.,200.);
 
-  nAsymDiJetVsPt->GetXaxis()->SetRangeUser(80.,120.);
-  nAsymDiJetVsPt->GetYaxis()->SetRangeUser(50.,120.);
+  nAsymDiJetVsPt->GetXaxis()->SetRangeUser(70.,120.);
+  nAsymDiJetVsPt->GetYaxis()->SetRangeUser(40.,120.);
 
-  nAsymDiCenJetVsPt->GetXaxis()->SetRangeUser(80.,120.);
-  nAsymDiCenJetVsPt->GetYaxis()->SetRangeUser(50.,120.);
+  nAsymDiCenJetVsPt->GetXaxis()->SetRangeUser(60.,120.);
+  nAsymDiCenJetVsPt->GetYaxis()->SetRangeUser(30.,120.);
 
-  TCanvas c1; c1.cd();
+  nMuVsEG->GetXaxis()->SetRangeUser(5.,25.);
+  nMuVsEG->GetYaxis()->SetRangeUser(5.,25.);
+
+  TCanvas c1("c1","c",1200,600); c1.cd();
   nMuPtVsPt->Draw("COLZ");
   c1.SaveAs("results/comparePlots/nMuPtVsPt.gif");
 
@@ -42,7 +45,7 @@
   nEGPtVsPt->Draw("COLZ");
   c3.SaveAs("results/comparePlots/nEGPtVsPt.gif");
 
-  TCanvas c4; c4.cd();
+  TCanvas c4("c4","c",1200,600); c4.cd();
   nOniaMuPtVsPt->Draw("COLZ");
   c4.SaveAs("results/comparePlots/nOniaMuPtVsPt.gif");
 
@@ -50,11 +53,11 @@
   nMuVsHTT->Draw("COLZ");
   c5.SaveAs("results/comparePlots/nMuVsHTT.gif");
 
-  TCanvas c6; c6.cd();
+  TCanvas c6("c6","c",1200,600); c6.cd();
   nAsymDiJetVsPt->Draw("COLZ");
   c6.SaveAs("results/comparePlots/nAsymDiJetVsPt.gif");
 
-  TCanvas c7; c7.cd();
+  TCanvas c7("c7","c",1200,600); c7.cd();
   nAsymDiCenJetVsPt->Draw("COLZ");
   c7.SaveAs("results/comparePlots/nAsymDiCenJetVsPt.gif");
 
@@ -62,7 +65,7 @@
   nMuVsEG->Draw("COLZ");
   c8.SaveAs("results/comparePlots/nMuVsEG.gif");
 
-  TCanvas c9; c9.cd();
+  TCanvas c9("c9","c",1200,600); c9.cd();
   nEGIsoEGVsPt->Draw("COLZ");
   c9.SaveAs("results/comparePlots/nEGIsoEGVsPt.gif");
 

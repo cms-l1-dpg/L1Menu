@@ -52,6 +52,7 @@ private :
   //Sums
   float HTT();
   float ETT();
+  float ETM();
   
   //Cross
   void Mu_HTT(Float_t & muPt, Float_t & myHTT);
@@ -378,6 +379,13 @@ inline Float_t BasicRatePlots::ETT() {
   return theETT;  
 }
 
+inline float BasicRatePlots::ETM() {
+
+  Float_t adc = gt_ -> RankETM ;
+  Float_t TheETM = adc / 2. ;
+
+  return TheETM;
+}
 
 float BasicRatePlots::SingleEGPt() {
 
@@ -597,6 +605,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   //Sums
   hTH1F["nHTTVsHTT"] = new TH1F("nHTTVsHTT","HTT; HTT cut; rate [Hz]",512,-.5,511.5);
   hTH1F["nETTVsETT"] = new TH1F("nETTVsETT","ETT; ETT cut; rate [Hz]",512,-.5,511.5);
+  hTH1F["nETMVsETM"] = new TH1F("nETMVsETM","ETM; ETM cut; rate [Hz]",512,-.5,511.5);
 
   //Cross  
   hTH2F["nMuVsHTT"]  = new TH2F("nMuVsHTT","Mu_HTT; p_{T} cut mu_{1}; HTT",61,-0.25,30.25,512,-.5,511.5);
@@ -652,6 +661,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     float htt       = HTT();
     float ett       = ETT();
+    float etm       = ETM();
 
     float egPt      = SingleEGPt();
     float isoEgPt   = SingleIsoEGPt();
@@ -778,20 +788,21 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     for(int iCut=0; iCut<61; ++iCut) {
       float ptCutMu = iCut*0.5;
 
-      for(int httCut=0; httCut<=512; ++httCut) {
-	if (muPt_forHTT>ptCutMu && HTT_forMu>httCut) hTH2F["nMuVsHTT"]->Fill(ptCutMu,httCut,weight);
-      }
-
       for(int ptCutEG=0; ptCutEG<65; ++ptCutEG){
 	if(muPt>ptCutMu && egPt>ptCutEG) hTH2F["nMuVsEG"]->Fill(ptCutMu,ptCutEG,weight);
       }
-
     }
 
       
     for(int httCut=0; httCut<512; ++httCut) {
       if(htt>httCut) hTH1F["nHTTVsHTT"]->Fill(httCut,weight);
       if(ett>httCut) hTH1F["nETTVsETT"]->Fill(httCut,weight);
+      if(etm>httCut) hTH1F["nETMVsETM"]->Fill(httCut,weight);
+
+      for(int iCut=0; iCut<61; ++iCut) {
+      float ptCutMu = iCut*0.5;
+	if (muPt_forHTT>ptCutMu && HTT_forMu>httCut) hTH2F["nMuVsHTT"]->Fill(ptCutMu,httCut,weight);
+      }
     }
       
 
@@ -895,22 +906,22 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
   else if (fileType == "13TEV_40PU_2012_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_v5_62X_13TeV_40PU_25bx_ReEmul2012.root"); 
-      basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_40PU_2012GCT10GEV_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012Gct10GeV/L1Tree.root"); 
-      basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_40PU_2015_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree.root"); 
+      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree_v3.root"); 
       basicRatePlots.run(false,"13TEV_40PU_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_45p4PU_2012_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1T2015Menu/L1Tree_v5_62X_13TeV_45p4PU_25bx_ReEmul2012.root"); 
-      basicRatePlots.run(false,"13TEV_45p4PU_2012_RE-EMUL",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
+      basicRatePlots.run(false,"13TEV_45p4PU_2012_RE-EMUL",0,500000000,xSec13TeV,45,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "TEST")
     {
