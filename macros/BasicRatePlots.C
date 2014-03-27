@@ -1,18 +1,31 @@
-#include "../../L1Ntuples/macros/L1Ntuple.h"
+#include "L1Ntuple.h"
+#include "L1AlgoFactory.h"
 #include <algorithm>
 #include<map>
 
-Int_t etaMuIdx(Double_t eta) {
-
-  static const size_t ETAMUBINS = 65;
-  static const Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
-  size_t etaIdx = 0.;
-  for (size_t idx=0; idx<ETAMUBINS; idx++) {
-    if (eta>=ETAMU[idx] and eta<ETAMU[idx+1])
-      etaIdx = idx;
+Double_t convertRegionEta(int iEta) {
+  static const double rgnEtaValues[11] = {
+     0.174, // HB and inner HE bins are 0.348 wide
+     0.522,
+     0.870,
+     1.218,
+     1.566,
+     1.956, // Last two HE bins are 0.432 and 0.828 wide
+     2.586,
+     3.250, // HF bins are 0.5 wide
+     3.750,
+     4.250,
+     4.750
+  };
+  if(iEta < 11) {
+    return -rgnEtaValues[-(iEta - 10)]; // 0-10 are negative eta values
   }
-  return int(etaIdx);
+  else if (iEta < 22) {
+    return rgnEtaValues[iEta - 11];     // 11-21 are positive eta values
+  }
+  return -9;
 }
+
 
 class BasicRatePlots : public L1Ntuple
 {
@@ -32,30 +45,11 @@ private :
 
   float ScaleFactor(float nZeroBias, float nBunches);
 
-  //Single Stuff
-  float SingleJetCentralPt();
-  float SingleJetCentralEta(Float_t cut );
-  float SingleJetPt();
   float SingleTauPt();
-  float SingleEGPt();
-  float SingleIsoEGPt();
-  float SingleMuPt();
-  float SingleMuErPt();
   float SingleMuEta(float eta);
+  float SingleEGEta(float ptCut, bool doIso);
 
-  //MultiStuff
-  float QuadJetCentral();
-  void DoubleMu(Float_t & muPt1, Float_t & muPt2);
-  void Onia(Float_t & muPt1, Float_t & muPt2, Float_t etacut, Int_t delta);
   void EGIsoEGPt(Float_t &myIsoEGPt, Float_t &myEGPt);
-
-  //Sums
-  float HTT();
-  float ETT();
-  float ETM();
-  
-  //Cross
-  void Mu_HTT(Float_t & muPt, Float_t & myHTT);
 
   //GMT stuff
   float DttfPt();
@@ -65,18 +59,14 @@ private :
 
   void setRateError(TH1F* histo);
 
-  vector<float> SortJets(bool doCentral, bool doTau);
-  vector<float> SortEGs(bool doIsol);
-
-
   float computeAvgLumi(float xSec, float avPU, int nBunches) { return 11246. * avPU * nBunches / (1E7 * xSec); };
 
   bool PhysicsBits[128];
 
+  L1AlgoFactory *algoFactory;
+
   std::map<std::string,TH1F*> hTH1F;
   std::map<std::string,TH2F*> hTH2F;
-
-  vector<float> sortedCenJets,sortedJets,sortedTaus,sortedEGs,sortedIsolEGs;
 
 };
 
@@ -102,44 +92,6 @@ float BasicRatePlots::ScaleFactor(float nZeroBias, float nBunches) {
   scal *= nBunches;
 
   return scal;
-}
-
-float BasicRatePlots::SingleMuPt(){
-
-  float maxPt = -10;
-  
-  int Nmu = gmt_ -> N;
-  for (int imu=0; imu < Nmu; imu++) 
-    {
-      int bx = gmt_ -> CandBx[imu];       // BX = 0, +/- 1 or +/- 2
-      if(bx != 0) continue;
-      int qual = gmt_ -> Qual[imu];
-      if(qual < 4) continue;
-      float pt = gmt_ -> Pt[imu];         // get pt to get highest pt one
-      if( pt > maxPt) maxPt = pt;
-    }
-  
-  return maxPt;
-}
-
-float BasicRatePlots::SingleMuErPt()  {
-
-  float maxPt = -10;
-  
-  int Nmu = gmt_ -> N;
-  for (int imu=0; imu < Nmu; imu++) 
-    {
-      int bx = gmt_ -> CandBx[imu];       // BX = 0, +/- 1 or +/- 2
-      if(bx != 0) continue;
-      int qual = gmt_ -> Qual[imu];
-      if(qual < 4) continue;
-      float eta = gmt_ -> Eta[imu];
-      if(fabs(eta) > 2.1) continue;
-      float pt = gmt_ -> Pt[imu];         // get pt to get highest pt one
-      if( pt > maxPt) maxPt = pt;
-    }
-  
-  return maxPt;
 }
 
 float BasicRatePlots::SingleMuEta(float ptCut ) {
@@ -230,106 +182,6 @@ float BasicRatePlots::RpcfPt()  {
   return maxPt;
 }
 
-void BasicRatePlots::DoubleMu(Float_t & muPt1, Float_t & muPt2) {
-
-  muPt1 = -10.;
-  muPt2 = -10.;
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if (qual < 4  && qual != 3 ) continue;
-    if (pt >= muPt1)
-      {
-	muPt2 = muPt1;
-	muPt1 = pt;
-      }
-    else if (pt >= muPt2) muPt2 = pt;
-  }
-  
-}
-
-
-void BasicRatePlots::Onia(Float_t & muPt1, Float_t & muPt2, Float_t etacut, Int_t delta) {
-
-  std::vector<std::pair<Float_t,Float_t> > muonPairs;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > etacut) continue;
-    Int_t ieta1 = etaMuIdx(eta);
-    
-    for (Int_t imu2=0; imu2 < Nmu; imu2++) {
-      if (imu2 == imu) continue;
-      Int_t bx2 = gmt_ -> CandBx[imu2];		
-      if (bx2 != 0) continue;
-      Float_t pt2 = gmt_ -> Pt[imu2];			
-      Int_t qual2 = gmt_ -> Qual[imu2];        
-      if ( qual2 < 4) continue;
-      Float_t eta2 = gmt_  -> Eta[imu2];        
-      if (fabs(eta2) > etacut) continue;
-      Int_t ieta2 = etaMuIdx(eta2);
-      
-      bool hasCorrCond = ( fabs(ieta1 - ieta2) <= delta);
-
-      if (hasCorrCond) muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
-      
-    }
-    
-  }
-  
-  // CB loop on muon pairs and get highest pT pair
-  // (in order look for first and second muon, can be arbitrary, it's a choice)
-  
-  muPt1 = -10;
-  muPt2 = -10;
-  
-  std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairIt  = muonPairs.begin();
-  std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairEnd = muonPairs.end();
-  for (; muonPairIt != muonPairEnd; ++muonPairIt)
-    {
-      Float_t pt1 = muonPairIt->first;
-      Float_t pt2 = muonPairIt->second;
-      
-      if ( (pt1 > muPt1) ||
-	   (fabs(muPt1-pt1)<10E-2 && pt2>muPt2) ) 
-	{
-	  muPt1 = pt1;
-	  muPt2 = pt2;
-	}
-    }
-
-}
-
-
-float BasicRatePlots::SingleJetCentralPt() {
-  
-  float maxPt = -10;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue; 
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    //Bool_t isTauJet = gt_ -> Taujet[ue];
-    //if (isTauJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = rank*4.;
-    if (pt >= maxPt) maxPt = pt;
-  } 
-  
-  return maxPt;  
-}
-
 float BasicRatePlots::SingleTauPt() {
   
   float maxPt = -10;
@@ -348,78 +200,30 @@ float BasicRatePlots::SingleTauPt() {
   return maxPt;
 }
 
-float BasicRatePlots::SingleJetPt() {
+float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
 
   float maxPt = -10;
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = rank*4.;
-    if (pt >= maxPt) maxPt = pt;
-  }
-  
-  return maxPt;  
-}
-
-inline float BasicRatePlots::HTT() {
-  
-  Float_t adc = gt_ -> RankHTT ;
-  Float_t theHTT = adc / 2. ;
-  
-  return theHTT;
-}
-
-inline Float_t BasicRatePlots::ETT() {
-
-  Float_t adc = gt_ -> RankETT ;
-  Float_t theETT = adc / 2. ;
-  
-  return theETT;  
-}
-
-inline float BasicRatePlots::ETM() {
-
-  Float_t adc = gt_ -> RankETM ;
-  Float_t TheETM = adc / 2. ;
-
-  return TheETM;
-}
-
-float BasicRatePlots::SingleEGPt() {
-
-  float maxPt = -10; 
+  float iEGMaxPt = -10;
 
   Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {               
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t pt = gt_ -> Rankel[ue];    // the rank of the electron
-    if (pt >= maxPt) maxPt = pt;
-  }  // end loop over EM objects
-  
-  return maxPt;   
-}
-
-
-float BasicRatePlots::SingleIsoEGPt() {
-
-  float maxPt = -10; 
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {               
+  for (Int_t ue=0; ue < Nele; ue++) {
     Int_t bx = gt_ -> Bxel[ue];        		
     if (bx != 0) continue;
     Bool_t iso = gt_ -> Isoel[ue];
-    if (! iso) continue;
+    if (!iso && doIso) continue;
     Float_t pt = gt_ -> Rankel[ue];    // the rank of the electron
-    if (pt >= maxPt) maxPt = pt;
-  }  // end loop over EM objects
-  
-  return maxPt;
-}
+    if ( pt >= maxPt) 
+      {
+	maxPt = pt;
+	iEGMaxPt = ue;
+      }
+  }
 
+  float eta = -10.;
+  int ieta = iEGMaxPt>=0 && maxPt>ptCut ? gt_ -> Etael[iEGMaxPt] : -10; 
+  if(ieta > 0) eta = convertRegionEta(ieta);
+  return eta;
+}
 
 void BasicRatePlots::EGIsoEGPt(Float_t &myIsoEGPt, Float_t &myEGPt) {
 
@@ -456,101 +260,6 @@ void BasicRatePlots::EGIsoEGPt(Float_t &myIsoEGPt, Float_t &myEGPt) {
   return;
 }
 
-
-void BasicRatePlots::Mu_HTT(Float_t & mymuPt, Float_t & myHTT) {
-
-  Float_t adc = gt_ -> RankHTT ;
-  myHTT = adc / 2. ;
-
-  Float_t maxPt = -1.;
-  int Nmu = gmt_ -> N;
-  for (int imu=0; imu < Nmu; imu++) 
-    {
-      int bx = gmt_ -> CandBx[imu];       // BX = 0, +/- 1 or +/- 2
-      if (bx != 0) continue;
-      int qual = gmt_ -> Qual[imu];
-      if (qual < 4) continue;
-      float pt = gmt_ -> Pt[imu];         // get pt to get highest pt one
-      if ( pt > maxPt) maxPt = pt;
-    }
-
-  mymuPt = maxPt;
-
-  return;
-}
-
-
-vector<float> BasicRatePlots::SortJets(bool doCentral, bool doTau){
-
-  if (doCentral && doTau){
-    cout << "Incompatible arguements to SortJets -- Exiting macro" << endl;
-    exit(1);
-  }
-  vector<float> theJets, theSortedJets;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue; 
-    if (doCentral){
-      Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-      if (isFwdJet) continue;
-    }else if (doTau){
-      Bool_t isTauJet = gt_ -> Taujet[ue];
-      if (! isTauJet) continue;
-    }
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = rank*4.;
-    theJets.push_back(float(pt));
-  } 
-  //cout << "Size of jets: " << Nj << " central: " << theJets.size() << endl;
-  
-  theSortedJets=theJets;
-  for (unsigned i=0; i < theJets.size(); i++) {
-    if (theJets[i] != theSortedJets[i] ){
-      cout << "\t ERROR XXXX: " << i << "\t " << theSortedJets[i] << "\t " << theJets[i] << "\t " << theJets.size() << "\t " << theSortedJets.size() << endl;
-      //}else{
-      //cout << "\t " << theSortedJets[i] << "\t " << theJets[i] << endl;
-    }
-  }
-  std::stable_sort(theSortedJets.begin(),theSortedJets.end(),std::greater<float>());
-  return theSortedJets;
-
-}
-
-vector<float> BasicRatePlots::SortEGs(bool doIsol){
-
-  vector<float> theEGs, theSortedEGs;
-
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {               
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-
-    if (doIsol){
-      Bool_t iso = gt_ -> Isoel[ue];
-      if (!iso) continue;
-    }
-
-    Float_t pt = gt_ -> Rankel[ue];    // the rank of the electron
-    theEGs.push_back(float(pt));
-  }  // end loop over EM objects
-
-  
-  theSortedEGs=theEGs;
-  for (unsigned i=0; i < theEGs.size(); i++) {
-    if (theEGs[i] != theSortedEGs[i] ){
-      cout << "\t ERROR XXXX: " << i << "\t " << theSortedEGs[i] << "\t " << theEGs[i] << "\t " << theEGs.size() << "\t " << theSortedEGs.size() << endl;
-      //}else{
-      //cout << "\t " << theSortedEGs[i] << "\t " << theEGs[i] << endl;
-    }
-  }
-  std::stable_sort(theSortedEGs.begin(),theSortedEGs.end(),std::greater<float>());
-  return theSortedEGs;
-
-}
-
 void BasicRatePlots::setRateError(TH1F* histo) {
 
   int nBins = histo->GetNbinsX();
@@ -576,6 +285,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   TFile *outFile = new TFile(("results/" + resultName).c_str(),"recreate");
   outFile->cd();
 
+  algoFactory = new L1AlgoFactory(gt_,gmt_);
+
   //Single stuff
   hTH1F["nJetVsPt"]    = new TH1F("nJetVsPt","SingleJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hTH1F["nTauVsPt"]    = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
@@ -585,6 +296,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH1F["nMuVsPt"]     = new TH1F("nMuVsPt","SingleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nMuErVsPt"]   = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nMuVsEta"]    = new TH1F("nMuVsEta","nMuVsEta",24,-2.4,2.4);
+  hTH1F["nEGVsEta"]    = new TH1F("nEGVsEta","nEGVsEta",50,-3.,3.);
+  hTH1F["nIsoEGVsEta"] = new TH1F("nIsoEGVsEta","nIsoEGVsEta",50,-3.,3.);
 
   //Multistuff
   hTH1F["nDiJetVsPt"]        = new TH1F("nDiJetVsPt","DiJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
@@ -638,8 +351,6 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     if (eventEntry < 0) break;
     GetEntry(event);
       
-    //if ( event_->lumi < FIRST_VALID_LS || event_->lumi > LAST_VALID_LS ) continue;
-      
     if (event%200000 == 0) {
       std::cout << "Processed " << event << " events." << std::endl;
     }
@@ -654,30 +365,31 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       
     nZeroBias += weight;
 
-    float jetPt     = SingleJetPt();
-    float jetCenPt  = SingleJetCentralPt();
+    float jetPt     = 0.; algoFactory->SingleJetPt(jetPt);
+    float jetCenPt  = 0.; algoFactory->SingleJetPt(jetCenPt,true);
 
     float tauPt     = SingleTauPt();
 
-    float htt       = HTT();
-    float ett       = ETT();
-    float etm       = ETM();
+    float htt       = 0.; algoFactory->HTTVal(htt);
+    float ett       = 0.; algoFactory->ETTVal(ett);
+    float etm       = 0.; algoFactory->ETMVal(etm);
 
-    float egPt      = SingleEGPt();
-    float isoEgPt   = SingleIsoEGPt();
+    float egPt      = 0.; algoFactory->SingleEGPt(egPt);
+    float isoEgPt   = 0.; algoFactory->SingleEGPt(isoEgPt,true);
+    float egEta     = SingleEGEta(16.,false);
+    float isoegEta  = SingleEGEta(16.,true);
 
-    float muPt     = SingleMuPt();
-    float muErPt   = SingleMuErPt();
-
+    float muPt     = -10.; algoFactory->SingleMuPt(muPt);
+    float muErPt   = -10.; algoFactory->SingleMuEta2p1Pt(muErPt);
     float muEta    = SingleMuEta(16.);
-      
-    float doubleMuPt1 = -10;
-    float doubleMuPt2 = -10;
-    DoubleMu(doubleMuPt1,doubleMuPt2);
 
-    float oniaMuPt1 = -10;
-    float oniaMuPt2 = -10;
-    Onia(oniaMuPt1,oniaMuPt2,2.1,22);
+    float doubleMuPt1 = -10.; 
+    float doubleMuPt2 = -10.;
+    algoFactory->DoubleMuPt(doubleMuPt1,doubleMuPt2);
+
+    float oniaMuPt1 = 0.;
+    float oniaMuPt2 = 0.;
+    algoFactory->OniaPt(oniaMuPt1,oniaMuPt2,22);
 
     float EGIsoPt1 = -10;
     float EGPt2    = -10;
@@ -690,57 +402,54 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     float muPt_forHTT = -10.;
     float HTT_forMu = -10.;
-    Mu_HTT(muPt_forHTT,HTT_forMu);
+    algoFactory->Mu_HTTPt(muPt_forHTT,HTT_forMu);
 
-    // creates sorted jet vectors for all jet cands and central jets
-    sortedJets = SortJets(false,false);  // no cuts --> doCentral=false, doTau=false
-    sortedCenJets = SortJets(true,false); // for central jet rate  --> doCentral=true, doTau=false
-    sortedTaus = SortJets(false,true); // for tau jet rate  --> doCentral=false, doTau=true
 
-    sortedEGs     = SortEGs(false);
-    sortedIsolEGs = SortEGs(true);
+    float dijetPt1    = -10.;
+    float dijetPt2    = -10.;
+    float diCenjetPt1 = -10.;
+    float diCenjetPt2 = -10.;
+    algoFactory->DoubleJetPt(dijetPt1,dijetPt2);
+    algoFactory->DoubleJetPt(diCenjetPt1,diCenjetPt2,true);
 
-    bool dijets    = sortedJets.size()>1;
-    bool dijetsC   = sortedCenJets.size()>1;
-    bool ditaus    = sortedTaus.size()>1;
-    bool quadjets  = sortedJets.size()>3;
-    bool quadjetsC = sortedCenJets.size()>3;
+    Float_t dummy = -1;
+    float ditauPt    = -10.; algoFactory->DoubleTauJetEta2p17Pt(dummy,ditauPt);
+    dummy = -1.;
+    float quadjetPt  = -10.; algoFactory->QuadJetPt(dummy,dummy,dummy,quadjetPt);
+    dummy = -1.;
+    float quadjetCPt = -10.; algoFactory->QuadJetPt(dummy,dummy,dummy,quadjetCPt,true);
+    dummy = -1.;
 
-    bool diEG     = sortedEGs.size()>1;
-    bool diIsolEG = sortedIsolEGs.size()>1;
-
-    float dijetPt    = -10.;
-    float diCenjetPt = -10.;
-    float ditauPt    = -10.;
-    float quadjetPt  = -10.;
-    float quadjetCPt = -10.;
-    if(dijets)    dijetPt     = sortedJets.at(1);
-    if(dijetsC)   diCenjetPt  = sortedCenJets.at(1);
-    if(ditaus)    ditauPt     = sortedTaus.at(1);
-    if(quadjets)  quadjetPt   = sortedJets.at(3);
-    if(quadjetsC) quadjetCPt  = sortedCenJets.at(3);
+    float diEG1     = -10.;
+    float diEG2     = -10.;
+    float diIsolEG1 = -10.;
+    float diIsolEG2 = -10.;
+    algoFactory->DoubleEGPt(diEG1,diEG2);
+    algoFactory->DoubleEGPt(diIsolEG1,diIsolEG2,true);
 
     hTH1F["nPUvsPU"]->Fill(simulation_->actualInt,weight);
     hTH1F["nMuVsEta"]->Fill(muEta,weight);
+    hTH1F["nEGVsEta"]->Fill(egEta,weight);
+    hTH1F["nIsoEGVsEta"]->Fill(isoegEta,weight);
 
     for(int ptCut=0; ptCut<256; ++ptCut) {
       if(jetPt>ptCut)	   hTH1F["nJetVsPt"]->Fill(ptCut,weight);
-      if(jetCenPt>ptCut) hTH1F["nJetCenVsPt"]->Fill(ptCut,weight);
+      if(jetCenPt>ptCut)   hTH1F["nJetCenVsPt"]->Fill(ptCut,weight);
       if(tauPt>ptCut)	   hTH1F["nTauVsPt"]->Fill(ptCut,weight);
 
-      if(dijetPt>ptCut){
+      if(dijetPt2>ptCut){
 	hTH1F["nDiJetVsPt"]->Fill(ptCut,weight);
 
 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-	  if(sortedJets.at(0)>ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut,weight);
+	  if(dijetPt1>ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	}
       }
 
-      if(diCenjetPt>ptCut){
+      if(diCenjetPt2>ptCut){
 	hTH1F["nDiCenJetVsPt"]->Fill(ptCut,weight);
 
 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-	  if(sortedCenJets.at(0)>ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut,weight);
+	  if(diCenjetPt1>ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	}
       }
 
@@ -754,13 +463,13 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       if(egPt>ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut,weight);
       if(isoEgPt>ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut,weight);
 
-      if(diEG && sortedEGs[1]>ptCut)         hTH1F["nDiEGVsPt"]->Fill(ptCut,weight);
-      if(diIsolEG && sortedIsolEGs[1]>ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut,weight);
+      if(diEG2>ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut,weight);
+      if(diIsolEG2>ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut,weight);
 
 
       for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
-	if(diEG && sortedEGs[0]>ptCut && sortedEGs[1]>ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
-	if(diIsolEG && sortedIsolEGs[0]>ptCut && sortedIsolEGs[1]>ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if(diEG1>ptCut && diEG2>ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if(diIsolEG1>ptCut && diIsolEG2>ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
 	if(EGIsoPt1>ptCut && EGPt2>ptCut2) hTH2F["nEGIsoEGVsPt"]->Fill(ptCut,ptCut2,weight);
       }
 
@@ -890,7 +599,7 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     }
   else if (fileType == "TEST")
     {
-      BasicRatePlots basicRatePlots("../test/L1Tree.root"); 
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/v4_62X_20PU_25bx_ReEmul2015/L1Tree.root"); 
       basicRatePlots.run(false,"TEST",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else 

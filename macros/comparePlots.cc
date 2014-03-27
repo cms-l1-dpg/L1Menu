@@ -156,7 +156,7 @@ void plot( std::vector<TH1*> plots,
 		  eff->SetFillColor( iPlot+1 );
 		  eff->SetMarkerColor( iPlot+1 );
 		  eff->SetMarkerStyle( 21 + iPlot );
-		  eff->GetYaxis()->SetRangeUser( .1, 10.);
+		  eff->GetYaxis()->SetRangeUser( .1, 2.);
 		  eff->GetYaxis()->SetLabelSize( .11);
 		  
 		  eff->Draw( iPlot>1 ? "samePE1" : "PE1" );

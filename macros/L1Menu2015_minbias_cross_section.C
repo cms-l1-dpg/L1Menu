@@ -1,7 +1,8 @@
+#include "L1AlgoFactory.h"
+
 #include "L1Ntuple.h"
 #include "Style.C"
 
-#include "TMath.h"
 #include "TH2.h"
 #include "TAxis.h"
 #include "TString.h"
@@ -43,143 +44,6 @@ Int_t kOFFSET = 0;
 Bool_t TheTriggerBits[N128];	// contains the emulated triggers for each event
 TH1F *h_All;		// one bin for each trigger. Fill bin i if event fires trigger i.
 TH1F *h_Pure;		// one bin for each trigger. Fill bin i if event fires trigger i and NO OTHER TRIGGER.
-
-// Methods to scale L1 jets for new HCAL LUTs and estimate the rate changes 
-
-// correction by 5% overall (from HCAL January 2012)
-inline Double_t CorrectedL1JetPtByFactor(Double_t JetPt, Bool_t theL1JetCorrection=false) {
-
-  Double_t JetPtcorr = JetPt;
-  if (theL1JetCorrection) JetPtcorr = JetPt*1.05;
-
-  return JetPtcorr;
-}
-
-// correction by 8% for forward jets (from HCAL January 2012)
-inline Double_t CorrectedL1FwdJetPtByFactor(Bool_t isFwdJet, Double_t JetPt, Bool_t theL1JetCorrection=false) {
-
-  Double_t JetPtcorr = JetPt;
-  if (theL1JetCorrection && isFwdJet) JetPtcorr = JetPt*1.08;
-
-  return JetPtcorr;
-}
-
-// correction for HF bins (from HCAL January 2012)
-Double_t CorrectedL1JetPtByHFtowers(Double_t JetiEta,Double_t JetPt, Bool_t theL1JetCorrection=false) {
-
-  static const Size_t   JetHFiEtabins   = 13;
-  static const Int_t    JetHFiEtabin[]  = {29,30,31,32,33,34,35,36,37,38,39,40,41};
-  static const Double_t JetHFiEtacorr[] = {0.982,0.962,0.952, 0.943,0.947,0.939, 0.938,0.935,0.934, 0.935,0.942,0.923,0.914};
-
-  Double_t JetPtcorr   = JetPt;
-
-  if(theL1JetCorrection) {
-    Int_t iJetiEtabin = 0;
-    for (iJetiEtabin=0; iJetiEtabin<JetHFiEtabins; iJetiEtabin++) {
-      if (JetHFiEtabin[iJetiEtabin]==JetiEta) {
-	JetPtcorr = JetPt * (1+(1-JetHFiEtacorr[iJetiEtabin]));
-      }
-    }
-  }
-
-  return JetPtcorr;
-}
-
-// correction for RCT->GCT bins (from HCAL January 2012)
-// HF from 29-41, first 3 HF trigger towers 3 iEtas, last highest eta HF trigger tower 4 iEtas; each trigger tower is 0.5 eta, RCT iEta from 0->21 (left->right)
-Double_t CorrectedL1JetPtByGCTregions(Double_t JetiEta,Double_t JetPt, Bool_t theL1JetCorrection=false) {
-
-  static const Double_t JetRCTHFiEtacorr[]  = {0.965,0.943,0.936,0.929}; // from HF iEta=29 to 41 (smaller->higher HF iEta)
-
-  Double_t JetPtcorr   = JetPt;
-
-  if (theL1JetCorrection) {
-
-    if ((JetiEta>=7 && JetiEta<=14)) {
-      JetPtcorr = JetPt * 1.05;
-    }
-
-    if ((JetiEta>=4 && JetiEta<=6) || (JetiEta>=15 && JetiEta<=17)) {
-      JetPtcorr = JetPt * 0.95;
-    }
-
-    if (JetiEta==0 || JetiEta==21) {
-      JetPtcorr = JetPt * (1+(1-JetRCTHFiEtacorr[3]));
-    }
-    else if (JetiEta==1 || JetiEta==20) {
-      JetPtcorr = JetPt * (1+(1-JetRCTHFiEtacorr[2]));
-    }
-    else if (JetiEta==2 || JetiEta==19) {
-      JetPtcorr = JetPt * (1+(1-JetRCTHFiEtacorr[1]));
-    }
-    else if (JetiEta==3 || JetiEta==18) {
-      JetPtcorr = JetPt * (1+(1-JetRCTHFiEtacorr[0]));
-    }
-  }
-
-  return JetPtcorr;
-}
-
-// methods for the correlation conditions
-const size_t PHIBINS = 18;
-const Double_t PHIBIN[] = {10,30,50,70,90,110,130,150,170,190,210,230,250,270,290,310,330,350};
-const size_t ETABINS = 23;
-const Double_t ETABIN[] = {-5.,-4.5,-4.,-3.5,-3.,-2.172,-1.74,-1.392,-1.044,-0.696,-0.348,0,0.348,0.696,1.044,1.392,1.74,2.172,3.,3.5,4.,4.5,5.};
-const size_t ETAMUBINS = 65;
-const Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
-
-Int_t etaMuIdx(Double_t eta) {
-  size_t etaIdx = 0.;
-  for (size_t idx=0; idx<ETAMUBINS; idx++) {
-    if (eta>=ETAMU[idx] and eta<ETAMU[idx+1])
-      etaIdx = idx;
-  }
-
-  return int(etaIdx);
-}
-
-Int_t etaINjetCoord(Double_t eta) {
-  size_t etaIdx = 0.;
-  for (size_t idx=0; idx<ETABINS; idx++) {
-    if (eta>=ETABIN[idx] and eta<ETABIN[idx+1])
-      etaIdx = idx;
-  }
-
-  return int(etaIdx);
-}
-
-inline Double_t degree(Double_t radian) {
-  if (radian<0)
-    return 360.+(radian/TMath::Pi()*180.);
-  else
-    return radian/TMath::Pi()*180.;
-}
-
-Int_t phiINjetCoord(Double_t phi) {
-  size_t phiIdx = 0;
-  Double_t phidegree = degree(phi);
-  for (size_t idx=0; idx<PHIBINS; idx++) {
-    if (phidegree>=PHIBIN[idx] and phidegree<PHIBIN[idx+1])
-      phiIdx = idx;
-    else if (phidegree>=PHIBIN[PHIBINS-1] || phidegree<=PHIBIN[0])
-      phiIdx = idx;
-  }
-  phiIdx = phiIdx + 1;
-  if (phiIdx == 18)  phiIdx = 0;
-
-  return int(phiIdx);
-}
-
-inline Bool_t correlateInPhi(Int_t jetphi, Int_t muphi, Int_t delta=1) {
-
-  Bool_t correlationINphi = fabs(muphi-jetphi)<fabs(2 +delta-1) || fabs(muphi-jetphi)>fabs(PHIBINS-2 - (delta-1) );
-  return correlationINphi;
-}
-
-inline Bool_t correlateInEta(Int_t mueta, Int_t jeteta, Int_t delta=1) {
-  Bool_t correlationINeta = fabs(mueta-jeteta)<2 + delta-1;
-  return correlationINeta;
-}
 
 // set the errors properly
 void CorrectScale(TH1F* h, Float_t scal) {
@@ -228,6 +92,8 @@ class L1Menu2012 : public L1Ntuple {
   void MyInit();
   void FilL1Bits();
 
+  L1AlgoFactory *algoFactory;
+
   std::map<std::string, int> Counts;
   std::map<std::string, int> Prescales;
   std::map<std::string, bool> Biased;
@@ -251,72 +117,7 @@ class L1Menu2012 : public L1Ntuple {
   Bool_t MultiMuons();
   Bool_t Sums();
 
-  // -- Cross
-  Bool_t Mu_EG(Float_t mucut, Float_t EGcut );
-  Bool_t MuOpen_EG(Float_t mucut, Float_t EGcut );
-  Bool_t Mu_JetCentral(Float_t mucut, Float_t jetcut );
-  Bool_t Mu_DoubleJetCentral(Float_t mucut, Float_t jetcut );
-  Bool_t Mu_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float_t taucut );
-  Bool_t Muer_JetCentral(Float_t mucut, Float_t jetcut );
-  Bool_t Muer_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float_t taucut );
-  Bool_t Mu_HTT(Float_t mucut, Float_t HTcut );
-  Bool_t Muer_ETM(Float_t mucut, Float_t ETMcut );
-  Bool_t SingleIsoEG_Eta2p1_ETM(Float_t egcut, Float_t ETMcut );
-  Bool_t EG_FwdJet(Float_t EGcut, Float_t FWcut ) ;
-  Bool_t EG_HT(Float_t EGcut, Float_t HTcut );
-  Bool_t EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut );
-  Bool_t DoubleEG_HT(Float_t EGcut, Float_t HTcut );
-  Bool_t EGEta2p1_JetCentral(Float_t EGcut, Float_t jetcut);		// delta
-  Bool_t EGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut, Float_t taucut);          // delta
-  Bool_t IsoEGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut, Float_t taucut);          // delta
-  Bool_t EGEta2p1_DoubleJetCentral(Float_t EGcut, Float_t jetcut);	// delta
-  Bool_t EGEta2p1_DoubleJetCentral_TripleJetCentral(Float_t EGcut, Float_t jetcut2, Float_t jetcut3);   
-
-  Bool_t HTT_HTM(Float_t HTTcut, Float_t HTMcut);
-  Bool_t JetCentral_ETM(Float_t jetcut, Float_t ETMcut);
-  Bool_t DoubleJetCentral_ETM(Float_t jetcut1, Float_t jetcut2, Float_t ETMcut);
-  Bool_t DoubleMu_EG(Float_t mucut, Float_t EGcut );
-  Bool_t Mu_DoubleEG(Float_t mucut, Float_t EGcut);
-
-  Bool_t Muer_TripleJetCentral(Float_t mucut, Float_t jet1, Float_t jet2, Float_t jet3);
   Bool_t Mia(Float_t mucut, Float_t jet1, Float_t jet2);	// delta
-  Bool_t Mu_JetCentral_delta(Float_t mucut, Float_t ptcut);	// delta
-  Bool_t Mu_JetCentral_deltaOut(Float_t mucut, Float_t ptcut); // delta
-
-  // -- Jets 
-  Bool_t SingleJet(Float_t cut);
-  Bool_t SingleJetCentral(Float_t cut);
-  Bool_t DoubleJetCentral(Float_t cut1, Float_t cut2);
-  Bool_t DoubleJet_Eta1p7_deltaEta4(Float_t cut1, Float_t cut2);
-  Bool_t TripleJetCentral(Float_t cut1, Float_t cut2, Float_t cut3);
-  Bool_t TripleJet_VBF(Float_t cut1, Float_t cut2, Float_t cut3);
-
-  Bool_t QuadJetCentral(Float_t cut1, Float_t cut2, Float_t cut3, Float_t cut4);
-
-  Bool_t SingleTauJetEta2p17(Float_t cut1);
-  Bool_t DoubleTauJetEta2p17(Float_t cut1, Float_t cut2);
-
-  // -- Sums
-  Bool_t ETT(Float_t ETTcut);
-  Bool_t HTT(Float_t HTTcut);
-  Bool_t ETM(Float_t ETMcut);
-
-  // -- Egamma
-  Bool_t SingleEG(Float_t cut);
-  Bool_t SingleEG_Eta2p1(Float_t cut);
-  Bool_t SingleIsoEG_Eta2p1(Float_t cut);
-
-  Bool_t DoubleEG(Float_t cut1, Float_t cut2);
-  Bool_t TripleEG(Float_t cut1, Float_t cut2, Float_t cut3);
-
-  // -- Muons 
-  Bool_t SingleMu(Float_t ptcut, Int_t qualmin=4);
-  Bool_t SingleMuEta2p1(Float_t ptcut);
-  Bool_t DoubleMu(Float_t cut1, Float_t cut2);	// on top of DoubleMu3
-  Bool_t DoubleMuHighQEtaCut(Float_t ptcut, Float_t etacut);
-  Bool_t TripleMu(Float_t cut1, Float_t cut2, Float_t cut3, Int_t qualmin);	// on top of DoubleMu3
-  Bool_t DoubleMuXOpen(Float_t ptcut);	// on top of SingleMu7
-  Bool_t Onia(Float_t ptcut1, Float_t ptcut2, Float_t etacut, Int_t delta);   
 
   void Loop();
 
@@ -411,23 +212,26 @@ void L1Menu2012::FilL1Bits() {
 
 void L1Menu2012::MyInit() {
 
+  algoFactory = new L1AlgoFactory(gt_,gmt_);
+  algoFactory->setL1JetCorrection(theL1JetCorrection);
+
   // the seeds per PAG
   setTOP.insert("L1_HTT150") ;
   setTOP.insert("L1_HTT175") ;
   setTOP.insert("L1_HTT200") ;
-  setTOP.insert("L1_SingleIsoEG18er") ;
   setTOP.insert("L1_SingleEG20") ;
-  setTOP.insert("L1_SingleIsoEG20er") ;
+  setTOP.insert("L1_SingleIsoEG20") ;
+  setTOP.insert("L1_SingleIsoEG30") ;
   setTOP.insert("L1_SingleEG22") ;
   setTOP.insert("L1_SingleEG24") ;
   setTOP.insert("L1_SingleEG30") ;
   setTOP.insert("L1_SingleEG35") ;
-  setTOP.insert("L1_DoubleEG_13_7") ;
+  setTOP.insert("L1_DoubleEG_35_15") ;
   setTOP.insert("L1_QuadJetC36") ;
   setTOP.insert("L1_QuadJetC40") ;
   setTOP.insert("L1_QuadJetC50") ;
-  setTOP.insert("L1_Mu12_EG7") ;
-  setTOP.insert("L1_Mu3p5_EG12") ;
+  setTOP.insert("L1_Mu18_EG8") ;
+  setTOP.insert("L1_Mu5_EG18") ;
   setTOP.insert("L1_SingleMu14er") ;
   setTOP.insert("L1_SingleMu16er") ;
   setTOP.insert("L1_SingleMu18er") ;
@@ -440,13 +244,13 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_ETM36") ;
   setHIGGS.insert("L1_ETM40") ;
   setHIGGS.insert("L1_SingleEG5") ;
-  setHIGGS.insert("L1_SingleIsoEG18er") ;
   setHIGGS.insert("L1_SingleEG20") ;
-  setHIGGS.insert("L1_SingleIsoEG20er") ;
+  setHIGGS.insert("L1_SingleIsoEG20") ;
+  setHIGGS.insert("L1_SingleIsoEG30") ;
   setHIGGS.insert("L1_SingleEG22") ;
-  setHIGGS.insert("L1_DoubleEG_13_7") ;
-  setHIGGS.insert("L1_TripleEG_12_7_5") ;
-  setHIGGS.insert("L1_SingleJet128") ;
+  setHIGGS.insert("L1_DoubleEG_35_15") ;
+  setHIGGS.insert("L1_TripleEG_20_15_5") ;
+  setHIGGS.insert("L1_SingleJet150") ;
   setHIGGS.insert("L1_DoubleJetC36") ;
   setHIGGS.insert("L1_DoubleJetC44_Eta1p74_WdEta4") ;
   setHIGGS.insert("L1_DoubleJetC52") ;
@@ -456,19 +260,18 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_TripleJet_64_44_24_VBF") ;
   setHIGGS.insert("L1_TripleJet_64_48_28_VBF") ;
   setHIGGS.insert("L1_TripleJet_68_48_32_VBF") ;
-  setHIGGS.insert("L1_DoubleTauJet44er") ;
+  setHIGGS.insert("L1_DoubleTauJet52er") ;
   setHIGGS.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12") ;
   setHIGGS.insert("L1_Mu10er_JetC32") ;
   setHIGGS.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12") ;
-  setHIGGS.insert("L1_Mu12_EG7") ;
+  setHIGGS.insert("L1_Mu18_EG8") ;
   setHIGGS.insert("L1_MuOpen_EG12") ;
-  setHIGGS.insert("L1_Mu3p5_EG12") ;
+  setHIGGS.insert("L1_Mu5_EG18") ;
   setHIGGS.insert("L1_SingleMu3") ;
   setHIGGS.insert("L1_SingleMu18er") ;
   setHIGGS.insert("L1_SingleMu20er") ;
   setHIGGS.insert("L1_DoubleMu_10_Open") ;
   setHIGGS.insert("L1_DoubleMu_10_3p5") ;
-  setHIGGS.insert("L1_Mu7er_ETM20");
   setHIGGS.insert("L1_IsoEG12er_ETM30");
 
   setSUSY.insert("L1_HTT100") ;
@@ -477,13 +280,13 @@ void L1Menu2012::MyInit() {
   setSUSY.insert("L1_HTT175") ;
   setSUSY.insert("L1_HTT200") ;
   setSUSY.insert("L1_SingleEG20") ;
-  setSUSY.insert("L1_SingleIsoEG20er") ;
+  setSUSY.insert("L1_SingleIsoEG30") ;
   setSUSY.insert("L1_SingleEG22") ;
   setSUSY.insert("L1_SingleEG24") ;
   setSUSY.insert("L1_SingleEG35") ;
-  setSUSY.insert("L1_DoubleEG_13_7") ;
+  setSUSY.insert("L1_DoubleEG_35_15") ;
   setSUSY.insert("L1_TripleEG7") ;
-  setSUSY.insert("L1_SingleJet128") ;
+  setSUSY.insert("L1_SingleJet150") ;
   setSUSY.insert("L1_DoubleJetC52") ;
   setSUSY.insert("L1_DoubleJetC56") ;
   setSUSY.insert("L1_DoubleJetC64") ;
@@ -497,13 +300,13 @@ void L1Menu2012::MyInit() {
   setSUSY.insert("L1_DoubleEG6_HTT100") ;
   setSUSY.insert("L1_DoubleEG6_HTT125") ;
   setSUSY.insert("L1_EG8_DoubleJetC20") ;
-  setSUSY.insert("L1_Mu12_EG7") ;
+  setSUSY.insert("L1_Mu18_EG8") ;
   setSUSY.insert("L1_MuOpen_EG12") ;
-  setSUSY.insert("L1_Mu3p5_EG12") ;
+  setSUSY.insert("L1_Mu5_EG18") ;
   setSUSY.insert("L1_DoubleMu3p5_EG5") ;
-  setSUSY.insert("L1_DoubleMu5_EG5") ;
+  setSUSY.insert("L1_DoubleMu7_EG7") ;
   setSUSY.insert("L1_Mu5_DoubleEG5") ;
-  setSUSY.insert("L1_Mu5_DoubleEG6") ;
+  setSUSY.insert("L1_Mu7_DoubleEG8") ;
   setSUSY.insert("L1_DoubleJetC36_ETM30") ;
   setSUSY.insert("L1_DoubleJetC44_ETM30") ;
   setSUSY.insert("L1_SingleMu12er") ;
@@ -524,22 +327,22 @@ void L1Menu2012::MyInit() {
   setEXO.insert("L1_HTT200") ;
   setEXO.insert("L1_ETT300") ;
   setEXO.insert("L1_SingleEG20") ;
-  setEXO.insert("L1_SingleIsoEG20er") ;
+  setEXO.insert("L1_SingleIsoEG30") ;
   setEXO.insert("L1_SingleEG22") ;
   setEXO.insert("L1_SingleEG24") ;
   setEXO.insert("L1_SingleEG30") ;
   setEXO.insert("L1_SingleEG35") ;
-  setEXO.insert("L1_DoubleEG_13_7") ;
-  setEXO.insert("L1_SingleJet36") ;
+  setEXO.insert("L1_DoubleEG_35_15") ;
   setEXO.insert("L1_SingleJet52") ;
   setEXO.insert("L1_SingleJet68") ;
   setEXO.insert("L1_SingleJet92") ;
   setEXO.insert("L1_SingleJet128") ;
+  setEXO.insert("L1_SingleJet150") ;
   setEXO.insert("L1_QuadJetC36") ;
   setEXO.insert("L1_QuadJetC40") ;
   setEXO.insert("L1_QuadJetC50") ;
-  setEXO.insert("L1_Mu12_EG7") ;
-  setEXO.insert("L1_Mu3p5_EG12") ;
+  setEXO.insert("L1_Mu18_EG8") ;
+  setEXO.insert("L1_Mu5_EG18") ;
   setEXO.insert("L1_SingleMu16er") ;
   setEXO.insert("L1_SingleMu18er") ;
   setEXO.insert("L1_SingleMu20er") ;
@@ -552,25 +355,24 @@ void L1Menu2012::MyInit() {
   setEXO.insert("L1_DoubleMu3er_HighQ_WdEta22");
 
   setSMP.insert("L1_SingleEG5") ;
-  setSMP.insert("L1_SingleIsoEG18er") ;
   setSMP.insert("L1_SingleEG20") ;
-  setSMP.insert("L1_SingleIsoEG20er") ;
+  setSMP.insert("L1_SingleIsoEG30") ;
   setSMP.insert("L1_SingleEG22") ;
   setSMP.insert("L1_SingleEG24") ;
   setSMP.insert("L1_SingleEG30") ;
   setSMP.insert("L1_SingleEG35") ;
-  setSMP.insert("L1_DoubleEG_13_7") ;
+  setSMP.insert("L1_DoubleEG_35_15") ;
   setSMP.insert("L1_SingleJet16") ;
-  setSMP.insert("L1_SingleJet36") ;
   setSMP.insert("L1_SingleJet52") ;
   setSMP.insert("L1_SingleJet68") ;
   setSMP.insert("L1_SingleJet92") ;
   setSMP.insert("L1_SingleJet128") ;
+  setSMP.insert("L1_SingleJet150") ;
   setSMP.insert("L1_EG22_ForJet24") ;
   setSMP.insert("L1_EG22_ForJet32") ;
-  setSMP.insert("L1_Mu12_EG7") ;
+  setSMP.insert("L1_Mu18_EG8") ;
   setSMP.insert("L1_MuOpen_EG12") ;
-  setSMP.insert("L1_Mu3p5_EG12") ;
+  setSMP.insert("L1_Mu5_EG18") ;
   setSMP.insert("L1_SingleMu16er") ;
   setSMP.insert("L1_SingleMu18er") ;
   setSMP.insert("L1_SingleMu20er") ;
@@ -581,7 +383,7 @@ void L1Menu2012::MyInit() {
   setBPH.insert("L1_SingleMu3") ;
   setBPH.insert("L1_DoubleMu0er_HighQ") ;
   setBPH.insert("L1_DoubleMu3er_HighQ_WdEta22") ;
-  setBPH.insert("L1_DoubleMu_5er_0er_HighQ_WdEta22") ;
+  setBPH.insert("L1_DoubleMu_6er_3er_HighQ_WdEta22") ;
   setBPH.insert("L1_TripleMu0_HighQ") ;
 
   // the seeds per physics triggers (TRIGPHYS));
@@ -594,7 +396,7 @@ void L1Menu2012::MyInit() {
   setMuon.insert("L1_SingleMuOpen");
   setMuon.insert("L1_SingleMu16");
   setMuon.insert("L1_SingleMu3");
-  setMuon.insert("L1_DoubleMu_5er_0er_HighQ_WdEta22");
+  setMuon.insert("L1_DoubleMu_6er_3er_HighQ_WdEta22");
   setMuon.insert("L1_SingleMu20er");
   setMuon.insert("L1_SingleMu12");
   setMuon.insert("L1_SingleMu20");
@@ -603,9 +405,8 @@ void L1Menu2012::MyInit() {
   setMuon.insert("L1_SingleMu12er");
   setMuon.insert("L1_SingleMu6_NotBptxOR");
   setMuon.insert("L1_DoubleMu0");
-  setMuon.insert("L1_DoubleMu_3er_0er_HighQ_WdEta22");
   setMuon.insert("L1_TripleMu0_HighQ");
-  setMuon.insert("L1_TripleMu_5_5_0");
+  setMuon.insert("L1_TripleMu_5_5_3");
   setMuon.insert("L1_SingleMu18er");
   setMuon.insert("L1_DoubleMu_12_5");
   setMuonHadronic.insert("L1_Mu4_HTT125");
@@ -619,24 +420,23 @@ void L1Menu2012::MyInit() {
   setMuonHadronic.insert("L1_Mu0_HTT50");
   setMuonHadronic.insert("L1_Mu0_HTT100");
   setMuonHadronic.insert("L1_Mu8_DoubleJetC20");
-  setMuonHadronic.insert("L1_Mu7er_ETM20");
-  setMuonEG.insert("L1_Mu3p5_EG12");
+  setMuonEG.insert("L1_Mu5_EG18");
   setMuonEG.insert("L1_MuOpen_EG12");
-  setMuonEG.insert("L1_Mu12_EG7");
+  setMuonEG.insert("L1_Mu18_EG8");
   setMuonEG.insert("L1_Mu5_DoubleEG5");
   setMuonEG.insert("L1_DoubleMu3p5_EG5");
-  setMuonEG.insert("L1_DoubleMu5_EG5");
-  setMuonEG.insert("L1_Mu5_DoubleEG6");
+  setMuonEG.insert("L1_DoubleMu7_EG7");
+  setMuonEG.insert("L1_Mu7_DoubleEG8");
   setMuonEG.insert("L1_MuOpen_EG5");
   setHadronic.insert("L1_SingleJet16");
-  setHadronic.insert("L1_SingleJet36");
   setHadronic.insert("L1_SingleJet52");
   setHadronic.insert("L1_SingleJet68");
   setHadronic.insert("L1_SingleJet92");
   setHadronic.insert("L1_SingleJet128");
-  setHadronic.insert("L1_DoubleJetC44_Eta1p74_WdEta4");
+  setHadronic.insert("L1_SingleJet150"); 
+ setHadronic.insert("L1_DoubleJetC44_Eta1p74_WdEta4");
   setHadronic.insert("L1_DoubleJetC56_Eta1p74_WdEta4");
-  setHadronic.insert("L1_DoubleTauJet44er");
+  setHadronic.insert("L1_DoubleTauJet52er");
   setHadronic.insert("L1_HTT125");
   setHadronic.insert("L1_DoubleJetC52");
   setHadronic.insert("L1_ETT80");
@@ -669,10 +469,9 @@ void L1Menu2012::MyInit() {
   setEGHadronic.insert("L1_EG22_ForJet32");
   setEGHadronic.insert("L1_EG8_DoubleJetC20");
   setEGHadronic.insert("L1_IsoEG12er_ETM30");
-  setEG.insert("L1_SingleIsoEG20er");
-  setEG.insert("L1_DoubleEG_13_7");
-  setEG.insert("L1_TripleEG_12_7_5");
-  setEG.insert("L1_SingleIsoEG18er");
+  setEG.insert("L1_DoubleEG_35_15");
+  setEG.insert("L1_TripleEG_20_15_5");
+  setEG.insert("L1_SingleIsoEG30");
   setEG.insert("L1_SingleEG5");
   setEG.insert("L1_SingleEG22");
   setEG.insert("L1_SingleEG24");
@@ -706,12 +505,12 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_BeamHalo"] = 8 ;
   BitMapping["L1_TripleMu0"] = 9 ;
   BitMapping["L1_Mu4_HTT125"] = 10 ;
-  BitMapping["L1_Mu3p5_EG12"] = 11 ;
+  BitMapping["L1_Mu5_EG18"] = 11 ;
   BitMapping["L1_Mu12er_ETM20"] = 12 ;
   BitMapping["L1_MuOpen_EG12"] = 13 ;
-  BitMapping["L1_Mu12_EG7"] = 14 ;
+  BitMapping["L1_Mu18_EG8"] = 14 ;
   BitMapping["L1_SingleJet16"] = 15 ;
-  BitMapping["L1_SingleJet36"] = 16 ;
+  BitMapping["L1_SingleJet150"] = 16 ;
   BitMapping["L1_SingleJet52"] = 17 ;
   BitMapping["L1_SingleJet68"] = 18 ;
   BitMapping["L1_SingleJet92"] = 19 ;
@@ -720,26 +519,25 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_DoubleEG6_HTT125"] = 22 ;
   BitMapping["L1_Mu5_DoubleEG5"] = 23 ;
   BitMapping["L1_DoubleMu3p5_EG5"] = 24 ;
-  BitMapping["L1_DoubleMu5_EG5"] = 25 ;
+  BitMapping["L1_DoubleMu7_EG7"] = 25 ;
   BitMapping["L1_DoubleMu0er_HighQ"] = 26 ;
-  BitMapping["L1_Mu5_DoubleEG6"] = 27 ;
+  BitMapping["L1_Mu7_DoubleEG8"] = 27 ;
   BitMapping["L1_DoubleJetC44_ETM30"] = 28 ;
   BitMapping["L1_Mu3_JetC16_WdEtaPhi2"] = 29 ;
   BitMapping["L1_Mu3_JetC52_WdEtaPhi2"] = 30 ;
   BitMapping["FREE_31"] = 31 ;
-  BitMapping["L1_SingleIsoEG20er"] = 32 ;
+  BitMapping["L1_SingleIsoEG20"] = 32 ;
   BitMapping["L1_EG22_ForJet24"] = 33 ;
   BitMapping["L1_EG22_ForJet32"] = 34 ;
   BitMapping["L1_DoubleJetC44_Eta1p74_WdEta4"] = 35 ;
   BitMapping["L1_DoubleJetC56_Eta1p74_WdEta4"] = 36 ;
-  BitMapping["L1_DoubleTauJet44er"] = 37 ;
-  //	BitMapping["L1_SingleTauJet62er"] = 137 ;
-  BitMapping["L1_DoubleEG_13_7"] = 38 ;
-  BitMapping["L1_TripleEG_12_7_5"] = 39 ;
+  BitMapping["L1_DoubleTauJet52er"] = 37 ;
+  BitMapping["L1_DoubleEG_35_15"] = 38 ;
+  BitMapping["L1_TripleEG_20_15_5"] = 39 ;
   BitMapping["L1_HTT125"] = 40 ;
   BitMapping["L1_DoubleJetC52"] = 41 ;
   BitMapping["L1_SingleMu14er"] = 42 ;
-  BitMapping["L1_SingleIsoEG18er"] = 43 ;
+  BitMapping["L1_SingleIsoEG30"] = 43 ;
   BitMapping["L1_DoubleMu_10_Open"] = 44 ;
   BitMapping["L1_DoubleMu_10_3p5"] = 45 ;
   BitMapping["L1_ETT80"] = 46 ;
@@ -754,7 +552,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_SingleMuOpen"] = 55 ;
   BitMapping["L1_SingleMu16"] = 56 ;
   BitMapping["L1_SingleMu3"] = 57 ;
-  BitMapping["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 58 ;
+  BitMapping["L1_DoubleMu_6er_3er_HighQ_WdEta22"] = 58 ;
   BitMapping["L1_SingleMu25"] = 59 ;
   BitMapping["L1_SingleMu20er"] = 60 ;
   BitMapping["L1_SingleMu12"] = 61 ;
@@ -788,12 +586,12 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_SingleMu6_NotBptxOR"] = 89 ;
   BitMapping["L1_Mu8_DoubleJetC20"] = 90 ;
   BitMapping["L1_DoubleMu0"] = 92 ;
-  BitMapping["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 93 ;
+  BitMapping["FREE93"] = 93 ;
   BitMapping["L1_EG8_DoubleJetC20"] = 94 ;
   BitMapping["L1_DoubleMu5"] = 95 ;
   BitMapping["L1_DoubleJetC56"] = 96 ;
   BitMapping["L1_TripleMu0_HighQ"] = 97 ;
-  BitMapping["L1_TripleMu_5_5_0"] = 98 ;
+  BitMapping["L1_TripleMu_5_5_3"] = 98 ;
   BitMapping["L1_ETT140"] = 99 ;
   BitMapping["L1_DoubleJetC36"] = 100 ;
   BitMapping["L1_DoubleJetC36_ETM30"] = 101 ;
@@ -822,7 +620,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_TripleEG7"] = 125 ;
   BitMapping["L1_HTT75"] = 126 ;
   BitMapping["L1_SingleMuBeamHalo"] = 127 ;
-  BitMapping["L1_Mu7er_ETM20"] = 200;
+  BitMapping["FREE200"] = 200;
   BitMapping["L1_IsoEG12er_ETM30"] = 201;
 
   // target lumi = 7e33
@@ -855,18 +653,18 @@ void L1Menu2012::MyInit() {
     Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 300;
     Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
     Prescales["L1_SingleEG7"] = 800;
-    Prescales["L1_SingleIsoEG20er"] = 1;
+    Prescales["L1_SingleIsoEG20"] = 1;
     Prescales["L1_EG22_ForJet24"] = INFTY;
     Prescales["L1_EG22_ForJet32"] = 1;
     Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 6;
     Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleTauJet44er"] = 1;
-    Prescales["L1_DoubleEG_13_7"] = 1;
+    Prescales["L1_DoubleTauJet52er"] = 1;
+    Prescales["L1_DoubleEG_25_10"] = 1;
     Prescales["L1_TripleEG_12_7_5"] = 1;
     Prescales["L1_HTT125"] = INFTY;
     Prescales["L1_DoubleJetC52"] = INFTY;
     Prescales["L1_SingleMu14er"] = 1;
-    Prescales["L1_SingleIsoEG18er"] = 1;
+    Prescales["L1_SingleIsoEG18"] = 1;
     Prescales["L1_DoubleMu_10_Open"] = 1;
     Prescales["L1_DoubleMu_10_3p5"] = 1;
     Prescales["L1_ETT80"] = INFTY;
@@ -909,7 +707,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_SingleMu6_NotBptxOR"] = 1;
     Prescales["L1_Mu8_DoubleJetC20"] = 200;
     Prescales["L1_DoubleMu0"] = INFTY;
-    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
     Prescales["L1_EG8_DoubleJetC20"] = 1000;
     Prescales["L1_DoubleJetC56"] = INFTY;
     Prescales["L1_TripleMu0_HighQ"] = 1;
@@ -928,7 +725,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_MuOpen_EG5"] = INFTY;
     Prescales["L1_DoubleMu_12_5"] = 1;
     Prescales["L1_TripleEG7"] = 1;
-    Prescales["L1_Mu7er_ETM20"] = INFTY;
     Prescales["L1_IsoEG12er_ETM30"] = INFTY;
   }
 
@@ -956,7 +752,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_DoubleMu0"]         = INFTY;
     Prescales["L1_DoubleMu0er_HighQ"] = 100;
     Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 1;
-    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
     Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
     Prescales["L1_DoubleMu_10_Open"]    = 100;
     Prescales["L1_DoubleMu_10_3p5"]     = 100;
@@ -973,8 +768,8 @@ void L1Menu2012::MyInit() {
     Prescales["L1_SingleEG24"]        = 200;
     Prescales["L1_SingleEG30"]        = 100;
     Prescales["L1_SingleEG35"]        = 1;
-    Prescales["L1_SingleIsoEG18er"]   = 300;
-    Prescales["L1_SingleIsoEG20er"]   = 1;
+    Prescales["L1_SingleIsoEG18"]   = 300;
+    Prescales["L1_SingleIsoEG20"]   = 1;
     Prescales["L1_EG22_ForJet24"]     = INFTY;
     Prescales["L1_EG22_ForJet32"]     = 1;
     Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
@@ -996,7 +791,7 @@ void L1Menu2012::MyInit() {
     Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 2000;
     Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
     Prescales["L1_DoubleJetC64"]           = 1;
-    Prescales["L1_DoubleTauJet44er"]       = 1;
+    Prescales["L1_DoubleTauJet52er"]       = 1;
     Prescales["L1_TripleJetC_52_28_28"]    = 300;
     Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
     Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
@@ -1039,7 +834,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_Mu0_HTT50"]    = INFTY;
     Prescales["L1_Mu0_HTT100"]   = INFTY;
     Prescales["L1_Mu4_HTT125"]   = 1;
-    Prescales["L1_Mu7er_ETM20"]  = INFTY;
     Prescales["L1_Mu12er_ETM20"] = 1;
 
     Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
@@ -1050,6 +844,124 @@ void L1Menu2012::MyInit() {
     Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
     Prescales["L1_DoubleJetC44_ETM30"] = 1;
   }
+
+  // 13 TeV 1.4 menu WITHOUT THE SUMS
+  if (theL1Menu == 14000) {
+    Prescales["L1_ZeroBias"]                      = 10000;
+    Prescales["L1_AlwaysTrue"]                    = 300;
+    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"]  = 10000;
+    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 10000;
+    Prescales["L1_InterBunch_Bptx"]               = INFTY;
+
+    //Muons
+    Prescales["L1_SingleMuOpen"]      = 10000;
+    Prescales["L1_SingleMu3"]         = 8000;
+    Prescales["L1_SingleMu12"]        = 1000;
+    Prescales["L1_SingleMu12er"]      = 200;
+    Prescales["L1_SingleMu14er"]      = 100;
+    Prescales["L1_SingleMu16"]        = 100;
+    Prescales["L1_SingleMu16er"]      = 100;
+    Prescales["L1_SingleMu18er"]      = 100;
+    Prescales["L1_SingleMu20er"]      = 100;
+    Prescales["L1_SingleMu20"]        = 100;
+    Prescales["L1_SingleMu25"]        = 100;
+    Prescales["L1_SingleMu25er"]      = 1;
+    Prescales["L1_DoubleMu0"]         = INFTY;
+    Prescales["L1_DoubleMu0er_HighQ"] = 100;
+    Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 100;
+    Prescales["L1_DoubleMu_6er_3er_HighQ_WdEta22"] = 1;
+    Prescales["L1_DoubleMu_10_Open"]    = 100;
+    Prescales["L1_DoubleMu_10_3p5"]     = 100;
+    Prescales["L1_DoubleMu_12_5"]       = 1;
+    Prescales["L1_TripleMu0"]           = 100;
+    Prescales["L1_TripleMu0_HighQ"]     = 100;
+    Prescales["L1_TripleMu_5_5_3"]      = 1;
+    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
+
+    //Electrons
+    Prescales["L1_SingleEG5"]         = 40000;
+    Prescales["L1_SingleEG20"]        = 800;
+    Prescales["L1_SingleEG22"]        = 400;
+    Prescales["L1_SingleEG24"]        = 200;
+    Prescales["L1_SingleEG30"]        = 100;
+    Prescales["L1_SingleEG35"]        = 1;
+    Prescales["L1_SingleIsoEG20"]     = 100;
+    Prescales["L1_SingleIsoEG30"]     = 1;
+    Prescales["L1_EG22_ForJet24"]     = INFTY;
+    Prescales["L1_EG22_ForJet32"]     = 1;
+    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
+    Prescales["L1_DoubleEG5"]         = INFTY;
+    Prescales["L1_DoubleEG_35_15"]    = 1;
+    Prescales["L1_TripleEG7"]         = 200;
+    Prescales["L1_TripleEG_20_15_5"]  = 1;
+
+    //Jets
+    Prescales["L1_SingleJet16"]           = INFTY;
+    Prescales["L1_SingleJet52"]           = 10000;
+    Prescales["L1_SingleJet68"]           = 800;
+    Prescales["L1_SingleJet92"]           = 300;
+    Prescales["L1_SingleJet128"]          = 80;
+    Prescales["L1_SingleJet150"]          = 1;
+    Prescales["L1_DoubleJetC36"]          = INFTY;
+    Prescales["L1_DoubleJetC52"]          = INFTY;
+    Prescales["L1_DoubleJetC56"]          = INFTY;
+    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 10;
+    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
+    Prescales["L1_DoubleJetC64"]           = 1;
+    Prescales["L1_DoubleTauJet52er"]       = 1;
+    Prescales["L1_TripleJetC_52_28_28"]    = 300;
+    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
+    Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
+    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
+    Prescales["L1_QuadJetC36"]             = INFTY;
+    Prescales["L1_QuadJetC40"]             = 1;
+    Prescales["L1_QuadJetC50"]             = 1;
+
+    //Sums
+    Prescales["L1_HTT100"] = INFTY;
+    Prescales["L1_HTT125"] = INFTY;
+    Prescales["L1_HTT150"] = INFTY;
+    Prescales["L1_HTT175"] = INFTY;
+    Prescales["L1_HTT200"] = INFTY;
+    Prescales["L1_ETT80"]  = INFTY;
+    Prescales["L1_ETM30"]  = INFTY;
+    Prescales["L1_ETM36"]  = INFTY;
+    Prescales["L1_ETM40"]  = INFTY;
+    Prescales["L1_ETM50"]  = INFTY;
+    Prescales["L1_ETM70"]  = INFTY;
+    Prescales["L1_ETM100"] = INFTY;
+    Prescales["L1_ETT140"] = INFTY;
+    Prescales["L1_ETT300"] = INFTY;
+
+    //Cross
+    Prescales["L1_MuOpen_EG5"]           = INFTY;
+    Prescales["L1_MuOpen_EG12"]          = INFTY;
+    Prescales["L1_Mu5_EG18"]             = 1;
+    Prescales["L1_Mu18_EG8"]             = 1;
+    Prescales["L1_Mu5_DoubleEG5"]        = INFTY;
+    Prescales["L1_Mu7_DoubleEG8"]        = 1;
+    Prescales["L1_DoubleMu3p5_EG5"]      = INFTY;
+    Prescales["L1_DoubleMu7_EG7"]        = 1;
+    Prescales["L1_Mu8_DoubleJetC20"]     = 200;
+    Prescales["L1_Mu10er_JetC32"]        = INFTY;
+    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 500;
+    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
+    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
+    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
+    Prescales["L1_Mu0_HTT50"]    = INFTY;
+    Prescales["L1_Mu0_HTT100"]   = INFTY;
+    Prescales["L1_Mu4_HTT125"]   = INFTY;
+    Prescales["L1_Mu12er_ETM20"] = INFTY;
+
+    Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
+    Prescales["L1_EG8_DoubleJetC20"] = 1000;
+    Prescales["L1_DoubleEG6_HTT100"] = INFTY;
+    Prescales["L1_DoubleEG6_HTT125"] = INFTY;
+
+    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
+    Prescales["L1_DoubleJetC44_ETM30"] = INFTY;
+  }
+
 
   // BACKUP OF full 13 TeV 1.4 menu
   if (theL1Menu == 1400) {
@@ -1075,7 +987,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_DoubleMu0"]         = INFTY;
     Prescales["L1_DoubleMu0er_HighQ"] = 1;
     Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 1;
-    Prescales["L1_DoubleMu_3er_0er_HighQ_WdEta22"] = 1;
     Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
     Prescales["L1_DoubleMu_10_Open"]    = 1;
     Prescales["L1_DoubleMu_10_3p5"]     = 1;
@@ -1093,15 +1004,15 @@ void L1Menu2012::MyInit() {
     Prescales["L1_SingleEG22"]        = 1;
     Prescales["L1_SingleEG24"]        = 1;
     Prescales["L1_SingleEG30"]        = 1;
-    Prescales["L1_SingleIsoEG18er"]   = 1;
-    Prescales["L1_SingleIsoEG20er"]   = 1;
+    Prescales["L1_SingleIsoEG18"]     = 1;
+    Prescales["L1_SingleIsoEG20"]     = 1;
     Prescales["L1_EG22_ForJet24"]     = INFTY;
     Prescales["L1_EG22_ForJet32"]     = 1;
     Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
     Prescales["L1_DoubleEG5"]         = INFTY;
     Prescales["L1_DoubleEG_13_7"]     = 1;
     Prescales["L1_TripleEG7"]         = 1;
-    Prescales["L1_TripleEG_12_7_5"]   = 1;
+    Prescales["L1_TripleEG_20_7_5"]   = 1;
 
     //Jets
     Prescales["L1_SingleJet16"]          = 150000;
@@ -1117,7 +1028,7 @@ void L1Menu2012::MyInit() {
     Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 10;
     Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
     Prescales["L1_DoubleJetC64"]           = 1;
-    Prescales["L1_DoubleTauJet44er"]       = 1;
+    Prescales["L1_DoubleTauJet52er"]       = 1;
     Prescales["L1_TripleJetC_52_28_28"]    = 300;
     Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
     Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
@@ -1160,7 +1071,6 @@ void L1Menu2012::MyInit() {
     Prescales["L1_Mu0_HTT50"]    = INFTY;
     Prescales["L1_Mu0_HTT100"]   = INFTY;
     Prescales["L1_Mu4_HTT125"]   = 1;
-    Prescales["L1_Mu7er_ETM20"]  = INFTY;
     Prescales["L1_Mu12er_ETM20"]         = 1;
 
     Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
@@ -1222,217 +1132,25 @@ void L1Menu2012::MyInit() {
     Biased[name] = false; 
   }
 
-  // Biased["L1_TripleMu0"] = true;
-  // Biased["L1_DoubleMu_10_Open"] = true;
-  // Biased["L1_SingleEG5"] = true;
-  // Biased["L1_TripleEG7"] = true;
-  // Biased["L1_TripleEG_10_7_5"] = true;
-  // Biased["L1_SingleJet36"] = true;
-  // Biased["L1_DoubleJetC36"] = true;
-  // Biased["L1_DoubleJetC44_Eta1p74_WdEta4"] = true;
-  // Biased["L1_QuadJetC36"] = true;
-  // Biased["L1_QuadJetC40"] = true;
-  // Biased["L1_DoubleTauJet44er"] = true;
-  // Biased["L1_Mu3p5_DoubleEG5"] = true;
-  // Biased["L1_QuadJetC32"] = true;
-  // Biased["L1_TripleJet28_Central"] = true;
 
-}
-
-Bool_t L1Menu2012::SingleMuEta2p1(Float_t ptcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) { 
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > 2.1) continue;
-    if (pt >= ptcut) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::SingleMu(Float_t ptcut, Int_t qualmin) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias
-  if (! raw) return false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		//    BX = 0, +/- 1 or +/- 2
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];		
-    if ( qual < qualmin) continue;
-    if (pt >= ptcut) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::DoubleMuHighQEtaCut(Float_t ptcut, Float_t etacut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t nmu=0;
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		//    BX = 0, +/- 1 or +/- 2
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];		
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];		
-    if (fabs(eta) > etacut) continue;
-    if (pt >= ptcut) nmu ++;
-    if(nmu >= 2) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::Onia(Float_t ptcut1, Float_t ptcut2, Float_t etacut, Int_t delta) {
-
-  Int_t Nmu = gmt_ -> N;
-  Int_t n1=0;
-  Int_t n2=0;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];		
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];		
-    if (fabs(eta) > etacut) continue;
-    if (pt >= ptcut1) n1 ++;
-    if (pt >= ptcut2) n2++;
-  }
-
-  Bool_t ok = (n1 >=1 && n2 >= 2 ) ;
-  if (! ok) return false;
-
-  // -- now the CORRELATION condition
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > etacut) continue;
-    if (pt < ptcut1) continue;
-    Int_t ieta1 = etaMuIdx(eta);
-
-    for (Int_t imu2=0; imu2 < Nmu; imu2++) {
-      if (imu2 == imu) continue;
-      Int_t bx2 = gmt_ -> CandBx[imu2];		
-      if (bx2 != 0) continue;
-      Float_t pt2 = gmt_ -> Pt[imu2];			
-      Int_t qual2 = gmt_ -> Qual[imu2];        
-      if ( qual2 < 4) continue;
-      Float_t eta2 = gmt_  -> Eta[imu2];        
-      if (fabs(eta2) > etacut) continue;
-      if (pt2 < ptcut2) continue;
-      Int_t ieta2 = etaMuIdx(eta2);
-
-      Float_t deta = ieta1 - ieta2; 
-      // std::cout << "eta 1 2 delta " << ieta1 << " " << ieta2 << " " << deta << std::endl;
-      if ( fabs(deta) <= delta)  return true;
-    }
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::DoubleMu(Float_t cut1, Float_t cut2) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias
-  if (! raw) return false;  
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    // if ( qual < 4) continue;
-    if (qual < 4  && qual != 3 ) continue;
-    if (pt >= cut1) n1 ++;
-    if (pt >= cut2) n2 ++;
-  }
-
-  return (n1 >= 1 && n2 >= 2 );
-}
-
-Bool_t L1Menu2012::TripleMu(Float_t cut1, Float_t cut2, Float_t cut3, Int_t qualmin) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t n3=0;
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < qualmin) continue;
-    if (pt >= cut1) n1 ++;
-    if (pt >= cut2) n2 ++;
-    if (pt >= cut3) n3 ++;
-  }
-
-  return ( n1 >= 1 && n2 >= 2 && n3 >= 3 );
-}
-
-Bool_t L1Menu2012::DoubleMuXOpen(Float_t cut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( (qual >= 5 || qual == 3 ) && pt >= cut ) n1 ++;
-    if ( pt >= 0 ) n2 ++;
-  }
-
-  return ( n1 >= 1 && n2 >= 2 );
 }
 
 Bool_t L1Menu2012::Muons() {
 
   insert_ibin = 0;
-  InsertInMenu("L1_SingleMuOpen",SingleMu(0.,0));
-  InsertInMenu("L1_SingleMu3",SingleMu(3.));
-  InsertInMenu("L1_SingleMu12",SingleMu(12.));
-  InsertInMenu("L1_SingleMu16",SingleMu(16.));
-  InsertInMenu("L1_SingleMu20",SingleMu(20.));
-  InsertInMenu("L1_SingleMu25",SingleMu(25.));
+  InsertInMenu("L1_SingleMuOpen",algoFactory->SingleMu(0.,0));
+  InsertInMenu("L1_SingleMu3",algoFactory->SingleMu(3.));
+  InsertInMenu("L1_SingleMu12",algoFactory->SingleMu(12.));
+  InsertInMenu("L1_SingleMu16",algoFactory->SingleMu(16.));
+  InsertInMenu("L1_SingleMu20",algoFactory->SingleMu(20.));
+  InsertInMenu("L1_SingleMu25",algoFactory->SingleMu(25.));
 
-  InsertInMenu("L1_SingleMu12er",SingleMuEta2p1(12.));
-  InsertInMenu("L1_SingleMu14er",SingleMuEta2p1(14.));
-  InsertInMenu("L1_SingleMu16er",SingleMuEta2p1(16.));
-  InsertInMenu("L1_SingleMu18er",SingleMuEta2p1(18.));
-  InsertInMenu("L1_SingleMu20er",SingleMuEta2p1(20.));
-  InsertInMenu("L1_SingleMu25er",SingleMuEta2p1(25.));
+  InsertInMenu("L1_SingleMu12er",algoFactory->SingleMuEta2p1(12.));
+  InsertInMenu("L1_SingleMu14er",algoFactory->SingleMuEta2p1(14.));
+  InsertInMenu("L1_SingleMu16er",algoFactory->SingleMuEta2p1(16.));
+  InsertInMenu("L1_SingleMu18er",algoFactory->SingleMuEta2p1(18.));
+  InsertInMenu("L1_SingleMu20er",algoFactory->SingleMuEta2p1(20.));
+  InsertInMenu("L1_SingleMu25er",algoFactory->SingleMuEta2p1(25.));
 
   Int_t NN = insert_ibin;
 
@@ -1470,18 +1188,18 @@ Bool_t L1Menu2012::Muons() {
 Bool_t L1Menu2012::MultiMuons() {
 
   insert_ibin = 0;
-  InsertInMenu("L1_DoubleMu0",DoubleMu(0.,0.));
-  InsertInMenu("L1_DoubleMu0er_HighQ",DoubleMuHighQEtaCut(0.,2.1));
-  InsertInMenu("L1_DoubleMu3er_HighQ_WdEta22",Onia(3.,3.,2.1,22));
-  InsertInMenu("L1_DoubleMu_5er_0er_HighQ_WdEta22",Onia(5.,0.,2.1,22));
+  InsertInMenu("L1_DoubleMu0",algoFactory->DoubleMu(0.,0.));
+  InsertInMenu("L1_DoubleMu0er_HighQ",algoFactory->DoubleMu(0.,0.,true,true));
+  InsertInMenu("L1_DoubleMu3er_HighQ_WdEta22",algoFactory->Onia(3.,3.,22));
+  InsertInMenu("L1_DoubleMu_6er_3er_HighQ_WdEta22",algoFactory->Onia(6.,3.,22));
 
-  InsertInMenu("L1_DoubleMu_12_5",DoubleMu(12.,5.));
-  InsertInMenu("L1_DoubleMu_10_Open",DoubleMuXOpen(10.));
-  InsertInMenu("L1_DoubleMu_10_3p5",DoubleMu(10.,3.5));
+  InsertInMenu("L1_DoubleMu_12_5",algoFactory->DoubleMu(12.,5.));
+  InsertInMenu("L1_DoubleMu_10_Open",algoFactory->DoubleMuXOpen(10.));
+  InsertInMenu("L1_DoubleMu_10_3p5",algoFactory->DoubleMu(10.,3.5));
 
-  InsertInMenu("L1_TripleMu0",TripleMu(0.,0.,0.,3));
-  InsertInMenu("L1_TripleMu0_HighQ",TripleMu(0.,0.,0.,4));
-  InsertInMenu("L1_TripleMu_5_5_0",TripleMu(5.,5.,0.,3));
+  InsertInMenu("L1_TripleMu0",algoFactory->TripleMu(0.,0.,0.,3));
+  InsertInMenu("L1_TripleMu0_HighQ",algoFactory->TripleMu(0.,0.,0.,4));
+  InsertInMenu("L1_TripleMu_5_5_3",algoFactory->TripleMu(5.,5.,3.,3));
 
   Int_t NN = insert_ibin;
 
@@ -1516,331 +1234,7 @@ Bool_t L1Menu2012::MultiMuons() {
   return res;
 }
 
-Bool_t L1Menu2012::Mu_EG(Float_t mucut, Float_t EGcut ) {
-
-  Bool_t raw = PhysicsBits[0];    // ZeroBias
-  if (! raw) return false;
-
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {   
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) return true;
-  }  // end loop over EM objects
-
-  return false;
-}
-
-Bool_t L1Menu2012::DoubleMu_EG(Float_t mucut, Float_t EGcut ) {
-
-  Bool_t raw = PhysicsBits[0]; 	// ZeroBias
-  if (! raw) return false;
-
-  Bool_t muon = false;
-  Int_t  Nmuons = 0;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    // if ( qual < 4) continue;
-    if (qual < 4 && qual !=3 ) continue;
-    if (pt >= mucut) Nmuons ++;
-  }
-  if (Nmuons >= 2) muon = true;
-
-  if(!muon) return false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) return true;
-  }  // end loop over EM objects
-
-  return false;
-}
-
-Bool_t L1Menu2012::Mu_DoubleEG(Float_t mucut, Float_t EGcut ) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias..
-  if (! raw) return false;
-
-  Bool_t muon = false;
-  Int_t  Nmuons = 0;
-  Int_t Nelectrons = 0;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) Nmuons ++;
-  }
-  if (Nmuons >= 1) muon = true;
-
-  if(!muon) return false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) Nelectrons ++;
-  }  // end loop over EM objects
-  if (Nelectrons >= 2) return true;
-
-  return false;
-}
-
-Bool_t L1Menu2012::MuOpen_EG(Float_t mucut, Float_t EGcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) return true;
-  }  // end loop over EM objects
-
-  return false;
-}
-
-Bool_t L1Menu2012::Mu_JetCentral(Float_t mucut, Float_t jetcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::Mu_DoubleJetCentral(Float_t mucut, Float_t jetcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t n1 = 0;
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) n1 ++;
-    if(n1 >= 2) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::Mu_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float_t taucut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t jet=false;
-  Bool_t central = false;
-  Bool_t tau = false;
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    Bool_t isTauJet = gt_ -> Taujet[ue];
-    if (! isTauJet) {  	// look at CentralJet
-      if (pt >= jetcut) central = true;
-    }
-    else   {		// look at TauJets
-      if (pt >= taucut) tau = true;
-    }
-  }
-  jet = central || tau  ;
-
-  return jet;
-}
-
-Bool_t L1Menu2012::Muer_JetCentral(Float_t mucut, Float_t jetcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > 2.1) continue;
-
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::Muer_JetCentral_LowerTauTh(Float_t mucut, Float_t jetcut, Float_t taucut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t jet=false;
-  Bool_t central = false;
-  Bool_t tau = false;
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > 2.1) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    Bool_t isTauJet = gt_ -> Taujet[ue];
-    if (! isTauJet) {       // look at CentralJet
-      if (pt >= jetcut) central = true;
-    }
-    else   {                // look at TauJets
-      if (pt >= taucut) tau = true;
-    }
-  }
-  jet = central || tau  ;
-
-  return jet;
-}
-
 Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
 
   Bool_t jet=false;
   Bool_t muon = false;
@@ -1868,7 +1262,7 @@ Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
     Bool_t isFwdJet = gt_ -> Fwdjet[ue];
     if (isFwdJet) continue;
     Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
+    Float_t pt = algoFactory->CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.);
     if (pt >= jet1) n1 ++;
     if (pt >= jet2) n2 ++;
   }       
@@ -1888,9 +1282,9 @@ Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
     if (fabs(eta) > 2.1) continue;
 
     Float_t phimu = gmt_ -> Phi[imu];
-    Int_t iphi_mu = phiINjetCoord(phimu);
+    Int_t iphi_mu = algoFactory->phiINjetCoord(phimu);
     Float_t etamu = gmt_ -> Eta[imu];
-    Int_t ieta_mu = etaINjetCoord(etamu);
+    Int_t ieta_mu = algoFactory->etaINjetCoord(etamu);
 
     for (Int_t ue=0; ue < Nj; ue++) {
       Int_t bxj = gt_ -> Bxjet[ue];        		
@@ -1898,15 +1292,15 @@ Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
       Bool_t isFwdJet = gt_ -> Fwdjet[ue];
       if (isFwdJet) continue;
       Float_t rank = gt_ -> Rankjet[ue];
-      Float_t ptj = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
+      Float_t ptj = algoFactory->CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.);
       if (ptj < jet2) continue;
       Float_t phijet = gt_ -> Phijet[ue];
       Int_t iphi_jet = (int)phijet;
       Float_t etajet = gt_ -> Etajet[ue];
       Int_t ieta_jet = (int)etajet;
 
-      Bool_t corr_phi = correlateInPhi(iphi_jet, iphi_mu);
-      Bool_t corr_eta = correlateInEta(ieta_jet, ieta_mu);
+      Bool_t corr_phi = algoFactory->correlateInPhi(iphi_jet, iphi_mu);
+      Bool_t corr_eta = algoFactory->correlateInEta(ieta_jet, ieta_mu);
       Bool_t corr = corr_phi && corr_eta;
       if (corr) return true ;
     }
@@ -1915,932 +1309,34 @@ Bool_t L1Menu2012::Mia(Float_t mucut, Float_t jet1, Float_t jet2) {
   return false;
 }
 
-Bool_t L1Menu2012::Mu_JetCentral_delta(Float_t mucut, Float_t jetcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t jet=false;
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) jet = true;
-  }
-
-  if (!jet) return false;
-
-  //  -- now evaluate the delta condition :
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt < mucut) continue;
-
-    Float_t phimu = gmt_ -> Phi[imu];
-    Int_t iphi_mu = phiINjetCoord(phimu);
-    Float_t etamu = gmt_ -> Eta[imu];
-    Int_t ieta_mu = etaINjetCoord(etamu);
-
-    for (Int_t ue=0; ue < Nj; ue++) {
-      Int_t bxj = gt_ -> Bxjet[ue];        		
-      if (bxj != 0) continue;
-      Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-      if (isFwdJet) continue;
-      Float_t rank = gt_ -> Rankjet[ue];
-      Float_t ptj = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-      if (ptj < jetcut) continue;
-      Float_t phijet = gt_ -> Phijet[ue];
-      Int_t iphi_jet = (int)phijet;
-      Float_t etajet = gt_ -> Etajet[ue];
-      Int_t ieta_jet = (int)etajet;
-
-      Bool_t corr = correlateInPhi(iphi_jet, iphi_mu, 2) && correlateInEta(ieta_jet, ieta_mu, 2);
-      if (corr) return true;
-    }
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::Mu_JetCentral_deltaOut(Float_t mucut, Float_t jetcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t jet=false;
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) jet = true;
-  }
-
-  if (!jet) return false;
-
-  //  -- now evaluate the delta condition :
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt < mucut) continue;
-
-    Float_t phimu = gmt_ -> Phi[imu];
-    Int_t iphi_mu = phiINjetCoord(phimu);
-    //          Float_t etamu = gmt_ -> Eta[imu];
-    //          Int_t ieta_mu = etaINjetCoord(etamu);
-
-    /*
-    Int_t PhiOut[3];
-    PhiOut[0] = iphi_mu;
-    if (iphi_mu< 17) PhiOut[1] = iphi_mu+1;
-    if (iphi_mu == 17) PhiOut[1] = 0;
-    if (iphi_mu > 0) PhiOut[2] = iphi_mu - 1;
-    if (iphi_mu == 0) PhiOut[2] = 17;
-    */
-
-    for (Int_t ue=0; ue < Nj; ue++) {
-      Int_t bxj = gt_ -> Bxjet[ue];        		
-      if (bxj != 0) continue;
-      Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-      if (isFwdJet) continue;
-      Float_t rank = gt_ -> Rankjet[ue];
-      Float_t ptj = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-      if (ptj < jetcut) continue;
-      Float_t phijet = gt_ -> Phijet[ue];
-      Int_t iphi_jet = (int)phijet;
-      //                  Float_t etajet = gt_ -> Etajet[ue];
-      //                  Int_t ieta_jet = (int)etajet;
-
-      if (! correlateInPhi(iphi_jet, iphi_mu, 8)) return true;
-    }
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::Muer_TripleJetCentral(Float_t mucut, Float_t jet1, Float_t jet2, Float_t jet3) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t jet=false;
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_ -> Eta[imu] ;
-    if (fabs(eta) > 2.1 ) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t n3=0;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jet1) n1 ++;
-    if (pt >= jet2) n2 ++;
-    if (pt >= jet3) n3 ++;
-  }
-
-  jet = ( n1 >= 1 && n2 >= 2 && n3 >= 3 ) ;
-
-  return jet;
-}
-
-Bool_t L1Menu2012::Mu_HTT(Float_t mucut, Float_t HTcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t ht=false;
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Float_t adc = gt_ -> RankHTT ;
-  Float_t TheHTT = adc / 2. ;
-  ht = (TheHTT >= HTcut) ;
-
-  return ht;
-}
-
-Bool_t L1Menu2012::Muer_ETM(Float_t mucut, Float_t ETMcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t etm = false;
-  Bool_t muon = false;
-
-  Int_t Nmu = gmt_ -> N;
-  for (Int_t imu=0; imu < Nmu; imu++) {
-    Int_t bx = gmt_ -> CandBx[imu];		
-    if (bx != 0) continue;
-    Float_t pt = gmt_ -> Pt[imu];			
-    Int_t qual = gmt_ -> Qual[imu];        
-    if ( qual < 4) continue;
-    Float_t eta = gmt_  -> Eta[imu];        
-    if (fabs(eta) > 2.1) continue;
-
-    if (pt >= mucut) muon = true;
-  }
-
-  if(!muon) return false;
-
-  Float_t adc = gt_ -> RankETM ;
-  Float_t TheETM = adc / 2. ;
-  etm = (TheETM >= ETMcut);
-
-  return etm;
-}
-
-Bool_t L1Menu2012::SingleIsoEG_Eta2p1_ETM(Float_t egcut, Float_t ETMcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t isoeg = false;
-  Bool_t etm = false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Bool_t iso = gt_ -> Isoel[ue];
-    if (! iso) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= egcut) isoeg = true;
-  }  // end loop over EM objects
-
-  if(!isoeg) return false;
-
-  Float_t adc = gt_ -> RankETM ;
-  Float_t TheETM = adc / 2. ;
-  etm = (TheETM >= ETMcut);
-
-  return etm;
-}
-
-Bool_t L1Menu2012::EG_FwdJet(Float_t EGcut, Float_t FWcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {        
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (!isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= FWcut) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  Int_t njets = 0;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) njets ++;
-    if(njets >=2) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::EG_HT(Float_t EGcut, Float_t HTcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-  Bool_t ht = false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Float_t adc = gt_ -> RankHTT ;
-  Float_t TheHTT = adc / 2. ;
-  ht = (TheHTT >= HTcut) ;
-
-  return ht;
-}
-
-Bool_t L1Menu2012::DoubleEG_HT(Float_t EGcut, Float_t HTcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-  Int_t n1 = 0;
-  Bool_t ht = false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) n1 ++;
-  }  // end loop over EM objects
-  eg = ( n1 >= 2 );
-
-  Float_t adc = gt_ -> RankHTT ;
-  Float_t TheHTT = adc / 2. ;
-  ht = (TheHTT >= HTcut) ;
-
-  return ( eg && ht);
-}
-
-Bool_t L1Menu2012::EGEta2p1_JetCentral(Float_t EGcut, Float_t jetcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-  Bool_t jet = false;
-
-  Int_t Nele = gt_ -> Nele; 
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) jet = true;
-  }
-
-  if (!jet) return false;
-
-  //  -- now evaluate the delta condition :
-  Int_t PhiOut[3];
-
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt < EGcut) continue;
-
-    Float_t phiel = gt_ -> Phiel[ue];
-    Int_t iphiel = (int)phiel;
-
-    PhiOut[0]=0; PhiOut[1]=0; PhiOut[2]=0;   
-
-    PhiOut[0] = iphiel;
-    if (iphiel< 17) PhiOut[1] = iphiel+1;
-    if (iphiel == 17) PhiOut[1] = 0;
-    if (iphiel > 0) PhiOut[2] = iphiel - 1;
-    if (iphiel == 0) PhiOut[2] = 17;
-
-    for (Int_t uj=0; uj < Nj; uj++) {
-      Int_t bxj = gt_ -> Bxjet[uj];        		
-      if (bxj != 0) continue;
-      Bool_t isFwdJet = gt_ -> Fwdjet[uj];
-      if (isFwdJet) continue;
-      Float_t rankj = gt_ -> Rankjet[uj];
-      // Float_t ptj = rankj * 4;
-      Float_t ptj = CorrectedL1JetPtByGCTregions(gt_->Etajet[uj],rankj*4.,theL1JetCorrection);
-      if (ptj < jetcut) continue;
-      Float_t phijet = gt_ -> Phijet[uj];
-      Int_t iphijet = (int)phijet; 
-
-      if ( iphijet != PhiOut[0] && 
-	   iphijet != PhiOut[1] &&
-	   iphijet != PhiOut[2] ) return true;
-    }  // loop over jets
-
-  }  // end loop over EM objects
-
-  return false;
-}
-
-Bool_t L1Menu2012::EGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut, Float_t taucut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-  Bool_t jet = false;
-  Bool_t central = false;
-  Bool_t tau = false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Bool_t isTauJet = gt_ -> Taujet[ue];
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (! isTauJet) {
-      if (pt >= jetcut) central = true;
-    }
-    else {
-      if (pt >= taucut) tau = true;
-    }
-  }
-  jet = tau || central;
-
-  if (!jet) return false;
-
-  //  -- now evaluate the delta condition :
-  Bool_t CORREL_CENTRAL = false;
-  Bool_t CORREL_TAU = false;
-  Int_t PhiOut[3];
-
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt < EGcut) continue;
-
-    Float_t phiel = gt_ -> Phiel[ue];
-    Int_t iphiel = (int)phiel;
-
-    PhiOut[0]=0; PhiOut[1]=0; PhiOut[2]=0;   
-
-    PhiOut[0] = iphiel;
-    if (iphiel< 17) PhiOut[1] = iphiel+1;
-    if (iphiel == 17) PhiOut[1] = 0;
-    if (iphiel > 0) PhiOut[2] = iphiel - 1;
-    if (iphiel == 0) PhiOut[2] = 17;
-
-    for (Int_t uj=0; uj < Nj; uj++) {
-      Int_t bxj = gt_ -> Bxjet[uj];        		
-      if (bxj != 0) continue;
-      Bool_t isFwdJet = gt_ -> Fwdjet[uj];
-      if (isFwdJet) continue;
-      Bool_t isTauJet = gt_ -> Taujet[uj];
-      Float_t rankj = gt_ -> Rankjet[uj];
-      Float_t ptj = CorrectedL1JetPtByGCTregions(gt_->Etajet[uj],rankj*4.,theL1JetCorrection);
-      Float_t phijet = gt_ -> Phijet[uj];
-      Int_t iphijet = (int)phijet;
-
-      if (! isTauJet) {
-
-	if (ptj >= jetcut) { 
-	  if ( iphijet != PhiOut[0] &&
-	       iphijet != PhiOut[1] &&
-	       iphijet != PhiOut[2] ) CORREL_CENTRAL = true;
-	}
-
-      }
-      else {
-	if (ptj >= taucut) {
-	  if ( iphijet != PhiOut[0] &&
-	       iphijet != PhiOut[1] &&
-	       iphijet != PhiOut[2] ) CORREL_TAU = true;
-	}
-
-      }
-
-
-    }  // loop over jets
-
-  }  // end loop over EM objects
-
-  return CORREL_CENTRAL || CORREL_TAU ;
-}
-
-Bool_t L1Menu2012::IsoEGEta2p1_JetCentral_LowTauTh(Float_t EGcut, Float_t jetcut, Float_t taucut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-  Bool_t jet = false;
-  Bool_t central = false;
-  Bool_t tau = false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Bool_t iso = gt_ -> Isoel[ue];
-    if ( ! iso) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Bool_t isTauJet = gt_ -> Taujet[ue];
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (! isTauJet) {
-      if (pt >= jetcut) central = true;
-    }
-    else {
-      if (pt >= taucut) tau = true;
-    }
-  }
-  jet = tau || central;
-
-  if(!jet) return false;
-
-  //  -- now evaluate the delta condition :
-  Bool_t CORREL_CENTRAL = false;
-  Bool_t CORREL_TAU = false;
-  Int_t PhiOut[3];
-
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Bool_t iso = gt_ -> Isoel[ue];
-    if ( ! iso) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt < EGcut) continue;
-
-    Float_t phiel = gt_ -> Phiel[ue];
-    Int_t iphiel = (int)phiel;
-
-    PhiOut[0]=0; PhiOut[1]=0; PhiOut[2]=0;   
-
-    PhiOut[0] = iphiel; 
-    if (iphiel< 17) PhiOut[1] = iphiel+1;
-    if (iphiel == 17) PhiOut[1] = 0;
-    if (iphiel > 0) PhiOut[2] = iphiel - 1;
-    if (iphiel == 0) PhiOut[2] = 17;
-
-    for (Int_t uj=0; uj < Nj; uj++) {
-      Int_t bxj = gt_ -> Bxjet[uj];        		
-      if (bxj != 0) continue;
-      Bool_t isFwdJet = gt_ -> Fwdjet[uj];
-      if (isFwdJet) continue;
-      Bool_t isTauJet = gt_ -> Taujet[uj];
-      Float_t rankj = gt_ -> Rankjet[uj];
-      Float_t ptj = CorrectedL1JetPtByGCTregions(gt_->Etajet[uj],rankj*4.,theL1JetCorrection);
-      Float_t phijet = gt_ -> Phijet[uj];
-      Int_t iphijet = (int)phijet;
-
-      if (! isTauJet) {
-
-	if (ptj >= jetcut) {
-	  if ( iphijet != PhiOut[0] &&
-	       iphijet != PhiOut[1] &&
-	       iphijet != PhiOut[2] ) CORREL_CENTRAL = true;
-	}
-
-      }
-      else {
-	if (ptj >= taucut) {
-	  if ( iphijet != PhiOut[0] &&
-	       iphijet != PhiOut[1] &&
-	       iphijet != PhiOut[2] ) CORREL_TAU = true;
-	}
-
-      }
-
-
-    }  // loop over jets
-
-  }  // end loop over EM objects
-
-  return CORREL_CENTRAL || CORREL_TAU ;
-}
-
-Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral(Float_t EGcut, Float_t jetcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-
-  Int_t Nele = gt_ -> Nele; 
-  for (Int_t ue=0; ue < Nele; ue++) { 
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true; 
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Int_t n2=0;
-  Int_t Nj = gt_ -> Njet ;               
-  for (Int_t ue=0; ue < Nj; ue++) {      
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue; 
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) n2 ++;
-  }
-
-  Bool_t jet = (n2 >= 2);
-  if (!jet) return false;
-
-  //  -- now evaluate the delta condition :
-  Int_t PhiOut[3];
-
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt < EGcut) continue;
-
-    Float_t phiel = gt_ -> Phiel[ue];
-    Int_t iphiel = (int)phiel;
-
-    PhiOut[0]=0; PhiOut[1]=0; PhiOut[2]=0; 
-
-    PhiOut[0] = iphiel;
-    if (iphiel< 17) PhiOut[1] = iphiel+1;
-    if (iphiel == 17) PhiOut[1] = 0;
-    if (iphiel > 0) PhiOut[2] = iphiel - 1;
-    if (iphiel == 0) PhiOut[2] = 17;
-
-    Int_t npair = 0;
-
-    for (Int_t uj=0; uj < Nj; uj++) {
-      Int_t bxj = gt_ -> Bxjet[uj];        		
-      if (bxj != 0) continue; 
-      Bool_t isFwdJet = gt_ -> Fwdjet[uj];
-      if (isFwdJet) continue;
-      Float_t rankj = gt_ -> Rankjet[uj];
-      // Float_t ptj = rankj * 4;
-      Float_t ptj = CorrectedL1JetPtByGCTregions(gt_->Etajet[uj],rankj*4.,theL1JetCorrection);
-      if (ptj < jetcut) continue;
-      Float_t phijet = gt_ -> Phijet[uj];
-      Int_t iphijet = (int)phijet;
-
-      if ( iphijet != PhiOut[0] &&
-	   iphijet != PhiOut[1] &&
-	   iphijet != PhiOut[2] ) npair ++;
-
-    }  // loop over jets
-
-    if (npair >= 2 ) return true ;
-
-  }  // end loop over EM objects
-
-  return false;
-}
-
-Bool_t L1Menu2012::EGEta2p1_DoubleJetCentral_TripleJetCentral(Float_t EGcut, Float_t jetcut2, Float_t jetcut3) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t eg = false;
-  Bool_t jet = false;
-  Int_t n2=0;       
-  Int_t n3=0;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue; 
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= EGcut) eg = true;  
-  }  // end loop over EM objects
-
-  if(!eg) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut2) n2 ++;
-    if (pt >= jetcut3) n3 ++;
-  }
-
-  jet = (n2 >= 2 && n3 >= 3 );
-
-  return jet;
-}
-
-Bool_t L1Menu2012::HTT_HTM(Float_t HTTcut, Float_t HTMcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t htt = false;
-  Bool_t htm = false;
-  Float_t adc = gt_ -> RankHTT;   
-  Float_t TheHTT = (float)adc / 2.   ;          
-  htt = ( TheHTT >= HTTcut ) ;
-
-  if(!htt) return false;
-
-  Int_t adc_HTM  = gt_  -> RankHTM ; 
-  Float_t TheHTM = adc_HTM * 2.  ;           
-  htm = ( TheHTM >= HTMcut );
-
-  return htm;
-}
-
-Bool_t L1Menu2012::JetCentral_ETM(Float_t jetcut, Float_t ETMcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t etm = false;
-  Bool_t jet = false;
-
-  Float_t adc = gt_ -> RankETM ;
-  Float_t TheETM = adc / 2. ;
-  etm = (TheETM >= ETMcut);
-
-  if(!etm) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut) jet = true;
-  }
-
-  return jet;
-}
-
-Bool_t L1Menu2012::DoubleJetCentral_ETM(Float_t jetcut1, Float_t jetcut2, Float_t ETMcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t jet = false;
-  Int_t n1=0;
-  Int_t n2=0;
-
-  Float_t adc = gt_ -> RankETM ;
-  Float_t TheETM = adc / 2. ;
-  Bool_t etm = (TheETM >= ETMcut);
-
-  if(!etm) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= jetcut1) n1 ++;
-    if (pt >= jetcut2) n2 ++;
-  }       
-  jet = (n1 >= 1 && n2 >= 2);
-
-  return jet;
-}
-
 Bool_t L1Menu2012::Cross() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_Mu0_HTT50", Mu_HTT(0.,50.) );
-  InsertInMenu("L1_Mu0_HTT100", Mu_HTT(0.,100.) );
-  InsertInMenu("L1_Mu4_HTT125", Mu_HTT(4.,125.) );
 
-  InsertInMenu("L1_Mu12er_ETM20", Muer_ETM(12.,20.) );
-  InsertInMenu("L1_Mu10er_JetC32", Muer_JetCentral(10.,32.) );
-
-  InsertInMenu("L1_Mu8_DoubleJetC20", Mu_DoubleJetCentral(8.,20.) );
-
-  InsertInMenu("L1_EG22_ForJet24", EG_FwdJet(22.,24.) );
-  InsertInMenu("L1_EG22_ForJet32", EG_FwdJet(22.,32.) );
-  InsertInMenu("L1_DoubleEG6_HTT100", DoubleEG_HT(6.,100.) );
-  InsertInMenu("L1_DoubleEG6_HTT125", DoubleEG_HT(6.,125.) );
-
-  InsertInMenu("L1_EG8_DoubleJetC20", EG_DoubleJetCentral(8.,20.) );
-
-  InsertInMenu("L1_Mu12_EG7", Mu_EG(12.,7.) );
-  InsertInMenu("L1_MuOpen_EG12", MuOpen_EG(0.,12.) );
-  InsertInMenu("L1_Mu3p5_EG12", Mu_EG(3.5,12.) );
-
-  InsertInMenu("L1_DoubleMu3p5_EG5", DoubleMu_EG(3.5,5.) );
-  InsertInMenu("L1_DoubleMu5_EG5", DoubleMu_EG(5.,5.) );
-
-  InsertInMenu("L1_Mu5_DoubleEG5", Mu_DoubleEG(5., 5.) );
-  InsertInMenu("L1_Mu5_DoubleEG6", Mu_DoubleEG(5., 6.) );
-
-  InsertInMenu("L1_DoubleJetC36_ETM30", DoubleJetCentral_ETM(36., 36., 30.) );
-  InsertInMenu("L1_DoubleJetC44_ETM30", DoubleJetCentral_ETM(44., 44., 30.) );
+  InsertInMenu("L1_Mu0_HTT50",  algoFactory->Mu_HTT(0.,50.) );
+  InsertInMenu("L1_Mu0_HTT100", algoFactory->Mu_HTT(0.,100.) );
+  InsertInMenu("L1_Mu4_HTT125", algoFactory->Mu_HTT(4.,125.) );
+  InsertInMenu("L1_Mu12er_ETM20", algoFactory->Muer_ETM(12.,20.) );
+  InsertInMenu("L1_Mu10er_JetC32", algoFactory->Muer_JetCentral(10.,32.) );
+  InsertInMenu("L1_Mu8_DoubleJetC20", algoFactory->Mu_DoubleJetCentral(8.,20.) );
+  InsertInMenu("L1_EG22_ForJet24", algoFactory->EG_FwdJet(22.,24.) );
+  InsertInMenu("L1_EG22_ForJet32", algoFactory->EG_FwdJet(22.,32.) );
+  InsertInMenu("L1_DoubleEG6_HTT100", algoFactory->DoubleEG_HT(6.,100.) );
+  InsertInMenu("L1_DoubleEG6_HTT125", algoFactory->DoubleEG_HT(6.,125.) );
+  InsertInMenu("L1_EG8_DoubleJetC20", algoFactory->EG_DoubleJetCentral(8.,20.) );
+  InsertInMenu("L1_Mu18_EG8", algoFactory->Mu_EG(18.,8.) );
+  InsertInMenu("L1_MuOpen_EG12", algoFactory->Mu_EG(0.,12.,0) );
+  InsertInMenu("L1_Mu5_EG18", algoFactory->Mu_EG(5.,18.) );
+  InsertInMenu("L1_DoubleMu3p5_EG5", algoFactory->DoubleMu_EG(3.5,5.) );
+  InsertInMenu("L1_DoubleMu7_EG7", algoFactory->DoubleMu_EG(7.,7.) );
+  InsertInMenu("L1_Mu5_DoubleEG5", algoFactory->Mu_DoubleEG(5., 5.) );
+  InsertInMenu("L1_Mu7_DoubleEG8", algoFactory->Mu_DoubleEG(7., 8.) );
+  InsertInMenu("L1_DoubleJetC36_ETM30", algoFactory->DoubleJetCentral_ETM(36., 36., 30.) );
+  InsertInMenu("L1_DoubleJetC44_ETM30", algoFactory->DoubleJetCentral_ETM(44., 44., 30.) );
 
   // new proposed seeds
-  InsertInMenu("L1_Mu7er_ETM20", Muer_ETM(7.,20.) );
-  InsertInMenu("L1_IsoEG12er_ETM30", SingleIsoEG_Eta2p1_ETM(12.,30.) );
+  InsertInMenu("L1_IsoEG12er_ETM30", algoFactory->SingleIsoEG_Eta2p1_ETM(12.,30.) );
 
   Int_t NN = insert_ibin;
   Int_t kOFFSET_old = kOFFSET;
@@ -2882,8 +1378,8 @@ Bool_t L1Menu2012::MultiCross() {
   InsertInMenu("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12", Mia(10.,20.,12.) );
   InsertInMenu("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12", Mia(10.,32.,12.) );
 
-  InsertInMenu("L1_Mu3_JetC16_WdEtaPhi2", Mu_JetCentral_delta(3.,16.) );
-  InsertInMenu("L1_Mu3_JetC52_WdEtaPhi2", Mu_JetCentral_delta(3.,52.) );
+  InsertInMenu("L1_Mu3_JetC16_WdEtaPhi2", algoFactory->Mu_JetCentral_delta(3.,16.) );
+  InsertInMenu("L1_Mu3_JetC52_WdEtaPhi2", algoFactory->Mu_JetCentral_delta(3.,52.) );
 
   Int_t NN = insert_ibin;
   Int_t kOFFSET_old = kOFFSET;
@@ -2918,277 +1414,18 @@ Bool_t L1Menu2012::MultiCross() {
   return res;
 }
 
-Bool_t L1Menu2012::SingleJetCentral(Float_t cut ) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias
-  if (! raw) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue; 
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= cut) return true;
-  } 
-
-  return false;
-}
-
-Bool_t L1Menu2012::SingleJet(Float_t cut ) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias
-  if (! raw) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= cut) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::DoubleJetCentral(Float_t cut1, Float_t cut2 ) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= cut1) n1++;
-    if (pt >= cut2) n2++;
-  }
-
-  return ( n1 >=1 && n2 >= 2);
-}
-
-Bool_t L1Menu2012::DoubleJet_Eta1p7_deltaEta4(Float_t cut1, Float_t cut2 ) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    Float_t eta = gt_ -> Etajet[ue];
-    if (eta < 5.5 || eta > 15.5) continue;  // eta = 6 - 15
-    if (pt >= cut1) n1++;
-    if (pt >= cut2) n2++;
-  }
-  Bool_t ok = ( n1 >=1 && n2 >= 2);
-  if (! ok) return false;
-
-  // -- now the correlation
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    Float_t eta1 = gt_ -> Etajet[ue];
-    if (eta1 < 5.5 || eta1 > 15.5) continue;  // eta = 6 - 15
-    if (pt < cut1) continue;
-
-    for (Int_t ve=0; ve < Nj; ve++) {
-      if (ve == ue) continue;
-      Int_t bx2 = gt_ -> Bxjet[ve];        		
-      if (bx2 != 0) continue;
-      Bool_t isFwdJet2 = gt_ -> Fwdjet[ve];
-      if (isFwdJet2) continue;
-      Float_t rank2 = gt_ -> Rankjet[ve];
-      Float_t pt2 = rank2 * 4;
-      Float_t eta2 = gt_ -> Etajet[ve];
-      if (eta2 < 5.5 || eta2 > 15.5) continue;  // eta = 6 - 15
-      if (pt2 < cut2) continue;
-
-      Bool_t corr = correlateInEta((int)eta1, (int)eta2, 4);
-      if (corr) return true;
-    }
-
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::SingleTauJetEta2p17(Float_t cut1) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias
-  if (! raw) return false;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue; 
-    Bool_t isTauJet = gt_ -> Taujet[ue];
-    if (! isTauJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];    // the rank of the electron
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    Float_t eta = gt_ -> Etajet[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    if (pt >= cut1) return true;
-  }
-
-  return false;
-}
-
-Bool_t L1Menu2012::DoubleTauJetEta2p17(Float_t cut1, Float_t cut2) {
-
-  Bool_t raw = PhysicsBits[0];  // ZeroBias
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue; 
-    Bool_t isTauJet = gt_ -> Taujet[ue];
-    if (! isTauJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];    // the rank of the electron
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    Float_t eta = gt_ -> Etajet[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    if (pt >= cut1) n1++;
-    if (pt >= cut2) n2++;
-  }  // end loop over jets
-
-  return ( n1 >=1 && n2 >= 2);
-}
-
-Bool_t L1Menu2012::TripleJetCentral(Float_t cut1, Float_t cut2, Float_t cut3 ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t n3=0;
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= cut1) n1++;
-    if (pt >= cut2) n2++;
-    if (pt >= cut3) n3++;
-  }
-
-  return ( n1 >=1 && n2 >= 2 && n3 >= 3 );
-}
-
-Bool_t L1Menu2012::TripleJet_VBF(Float_t jet1, Float_t jet2, Float_t jet3 ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Bool_t jet=false;        
-  Bool_t jetf1=false;           
-  Bool_t jetf2=false;   
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t n3=0;
-
-  Int_t f1=0;
-  Int_t f2=0;
-  Int_t f3=0;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-
-    if (isFwdJet) {
-      if (pt >= jet1) f1 ++;
-      if (pt >= jet2) f2 ++;
-      if (pt >= jet3) f3 ++;              
-    } 
-    else {
-      if (pt >= jet1) n1 ++;
-      if (pt >= jet2) n2 ++;
-      if (pt >= jet3) n3 ++;
-    }    
-  }
-
-  jet   = ( n1 >= 1 && n2 >= 2 && n3 >= 3 ) ;        
-  jetf1 = ( f1 >= 1 && n2 >= 1 && n3 >= 2 ) ;  // numbers change ofcourse    
-  jetf2 = ( n1 >= 1 && f2 >= 1 && n3 >= 2 ) ;  
-
-  return ( jet || jetf1 || jetf2 );
-}
-
-Bool_t L1Menu2012::QuadJetCentral(Float_t cut1, Float_t cut2, Float_t cut3, Float_t cut4 ) {
-
-  // cut1 >= cut2  >= cut3 >= cut4
-
-  // ZeroBias
-  // Bool_t raw = PhysicsBits[16];  // SingleJet36
-  // if (! raw) return false;
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t n3=0;
-  Int_t n4=0;
-
-  Int_t Nj = gt_ -> Njet ;
-  for (Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = gt_ -> Bxjet[ue];        		
-    if (bx != 0) continue;
-    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
-    if (isFwdJet) continue;
-    Float_t rank = gt_ -> Rankjet[ue];
-    Float_t pt = CorrectedL1JetPtByGCTregions(gt_->Etajet[ue],rank*4.,theL1JetCorrection);
-    if (pt >= cut1) n1++;
-    if (pt >= cut2) n2++;
-    if (pt >= cut3) n3++;
-    if (pt >= cut4) n4++;
-  }
-
-  return ( n1 >=1 && n2 >= 2 && n3 >= 3 && n4 >= 4);
-}
-
 Bool_t L1Menu2012::Jets() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_SingleJet16", SingleJet(16.) );
-  InsertInMenu("L1_SingleJet36", SingleJet(36.) );
-  InsertInMenu("L1_SingleJet52", SingleJet(52.) );
-  InsertInMenu("L1_SingleJet68", SingleJet(68.) );
-  InsertInMenu("L1_SingleJet92", SingleJet(92.) );
-  InsertInMenu("L1_SingleJet128", SingleJet(128.) );
+  InsertInMenu("L1_SingleJet16", algoFactory->SingleJet(16.) );
+  InsertInMenu("L1_SingleJet52", algoFactory->SingleJet(52.) );
+  InsertInMenu("L1_SingleJet68", algoFactory->SingleJet(68.) );
+  InsertInMenu("L1_SingleJet92", algoFactory->SingleJet(92.) );
+  InsertInMenu("L1_SingleJet128", algoFactory->SingleJet(128.) );
+  InsertInMenu("L1_SingleJet150", algoFactory->SingleJet(150.) );
 
-  InsertInMenu("L1_DoubleTauJet44er", DoubleTauJetEta2p17(44.,44.) );
+  InsertInMenu("L1_DoubleTauJet52er", algoFactory->DoubleTauJetEta2p17(52.,52.) );
 
   Int_t NN = insert_ibin;
 
@@ -3230,21 +1467,21 @@ Bool_t L1Menu2012::MultiJets() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_DoubleJetC36", DoubleJetCentral(36.,36.) );
-  InsertInMenu("L1_DoubleJetC44_Eta1p74_WdEta4", DoubleJet_Eta1p7_deltaEta4(44.,44.) );
-  InsertInMenu("L1_DoubleJetC52", DoubleJetCentral(52.,52.) );
-  InsertInMenu("L1_DoubleJetC56_Eta1p74_WdEta4", DoubleJet_Eta1p7_deltaEta4(56.,56.) );
-  InsertInMenu("L1_DoubleJetC56", DoubleJetCentral(56.,56.) );
-  InsertInMenu("L1_DoubleJetC64", DoubleJetCentral(64.,64.) );
+  InsertInMenu("L1_DoubleJetC36", algoFactory->DoubleJet(36.,36.,true) );
+  InsertInMenu("L1_DoubleJetC44_Eta1p74_WdEta4", algoFactory->DoubleJet_Eta1p7_deltaEta4(44.,44.) );
+  InsertInMenu("L1_DoubleJetC52", algoFactory->DoubleJet(52.,52.,true) );
+  InsertInMenu("L1_DoubleJetC56_Eta1p74_WdEta4", algoFactory->DoubleJet_Eta1p7_deltaEta4(56.,56.) );
+  InsertInMenu("L1_DoubleJetC56", algoFactory->DoubleJet(56.,56.,true) );
+  InsertInMenu("L1_DoubleJetC64", algoFactory->DoubleJet(64.,64.,true) );
 
-  InsertInMenu("L1_TripleJet_64_44_24_VBF", TripleJet_VBF(64.,44.,24.) );
-  InsertInMenu("L1_TripleJet_64_48_28_VBF", TripleJet_VBF(64.,48.,28.) );
-  InsertInMenu("L1_TripleJet_68_48_32_VBF", TripleJet_VBF(68.,48.,32.) );
-  InsertInMenu("L1_TripleJetC_52_28_28", TripleJetCentral(52.,28.,28.) );
+  InsertInMenu("L1_TripleJet_64_44_24_VBF", algoFactory->TripleJet_VBF(64.,44.,24.) );
+  InsertInMenu("L1_TripleJet_64_48_28_VBF", algoFactory->TripleJet_VBF(64.,48.,28.) );
+  InsertInMenu("L1_TripleJet_68_48_32_VBF", algoFactory->TripleJet_VBF(68.,48.,32.) );
+  InsertInMenu("L1_TripleJetC_52_28_28", algoFactory->TripleJetCentral(52.,28.,28.) );
 
-  InsertInMenu("L1_QuadJetC36", QuadJetCentral(36.,36.,36.,36.) );
-  InsertInMenu("L1_QuadJetC40", QuadJetCentral(40.,40.,40.,40.) );
-  InsertInMenu("L1_QuadJetC50", QuadJetCentral(50.,50.,50.,50.) );
+  InsertInMenu("L1_QuadJetC36", algoFactory->QuadJet(36.,36.,36.,36.,true) );
+  InsertInMenu("L1_QuadJetC40", algoFactory->QuadJet(40.,40.,40.,40.,true) );
+  InsertInMenu("L1_QuadJetC50", algoFactory->QuadJet(50.,50.,50.,50.,true) );
 
   Int_t NN = insert_ibin;
 
@@ -3282,59 +1519,24 @@ Bool_t L1Menu2012::MultiJets() {
   return res;
 }
 
-Bool_t L1Menu2012::ETM(Float_t ETMcut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Float_t adc = gt_ -> RankETM ;
-  Float_t TheETM = adc / 2. ;
-
-  if (TheETM < ETMcut) return false;
-  return true;
-
-}
-
-Bool_t L1Menu2012::HTT(Float_t HTTcut) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Float_t adc = gt_ -> RankHTT ;
-  Float_t TheHTT = adc / 2. ;
-
-  if (TheHTT < HTTcut) return false;
-  return true;
-
-}
-
-Bool_t L1Menu2012::ETT(Float_t ETTcut) {
-
-  Float_t adc = gt_ -> RankETT ;
-  Float_t TheETT = adc / 2. ;
-
-  if (TheETT < ETTcut) return false;
-  return true;
-}
-
 Bool_t L1Menu2012::Sums() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_ETM30", ETM(30.) );
-  InsertInMenu("L1_ETM36", ETM(36.) );
-  InsertInMenu("L1_ETM40", ETM(40.) );
-  InsertInMenu("L1_ETM50", ETM(50.) );
-  InsertInMenu("L1_ETM70", ETM(70.) );
-  InsertInMenu("L1_ETM100", ETM(100.) );
+  InsertInMenu("L1_ETM30",  algoFactory->ETM(30.));
+  InsertInMenu("L1_ETM36",  algoFactory->ETM(36.));
+  InsertInMenu("L1_ETM40",  algoFactory->ETM(40.));
+  InsertInMenu("L1_ETM50",  algoFactory->ETM(50.));
+  InsertInMenu("L1_ETM70",  algoFactory->ETM(70.));
+  InsertInMenu("L1_ETM100", algoFactory->ETM(100.));
 
-  InsertInMenu("L1_HTT100", HTT(100.) );
-  InsertInMenu("L1_HTT125", HTT(125.) );
-  InsertInMenu("L1_HTT150", HTT(150.) );
-  InsertInMenu("L1_HTT175", HTT(175.) );
-  InsertInMenu("L1_HTT200", HTT(200.) );
+  InsertInMenu("L1_HTT100", algoFactory->HTT(100.));
+  InsertInMenu("L1_HTT125", algoFactory->HTT(125.));
+  InsertInMenu("L1_HTT150", algoFactory->HTT(150.));
+  InsertInMenu("L1_HTT175", algoFactory->HTT(175.));
+  InsertInMenu("L1_HTT200", algoFactory->HTT(200.));
 
-  InsertInMenu("L1_ETT300", ETT(300.) );
+  InsertInMenu("L1_ETT300", algoFactory->ETT(300.));
 
   Int_t NN = insert_ibin;
 
@@ -3371,118 +1573,18 @@ Bool_t L1Menu2012::Sums() {
   return res;
 }
 
-Bool_t L1Menu2012::SingleEG(Float_t cut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {               
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ; 
-    if (pt >= cut) return true;
-  }  // end loop over EM objects
-
-  return false; 
-}
-
-Bool_t L1Menu2012::SingleIsoEG_Eta2p1(Float_t cut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Bool_t iso = gt_ -> Isoel[ue];
-    if (! iso) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= cut) return true;
-  }  // end loop over EM objects
-
-  return false;
-}
-
-Bool_t L1Menu2012::SingleEG_Eta2p1(Float_t cut ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t eta = gt_ -> Etael[ue];
-    if (eta < 4.5 || eta > 16.5) continue;  // eta = 5 - 16
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= cut) return true;
-  }  // end loop over EM objects
-
-  return false;
-}
-
-Bool_t L1Menu2012::DoubleEG(Float_t cut1, Float_t cut2 ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {               
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= cut1) n1++;
-    if (pt >= cut2) n2++;
-  }  // end loop over EM objects
-
-  return ( n1 >= 1 && n2 >= 2) ;
-}
-
-Bool_t L1Menu2012::TripleEG(Float_t cut1, Float_t cut2, Float_t cut3 ) {
-
-  Bool_t raw = PhysicsBits[0];   // ZeroBias  
-  if (! raw) return false;
-
-  Int_t n1=0;
-  Int_t n2=0;
-  Int_t n3=0;
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Float_t rank = gt_ -> Rankel[ue];    // the rank of the electron
-    Float_t pt = rank ;
-    if (pt >= cut1) n1++;
-    if (pt >= cut2) n2++;
-    if (pt >= cut3) n3++;
-  }  // end loop over EM objects
-
-  Bool_t ok = ( n1 >= 1 && n2 >= 2 && n3 >= 3) ;
-  return ok;
-}
-
 Bool_t L1Menu2012::EGamma() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_SingleEG5", SingleEG(5.) );
-  InsertInMenu("L1_SingleIsoEG18er", SingleIsoEG_Eta2p1(18.) );
-  InsertInMenu("L1_SingleEG20", SingleEG(20.) );
-  InsertInMenu("L1_SingleIsoEG20er", SingleIsoEG_Eta2p1(20.) );
-  InsertInMenu("L1_SingleEG22", SingleEG(22.) );
-  InsertInMenu("L1_SingleEG24", SingleEG(24.) );
-  InsertInMenu("L1_SingleEG30", SingleEG(30.) );
-  InsertInMenu("L1_SingleEG35", SingleEG(35.) );
+  InsertInMenu("L1_SingleEG5", algoFactory->SingleEG(5.) );
+  InsertInMenu("L1_SingleEG20", algoFactory->SingleEG(20.) );
+  InsertInMenu("L1_SingleIsoEG20", algoFactory->SingleEG(20.,true) );
+  InsertInMenu("L1_SingleIsoEG30", algoFactory->SingleEG(30.,true) );
+  InsertInMenu("L1_SingleEG22", algoFactory->SingleEG(22.) );
+  InsertInMenu("L1_SingleEG24", algoFactory->SingleEG(24.) );
+  InsertInMenu("L1_SingleEG30", algoFactory->SingleEG(30.) );
+  InsertInMenu("L1_SingleEG35", algoFactory->SingleEG(35.) );
 
   Int_t NN = insert_ibin;
 
@@ -3521,9 +1623,9 @@ Bool_t L1Menu2012::MultiEGamma() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_DoubleEG_13_7", DoubleEG(13.,7.) );
-  InsertInMenu("L1_TripleEG7", TripleEG(7.,7.,7.) );
-  InsertInMenu("L1_TripleEG_12_7_5", TripleEG(12.,7.,5.) );
+  InsertInMenu("L1_DoubleEG_35_15", algoFactory->DoubleEG(35.,15.) );
+  InsertInMenu("L1_TripleEG7", algoFactory->TripleEG(7.,7.,7.) );
+  InsertInMenu("L1_TripleEG_20_15_5", algoFactory->TripleEG(20.,15.,5.) );
 
   Int_t NN = insert_ibin;
 
@@ -3564,7 +1666,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  nevents = 500000;
+  nevents = 1000000;
 
   Int_t NPASS = 0; 
 
@@ -3941,7 +2043,7 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
     // 13 TeV ZeroBias 62X sample, 2015 re-emulation
     NumberOfBunches = 2590; 
     AverageLumi = 1.;
-    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree_v3.root";
+    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree.root";
     AveragePU = 40;
     L1JetCorrection=false;
     Energy = 13;
@@ -4185,9 +2287,7 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
     TString name = h_All -> GetXaxis() -> GetBinLabel(k);
 
     Float_t rate = h_All -> GetBinContent(k);
-
     Float_t err_rate  = h_All -> GetBinError(k);
-
     Float_t pure = h_Pure -> GetBinContent(k);
 
     std::string L1namest = (std::string)name;
