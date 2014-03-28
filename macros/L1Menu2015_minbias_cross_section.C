@@ -4,7 +4,7 @@
 #include "Style.C"
 
 #include "TH2.h"
-#include "TAxis.h"
+//#include "TAxis.h"
 #include "TString.h"
 
 #include <iostream>
@@ -13,7 +13,7 @@
 #include <set>
 
 // huge prescale value for seeds changed on-the-fly
-#define INFTY 300000
+#define INFTY 262139
 
 TH1F *h_Cross;
 TH1F *h_MultiCross;
@@ -37,7 +37,6 @@ const Int_t NTRIGPHYS = 6;
 TH2F *cor_TRIGPHYS;
 TH1F *h_TRIGPHYS_pure;
 TH1F *h_TRIGPHYS_shared;
-
 
 const Int_t N128 = 128;			// could be > 128 for "test seeds"
 Int_t kOFFSET = 0;
@@ -64,10 +63,9 @@ class L1Menu2012 : public L1Ntuple {
 
  public :
 
-  L1Menu2012(Int_t aL1Menu, Float_t aNumberOfBunches, Float_t aAverageLumi, std::string aL1NtupleFileName,Float_t aAveragePU, Float_t aZeroBiasPrescale,Bool_t aL1JetCorrection) : 
-    theL1Menu(aL1Menu), 
+  L1Menu2012(string menufile, Float_t aNumberOfBunches, std::string aL1NtupleFileName,Float_t aAveragePU, Float_t aZeroBiasPrescale,Bool_t aL1JetCorrection) : 
+    themenufilename(menufile), 
     theNumberOfBunches(aNumberOfBunches),
-    theAverageLumi(aAverageLumi),
     theL1NtupleFileName(aL1NtupleFileName),
     theAveragePU(aAveragePU),
     theZeroBiasPrescale(aZeroBiasPrescale),
@@ -76,11 +74,9 @@ class L1Menu2012 : public L1Ntuple {
 
   ~L1Menu2012() {}
 
-  Int_t theL1Menu;
-
   // the setting below are/will be specific for each L1Ntuple file used
+  string themenufilename;
   Float_t theNumberOfBunches;
-  Float_t theAverageLumi;
   std::string theL1NtupleFileName;
   Float_t theAveragePU;
   Float_t theZeroBiasPrescale;
@@ -230,8 +226,8 @@ void L1Menu2012::MyInit() {
   setTOP.insert("L1_QuadJetC36") ;
   setTOP.insert("L1_QuadJetC40") ;
   setTOP.insert("L1_QuadJetC50") ;
-  setTOP.insert("L1_Mu18_EG8") ;
-  setTOP.insert("L1_Mu5_EG18") ;
+  setTOP.insert("L1_Mu20_EG8") ;
+  setTOP.insert("L1_Mu5_EG20") ;
   setTOP.insert("L1_SingleMu14er") ;
   setTOP.insert("L1_SingleMu16er") ;
   setTOP.insert("L1_SingleMu18er") ;
@@ -249,7 +245,7 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_SingleIsoEG30") ;
   setHIGGS.insert("L1_SingleEG22") ;
   setHIGGS.insert("L1_DoubleEG_35_15") ;
-  setHIGGS.insert("L1_TripleEG_20_15_5") ;
+  setHIGGS.insert("L1_TripleEG_25_15_5") ;
   setHIGGS.insert("L1_SingleJet150") ;
   setHIGGS.insert("L1_DoubleJetC36") ;
   setHIGGS.insert("L1_DoubleJetC44_Eta1p74_WdEta4") ;
@@ -260,13 +256,13 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_TripleJet_64_44_24_VBF") ;
   setHIGGS.insert("L1_TripleJet_64_48_28_VBF") ;
   setHIGGS.insert("L1_TripleJet_68_48_32_VBF") ;
-  setHIGGS.insert("L1_DoubleTauJet52er") ;
+  setHIGGS.insert("L1_DoubleTauJet68er") ;
   setHIGGS.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12") ;
   setHIGGS.insert("L1_Mu10er_JetC32") ;
   setHIGGS.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12") ;
-  setHIGGS.insert("L1_Mu18_EG8") ;
+  setHIGGS.insert("L1_Mu20_EG8") ;
   setHIGGS.insert("L1_MuOpen_EG12") ;
-  setHIGGS.insert("L1_Mu5_EG18") ;
+  setHIGGS.insert("L1_Mu5_EG20") ;
   setHIGGS.insert("L1_SingleMu3") ;
   setHIGGS.insert("L1_SingleMu18er") ;
   setHIGGS.insert("L1_SingleMu20er") ;
@@ -300,13 +296,13 @@ void L1Menu2012::MyInit() {
   setSUSY.insert("L1_DoubleEG6_HTT100") ;
   setSUSY.insert("L1_DoubleEG6_HTT125") ;
   setSUSY.insert("L1_EG8_DoubleJetC20") ;
-  setSUSY.insert("L1_Mu18_EG8") ;
+  setSUSY.insert("L1_Mu20_EG8") ;
   setSUSY.insert("L1_MuOpen_EG12") ;
-  setSUSY.insert("L1_Mu5_EG18") ;
+  setSUSY.insert("L1_Mu5_EG20") ;
   setSUSY.insert("L1_DoubleMu3p5_EG5") ;
   setSUSY.insert("L1_DoubleMu7_EG7") ;
   setSUSY.insert("L1_Mu5_DoubleEG5") ;
-  setSUSY.insert("L1_Mu7_DoubleEG8") ;
+  setSUSY.insert("L1_Mu7_DoubleEG10") ;
   setSUSY.insert("L1_DoubleJetC36_ETM30") ;
   setSUSY.insert("L1_DoubleJetC44_ETM30") ;
   setSUSY.insert("L1_SingleMu12er") ;
@@ -341,8 +337,8 @@ void L1Menu2012::MyInit() {
   setEXO.insert("L1_QuadJetC36") ;
   setEXO.insert("L1_QuadJetC40") ;
   setEXO.insert("L1_QuadJetC50") ;
-  setEXO.insert("L1_Mu18_EG8") ;
-  setEXO.insert("L1_Mu5_EG18") ;
+  setEXO.insert("L1_Mu20_EG8") ;
+  setEXO.insert("L1_Mu5_EG20") ;
   setEXO.insert("L1_SingleMu16er") ;
   setEXO.insert("L1_SingleMu18er") ;
   setEXO.insert("L1_SingleMu20er") ;
@@ -370,9 +366,9 @@ void L1Menu2012::MyInit() {
   setSMP.insert("L1_SingleJet150") ;
   setSMP.insert("L1_EG22_ForJet24") ;
   setSMP.insert("L1_EG22_ForJet32") ;
-  setSMP.insert("L1_Mu18_EG8") ;
+  setSMP.insert("L1_Mu20_EG8") ;
   setSMP.insert("L1_MuOpen_EG12") ;
-  setSMP.insert("L1_Mu5_EG18") ;
+  setSMP.insert("L1_Mu5_EG20") ;
   setSMP.insert("L1_SingleMu16er") ;
   setSMP.insert("L1_SingleMu18er") ;
   setSMP.insert("L1_SingleMu20er") ;
@@ -387,101 +383,102 @@ void L1Menu2012::MyInit() {
   setBPH.insert("L1_TripleMu0_HighQ") ;
 
   // the seeds per physics triggers (TRIGPHYS));
-  setMuon.insert("L1_TripleMu0");
-  setMuon.insert("L1_DoubleMu0er_HighQ");
+  setMuon.insert("L1_SingleMuOpen");
+  setMuon.insert("L1_SingleMu3");
+  setMuon.insert("L1_SingleMu12");
+  setMuon.insert("L1_SingleMu12er");
   setMuon.insert("L1_SingleMu14er");
+  setMuon.insert("L1_SingleMu16");
+  setMuon.insert("L1_SingleMu16er");
+  setMuon.insert("L1_SingleMu18er");
+  setMuon.insert("L1_SingleMu20er");
+  setMuon.insert("L1_SingleMu20");
+  setMuon.insert("L1_SingleMu25");
+  setMuon.insert("L1_SingleMu25er");
+  setMuon.insert("L1_DoubleMu0");
+  setMuon.insert("L1_DoubleMu0er_HighQ");
+  setMuon.insert("L1_DoubleMu3er_HighQ_WdEta22");
+  setMuon.insert("L1_DoubleMu_6er_3er_HighQ_WdEta22");
   setMuon.insert("L1_DoubleMu_10_Open");
   setMuon.insert("L1_DoubleMu_10_3p5");
-  setMuon.insert("L1_DoubleMu3er_HighQ_WdEta22");
-  setMuon.insert("L1_SingleMuOpen");
-  setMuon.insert("L1_SingleMu16");
-  setMuon.insert("L1_SingleMu3");
-  setMuon.insert("L1_DoubleMu_6er_3er_HighQ_WdEta22");
-  setMuon.insert("L1_SingleMu20er");
-  setMuon.insert("L1_SingleMu12");
-  setMuon.insert("L1_SingleMu20");
-  setMuon.insert("L1_SingleMu25er");
-  setMuon.insert("L1_SingleMu16er");
-  setMuon.insert("L1_SingleMu12er");
-  setMuon.insert("L1_SingleMu6_NotBptxOR");
-  setMuon.insert("L1_DoubleMu0");
+  setMuon.insert("L1_DoubleMu_12_5");
+  setMuon.insert("L1_TripleMu0");
   setMuon.insert("L1_TripleMu0_HighQ");
   setMuon.insert("L1_TripleMu_5_5_3");
-  setMuon.insert("L1_SingleMu18er");
-  setMuon.insert("L1_DoubleMu_12_5");
-  setMuonHadronic.insert("L1_Mu4_HTT125");
-  setMuonHadronic.insert("L1_Mu12er_ETM20");
-  setMuonHadronic.insert("L1_DoubleJetC44_ETM30");
+  setMuon.insert("L1_SingleMu6_NotBptxOR");
+  setMuonHadronic.insert("L1_Mu8_DoubleJetC20");
+  setMuonHadronic.insert("L1_Mu10er_JetC32");
   setMuonHadronic.insert("L1_Mu3_JetC16_WdEtaPhi2");
   setMuonHadronic.insert("L1_Mu3_JetC52_WdEtaPhi2");
   setMuonHadronic.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12");
-  setMuonHadronic.insert("L1_Mu10er_JetC32");
   setMuonHadronic.insert("L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12");
   setMuonHadronic.insert("L1_Mu0_HTT50");
   setMuonHadronic.insert("L1_Mu0_HTT100");
-  setMuonHadronic.insert("L1_Mu8_DoubleJetC20");
-  setMuonEG.insert("L1_Mu5_EG18");
+  setMuonHadronic.insert("L1_Mu4_HTT125");
+  setMuonHadronic.insert("L1_Mu12er_ETM20");
+  setMuonEG.insert("L1_MuOpen_EG5");
   setMuonEG.insert("L1_MuOpen_EG12");
-  setMuonEG.insert("L1_Mu18_EG8");
+  setMuonEG.insert("L1_Mu5_EG20");
+  setMuonEG.insert("L1_Mu20_EG8");
   setMuonEG.insert("L1_Mu5_DoubleEG5");
+  setMuonEG.insert("L1_Mu7_DoubleEG10");
   setMuonEG.insert("L1_DoubleMu3p5_EG5");
   setMuonEG.insert("L1_DoubleMu7_EG7");
-  setMuonEG.insert("L1_Mu7_DoubleEG8");
-  setMuonEG.insert("L1_MuOpen_EG5");
+  setEG.insert("L1_SingleEG5");
+  setEG.insert("L1_SingleEG20");
+  setEG.insert("L1_SingleEG22");
+  setEG.insert("L1_SingleEG24");
+  setEG.insert("L1_SingleEG30");
+  setEG.insert("L1_SingleEG35");
+  setEG.insert("L1_SingleIsoEG20");
+  setEG.insert("L1_SingleIsoEG30");
+  setEG.insert("L1_DoubleEG3_FwdVeto");
+  setEG.insert("L1_DoubleEG5");
+  setEG.insert("L1_DoubleEG_35_15");
+  setEG.insert("L1_TripleEG7");
+  setEG.insert("L1_TripleEG_25_15_5");
   setHadronic.insert("L1_SingleJet16");
   setHadronic.insert("L1_SingleJet52");
   setHadronic.insert("L1_SingleJet68");
   setHadronic.insert("L1_SingleJet92");
   setHadronic.insert("L1_SingleJet128");
   setHadronic.insert("L1_SingleJet150"); 
- setHadronic.insert("L1_DoubleJetC44_Eta1p74_WdEta4");
-  setHadronic.insert("L1_DoubleJetC56_Eta1p74_WdEta4");
-  setHadronic.insert("L1_DoubleTauJet52er");
-  setHadronic.insert("L1_HTT125");
-  setHadronic.insert("L1_DoubleJetC52");
-  setHadronic.insert("L1_ETT80");
-  setHadronic.insert("L1_ETM100");
-  setHadronic.insert("L1_ETM36");
-  setHadronic.insert("L1_ETM30");
-  setHadronic.insert("L1_ETM50");
-  setHadronic.insert("L1_ETM70");
-  setHadronic.insert("L1_ETT300");
-  setHadronic.insert("L1_HTT100");
-  setHadronic.insert("L1_HTT150");
-  setHadronic.insert("L1_HTT175");
-  setHadronic.insert("L1_HTT200");
-  setHadronic.insert("L1_DoubleJetC64");
-  setHadronic.insert("L1_ETM40");
-  setHadronic.insert("L1_DoubleJetC56");
-  setHadronic.insert("L1_ETT140");
   setHadronic.insert("L1_DoubleJetC36");
-  setHadronic.insert("L1_DoubleJetC36_ETM30");
+  setHadronic.insert("L1_DoubleJetC52");
+  setHadronic.insert("L1_DoubleJetC56");
+  setHadronic.insert("L1_DoubleJetC44_Eta1p74_WdEta4");
+  setHadronic.insert("L1_DoubleJetC56_Eta1p74_WdEta4");
+  setHadronic.insert("L1_DoubleJetC64");
+  setHadronic.insert("L1_DoubleTauJet68er");
+  setHadronic.insert("L1_TripleJetC_52_28_28");
   setHadronic.insert("L1_TripleJet_64_44_24_VBF");
   setHadronic.insert("L1_TripleJet_64_48_28_VBF");
   setHadronic.insert("L1_TripleJet_68_48_32_VBF");
   setHadronic.insert("L1_QuadJetC36");
   setHadronic.insert("L1_QuadJetC40");
   setHadronic.insert("L1_QuadJetC50");
-  setHadronic.insert("L1_TripleJetC_52_28_28");
-  setEGHadronic.insert("L1_DoubleEG6_HTT100");
-  setEGHadronic.insert("L1_DoubleEG6_HTT125");
+  setHadronic.insert("L1_HTT100");
+  setHadronic.insert("L1_HTT125");
+  setHadronic.insert("L1_HTT150");
+  setHadronic.insert("L1_HTT175");
+  setHadronic.insert("L1_HTT200");
+  setHadronic.insert("L1_ETT80");
+  setHadronic.insert("L1_ETM30");
+  setHadronic.insert("L1_ETM36");
+  setHadronic.insert("L1_ETM40");
+  setHadronic.insert("L1_ETM50");
+  setHadronic.insert("L1_ETM70");
+  setHadronic.insert("L1_ETM100");
+  setHadronic.insert("L1_ETT140");
+  setHadronic.insert("L1_ETT300");
+  setHadronic.insert("L1_DoubleJetC36_ETM30");
+  setHadronic.insert("L1_DoubleJetC44_ETM30");
+  setEGHadronic.insert("L1_IsoEG12er_ETM30");
+  setEGHadronic.insert("L1_EG8_DoubleJetC20");
   setEGHadronic.insert("L1_EG22_ForJet24");
   setEGHadronic.insert("L1_EG22_ForJet32");
-  setEGHadronic.insert("L1_EG8_DoubleJetC20");
-  setEGHadronic.insert("L1_IsoEG12er_ETM30");
-  setEG.insert("L1_DoubleEG_35_15");
-  setEG.insert("L1_TripleEG_20_15_5");
-  setEG.insert("L1_SingleIsoEG30");
-  setEG.insert("L1_SingleEG5");
-  setEG.insert("L1_SingleEG22");
-  setEG.insert("L1_SingleEG24");
-  setEG.insert("L1_SingleEG20");
-  setEG.insert("L1_SingleEG30");
-  setEG.insert("L1_SingleEG35");
-  setEG.insert("L1_DoubleEG5");
-  setEG.insert("L1_DoubleEG3_FwdVeto");
-  setEG.insert("L1_TripleEG7");
-
+  setEGHadronic.insert("L1_DoubleEG6_HTT100");
+  setEGHadronic.insert("L1_DoubleEG6_HTT125");
 
   // ---- The bit std::mapping
   //  be carefull with Trigger name != Trigger alias for a few bits that were already in 2011 menu :
@@ -505,10 +502,10 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_BeamHalo"] = 8 ;
   BitMapping["L1_TripleMu0"] = 9 ;
   BitMapping["L1_Mu4_HTT125"] = 10 ;
-  BitMapping["L1_Mu5_EG18"] = 11 ;
+  BitMapping["L1_Mu5_EG20"] = 11 ;
   BitMapping["L1_Mu12er_ETM20"] = 12 ;
   BitMapping["L1_MuOpen_EG12"] = 13 ;
-  BitMapping["L1_Mu18_EG8"] = 14 ;
+  BitMapping["L1_Mu20_EG8"] = 14 ;
   BitMapping["L1_SingleJet16"] = 15 ;
   BitMapping["L1_SingleJet150"] = 16 ;
   BitMapping["L1_SingleJet52"] = 17 ;
@@ -521,7 +518,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_DoubleMu3p5_EG5"] = 24 ;
   BitMapping["L1_DoubleMu7_EG7"] = 25 ;
   BitMapping["L1_DoubleMu0er_HighQ"] = 26 ;
-  BitMapping["L1_Mu7_DoubleEG8"] = 27 ;
+  BitMapping["L1_Mu7_DoubleEG10"] = 27 ;
   BitMapping["L1_DoubleJetC44_ETM30"] = 28 ;
   BitMapping["L1_Mu3_JetC16_WdEtaPhi2"] = 29 ;
   BitMapping["L1_Mu3_JetC52_WdEtaPhi2"] = 30 ;
@@ -531,9 +528,9 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_EG22_ForJet32"] = 34 ;
   BitMapping["L1_DoubleJetC44_Eta1p74_WdEta4"] = 35 ;
   BitMapping["L1_DoubleJetC56_Eta1p74_WdEta4"] = 36 ;
-  BitMapping["L1_DoubleTauJet52er"] = 37 ;
+  BitMapping["L1_DoubleTauJet68er"] = 37 ;
   BitMapping["L1_DoubleEG_35_15"] = 38 ;
-  BitMapping["L1_TripleEG_20_15_5"] = 39 ;
+  BitMapping["L1_TripleEG_25_15_5"] = 39 ;
   BitMapping["L1_HTT125"] = 40 ;
   BitMapping["L1_DoubleJetC52"] = 41 ;
   BitMapping["L1_SingleMu14er"] = 42 ;
@@ -623,475 +620,16 @@ void L1Menu2012::MyInit() {
   BitMapping["FREE200"] = 200;
   BitMapping["L1_IsoEG12er_ETM30"] = 201;
 
-  // target lumi = 7e33
-  if (theL1Menu == 70) {
-    Prescales["L1_ZeroBias"] = 10000;
-    Prescales["L1_AlwaysTrue"] = 241;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"] = 1000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 5000;
-    Prescales["L1_InterBunch_Bptx"] = 1048573;
-    Prescales["L1_TripleMu0"] = 1;
-    Prescales["L1_Mu4_HTT125"] = 1;
-    Prescales["L1_Mu3p5_EG12"] = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-    Prescales["L1_MuOpen_EG12"] = INFTY;
-    Prescales["L1_Mu12_EG7"] = 1;
-    Prescales["L1_SingleJet16"] = 150000;
-    Prescales["L1_SingleJet36"] = 6000;
-    Prescales["L1_SingleJet52"] = 7500;
-    Prescales["L1_SingleJet68"] = 200;
-    Prescales["L1_SingleJet92"] = 40;
-    Prescales["L1_SingleJet128"] = 1;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-    Prescales["L1_Mu5_DoubleEG5"] = INFTY;
-    Prescales["L1_DoubleMu3p5_EG5"] = INFTY;
-    Prescales["L1_DoubleMu5_EG5"] = 1;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_Mu5_DoubleEG6"] = 1;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 300;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
-    Prescales["L1_SingleEG7"] = 800;
-    Prescales["L1_SingleIsoEG20"] = 1;
-    Prescales["L1_EG22_ForJet24"] = INFTY;
-    Prescales["L1_EG22_ForJet32"] = 1;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 6;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleTauJet52er"] = 1;
-    Prescales["L1_DoubleEG_25_10"] = 1;
-    Prescales["L1_TripleEG_12_7_5"] = 1;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_DoubleJetC52"] = INFTY;
-    Prescales["L1_SingleMu14er"] = 1;
-    Prescales["L1_SingleIsoEG18"] = 1;
-    Prescales["L1_DoubleMu_10_Open"] = 1;
-    Prescales["L1_DoubleMu_10_3p5"] = 1;
-    Prescales["L1_ETT80"] = INFTY;
-    Prescales["L1_SingleEG5"] = 4500;
-    Prescales["L1_SingleEG22"] = 1;
-    Prescales["L1_SingleEG12"] = 1800;
-    Prescales["L1_SingleEG24"] = 1;
-    Prescales["L1_SingleEG20"] = 1;
-    Prescales["L1_SingleEG30"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMuOpen"] = 7000;
-    Prescales["L1_SingleMu16"] = 1;
-    Prescales["L1_SingleMu3"] = 4000;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_SingleMu25"] = 600;
-    Prescales["L1_SingleMu20er"] = 1;
-    Prescales["L1_SingleMu12"] = 900;
-    Prescales["L1_SingleMu20"] = 1;
-    Prescales["L1_SingleMu25er"] = 1;
-    Prescales["L1_ETM100"] = 1;
-    Prescales["L1_ETM36"] = INFTY;
-    Prescales["L1_ETM30"] = 12000;
-    Prescales["L1_ETM50"] = 1;
-    Prescales["L1_ETM70"] = 1;
-    Prescales["L1_ETT300"] = 1;
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
-    Prescales["L1_Mu10er_JetC32"] = INFTY;
-    Prescales["L1_DoubleJetC64"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_ETM40"] = 1;
-    Prescales["L1_Mu0_HTT50"] = INFTY;
-    Prescales["L1_Mu0_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG5"] = INFTY;
-    Prescales["L1_SingleMu16er"] = 1;
-    Prescales["L1_SingleMu12er"] = 1;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-    Prescales["L1_Mu8_DoubleJetC20"] = 200;
-    Prescales["L1_DoubleMu0"] = INFTY;
-    Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    Prescales["L1_DoubleJetC56"] = INFTY;
-    Prescales["L1_TripleMu0_HighQ"] = 1;
-    Prescales["L1_TripleMu_5_5_0"] = 1;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_DoubleJetC36"] = 320;
-    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC40"] = 1;
-    Prescales["L1_QuadJetC36"] = INFTY;
-    Prescales["L1_TripleJetC_52_28_28"] = 300;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_SingleMu18er"] = 1;
-    Prescales["L1_MuOpen_EG5"] = INFTY;
-    Prescales["L1_DoubleMu_12_5"] = 1;
-    Prescales["L1_TripleEG7"] = 1;
-    Prescales["L1_IsoEG12er_ETM30"] = INFTY;
+  //Read the prescales table
+  ifstream menufile;
+  menufile.open(themenufilename);
+  char path_name[50];
+  Int_t prescale_value = -1;
+
+  while(menufile >> path_name >> prescale_value){
+    if(prescale_value < 0) Prescales[path_name] = INFTY;
+    else Prescales[path_name] = prescale_value;
   }
-
-  // full 13 TeV 1.4 menu
-  if (theL1Menu == 140) {
-    Prescales["L1_ZeroBias"]                      = 10000;
-    Prescales["L1_AlwaysTrue"]                    = 300;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"]  = 10000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 10000;
-    Prescales["L1_InterBunch_Bptx"]               = INFTY;
-
-    //Muons
-    Prescales["L1_SingleMuOpen"]      = 10000;
-    Prescales["L1_SingleMu3"]         = 8000;
-    Prescales["L1_SingleMu12"]        = 1000;
-    Prescales["L1_SingleMu12er"]      = 200;
-    Prescales["L1_SingleMu14er"]      = 100;
-    Prescales["L1_SingleMu16"]        = 100;
-    Prescales["L1_SingleMu16er"]      = 100;
-    Prescales["L1_SingleMu18er"]      = 100;
-    Prescales["L1_SingleMu20er"]      = 100;
-    Prescales["L1_SingleMu20"]        = 100;
-    Prescales["L1_SingleMu25"]        = 1;
-    Prescales["L1_SingleMu25er"]      = 1;
-    Prescales["L1_DoubleMu0"]         = INFTY;
-    Prescales["L1_DoubleMu0er_HighQ"] = 100;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 1;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"]    = 100;
-    Prescales["L1_DoubleMu_10_3p5"]     = 100;
-    Prescales["L1_DoubleMu_12_5"]       = 1;
-    Prescales["L1_TripleMu0"]           = 100;
-    Prescales["L1_TripleMu0_HighQ"]     = 1;
-    Prescales["L1_TripleMu_5_5_0"]      = 1;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-
-    //Electrons
-    Prescales["L1_SingleEG5"]         = 40000;
-    Prescales["L1_SingleEG20"]        = 800;
-    Prescales["L1_SingleEG22"]        = 400;
-    Prescales["L1_SingleEG24"]        = 200;
-    Prescales["L1_SingleEG30"]        = 100;
-    Prescales["L1_SingleEG35"]        = 1;
-    Prescales["L1_SingleIsoEG18"]   = 300;
-    Prescales["L1_SingleIsoEG20"]   = 1;
-    Prescales["L1_EG22_ForJet24"]     = INFTY;
-    Prescales["L1_EG22_ForJet32"]     = 1;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_DoubleEG5"]         = INFTY;
-    Prescales["L1_DoubleEG_13_7"]     = 1;
-    Prescales["L1_TripleEG7"]         = 200;
-    Prescales["L1_TripleEG_12_7_5"]   = 1;
-
-    //Jets
-    Prescales["L1_SingleJet16"]           = INFTY;
-    Prescales["L1_SingleJet36"]           = 100000;
-    Prescales["L1_SingleJet52"]           = 10000;
-    Prescales["L1_SingleJet68"]           = 800;
-    Prescales["L1_SingleJet92"]           = 200;
-    Prescales["L1_SingleJet128"]          = 1;
-    Prescales["L1_DoubleJetC36"]          = INFTY;
-    Prescales["L1_DoubleJetC52"]          = INFTY;
-    Prescales["L1_DoubleJetC56"]          = INFTY;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 2000;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC64"]           = 1;
-    Prescales["L1_DoubleTauJet52er"]       = 1;
-    Prescales["L1_TripleJetC_52_28_28"]    = 300;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC36"]             = 1;
-    Prescales["L1_QuadJetC40"]             = 1;
-    Prescales["L1_QuadJetC50"]             = 1;
-
-    //Sums
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_HTT150"] = 10000;
-    Prescales["L1_HTT175"] = 1000;
-    Prescales["L1_HTT200"] = 1;
-    Prescales["L1_ETT80"]  = INFTY;
-    Prescales["L1_ETM30"]  = INFTY;
-    Prescales["L1_ETM36"]  = 30000;
-    Prescales["L1_ETM40"]  = 15000;
-    Prescales["L1_ETM50"]  = 1000;
-    Prescales["L1_ETM70"]  = 500;
-    Prescales["L1_ETM100"] = 1;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_ETT300"] = INFTY;
-
-    //Cross
-    Prescales["L1_MuOpen_EG5"]           = INFTY;
-    Prescales["L1_MuOpen_EG12"]          = INFTY;
-    Prescales["L1_Mu3p5_EG12"]           = 1;
-    Prescales["L1_Mu12_EG7"]             = 1;
-    Prescales["L1_Mu5_DoubleEG5"]        = INFTY;
-    Prescales["L1_Mu5_DoubleEG6"]        = 1;
-    Prescales["L1_DoubleMu3p5_EG5"]      = INFTY;
-    Prescales["L1_DoubleMu5_EG5"]        = 1;
-    Prescales["L1_Mu8_DoubleJetC20"]     = 200;
-    Prescales["L1_Mu10er_JetC32"]        = INFTY;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 500;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 1;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_Mu0_HTT50"]    = INFTY;
-    Prescales["L1_Mu0_HTT100"]   = INFTY;
-    Prescales["L1_Mu4_HTT125"]   = 1;
-    Prescales["L1_Mu12er_ETM20"] = 1;
-
-    Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
-    Prescales["L1_EG8_DoubleJetC20"] = 20000;
-    Prescales["L1_DoubleEG6_HTT100"] = 2500;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-
-    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-  }
-
-  // 13 TeV 1.4 menu WITHOUT THE SUMS
-  if (theL1Menu == 14000) {
-    Prescales["L1_ZeroBias"]                      = 10000;
-    Prescales["L1_AlwaysTrue"]                    = 300;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"]  = 10000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 10000;
-    Prescales["L1_InterBunch_Bptx"]               = INFTY;
-
-    //Muons
-    Prescales["L1_SingleMuOpen"]      = 10000;
-    Prescales["L1_SingleMu3"]         = 8000;
-    Prescales["L1_SingleMu12"]        = 1000;
-    Prescales["L1_SingleMu12er"]      = 200;
-    Prescales["L1_SingleMu14er"]      = 100;
-    Prescales["L1_SingleMu16"]        = 100;
-    Prescales["L1_SingleMu16er"]      = 100;
-    Prescales["L1_SingleMu18er"]      = 100;
-    Prescales["L1_SingleMu20er"]      = 100;
-    Prescales["L1_SingleMu20"]        = 100;
-    Prescales["L1_SingleMu25"]        = 100;
-    Prescales["L1_SingleMu25er"]      = 1;
-    Prescales["L1_DoubleMu0"]         = INFTY;
-    Prescales["L1_DoubleMu0er_HighQ"] = 100;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 100;
-    Prescales["L1_DoubleMu_6er_3er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"]    = 100;
-    Prescales["L1_DoubleMu_10_3p5"]     = 100;
-    Prescales["L1_DoubleMu_12_5"]       = 1;
-    Prescales["L1_TripleMu0"]           = 100;
-    Prescales["L1_TripleMu0_HighQ"]     = 100;
-    Prescales["L1_TripleMu_5_5_3"]      = 1;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-
-    //Electrons
-    Prescales["L1_SingleEG5"]         = 40000;
-    Prescales["L1_SingleEG20"]        = 800;
-    Prescales["L1_SingleEG22"]        = 400;
-    Prescales["L1_SingleEG24"]        = 200;
-    Prescales["L1_SingleEG30"]        = 100;
-    Prescales["L1_SingleEG35"]        = 1;
-    Prescales["L1_SingleIsoEG20"]     = 100;
-    Prescales["L1_SingleIsoEG30"]     = 1;
-    Prescales["L1_EG22_ForJet24"]     = INFTY;
-    Prescales["L1_EG22_ForJet32"]     = 1;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_DoubleEG5"]         = INFTY;
-    Prescales["L1_DoubleEG_35_15"]    = 1;
-    Prescales["L1_TripleEG7"]         = 200;
-    Prescales["L1_TripleEG_20_15_5"]  = 1;
-
-    //Jets
-    Prescales["L1_SingleJet16"]           = INFTY;
-    Prescales["L1_SingleJet52"]           = 10000;
-    Prescales["L1_SingleJet68"]           = 800;
-    Prescales["L1_SingleJet92"]           = 300;
-    Prescales["L1_SingleJet128"]          = 80;
-    Prescales["L1_SingleJet150"]          = 1;
-    Prescales["L1_DoubleJetC36"]          = INFTY;
-    Prescales["L1_DoubleJetC52"]          = INFTY;
-    Prescales["L1_DoubleJetC56"]          = INFTY;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 10;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC64"]           = 1;
-    Prescales["L1_DoubleTauJet52er"]       = 1;
-    Prescales["L1_TripleJetC_52_28_28"]    = 300;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC36"]             = INFTY;
-    Prescales["L1_QuadJetC40"]             = 1;
-    Prescales["L1_QuadJetC50"]             = 1;
-
-    //Sums
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_HTT150"] = INFTY;
-    Prescales["L1_HTT175"] = INFTY;
-    Prescales["L1_HTT200"] = INFTY;
-    Prescales["L1_ETT80"]  = INFTY;
-    Prescales["L1_ETM30"]  = INFTY;
-    Prescales["L1_ETM36"]  = INFTY;
-    Prescales["L1_ETM40"]  = INFTY;
-    Prescales["L1_ETM50"]  = INFTY;
-    Prescales["L1_ETM70"]  = INFTY;
-    Prescales["L1_ETM100"] = INFTY;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_ETT300"] = INFTY;
-
-    //Cross
-    Prescales["L1_MuOpen_EG5"]           = INFTY;
-    Prescales["L1_MuOpen_EG12"]          = INFTY;
-    Prescales["L1_Mu5_EG18"]             = 1;
-    Prescales["L1_Mu18_EG8"]             = 1;
-    Prescales["L1_Mu5_DoubleEG5"]        = INFTY;
-    Prescales["L1_Mu7_DoubleEG8"]        = 1;
-    Prescales["L1_DoubleMu3p5_EG5"]      = INFTY;
-    Prescales["L1_DoubleMu7_EG7"]        = 1;
-    Prescales["L1_Mu8_DoubleJetC20"]     = 200;
-    Prescales["L1_Mu10er_JetC32"]        = INFTY;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 500;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_Mu0_HTT50"]    = INFTY;
-    Prescales["L1_Mu0_HTT100"]   = INFTY;
-    Prescales["L1_Mu4_HTT125"]   = INFTY;
-    Prescales["L1_Mu12er_ETM20"] = INFTY;
-
-    Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
-    Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    Prescales["L1_DoubleEG6_HTT100"] = INFTY;
-    Prescales["L1_DoubleEG6_HTT125"] = INFTY;
-
-    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    Prescales["L1_DoubleJetC44_ETM30"] = INFTY;
-  }
-
-
-  // BACKUP OF full 13 TeV 1.4 menu
-  if (theL1Menu == 1400) {
-    Prescales["L1_ZeroBias"]                      = 10000;
-    Prescales["L1_AlwaysTrue"]                    = 300;
-    Prescales["L1_BeamGas_Hf_BptxPlusPostQuiet"]  = 10000;
-    Prescales["L1_BeamGas_Hf_BptxMinusPostQuiet"] = 10000;
-    Prescales["L1_InterBunch_Bptx"]               = INFTY;
-
-    //Muons
-    Prescales["L1_SingleMuOpen"]      = 7000;
-    Prescales["L1_SingleMu3"]         = 4000;
-    Prescales["L1_SingleMu7"]         = 2000;
-    Prescales["L1_SingleMu12"]        = 1000;
-    Prescales["L1_SingleMu12er"]      = 1;
-    Prescales["L1_SingleMu14er"]      = 1;
-    Prescales["L1_SingleMu16"]        = 1;
-    Prescales["L1_SingleMu16er"]      = 1;
-    Prescales["L1_SingleMu18er"]      = 1;
-    Prescales["L1_SingleMu20er"]      = 1;
-    Prescales["L1_SingleMu20"]        = 1;
-    Prescales["L1_SingleMu25er"]      = 1;
-    Prescales["L1_DoubleMu0"]         = INFTY;
-    Prescales["L1_DoubleMu0er_HighQ"] = 1;
-    Prescales["L1_DoubleMu3er_HighQ_WdEta22"]      = 1;
-    Prescales["L1_DoubleMu_5er_0er_HighQ_WdEta22"] = 1;
-    Prescales["L1_DoubleMu_10_Open"]    = 1;
-    Prescales["L1_DoubleMu_10_3p5"]     = 1;
-    Prescales["L1_DoubleMu_12_5"]       = 1;
-    Prescales["L1_TripleMu0"]           = 1;
-    Prescales["L1_TripleMu0_HighQ"]     = 1;
-    Prescales["L1_TripleMu_5_5_0"]      = 1;
-    Prescales["L1_SingleMu6_NotBptxOR"] = 1;
-
-    //Electrons
-    Prescales["L1_SingleEG5"]         = 5000;
-    Prescales["L1_SingleEG7"]         = 2500;
-    Prescales["L1_SingleEG12"]        = 2000;
-    Prescales["L1_SingleEG20"]        = 1;
-    Prescales["L1_SingleEG22"]        = 1;
-    Prescales["L1_SingleEG24"]        = 1;
-    Prescales["L1_SingleEG30"]        = 1;
-    Prescales["L1_SingleIsoEG18"]     = 1;
-    Prescales["L1_SingleIsoEG20"]     = 1;
-    Prescales["L1_EG22_ForJet24"]     = INFTY;
-    Prescales["L1_EG22_ForJet32"]     = 1;
-    Prescales["L1_DoubleEG3_FwdVeto"] = INFTY;
-    Prescales["L1_DoubleEG5"]         = INFTY;
-    Prescales["L1_DoubleEG_13_7"]     = 1;
-    Prescales["L1_TripleEG7"]         = 1;
-    Prescales["L1_TripleEG_20_7_5"]   = 1;
-
-    //Jets
-    Prescales["L1_SingleJet16"]          = 150000;
-    Prescales["L1_SingleJet36"]          = 10000;
-    Prescales["L1_SingleJet52"]          = 8000;
-    Prescales["L1_SingleJet68"]          = 200;
-    Prescales["L1_SingleJet92"]          = 50;
-    Prescales["L1_SingleJet128"]         = 1;
-    Prescales["L1_SingleJetC32_NotBptxOR"] = 1;
-    Prescales["L1_DoubleJetC36"]         = INFTY;
-    Prescales["L1_DoubleJetC52"]         = INFTY;
-    Prescales["L1_DoubleJetC56"]         = INFTY;
-    Prescales["L1_DoubleJetC44_Eta1p74_WdEta4"] = 10;
-    Prescales["L1_DoubleJetC56_Eta1p74_WdEta4"] = 1;
-    Prescales["L1_DoubleJetC64"]           = 1;
-    Prescales["L1_DoubleTauJet52er"]       = 1;
-    Prescales["L1_TripleJetC_52_28_28"]    = 300;
-    Prescales["L1_TripleJet_64_44_24_VBF"] = INFTY;
-    Prescales["L1_TripleJet_64_48_28_VBF"] = INFTY;
-    Prescales["L1_TripleJet_68_48_32_VBF"] = 1;
-    Prescales["L1_QuadJetC36"]             = INFTY;
-    Prescales["L1_QuadJetC40"]             = 1;
-    Prescales["L1_QuadJetC50"]             = 1;
-
-    //Sums
-    Prescales["L1_HTT100"] = INFTY;
-    Prescales["L1_HTT125"] = INFTY;
-    Prescales["L1_HTT150"] = 1;
-    Prescales["L1_HTT175"] = 1;
-    Prescales["L1_HTT200"] = 1;
-    Prescales["L1_ETT80"]  = INFTY;
-    Prescales["L1_ETM30"]  = INFTY;
-    Prescales["L1_ETM36"]  = 15000;
-    Prescales["L1_ETM40"]  = 1;
-    Prescales["L1_ETM50"]  = 1;
-    Prescales["L1_ETM70"]  = 1;
-    Prescales["L1_ETM100"] = 1;
-    Prescales["L1_ETT140"] = INFTY;
-    Prescales["L1_ETT300"] = 1;
-
-    //Cross
-    Prescales["L1_MuOpen_EG5"]           = INFTY;
-    Prescales["L1_MuOpen_EG12"]          = INFTY;
-    Prescales["L1_Mu3p5_EG12"]           = 1;
-    Prescales["L1_Mu12_EG7"]             = 1;
-    Prescales["L1_Mu5_DoubleEG5"]        = INFTY;
-    Prescales["L1_Mu5_DoubleEG6"]        = 1;
-    Prescales["L1_DoubleMu3p5_EG5"]      = INFTY;
-    Prescales["L1_DoubleMu5_EG5"]        = 1;
-    Prescales["L1_Mu3_JetC16_WdEtaPhi2"] = 500;
-    Prescales["L1_Mu8_DoubleJetC20"]     = 200;
-    Prescales["L1_Mu10er_JetC32"]        = INFTY;
-    Prescales["L1_Mu3_JetC52_WdEtaPhi2"] = 10;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_20_12"] = INFTY;
-    Prescales["L1_Mu10er_JetC12_WdEtaPhi1_DoubleJetC_32_12"] = 1;
-    Prescales["L1_Mu0_HTT50"]    = INFTY;
-    Prescales["L1_Mu0_HTT100"]   = INFTY;
-    Prescales["L1_Mu4_HTT125"]   = 1;
-    Prescales["L1_Mu12er_ETM20"]         = 1;
-
-    Prescales["L1_IsoEG12er_ETM30"]  = INFTY;
-    Prescales["L1_EG8_DoubleJetC20"] = 1000;
-    Prescales["L1_DoubleEG6_HTT100"] = 1;
-    Prescales["L1_DoubleEG6_HTT125"] = 1;
-
-    Prescales["L1_DoubleJetC36_ETM30"] = INFTY;
-    Prescales["L1_DoubleJetC44_ETM30"] = 1;
-  }
-
-  /*
-  // -- test  to see where we stand if we would get rid of all p'ed seeds
-  // -- (in 2011 we spent ~ 20% of the rate in monitoring / control p'ed seeds..)
-
-  for (std::map<std::string, int>::iterator it=Prescales.begin(); it != Prescales.end(); it++) {
-  std::string name = it -> first;
-  Int_t p = it -> second;
-  if (p > 1 ) Prescales[name] = 0;
-  }
-  */
 
   for (std::map<std::string, int>::iterator it=Prescales.begin(); it != Prescales.end(); it++) {
     std::string name = it -> first;
@@ -1325,13 +863,13 @@ Bool_t L1Menu2012::Cross() {
   InsertInMenu("L1_DoubleEG6_HTT100", algoFactory->DoubleEG_HT(6.,100.) );
   InsertInMenu("L1_DoubleEG6_HTT125", algoFactory->DoubleEG_HT(6.,125.) );
   InsertInMenu("L1_EG8_DoubleJetC20", algoFactory->EG_DoubleJetCentral(8.,20.) );
-  InsertInMenu("L1_Mu18_EG8", algoFactory->Mu_EG(18.,8.) );
+  InsertInMenu("L1_Mu20_EG8", algoFactory->Mu_EG(20.,8.) );
   InsertInMenu("L1_MuOpen_EG12", algoFactory->Mu_EG(0.,12.,0) );
-  InsertInMenu("L1_Mu5_EG18", algoFactory->Mu_EG(5.,18.) );
+  InsertInMenu("L1_Mu5_EG20", algoFactory->Mu_EG(5.,20.) );
   InsertInMenu("L1_DoubleMu3p5_EG5", algoFactory->DoubleMu_EG(3.5,5.) );
   InsertInMenu("L1_DoubleMu7_EG7", algoFactory->DoubleMu_EG(7.,7.) );
   InsertInMenu("L1_Mu5_DoubleEG5", algoFactory->Mu_DoubleEG(5., 5.) );
-  InsertInMenu("L1_Mu7_DoubleEG8", algoFactory->Mu_DoubleEG(7., 8.) );
+  InsertInMenu("L1_Mu7_DoubleEG10", algoFactory->Mu_DoubleEG(7., 10.) );
   InsertInMenu("L1_DoubleJetC36_ETM30", algoFactory->DoubleJetCentral_ETM(36., 36., 30.) );
   InsertInMenu("L1_DoubleJetC44_ETM30", algoFactory->DoubleJetCentral_ETM(44., 44., 30.) );
 
@@ -1425,7 +963,7 @@ Bool_t L1Menu2012::Jets() {
   InsertInMenu("L1_SingleJet128", algoFactory->SingleJet(128.) );
   InsertInMenu("L1_SingleJet150", algoFactory->SingleJet(150.) );
 
-  InsertInMenu("L1_DoubleTauJet52er", algoFactory->DoubleTauJetEta2p17(52.,52.) );
+  InsertInMenu("L1_DoubleTauJet68er", algoFactory->DoubleTauJetEta2p17(68.,68.) );
 
   Int_t NN = insert_ibin;
 
@@ -1623,9 +1161,9 @@ Bool_t L1Menu2012::MultiEGamma() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_DoubleEG_35_15", algoFactory->DoubleEG(35.,15.) );
+  InsertInMenu("L1_DoubleEG_35_15", algoFactory->DoubleIsoEGEG(35.,15.) );
   InsertInMenu("L1_TripleEG7", algoFactory->TripleEG(7.,7.,7.) );
-  InsertInMenu("L1_TripleEG_20_15_5", algoFactory->TripleEG(20.,15.,5.) );
+  InsertInMenu("L1_TripleEG_25_15_5", algoFactory->TripleEG(25.,15.,5.) );
 
   Int_t NN = insert_ibin;
 
@@ -1666,7 +1204,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  nevents = 1000000;
+  nevents = 2000000;
 
   Int_t NPASS = 0; 
 
@@ -1894,7 +1432,7 @@ void L1Menu2012::Loop() {
   CorrectScale(h_All, scal);
   h_Pure  -> Scale(scal);
 
-  std::cout << " Prescales for: " << theL1Menu << ", L1NtupleFileName = " << theL1NtupleFileName << std::endl;
+  std::cout << " Prescales for: " << themenufilename << ", L1NtupleFileName = " << theL1NtupleFileName << std::endl;
   std::cout << std::endl << " --------------------------------------------------------- " << std::endl << std::endl;
   std::cout << " Rate that pass L1 " << NPASS * scal << " kHz  ( claimed by a PAG " << nPAG * scal << " kHz  i.e. " << 100.*(float)nPAG/(float)NPASS << "%. ) " << ") adding " << extrarate << " kHz = " << NPASS * scal + extrarate << " kHz " << std::endl << std::endl;
   std::cout << " --------------------------------------------------------- " << std::endl << std::endl;
@@ -1997,16 +1535,16 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   h_Pure = new TH1F("h_Pure","h_Pure",N128,-0.5,N128-0.5);
 
   Float_t NumberOfBunches=0; 
-  Float_t AverageLumi=0;
   std::string L1NtupleFileName="";
   Float_t AveragePU=0;
   Bool_t L1JetCorrection=false;
   Float_t Energy=0;
 
+  string themenufilename;
+
   if (whichFileAndLumiToUse==1) {
     // 8 TeV ZeroBias 53X sample
     NumberOfBunches = 2590; 
-    AverageLumi = 1.001;
     L1NtupleFileName = "/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_8TeV_53X_25PU_ReEmul2012_v2.root";
     AveragePU = 25;
     L1JetCorrection=false;
@@ -2015,7 +1553,6 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   if (whichFileAndLumiToUse==2) {
     // 13 TeV ZeroBias 53X sample
     NumberOfBunches = 2590; 
-    AverageLumi = 0.9305;
     L1NtupleFileName = "/data2/battilan/L1Trigger/L1T2015Menu/L1Ntuple_13TeV_53X_ReEmul2012_v2.root";
     AveragePU = 25;
     L1JetCorrection=false;
@@ -2024,7 +1561,6 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   if (whichFileAndLumiToUse==3) {
     // 13 TeV ZeroBias 62X sample, 2012 re-emulation
     NumberOfBunches = 2590; 
-    AverageLumi = 1.;
     L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012/L1Tree.root";
     AveragePU = 40;
     L1JetCorrection=false;
@@ -2033,7 +1569,6 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   if (whichFileAndLumiToUse==4) {
     // 13 TeV ZeroBias 62X sample, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 2590; 
-    AverageLumi = 1.;
     L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012Gct10GeV/L1Tree.root";
     AveragePU = 40;
     L1JetCorrection=false;
@@ -2042,8 +1577,8 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   if (whichFileAndLumiToUse==5) {
     // 13 TeV ZeroBias 62X sample, 2015 re-emulation
     NumberOfBunches = 2590; 
-    AverageLumi = 1.;
     L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree.root";
+    themenufilename = "Menu_40PU_25bx_NOSUMS.txt";
     AveragePU = 40;
     L1JetCorrection=false;
     Energy = 13;
@@ -2053,12 +1588,12 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
   }
 
   std::stringstream txtos;
-  txtos << "L1Menu_" << usedL1Menu << "_" << Energy << "_" << AveragePU << "_" << AverageLumi << "_rates.txt";
+  txtos << "L1Menu_" << usedL1Menu << "_" << Energy << "_" << AveragePU << "_rates.txt";
   TString TXTOutPutFileName = txtos.str();
   std::ofstream TXTOutfile(TXTOutPutFileName);
 
   std::stringstream csvos;
-  csvos << "L1Menu_" << usedL1Menu << "_" << Energy << "_" << AveragePU << "_" << AverageLumi  << "_rates.csv";
+  csvos << "L1Menu_" << usedL1Menu << "_" << Energy << "_" << AveragePU << "_rates.csv";
   TString CSVOutPutFileName = csvos.str();
   std::ofstream CSVOutfile(CSVOutPutFileName);
 
@@ -2066,6 +1601,7 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
 
   std::cout << std::endl << "Using: whichFileAndLumiToUse = " << whichFileAndLumiToUse << std::endl;
   std::cout << "  L1NtupleFileName                 = " << L1NtupleFileName << std::endl;
+  std::cout << "  L1MenuFileName                   = " << themenufilename << std::endl;
   std::cout << "  AveragePU                        = " << AveragePU << std::endl;
 
   if (writefiles) { 
@@ -2081,7 +1617,7 @@ void RunL1(Bool_t drawplots=true,Bool_t writefiles=true,Int_t usedL1Menu=50,Floa
     TXTOutfile << "  L1NtupleFileName                 = " << L1NtupleFileName << std::endl;
   }
 
-  L1Menu2012 a(usedL1Menu,NumberOfBunches,AverageLumi,L1NtupleFileName,AveragePU,9973,L1JetCorrection);
+  L1Menu2012 a(themenufilename,NumberOfBunches,L1NtupleFileName,AveragePU,9973,L1JetCorrection);
   a.Open(L1NtupleFileName);
   a.Loop();
 

@@ -49,8 +49,6 @@ private :
   float SingleMuEta(float eta);
   float SingleEGEta(float ptCut, bool doIso);
 
-  void EGIsoEGPt(Float_t &myIsoEGPt, Float_t &myEGPt);
-
   //GMT stuff
   float DttfPt();
   float RpcbPt();
@@ -225,41 +223,6 @@ float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
   return eta;
 }
 
-void BasicRatePlots::EGIsoEGPt(Float_t &myIsoEGPt, Float_t &myEGPt) {
-
-  float maxPtEGIso = -10.; 
-  float maxPtEG    = -10.; 
-
-  Int_t iEGIso = -1;
-
-  Int_t Nele = gt_ -> Nele;
-  for (Int_t ue=0; ue < Nele; ue++) {
-    Int_t bx = gt_ -> Bxel[ue];        		
-    if (bx != 0) continue;
-    Bool_t iso = gt_ -> Isoel[ue];
-    if (! iso) continue;
-    Float_t ptIso = gt_ -> Rankel[ue];    // the rank of the first (isolated) electron
-    if (ptIso >= maxPtEGIso){
-      maxPtEGIso = ptIso;
-      iEGIso = ue;
-    }
-  }
-
-  for (Int_t ue2=0; ue2 < Nele; ue2++) {
-    if(ue2 == iEGIso) continue;
-    Int_t bx2 = gt_ -> Bxel[ue2];
-    if (bx2 != 0) continue;
-
-    Float_t pt2 = gt_ -> Rankel[ue2];    // the rank of the second electron
-    if (pt2 >= maxPtEG) maxPtEG = pt2;
-  }
-  
-  myIsoEGPt = maxPtEGIso;
-  myEGPt = maxPtEG;
-
-  return;
-}
-
 void BasicRatePlots::setRateError(TH1F* histo) {
 
   int nBins = histo->GetNbinsX();
@@ -324,6 +287,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH2F["nMuVsHTT"]  = new TH2F("nMuVsHTT","Mu_HTT; p_{T} cut mu_{1}; HTT",61,-0.25,30.25,512,-.5,511.5);
   hTH2F["nMuVsEG"]   = new TH2F("nMuVsEG","Mu_EG; p_{T} cut mu; p_{T} cut EG",61,-0.25,30.25,65,-0.5,64.5);
 
+  //GMT stuff
   hTH1F["nDttfVsPt"]  = new TH1F("nDttfVsPt","DTTF; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nRpcbVsPt"]  = new TH1F("nRpcbVsPt","RPCb; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nRpcfVsPt"]  = new TH1F("nRpcfVsPt","RPCf; p_{T} cut; rate [Hz]",131,-0.5,130.5);
@@ -393,7 +357,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     float EGIsoPt1 = -10;
     float EGPt2    = -10;
-    EGIsoEGPt(EGIsoPt1,EGPt2);
+    algoFactory->DoubleIsoEGEGPt(EGIsoPt1,EGPt2);
 
     float dttfPt   = DttfPt();
     float rpcbPt   = RpcbPt();
@@ -433,44 +397,44 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     hTH1F["nIsoEGVsEta"]->Fill(isoegEta,weight);
 
     for(int ptCut=0; ptCut<256; ++ptCut) {
-      if(jetPt>ptCut)	   hTH1F["nJetVsPt"]->Fill(ptCut,weight);
-      if(jetCenPt>ptCut)   hTH1F["nJetCenVsPt"]->Fill(ptCut,weight);
-      if(tauPt>ptCut)	   hTH1F["nTauVsPt"]->Fill(ptCut,weight);
+      if(jetPt>=ptCut)	  hTH1F["nJetVsPt"]->Fill(ptCut,weight);
+      if(jetCenPt>=ptCut) hTH1F["nJetCenVsPt"]->Fill(ptCut,weight);
+      if(tauPt>=ptCut)	  hTH1F["nTauVsPt"]->Fill(ptCut,weight);
 
-      if(dijetPt2>ptCut){
+      if(dijetPt2>=ptCut){
 	hTH1F["nDiJetVsPt"]->Fill(ptCut,weight);
 
 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-	  if(dijetPt1>ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut,weight);
+	  if(dijetPt1>=ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	}
       }
 
-      if(diCenjetPt2>ptCut){
+      if(diCenjetPt2>=ptCut){
 	hTH1F["nDiCenJetVsPt"]->Fill(ptCut,weight);
 
 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-	  if(diCenjetPt1>ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut,weight);
+	  if(diCenjetPt1>=ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut,weight);
 	}
       }
 
-      if(ditauPt>ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut,weight);
-      if(quadjetPt>ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut,weight);
-      if(quadjetCPt>ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut,weight);
+      if(ditauPt>=ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut,weight);
+      if(quadjetPt>=ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut,weight);
+      if(quadjetCPt>=ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut,weight);
 
     }//loop on 256
       
     for(int ptCut=0; ptCut<65; ++ptCut) {
-      if(egPt>ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut,weight);
-      if(isoEgPt>ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut,weight);
+      if(egPt>=ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut,weight);
+      if(isoEgPt>=ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut,weight);
 
-      if(diEG2>ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut,weight);
-      if(diIsolEG2>ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut,weight);
+      if(diEG2>=ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut,weight);
+      if(diIsolEG2>=ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut,weight);
 
 
       for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
-	if(diEG1>ptCut && diEG2>ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
-	if(diIsolEG1>ptCut && diIsolEG2>ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
-	if(EGIsoPt1>ptCut && EGPt2>ptCut2) hTH2F["nEGIsoEGVsPt"]->Fill(ptCut,ptCut2,weight);
+	if(diEG1>=ptCut && diEG2>=ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if(diIsolEG1>=ptCut && diIsolEG2>=ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if(EGIsoPt1>=ptCut && EGPt2>=ptCut2) hTH2F["nEGIsoEGVsPt"]->Fill(ptCut,ptCut2,weight);
       }
 
     }//loop on 65
@@ -489,8 +453,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       for(int iCut2=0; iCut2<=iCut; ++iCut2) {
 	float ptCut = iCut*0.5;
 	float ptCut2 = iCut2*0.5;
-	if (doubleMuPt1>ptCut && doubleMuPt2>ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
-	if (oniaMuPt1>ptCut && oniaMuPt2>ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if (doubleMuPt1>=ptCut && doubleMuPt2>=ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
+	if (oniaMuPt1>=ptCut && oniaMuPt2>=ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2,weight);
       }
     }
 
@@ -498,7 +462,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
       float ptCutMu = iCut*0.5;
 
       for(int ptCutEG=0; ptCutEG<65; ++ptCutEG){
-	if(muPt>ptCutMu && egPt>ptCutEG) hTH2F["nMuVsEG"]->Fill(ptCutMu,ptCutEG,weight);
+	if(muPt>=ptCutMu && egPt>=ptCutEG) hTH2F["nMuVsEG"]->Fill(ptCutMu,ptCutEG,weight);
       }
     }
 
@@ -510,7 +474,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
       for(int iCut=0; iCut<61; ++iCut) {
       float ptCutMu = iCut*0.5;
-	if (muPt_forHTT>ptCutMu && HTT_forMu>httCut) hTH2F["nMuVsHTT"]->Fill(ptCutMu,httCut,weight);
+	if (muPt_forHTT>=ptCutMu && HTT_forMu>=httCut) hTH2F["nMuVsHTT"]->Fill(ptCutMu,httCut,weight);
       }
     }
       

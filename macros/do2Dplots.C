@@ -31,7 +31,7 @@
   nAsymDiCenJetVsPt->GetYaxis()->SetRangeUser(30.,120.);
 
   nMuVsEG->GetXaxis()->SetRangeUser(5.,25.);
-  nMuVsEG->GetYaxis()->SetRangeUser(5.,25.);
+  nMuVsEG->GetYaxis()->SetRangeUser(7.,25.);
 
   TCanvas c1("c1","c",1200,600); c1.cd();
   nMuPtVsPt->Draw("COLZ");
