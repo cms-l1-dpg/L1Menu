@@ -19,7 +19,7 @@ git cms-merge-topic 2525
 # The UCT2015 code
 git clone https://github.com/uwcms/UCT2015.git L1Trigger/UCT2015
 cd L1Trigger/UCT2015
-git checkout 2014-Menus-V1
+git checkout 2014-Menus-V45
 cd ../..
 
 git clone https://github.com/cms-l1-dpg/L1Ntuples.git L1TriggerDPG/L1Ntuples

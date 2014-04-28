@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def customiseUCT2015(process, runOnMC, runOnPostLS1 ):
+def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
 
     if hasattr(process,'reEmulCaloChain') :
         print "[L1Menu]: Customising calo chain with UCT2015"
@@ -8,6 +8,9 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1 ):
         if runOnMC and runOnPostLS1 :
             print "[L1Menu]:\tUsing MC configuration for post LS1"
             process.load("L1Trigger.UCT2015.emulationMC_cfi")
+            from L1Trigger.UCT2015.regionSF_cfi import *
+            if whichPU == 20 :
+                process.CorrectedDigis.regionSubtraction = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
             print "[L1Menu]:\tUsing DATA configuration"
             process.load("L1Trigger.UCT2015.emulation_cfi") # For running on data

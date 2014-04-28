@@ -58,6 +58,12 @@ options.register('runOnPostLS1',
                  VarParsing.VarParsing.varType.bool,
                  "Set to True when running on MC and this postLS1")
 
+options.register('whichPU',
+                 40, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.int,
+                 "Number of average PU interactions for UCT PU subtractions")
+
 options.register('keepEDMOutput',
                  False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -148,7 +154,7 @@ if options.reEmulation and (options.customDTTF or options.customCSCTF or options
 
 if options.reEmulation and options.useUct2015 :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
-    customiseUCT2015(process, options.runOnMC, options.runOnPostLS1)
+    customiseUCT2015(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
 
 if options.puReweightingFile != "none" :
     from L1TriggerDPG.L1Menu.pileUpReweighting_cff import *

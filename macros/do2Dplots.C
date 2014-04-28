@@ -3,7 +3,7 @@
   gStyle->SetPalette(1);
   gStyle->SetOptStat(0);
 
-  TFile fIn("results/results_13TEV_40PU_2015_RE-EMUL_RATE.root");
+  TFile fIn("results/results_13TEV_40PU_50bx_2012GCT10GEV_RE-EMUL_RATE.root");
   fIn.cd();
 
   TH2F *nMuPtVsPt         = (TH2F*)fIn.Get("nMuPtVsPt");
@@ -16,10 +16,12 @@
   TH2F *nMuVsEG           = (TH2F*)fIn.Get("nMuVsEG");
   TH2F *nEGIsoEGVsPt      = (TH2F*)fIn.Get("nEGIsoEGVsPt");
 
-  nMuPtVsPt->GetXaxis()->SetRangeUser(5.,30.);
+  nMuPtVsPt->GetXaxis()->SetRangeUser(5.5,20.);
 
-  nEGPtVsPt->GetXaxis()->SetRangeUser(17.,30.);
-  nEGPtVsPt->GetYaxis()->SetRangeUser(3.,30.);
+  nEGPtVsPt->GetXaxis()->SetRangeUser(12.,30.);
+  nEGPtVsPt->GetYaxis()->SetRangeUser(6.,30.);
+
+  nOniaMuPtVsPt->GetXaxis()->SetRangeUser(3.,15.);
 
   nMuVsHTT->GetXaxis()->SetRangeUser(5.,15.);
   nMuVsHTT->GetYaxis()->SetRangeUser(60.,200.);
