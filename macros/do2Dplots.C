@@ -3,7 +3,7 @@
   gStyle->SetPalette(1);
   gStyle->SetOptStat(0);
 
-  TFile fIn("results/results_13TEV_40PU_50bx_2012GCT10GEV_RE-EMUL_RATE.root");
+  TFile fIn("results/results_13TEV_40PU_2015_RE-EMUL_RATE.root");
   fIn.cd();
 
   TH2F *nMuPtVsPt         = (TH2F*)fIn.Get("nMuPtVsPt");
