@@ -2,7 +2,7 @@
 L1TMenu
 =======
 
-Package to put togheter code and configuration file to prepare Winter13 version of the 2015 L1 menu
+Package to put together code and configuration file to prepare Winter13 version of the 2015 L1 menu
 
 Installation instructions:
 
@@ -14,12 +14,15 @@ cd $MY_CMSSW_VERSION/src
 cmsenv
 
 # The PR for the RCT in 62X from Maria
-git cms-merge-topic 2525
+## git cms-merge-topic 2525
+git cms-addpkg DataFormats/L1CaloTrigger
+git cms-addpkg L1TriggerConfig/L1ScalesProducers
+git cms-addpkg L1Trigger/RegionalCaloTrigger     
 
 # The UCT2015 code
 git clone https://github.com/uwcms/UCT2015.git L1Trigger/UCT2015
 cd L1Trigger/UCT2015
-git checkout 2014-Menus-V45
+git checkout 2014-Menus-V46
 cd ../..
 
 git clone https://github.com/cms-l1-dpg/L1Ntuples.git L1TriggerDPG/L1Ntuples
