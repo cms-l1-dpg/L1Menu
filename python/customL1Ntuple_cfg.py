@@ -100,6 +100,12 @@ options.register('useUct2015',
                  VarParsing.VarParsing.varType.bool,
                  "Enables UCT2015 emulation for calos")
 
+options.register('useStage1Layer2',
+                 False, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Enables new Stage1Layer2 emulation for calos")
+
 options.register('puReweightingFile',
                  'none', #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -146,9 +152,12 @@ if options.reEmulation and (options.customDTTF or options.customCSCTF or options
     from L1TriggerDPG.L1Menu.customiseL1Muons_cff import *
     customiseL1Muons(process, options.customDTTF, options.customCSCTF, options.customPACT, options.dttfLutsFile)
 
-if options.reEmulation and options.useUct2015 :
+if options.reEmulation and (options.useUct2015 or options.useStage1Layer2) :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
-    customiseUCT2015(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
+    if options.useUct2015:
+        customiseUCT2015(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
+    if options.useStage1Layer2:
+        customiseStage1Layer2(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
 
 if options.puReweightingFile != "none" :
     from L1TriggerDPG.L1Menu.pileUpReweighting_cff import *
@@ -169,6 +178,7 @@ if options.keepEDMOutput :
                                                                              'keep *_csctfReEmulDigis_*_*',
                                                                              'keep *_dttfReEmulDigis_*_*',
                                                                              'keep *_uctGctDigis_*_*',
+                                                                             'keep *BXVector_*__L1TEMULATION',
                                                                              'keep *_gctDigis_*_*')
                                   )
 
