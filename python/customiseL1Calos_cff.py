@@ -25,26 +25,12 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
             process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
 
             process.hcalReEmulDigis = process.simHcalTriggerPrimitiveDigis.clone()
-            
             process.hcalReEmulDigis.inputLabel = cms.VInputTag(cms.InputTag('hcalDigis'), cms.InputTag('hcalDigis'))
             process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(True)
-
             process.hackHCALMIPs.src = cms.InputTag("hcalReEmulDigis")
 
 
-        process.uctGctDigis =cms.EDProducer("UCT2015GctCandsProducer",
-                                           egRelaxed = cms.InputTag("UCT2015Producer","RelaxedEGUnpacked"),
-                                           egIsolated = cms.InputTag("UCT2015Producer","IsolatedEGUnpacked"),
-                                           tauRelaxed = cms.InputTag("UCT2015Producer","RelaxedTauUnpacked"), # this collection is ignored in the final output, GT constraints
-                                           tauIsolated = cms.InputTag("UCT2015Producer","IsolatedTauUnpacked"),
-                                           jetSource = cms.InputTag("UCT2015Producer","CorrJetUnpacked"), # default are corrected jets
-                                           #jetSource = cms.InputTag("UCT2015Producer","JetUnpacked"),
-                                           setSource = cms.InputTag("UCT2015Producer","SETUnpacked"),
-                                           metSource = cms.InputTag("UCT2015Producer","METUnpacked"),
-                                           shtSource = cms.InputTag("UCT2015Producer","SHTUnpacked"),
-                                           mhtSource = cms.InputTag("UCT2015Producer","MHTUnpacked")
-        )
-        
+        process.load("L1Trigger.UCT2015.uctl1extraparticles_cfi")
 
         if runOnMC and not runOnPostLS1 :
             # If run on MC and on 53X needs a patch different w.r.t. the UCT "standard" one
@@ -58,19 +44,15 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
         getattr(process,'reEmul').replace(process.reEmulCaloChain, process.reEmulUctChain)
 
         l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
-
-        l1ExtraReEmul.isolatedEmSource    = cms.InputTag("uctGctDigis","isoEm")
+        l1ExtraReEmul.etTotalSource = cms.InputTag("uctGctDigis")
         l1ExtraReEmul.nonIsolatedEmSource = cms.InputTag("uctGctDigis","nonIsoEm")
-
+        l1ExtraReEmul.etMissSource  = cms.InputTag("uctGctDigis")        
+        l1ExtraReEmul.htMissSource  = cms.InputTag("uctGctDigis")
         l1ExtraReEmul.forwardJetSource = cms.InputTag("uctGctDigis","forJets")
         l1ExtraReEmul.centralJetSource = cms.InputTag("uctGctDigis","cenJets")
         l1ExtraReEmul.tauJetSource     = cms.InputTag("uctGctDigis","tauJets")
-            
-        l1ExtraReEmul.etTotalSource = cms.InputTag("uctGctDigis")
+        l1ExtraReEmul.isolatedEmSource    = cms.InputTag("uctGctDigis","isoEm")
         l1ExtraReEmul.etHadSource   = cms.InputTag("uctGctDigis")
-        l1ExtraReEmul.etMissSource  = cms.InputTag("uctGctDigis")
-        l1ExtraReEmul.htMissSource  = cms.InputTag("uctGctDigis")
-
         l1ExtraReEmul.hfRingEtSumsSource    = cms.InputTag("uctGctDigis")
         l1ExtraReEmul.hfRingBitCountsSource = cms.InputTag("uctGctDigis")
 

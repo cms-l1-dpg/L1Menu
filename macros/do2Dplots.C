@@ -3,6 +3,7 @@
   gStyle->SetPalette(1);
   gStyle->SetOptStat(0);
 
+  //TFile fIn("results/results_13TEV_40PU_50bx_2012GCT10GEV_RE-EMUL_RATE.root");
   TFile fIn("results/results_13TEV_40PU_2015_RE-EMUL_RATE.root");
   fIn.cd();
 
@@ -16,7 +17,7 @@
   TH2F *nMuVsEG           = (TH2F*)fIn.Get("nMuVsEG");
   TH2F *nEGIsoEGVsPt      = (TH2F*)fIn.Get("nEGIsoEGVsPt");
 
-  nMuPtVsPt->GetXaxis()->SetRangeUser(5.5,20.);
+  nMuPtVsPt->GetXaxis()->SetRangeUser(6.5,20.);
 
   nEGPtVsPt->GetXaxis()->SetRangeUser(12.,30.);
   nEGPtVsPt->GetYaxis()->SetRangeUser(6.,30.);
@@ -32,8 +33,8 @@
   nAsymDiCenJetVsPt->GetXaxis()->SetRangeUser(60.,120.);
   nAsymDiCenJetVsPt->GetYaxis()->SetRangeUser(30.,120.);
 
-  nMuVsEG->GetXaxis()->SetRangeUser(5.,25.);
-  nMuVsEG->GetYaxis()->SetRangeUser(7.,25.);
+  nMuVsEG->GetXaxis()->SetRangeUser(3.,15.);
+  nMuVsEG->GetYaxis()->SetRangeUser(16.,25.);
 
   TCanvas c1("c1","c",1200,600); c1.cd();
   nMuPtVsPt->Draw("COLZ");
