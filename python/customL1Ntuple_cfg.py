@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 # General config options
 import FWCore.ParameterSet.VarParsing as VarParsing
+import sys
+
 options = VarParsing.VarParsing()
 
 options.register('globalTag',
@@ -137,6 +139,10 @@ process.p.remove(process.l1MenuTreeProducer)
 
 # re-emulation customisations
 
+if options.useUct2015 and options.useStage1Layer2:
+    print "[L1Menu]: ERROR !!! Currently cannot run both UCT and Stage1 Emulators at the same time"
+    sys.exit(1)
+
 if options.reEmulation :
     from L1TriggerDPG.L1Menu.reEmulation_cff import *
     reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1)
@@ -157,7 +163,7 @@ if options.reEmulation and (options.useUct2015 or options.useStage1Layer2) :
     if options.useUct2015:
         customiseUCT2015(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
     if options.useStage1Layer2:
-        customiseStage1Layer2(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
+        customiseStage1(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
 
 if options.puReweightingFile != "none" :
     from L1TriggerDPG.L1Menu.pileUpReweighting_cff import *

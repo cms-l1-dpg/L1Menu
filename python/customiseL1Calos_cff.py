@@ -1,5 +1,40 @@
 import FWCore.ParameterSet.Config as cms
 
+def updatel1ExtraReEmulTag(process,inputTag):
+
+    l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
+
+    l1ExtraReEmul.isolatedEmSource    = cms.InputTag(inputTag,"isoEm")
+    l1ExtraReEmul.nonIsolatedEmSource = cms.InputTag(inputTag,"nonIsoEm")
+
+    l1ExtraReEmul.forwardJetSource = cms.InputTag(inputTag,"forJets")
+    l1ExtraReEmul.centralJetSource = cms.InputTag(inputTag,"cenJets")
+    l1ExtraReEmul.tauJetSource     = cms.InputTag(inputTag,"tauJets")
+        
+    l1ExtraReEmul.etTotalSource = cms.InputTag(inputTag)
+    l1ExtraReEmul.etHadSource   = cms.InputTag(inputTag)
+    l1ExtraReEmul.etMissSource  = cms.InputTag(inputTag)
+    l1ExtraReEmul.htMissSource  = cms.InputTag(inputTag)
+    
+    l1ExtraReEmul.hfRingEtSumsSource    = cms.InputTag(inputTag)
+    l1ExtraReEmul.hfRingBitCountsSource = cms.InputTag(inputTag)
+
+def updategtReEmulTag(process,inputTag):
+
+    getattr(process,'gtReEmulDigis').GctInputTag = cms.InputTag(inputTag)
+    getattr(process,'gtReEmulDigis').EmulateBxInEvent = cms.int32(1)
+
+def updatel1ntupleTag(process,inputTag):
+
+    ntuple = getattr(process,'l1NtupleProducer')
+    ntuple.gctCentralJetsSource = cms.InputTag(inputTag,"cenJets")
+    ntuple.gctNonIsoEmSource    = cms.InputTag(inputTag,"nonIsoEm")
+    ntuple.gctForwardJetsSource = cms.InputTag(inputTag,"forJets")
+    ntuple.gctIsoEmSource       = cms.InputTag(inputTag,"isoEm")
+    ntuple.gctTauJetsSource     = cms.InputTag(inputTag,"tauJets")
+    ntuple.gctEnergySumsSource  = cms.InputTag(inputTag,"")
+    ntuple.rctSource            = cms.InputTag("none")
+
 def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
 
     if hasattr(process,'reEmulCaloChain') :
@@ -58,23 +93,8 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
 
         l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
 
-        l1ExtraReEmul.isolatedEmSource    = cms.InputTag("uctGctDigis","isoEm")
-        l1ExtraReEmul.nonIsolatedEmSource = cms.InputTag("uctGctDigis","nonIsoEm")
-
-        l1ExtraReEmul.forwardJetSource = cms.InputTag("uctGctDigis","forJets")
-        l1ExtraReEmul.centralJetSource = cms.InputTag("uctGctDigis","cenJets")
-        l1ExtraReEmul.tauJetSource     = cms.InputTag("uctGctDigis","tauJets")
-            
-        l1ExtraReEmul.etTotalSource = cms.InputTag("uctGctDigis")
-        l1ExtraReEmul.etHadSource   = cms.InputTag("uctGctDigis")
-        l1ExtraReEmul.etMissSource  = cms.InputTag("uctGctDigis")
-        l1ExtraReEmul.htMissSource  = cms.InputTag("uctGctDigis")
-
-        l1ExtraReEmul.hfRingEtSumsSource    = cms.InputTag("uctGctDigis")
-        l1ExtraReEmul.hfRingBitCountsSource = cms.InputTag("uctGctDigis")
-
-        getattr(process,'gtReEmulDigis').GctInputTag = cms.InputTag("uctGctDigis")
-        getattr(process,'gtReEmulDigis').EmulateBxInEvent = cms.int32(1)
+        updatel1ExtraReEmulTag(process,"uctGctDigis")
+        updategtReEmulTag(process,"uctGctDigis")
 
     else :
        print "[L1Menu]: ERROR: Can't customise calo chain with UCT2015, reEmulCaloChain is missing!"
@@ -82,15 +102,7 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
     if hasattr(process,'l1NtupleProducer') and hasattr(process,'l1ExtraTreeProducer') :
         print "[L1Menu]:\tConfiguring Ntuple to use UCT2015 information"
  
-        ntuple = getattr(process,'l1NtupleProducer')
-        ntuple.gctCentralJetsSource = cms.InputTag("uctGctDigis","cenJets")
-        ntuple.gctNonIsoEmSource    = cms.InputTag("uctGctDigis","nonIsoEm")
-        ntuple.gctForwardJetsSource = cms.InputTag("uctGctDigis","forJets")
-        ntuple.gctIsoEmSource       = cms.InputTag("uctGctDigis","isoEm")
-        ntuple.gctTauJetsSource     = cms.InputTag("uctGctDigis","tauJets")
-        ntuple.gctEnergySumsSource  = cms.InputTag("uctGctDigis","")
-        ntuple.rctSource            = cms.InputTag("none")
-
+        updatel1ntupleTag(process,"uctGctDigis")
 
 
 def customiseL1Calos(process, customGCT=True):
@@ -109,10 +121,10 @@ def customiseL1Calos(process, customGCT=True):
         process.es_prefer_gct = cms.ESPrefer("L1GctConfigProducers")
         
 
-def customiseStage1Layer2(process, runOnMC, runOnPostLS1, whichPU ):
+def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
 
     if hasattr(process,'reEmulCaloChain') :
-        print "[L1Menu]: Customising calo chain with new L1 Stage1Layer2 Emulator"
+        print "[L1Menu]: Customising calo chain with new L1 Stage1 Emulator"
 
         if runOnMC and runOnPostLS1 :
             ## print "[L1Menu]:\tUsing MC configuration for post LS1"
@@ -124,7 +136,7 @@ def customiseStage1Layer2(process, runOnMC, runOnPostLS1, whichPU ):
             print "[L1Menu]:\tUsing DATA configuration"
             process.load("L1Trigger.UCT2015.emulation_cfi") # For running on data
         else :
-            print "Illegal option(s) for Stage1Layer Emulation"
+            print "Illegal option(s) for Stage1 Emulator"
             sys.exit(1)
 
 
@@ -168,8 +180,11 @@ def customiseStage1Layer2(process, runOnMC, runOnPostLS1, whichPU ):
             InputCollection = cms.InputTag("Layer2Phys")
             )
 
-        process.Layer2 = cms.Sequence(
-            ## process.gctDigis
+        process.load("L1Trigger.UCT2015.emulationMC_cfi")
+        process.rctLayer2Format.regionTag = "uctDigis"
+        process.rctLayer2Format.emTag = "uctDigis"
+
+        process.Stage1GctDigis = cms.Sequence(
             process.rctLayer2Format
             *process.Layer2HW
             *process.Layer2Phys
@@ -177,3 +192,27 @@ def customiseStage1Layer2(process, runOnMC, runOnPostLS1, whichPU ):
             ## *process.L1Packer
             ## *process.L1Unpacker
             )
+
+        if runOnMC and not runOnPostLS1 :
+            # If run on MC and on 53X needs a patch different w.r.t. the UCT "standard" one
+            # in this case there are no hcal digis stored so need to run on unpacked (Zero Suppressed) ones
+            
+            process.reEmulStage1Chain = cms.Sequence(process.hcalReEmulDigis + process.emulationSequence + process.Stage1GctDigis)
+        else :
+            process.reEmulStage1Chain = cms.Sequence(process.emulationSequence + process.Stage1GctDigis)
+
+
+        getattr(process,'reEmul').replace(process.reEmulCaloChain, process.reEmulStage1Chain)
+
+        l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
+
+        updatel1ExtraReEmulTag(process,"Layer2gctFormat")
+        updategtReEmulTag(process,"Layer2gctFormat")
+
+    else :
+       print "[L1Menu]: ERROR: Can't customise calo chain with Stage1 emulator, reEmulCaloChain is missing!"
+
+    if hasattr(process,'l1NtupleProducer') and hasattr(process,'l1ExtraTreeProducer') :
+        print "[L1Menu]:\tConfiguring Ntuple to use Stage1 emulator information"
+ 
+        updatel1ntupleTag(process,"Layer2gctFormat")
