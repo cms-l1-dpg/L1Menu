@@ -80,13 +80,19 @@ options.register('customCSCTF',
                  False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
-                 "Enables usage of new CSCTF FW and LUTs")
+                 "Enables usage of new CSCTF FW and LUTs (actually does nothing right now)")
 
 options.register('customPACT',
                  False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  "Enables usage of new RPC PACT patterns")
+
+options.register('customGMT',
+                 False, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Switches to minPT for the GMT")
 
 options.register('useUct2015',
                  False, #default value
@@ -136,9 +142,9 @@ if options.reEmulation and not options.useUct2015 and options.jetSeedThr10GeV :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
     customiseL1Calos(process, True)
 
-if options.reEmulation and (options.customDTTF or options.customCSCTF or options.customPACT) :
+if options.reEmulation and (options.customDTTF or options.customCSCTF or options.customPACT or options.customGMT ) :
     from L1TriggerDPG.L1Menu.customiseL1Muons_cff import *
-    customiseL1Muons(process, options.customDTTF, options.customCSCTF, options.customPACT, options.dttfLutsFile)
+    customiseL1Muons(process, options.customDTTF, options.customCSCTF, options.customPACT, options.customGMT, options.dttfLutsFile)
 
 if options.reEmulation and options.useUct2015 :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
