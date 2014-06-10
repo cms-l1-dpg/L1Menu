@@ -536,10 +536,35 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012Gct10GeV/L1Tree.root"); 
       basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
     }
-  else if (fileType == "13TEV_40PU_2015_RE-EMUL")
+  else if (fileType == "13TEV_40PU_2015_MU-FULL-RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2015/L1Tree.root"); 
-      basicRatePlots.run(false,"13TEV_40PU_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1MuonRates2015/L1Tree_v3_62X_13TeV_40PU_25bx_FullMuReEmul.root"); 
+      basicRatePlots.run(false,"13TEV_40PU_2015_MU-FULL-RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2015_MU-FULL-RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1MuonRates2015/L1Tree_v3_62X_13TeV_40PU_25bx_FullMuReEmul.root"); 
+      basicRatePlots.run(false,"13TEV_40PU_2015_MU-FULL-RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2015_MU-DTTF-RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1MuonRates2015/L1Tree_v3_62X_13TeV_40PU_25bx_DttfReEmul.root"); 
+      basicRatePlots.run(false,"13TEV_40PU_2015_MU-DTTF-RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2015_ORIG-EMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1MuonRates2015/L1Tree_v3_62X_13TeV_40PU_25bx_OrigEmul.root "); 
+      basicRatePlots.run(false,"13TEV_40PU_2015_ORIG-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2015_ORIG-REEMUL")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1MuonRates2015/L1Tree_v3_62X_13TeV_40PU_25bx_OrigReEmul.root "); 
+      basicRatePlots.run(false,"13TEV_40PU_2015_ORIG-REEMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
+    }
+  else if (fileType == "13TEV_40PU_2015_ORIG-REEMULNO2012")
+    {
+      BasicRatePlots basicRatePlots("/data2/battilan/L1Trigger/L1MuonRates2015/L1Tree_v3_62X_13TeV_40PU_25bx_OrigReEmulNo2012.root "); 
+      basicRatePlots.run(false,"13TEV_40PU_2015_ORIG-REEMULNO2012",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_45p4PU_2012_RE-EMUL")
     {
