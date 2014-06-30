@@ -128,86 +128,28 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
 
         if runOnMC and runOnPostLS1 :
             ## print "[L1Menu]:\tUsing MC configuration for post LS1"
-            process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
+            process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
+            ## process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
             from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import *
             if whichPU == 20 :
                 process.CorrectedDigis.regionSubtraction = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
-            print "[L1Menu]:\tUsing DATA configuration"
-            process.load("L1Trigger.UCT2015.emulation_cfi") # For running on data
+            ## print "[L1Menu]:\tUsing DATA configuration"
+            ## process.load("L1Trigger.UCT2015.emulation_cfi") # For running on data
+            ## process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
+            print "[L1Menu]:\tNot yet configured to run Stage1 emulator on DATA"
+            sys.exit(1)
         else :
             print "Illegal option(s) for Stage1 Emulator"
             sys.exit(1)
 
 
-        ## process.gctDigis = cms.EDProducer(
-        ##     "GctRawToDigi",
-        ##     unpackSharedRegions = cms.bool(False),
-        ##     numberOfGctSamplesToUnpack = cms.uint32(1),
-        ##     verbose = cms.untracked.bool(False),
-        ##     numberOfRctSamplesToUnpack = cms.uint32(1),
-        ##     inputLabel = cms.InputTag("rawDataCollector"),
-        ##     unpackerVersion = cms.uint32(0),
-        ##     gctFedId = cms.untracked.int32(745),
-        ##     hltMode = cms.bool(False)
-        ##     )
-
-        process.rctLayer2Format = cms.EDProducer(
-            "l1t::L1TCaloRCTToUpgradeConverter",
-            regionTag = cms.InputTag("gctDigis"),
-            emTag = cms.InputTag("gctDigis"))
-
-        process.Layer2HW = cms.EDProducer(
-            "l1t::Stage1Layer2Producer",
-            CaloRegions = cms.InputTag("rctLayer2Format"),
-            CaloEmCands = cms.InputTag("rctLayer2Format"),
-            FirmwareVersion = cms.uint32(2),  ## 1=HI algo, 2= pp algo
-            egRelativeJetIsolationCut = cms.double(0.5), ## eg isolation cut
-            tauRelativeJetIsolationCut = cms.double(1.), ## tau isolation cut
-            regionETCutForHT = cms.uint32(7),
-            regionETCutForMET = cms.uint32(0),
-            minGctEtaForSums = cms.int32(4),
-            maxGctEtaForSums = cms.int32(17)
-            )
-
-        process.Layer2Phys = cms.EDProducer(
-            "l1t::PhysicalEtAdder",
-            InputCollection = cms.InputTag("Layer2HW")
-            )
-
-        process.Layer2gctFormat = cms.EDProducer(
-            "l1t::L1TCaloUpgradeToGCTConverter",
-            InputCollection = cms.InputTag("Layer2Phys")
-            )
-
-        process.load("L1Trigger.UCT2015.emulationMC_cfi")
-        process.rctLayer2Format.regionTag = "uctDigis"
-        process.rctLayer2Format.emTag = "uctDigis"
-
-        process.Stage1GctDigis = cms.Sequence(
-            process.rctLayer2Format
-            *process.Layer2HW
-            *process.Layer2Phys
-            *process.Layer2gctFormat
-            ## *process.L1Packer
-            ## *process.L1Unpacker
-            )
-
-        if runOnMC and not runOnPostLS1 :
-            # If run on MC and on 53X needs a patch different w.r.t. the UCT "standard" one
-            # in this case there are no hcal digis stored so need to run on unpacked (Zero Suppressed) ones
-            
-            process.reEmulStage1Chain = cms.Sequence(process.hcalReEmulDigis + process.emulationSequence + process.Stage1GctDigis)
-        else :
-            process.reEmulStage1Chain = cms.Sequence(process.emulationSequence + process.Stage1GctDigis)
-
-
-        getattr(process,'reEmul').replace(process.reEmulCaloChain, process.reEmulStage1Chain)
+        getattr(process,'reEmul').replace(process.reEmulCaloChain, process.L1TCaloStage1_PPFromRaw)
 
         l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
 
-        updatel1ExtraReEmulTag(process,"Layer2gctFormat")
-        updategtReEmulTag(process,"Layer2gctFormat")
+        updatel1ExtraReEmulTag(process,"caloStage1LegacyFormatDigis")
+        updategtReEmulTag(process,"caloStage1LegacyFormatDigis")
 
     else :
        print "[L1Menu]: ERROR: Can't customise calo chain with Stage1 emulator, reEmulCaloChain is missing!"
@@ -215,4 +157,4 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
     if hasattr(process,'l1NtupleProducer') and hasattr(process,'l1ExtraTreeProducer') :
         print "[L1Menu]:\tConfiguring Ntuple to use Stage1 emulator information"
  
-        updatel1ntupleTag(process,"Layer2gctFormat")
+        updatel1ntupleTag(process,"caloStage1LegacyFormatDigis")
