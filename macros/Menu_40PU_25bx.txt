@@ -2,10 +2,8 @@ L1_ZeroBias                       25000
 L1_AlwaysTrue                     300
 L1_BeamGas_Hf_BptxPlusPostQuiet   10000
 L1_BeamGas_Hf_BptxMinusPostQuiet  10000
-L1_InterBunch_Bptx                -1
 L1_SingleMuOpen       -1
 L1_SingleMu5          50000
-L1_SingleMu7          20000
 L1_SingleMu12         3000
 L1_SingleMu14er       1000
 L1_SingleMu16         1000
@@ -17,6 +15,7 @@ L1_SingleMu25         1
 L1_SingleMu25er       1
 L1_SingleMu30         1
 L1_SingleMu30er       1
+L1_DoubleMu0_HighQ   20000
 L1_DoubleMu0er16_HighQ_WdEta18_OS 1
 L1_DoubleMu_9_0_HighQ_WdEta18     1
 L1_DoubleMu_10_Open     2000
@@ -90,5 +89,4 @@ L1_Mu3_JetC92_WdEtaPhi2  -1
 L1_Mu16er_TauJet20er     1
 L1_IsoEG20er_TauJet20er  1
 L1_IsoEG12er_ETM30   -1
-L1_EG22_ForJet24     -1
-L1_EG22_ForJet32     -1
+L1_QuadJetC36_Tau52 20

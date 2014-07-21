@@ -8,7 +8,7 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
         if runOnMC and runOnPostLS1 :
             print "[L1Menu]:\tUsing MC configuration for post LS1"
             process.load("L1Trigger.UCT2015.emulationMC_cfi")
-            from L1Trigger.UCT2015.regionSF_cfi import *
+            from L1Trigger.UCT2015.regionSF_cfi import regionSubtraction_PU20_MC13TeV
             if whichPU == 20 :
                 process.CorrectedDigis.regionSubtraction = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
