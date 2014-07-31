@@ -117,7 +117,7 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
             ## process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
             process.load('L1Trigger/L1TCalorimeter/caloStage1RegionSF_cfi')
             if whichPU == 20 :
-                process.CorrectedDigis.regionSubtraction = regionSubtraction_PU20_MC13TeV
+                process.caloStage1Params.regionPUSParams = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
             ## print "[L1Menu]:\tUsing DATA configuration"
             ## process.load("L1Trigger.UCT2015.emulation_cfi") # For running on data
