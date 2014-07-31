@@ -2,6 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 # General config options
 import FWCore.ParameterSet.VarParsing as VarParsing
+import sys
+
 options = VarParsing.VarParsing()
 
 options.register('globalTag',
@@ -106,6 +108,12 @@ options.register('useUct2015',
                  VarParsing.VarParsing.varType.bool,
                  "Enables UCT2015 emulation for calos")
 
+options.register('useStage1Layer2',
+                 False, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Enables new Stage1Layer2 emulation for calos")
+
 options.register('puReweightingFile',
                  'none', #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -137,6 +145,10 @@ process.p.remove(process.l1MenuTreeProducer)
 
 # re-emulation customisations
 
+if options.useUct2015 and options.useStage1Layer2:
+    print "[L1Menu]: ERROR !!! Currently cannot run both UCT and Stage1 Emulators at the same time"
+    sys.exit(1)
+
 if options.reEmulation :
     from L1TriggerDPG.L1Menu.reEmulation_cff import *
     reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1)
@@ -152,9 +164,12 @@ if options.reEmulation and (options.customDTTF or options.customCSCTF or options
     from L1TriggerDPG.L1Menu.customiseL1Muons_cff import *
     customiseL1Muons(process, options.customDTTF, options.customCSCTF, options.customPACT, options.customGMT, options.dttfLutsFile)
 
-if options.reEmulation and options.useUct2015 :
+if options.reEmulation and (options.useUct2015 or options.useStage1Layer2) :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
-    customiseUCT2015(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
+    if options.useUct2015:
+        customiseUCT2015(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
+    if options.useStage1Layer2:
+        customiseStage1(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
 
 if options.puReweightingFile != "none" :
     from L1TriggerDPG.L1Menu.pileUpReweighting_cff import *
@@ -175,6 +190,7 @@ if options.keepEDMOutput :
                                                                              'keep *_csctfReEmulDigis_*_*',
                                                                              'keep *_dttfReEmulDigis_*_*',
                                                                              'keep *_uctGctDigis_*_*',
+                                                                             'keep *BXVector_*__L1TEMULATION',
                                                                              'keep *_gctDigis_*_*')
                                   )
 
