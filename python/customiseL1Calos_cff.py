@@ -43,7 +43,7 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
         if runOnMC and runOnPostLS1 :
             print "[L1Menu]:\tUsing MC configuration for post LS1"
             process.load("L1Trigger.UCT2015.emulationMC_cfi")
-            from L1Trigger.UCT2015.regionSF_cfi import *
+            from L1Trigger.UCT2015.regionSF_cfi import regionSubtraction_PU20_MC13TeV
             if whichPU == 20 :
                 process.CorrectedDigis.regionSubtraction = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
@@ -60,25 +60,11 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
             process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
 
             process.hcalReEmulDigis = process.simHcalTriggerPrimitiveDigis.clone()
-            
             process.hcalReEmulDigis.inputLabel = cms.VInputTag(cms.InputTag('hcalDigis'), cms.InputTag('hcalDigis'))
             process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(True)
-
             process.hackHCALMIPs.src = cms.InputTag("hcalReEmulDigis")
 
-
-        process.uctGctDigis =cms.EDProducer("UCT2015GctCandsProducer",
-                                           egRelaxed = cms.InputTag("UCT2015Producer","RelaxedEGUnpacked"),
-                                           egIsolated = cms.InputTag("UCT2015Producer","IsolatedEGUnpacked"),
-                                           tauRelaxed = cms.InputTag("UCT2015Producer","RelaxedTauUnpacked"), # this collection is ignored in the final output, GT constraints
-                                           tauIsolated = cms.InputTag("UCT2015Producer","IsolatedTauUnpacked"),
-                                           jetSource = cms.InputTag("UCT2015Producer","CorrJetUnpacked"), # default are corrected jets
-                                           #jetSource = cms.InputTag("UCT2015Producer","JetUnpacked"),
-                                           setSource = cms.InputTag("UCT2015Producer","SETUnpacked"),
-                                           metSource = cms.InputTag("UCT2015Producer","METUnpacked"),
-                                           shtSource = cms.InputTag("UCT2015Producer","SHTUnpacked"),
-                                           mhtSource = cms.InputTag("UCT2015Producer","MHTUnpacked")
-        )
+        process.load("L1Trigger.UCT2015.uctl1extraparticles_cfi")
 
         if runOnMC and not runOnPostLS1 :
             # If run on MC and on 53X needs a patch different w.r.t. the UCT "standard" one
@@ -92,7 +78,6 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
         getattr(process,'reEmul').replace(process.reEmulCaloChain, process.reEmulUctChain)
 
         l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
-
         updatel1ExtraReEmulTag(process,"uctGctDigis")
         updategtReEmulTag(process,"uctGctDigis")
 

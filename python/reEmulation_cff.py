@@ -70,19 +70,30 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             from L1Trigger.CSCTrackFinder.csctfDigis_cfi import csctfDigis
 
             customise_csc_L1Emulator(process) 
-        
+
             process.csctfReEmulTrackDigis = process.simCsctfTrackDigis.clone()
             process.csctfReEmulDigis      = csctfDigis.clone()
 
             process.csctfReEmulTrackDigis.DTproducer  = cms.untracked.InputTag("dttfDigis")
             process.csctfReEmulDigis.CSCTrackProducer         = cms.untracked.InputTag("csctfReEmulTrackDigis")
 
+            process.csctfReEmulTrackDigis.SectorProcessor.PTLUT.PtMethod = cms.untracked.uint32(33) # no triple ganging in ME11a
+            process.csctfReEmulTrackDigis.SectorProcessor.gangedME1a = cms.untracked.bool(False)
+            process.csctfReEmulTrackDigis.SectorProcessor.firmwareSP = cms.uint32(20120730) #core 20120730
+            process.csctfReEmulTrackDigis.SectorProcessor.initializeFromPSet = cms.bool(True) 
+
             process.csctfReEmulSequence = cms.Sequence(
                 process.simCscTriggerPrimitiveDigis
                 * process.csctfReEmulTrackDigis
                 * process.csctfReEmulDigis
             )
-            
+
+            process.load('L1TriggerConfig.GMTConfigProducers.L1MuGMTParameters_cfi')
+            # from L1TriggerConfig.GMTConfigProducers.L1MuGMTParameters_cfi import L1MuGMTParameters
+            process.L1MuGMTParameters.MergeMethodPtBrl=cms.string("byCombi")
+            process.L1MuGMTParameters.MergeMethodPtFwd=cms.string("byCombi")
+            process.L1MuGMTParameters.VersionSortRankEtaQLUT = cms.uint32(273)
+            process.L1MuGMTParameters.VersionLUTs = cms.uint32(1)
 
 
         from L1Trigger.GlobalMuonTrigger.gmtDigis_cfi import gmtDigis
