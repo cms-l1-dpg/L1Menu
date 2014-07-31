@@ -37,7 +37,8 @@ def customiseL1Muons(process, customDTTF=True, customCSCTF=True, customPACT=True
 
         print "[L1Menu]:\tCustomising PACT patterns"
 
-        patternDirectory = "L1TriggerDPG/L1Menu/data/rpc_patterns/xml/"
+        #patternDirectory = "L1TriggerDPG/L1Menu/data/rpc_patterns/xml/"
+        patternDirectory = "."
         
         process.load("L1TriggerConfig.RPCTriggerConfig.RPCConeDefinition_cff")
         process.load("L1TriggerConfig.RPCTriggerConfig.L1RPCConfig_cff")

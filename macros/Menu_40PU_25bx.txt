@@ -1,7 +1,5 @@
 L1_ZeroBias                       25000
 L1_AlwaysTrue                     300
-L1_BeamGas_Hf_BptxPlusPostQuiet   10000
-L1_BeamGas_Hf_BptxMinusPostQuiet  10000
 L1_SingleMuOpen       -1
 L1_SingleMu5          50000
 L1_SingleMu12         3000

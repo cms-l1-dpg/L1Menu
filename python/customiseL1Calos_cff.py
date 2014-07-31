@@ -115,7 +115,7 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
             ## print "[L1Menu]:\tUsing MC configuration for post LS1"
             process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
             ## process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
-            from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import *
+            process.load('L1Trigger/L1TCalorimeter/caloStage1RegionSF_cfi')
             if whichPU == 20 :
                 process.CorrectedDigis.regionSubtraction = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
