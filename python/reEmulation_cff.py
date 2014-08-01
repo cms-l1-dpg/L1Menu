@@ -92,7 +92,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             # from L1TriggerConfig.GMTConfigProducers.L1MuGMTParameters_cfi import L1MuGMTParameters
             process.L1MuGMTParameters.MergeMethodPtBrl=cms.string("byCombi")
             process.L1MuGMTParameters.MergeMethodPtFwd=cms.string("byCombi")
-            process.L1MuGMTParameters.VersionSortRankEtaQLUT = cms.uint32(273)
+            process.L1MuGMTParameters.VersionSortRankEtaQLUT = cms.uint32(1043)
             process.L1MuGMTParameters.VersionLUTs = cms.uint32(1)
 
 
