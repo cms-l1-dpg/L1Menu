@@ -1185,7 +1185,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  if(nevents > 20000000) nevents = 20000000;
+  if(nevents > 6000000) nevents = 6000000;
 
   Int_t NPASS = 0; 
 
@@ -1551,8 +1551,8 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==4){
     // 13 TeV ZeroBias 62X sample 40 PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v6/25ns_40PU_ReEmul2015/L1Tree.root";
-    themenufilename = "Menu_40PU_25bx_V0.txt";
+    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v7/25ns_40PU_ReEmul2015/L1Tree.root";
+    themenufilename = "Menu_40PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;
     L1JetCorrection=false;
@@ -1599,6 +1599,9 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 
   if(drawplots){
 
+    TFile fOut("plots_menu.root","RECREATE");
+    fOut.cd();
+
     TString YaxisName;
     if(targetlumi == 1.)   YaxisName = "Rate (kHz) at 1e32";
     if(targetlumi == 2.)   YaxisName = "Rate (kHz) at 2e32";
@@ -1614,6 +1617,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_Cross -> GetXaxis() -> SetLabelSize(0.035);
     h_Cross -> SetYTitle(YaxisName);
     h_Cross -> Draw();
+    c1->Write();
 
     TCanvas* c2 = new TCanvas("c2","c2");
     c2 -> cd();
@@ -1621,6 +1625,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_MultiCross -> GetXaxis() -> SetLabelSize(0.035);
     h_MultiCross -> SetYTitle(YaxisName);
     h_MultiCross -> Draw();
+    c2->Write();
 
     TCanvas* c3 = new TCanvas("c3","c3");
     c3 -> cd();
@@ -1628,6 +1633,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_Sums -> GetXaxis() -> SetLabelSize(0.035);
     h_Sums -> SetYTitle(YaxisName);
     h_Sums -> Draw();
+    c3->Write();
 
     TCanvas* c4 = new TCanvas("c4","c4");
     c4 -> cd();
@@ -1635,6 +1641,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_Egamma -> GetXaxis() -> SetLabelSize(0.035);
     h_Egamma -> SetYTitle(YaxisName);
     h_Egamma -> Draw();
+    c4->Write();
 
     TCanvas* c5 = new TCanvas("c5","c5");
     c5 -> cd();
@@ -1642,6 +1649,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_MultiEgamma -> GetXaxis() -> SetLabelSize(0.035);
     h_MultiEgamma -> SetYTitle(YaxisName);
     h_MultiEgamma -> Draw();
+    c5->Write();
 
     TCanvas* c6 = new TCanvas("c6","c6");
     c6 -> cd();
@@ -1649,6 +1657,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_Jets -> GetXaxis() -> SetLabelSize(0.035);
     h_Jets -> SetYTitle(YaxisName);
     h_Jets -> Draw();
+    c6->Write();
 
     TCanvas* c7 = new TCanvas("c7","c7");
     c7 -> cd();
@@ -1656,6 +1665,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_MultiJets -> GetXaxis() -> SetLabelSize(0.035);
     h_MultiJets -> SetYTitle(YaxisName);
     h_MultiJets -> Draw();
+    c7->Write();
 
     TCanvas* c8 = new TCanvas("c8","c8");
     c8 -> cd();
@@ -1663,6 +1673,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_Muons -> GetXaxis() -> SetLabelSize(0.035);
     h_Muons -> SetYTitle(YaxisName);
     h_Muons -> Draw();
+    c8->Write();
 
     TCanvas* c9 = new TCanvas("c9","c9");
     c9 -> cd();
@@ -1670,6 +1681,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_MultiMuons -> GetXaxis() -> SetLabelSize(0.035);
     h_MultiMuons -> SetYTitle(YaxisName);
     h_MultiMuons -> Draw();
+    c9->Write();
 
     TCanvas* c10 = new TCanvas("c10","c10");
     c10 -> cd();
@@ -1697,6 +1709,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 
     cor_Block -> Draw("colz");
     cor_Block -> Draw("same,text");
+    c10->Write();
 
     TCanvas* c11 = new TCanvas("c11","c11");
     c11 -> cd();
@@ -1718,6 +1731,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 
     cor_PAGS -> Draw("colz");
     cor_PAGS -> Draw("same,text"); 
+    c11->Write();
 
     TCanvas* c12 = new TCanvas("c12","c12");
     c12 -> cd();
@@ -1730,6 +1744,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_PAGS_pure -> GetXaxis() -> SetBinLabel(7,"B2G");
     h_PAGS_pure -> SetYTitle("Pure rate (kHz)");
     h_PAGS_pure -> Draw();
+    c12->Write();
 
     TCanvas* c13 = new TCanvas("c13","c13");
     c13 -> cd();
@@ -1742,6 +1757,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_PAGS_shared -> GetXaxis() -> SetBinLabel(7,"B2G");
     h_PAGS_shared -> SetYTitle("Shared rate (kHz)");
     h_PAGS_shared -> Draw();
+    c13->Write();
 		
     TCanvas* c14 = new TCanvas("c14","c14");
     c14 -> cd();
@@ -1761,6 +1777,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 
     cor_TRIGPHYS -> Draw("colz");
     cor_TRIGPHYS -> Draw("same,text"); 
+    c14->Write();
 
     TCanvas* c15 = new TCanvas("c15","c15");
     c15 -> cd();
@@ -1773,6 +1790,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 		
     h_TRIGPHYS_pure -> SetYTitle("Pure rate (kHz)");
     h_TRIGPHYS_pure -> Draw();
+    c15->Write();
 
     TCanvas* c16 = new TCanvas("c16","c16");
     c16 -> cd();
@@ -1785,7 +1803,9 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 	
     h_TRIGPHYS_shared -> SetYTitle("Shared rate (kHz)");
     h_TRIGPHYS_shared -> Draw();
+    c16->Write();
 
+    fOut.Close();
   }
 
   std::cout << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@13TeV" << "\t +/- \t" << "error_rate@13TeV" << "\t " << "pure@13TeV" << std::endl;

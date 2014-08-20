@@ -8,7 +8,7 @@ process.p.remove(process.l1MuonRecoTreeProducer)
 # edit here
 
 OUTFILE="L1Tree.root"
-NEVTS=-1
+NEVTS=500
 
 process.TFileService.fileName=OUTFILE
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(NEVTS) )

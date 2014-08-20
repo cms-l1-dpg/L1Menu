@@ -75,7 +75,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             process.csctfReEmulDigis      = csctfDigis.clone()
 
             process.csctfReEmulTrackDigis.DTproducer  = cms.untracked.InputTag("dttfDigis")
-            process.csctfReEmulDigis.CSCTrackProducer         = cms.untracked.InputTag("csctfReEmulTrackDigis")
+            process.csctfReEmulDigis.CSCTrackProducer = cms.untracked.InputTag("csctfReEmulTrackDigis")
 
             process.csctfReEmulTrackDigis.SectorProcessor.PTLUT.PtMethod = cms.untracked.uint32(33) # no triple ganging in ME11a
             process.csctfReEmulTrackDigis.SectorProcessor.gangedME1a = cms.untracked.bool(False)
@@ -89,7 +89,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             )
 
             process.load('L1TriggerConfig.GMTConfigProducers.L1MuGMTParameters_cfi')
-            # from L1TriggerConfig.GMTConfigProducers.L1MuGMTParameters_cfi import L1MuGMTParameters
             process.L1MuGMTParameters.MergeMethodPtBrl=cms.string("byCombi")
             process.L1MuGMTParameters.MergeMethodPtFwd=cms.string("byCombi")
             process.L1MuGMTParameters.VersionSortRankEtaQLUT = cms.uint32(1043)
@@ -202,7 +201,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
     from L1Trigger.GlobalTrigger.gtDigis_cfi import gtDigis
     process.gtReEmulDigis   = gtDigis.clone()
 
-
     if reEmulMuons :
         process.gtReEmulDigis.GmtInputTag  = cms.InputTag("gmtReEmulDigis")
     if reEmulCalos :
@@ -211,7 +209,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
     if patchNtuple :
         ntuple.gtSource = cms.InputTag("gtReEmulDigis")
         
-
     if reEmulMuons and reEmulCalos :
         process.reEmul = cms.Sequence(process.reEmulCaloChain + process.reEmulMuonChain + process.gtReEmulDigis + process.l1ExtraReEmul)
     elif reEmulMuons :

@@ -141,6 +141,7 @@ process.GlobalTag.toGet     = cms.VPSet()
 # make ntuples from RAW (ie. remove RECO)
 
 process.p.remove(process.muonDTDigis)
+process.p.remove(process.csctfDigis)
 process.p.remove(process.l1MenuTreeProducer)
 
 # re-emulation customisations
@@ -190,6 +191,7 @@ if options.keepEDMOutput :
                                                                              'keep *_csctfReEmulDigis_*_*',
                                                                              'keep *_dttfReEmulDigis_*_*',
                                                                              'keep *_uctGctDigis_*_*',
+                                                                             'keep *_caloStage1LegacyFormatDigis_*_*',
                                                                              'keep *BXVector_*__L1TEMULATION',
                                                                              'keep *_gctDigis_*_*')
                                   )
