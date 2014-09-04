@@ -249,7 +249,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   outFile->cd();
 
   algoFactory = new L1AlgoFactory(gt_,gmt_);
-  if(nBunches == 1368) algoFactory->setHF(true);
+  //if(nBunches == 1368) algoFactory->setHF(true);
   algoFactory->setTau(noTauInJet);
 
   //Single stuff
@@ -320,8 +320,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     if (event%200000 == 0) {
       std::cout << "Processed " << event << " events." << std::endl;
     }
-      
-    if ( event_->lumi < minLs || event_->lumi > maxLs ) continue;
+
+    if(event_->lumi < minLs || event_->lumi > maxLs) continue;
 
     double weight = event_->puWeight > -0.001 ? event_->puWeight : 1; 
       
@@ -525,11 +525,6 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/h/heistera/scratch1/L1Ntuples/L1TreeL1Accept_207477_LS_57_133.root");
       basicRatePlots.run(true,"DATA_207477",57,133,xSec8TeV,999.,nBunches50ns,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
     }
-  else if (fileType == "13TEV_40PU_2012GCT10GEV_RE-EMUL")
-    {
-      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v4_62X_40PU_25bx_ReEmul2012Gct10GeV/L1Tree.root"); 
-      basicRatePlots.run(false,"13TEV_40PU_2012_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents);
-    }
   else if (fileType == "13TEV_40PU_2015_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v6/25ns_40PU_ReEmul2015/L1Tree.root"); 
@@ -554,6 +549,16 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     {
       BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/JetCalib_V45/v4_62X_40PU_50bx_ReEmul2015/L1Tree.root");
       basicRatePlots.run(false,"13TEV_40PU_50bx_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches50ns,isCrossSec,nEvents,true);
+    }
+  else if (fileType == "8TEV_50bx_71X_MC")
+    {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/v7/71X_8TeV/MC/L1Tree.root");
+      basicRatePlots.run(false,"8TEV_50bx_71X_MC",0,500000000,xSec8TeV,20,nBunches50ns,isCrossSec,nEvents,false);
+    }
+  else if (fileType == "8TEV_50bx_71X_Data")
+    {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/v7/71X_8TeV/Data/L1Tree.root");
+      basicRatePlots.run(true,"8TEV_50bx_71X_Data",50,1600,xSec8TeV,20,nBunches50ns,isCrossSec,nEvents,false);
     }
   else if (fileType == "TEST")
     {

@@ -77,9 +77,9 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             process.csctfReEmulTrackDigis.DTproducer  = cms.untracked.InputTag("dttfDigis")
             process.csctfReEmulDigis.CSCTrackProducer = cms.untracked.InputTag("csctfReEmulTrackDigis")
 
-            process.csctfReEmulTrackDigis.SectorProcessor.PTLUT.PtMethod = cms.untracked.uint32(33) # no triple ganging in ME11a
+            process.csctfReEmulTrackDigis.SectorProcessor.PTLUT.PtMethod = cms.untracked.uint32(34) # no triple ganging in ME11a
             process.csctfReEmulTrackDigis.SectorProcessor.gangedME1a = cms.untracked.bool(False)
-            process.csctfReEmulTrackDigis.SectorProcessor.firmwareSP = cms.uint32(20120730) #core 20120730
+            process.csctfReEmulTrackDigis.SectorProcessor.firmwareSP = cms.uint32(20140515) #core 20120730
             process.csctfReEmulTrackDigis.SectorProcessor.initializeFromPSet = cms.bool(True) 
 
             process.csctfReEmulSequence = cms.Sequence(

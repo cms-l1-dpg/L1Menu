@@ -90,7 +90,7 @@ void getRange( TH1* plot, float & minY, float & maxY )
     }
 
   minY = ( fabs(minY - 1E10) > 0.01 ) ? minY*0.5 : 0.;
-  maxY = ( fabs(maxY - 0.  ) > 0.01 ) ? maxY*2.  : 1.;
+  maxY = ( fabs(maxY - 0.  ) > 0.01 ) ? maxY*2. : 1.;
 
   return;
 
