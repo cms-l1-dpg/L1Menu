@@ -66,10 +66,10 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
                 * process.csctfReEmulDigis
             )
         else :
-            from SLHCUpgradeSimulations.Configuration.muonCustoms import customise_csc_L1Emulator
+            from SLHCUpgradeSimulations.Configuration.muonCustoms import customise_csc_L1Emulator_sim
             from L1Trigger.CSCTrackFinder.csctfDigis_cfi import csctfDigis
 
-            customise_csc_L1Emulator(process) 
+            customise_csc_L1Emulator_sim(process) 
 
             process.csctfReEmulTrackDigis = process.simCsctfTrackDigis.clone()
             process.csctfReEmulDigis      = csctfDigis.clone()
