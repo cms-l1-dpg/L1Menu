@@ -64,8 +64,18 @@ def customiseUCT2015(process, runOnMC, runOnPostLS1, whichPU ):
             process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(True)
             process.hackHCALMIPs.src = cms.InputTag("hcalReEmulDigis")
 
-        process.load("L1Trigger.UCT2015.uctl1extraparticles_cfi")
-
+        process.uctGctDigis =cms.EDProducer("UCT2015GctCandsProducer",
+                                           egRelaxed = cms.InputTag("UCT2015Producer","RelaxedEGUnpacked"),
+                                           egIsolated = cms.InputTag("UCT2015Producer","IsolatedEGUnpacked"),
+                                           tauRelaxed = cms.InputTag("UCT2015Producer","RelaxedTauUnpacked"), # this collection is ignored in the final output, GT constraints
+                                           tauIsolated = cms.InputTag("UCT2015Producer","IsolatedTauUnpacked"),
+                                           jetSource = cms.InputTag("UCT2015Producer","CorrJetUnpacked"), # default are corrected jets
+                                           #jetSource = cms.InputTag("UCT2015Producer","JetUnpacked"),
+                                           setSource = cms.InputTag("UCT2015Producer","SETUnpacked"),
+                                           metSource = cms.InputTag("UCT2015Producer","METUnpacked"),
+                                           shtSource = cms.InputTag("UCT2015Producer","SHTUnpacked"),
+                                           mhtSource = cms.InputTag("UCT2015Producer","MHTUnpacked")
+        )
         if runOnMC and not runOnPostLS1 :
             # If run on MC and on 53X needs a patch different w.r.t. the UCT "standard" one
             # in this case there are no hcal digis stored so need to run on unpacked (Zero Suppressed) ones
@@ -116,7 +126,7 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
             process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
             ## process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
             process.load('L1Trigger/L1TCalorimeter/caloStage1RegionSF_cfi')
-            from L1Trigger.UCT2015.regionSF_cfi import regionSubtraction_PU20_MC13TeV
+            from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU20_MC13TeV
             if whichPU == 20 :
                 process.caloStage1Params.regionPUSParams = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
