@@ -38,7 +38,7 @@ L1_SingleIsoEG28er     1000
 L1_SingleIsoEG30er     1
 L1_DoubleEG_15_10      1000
 L1_DoubleEG_22_10      1
-L1_DoubleEG_20_10_WIso 1
+L1_DoubleEG_20_10_1LegIso 1
 L1_TripleEG10          1
 L1_TripleEG_14_10_8    1
 L1_SingleJet52            50000
@@ -66,7 +66,8 @@ L1_ETM50   1000
 L1_ETM60   900
 L1_ETM70   1
 L1_ETM100  1
-L1_ETM60_NoQCD 1
+L1_ETM60_NoJet52WdPhi2 1
+L1_ETM70_NoJet52WdPhi2 1
 L1_HTT125  1000
 L1_HTT150  800
 L1_HTT175  1
@@ -82,6 +83,7 @@ L1_Mu6_DoubleEG10         1
 L1_DoubleMu6_EG6       100000
 L1_DoubleMu7_EG7          1
 L1_Mu6_HTT150             1
+L1_Mu0er_ETM55           1000
 L1_Mu14er_ETM30           1
 L1_Mu10er_ETM50           1
 L1_Mu8_DoubleJetC20      -1
