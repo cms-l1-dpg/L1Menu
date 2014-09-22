@@ -7,23 +7,11 @@ Package to put together code and configuration file to prepare Winter13 version 
 Installation instructions:
 
 <pre><code>
-export MY_CMSSW_VERSION="CMSSW_6_2_5"
+export MY_CMSSW_VERSION="CMSSW_7_0_pre6"
 cmsrel $MY_CMSSW_VERSION 
 cd $MY_CMSSW_VERSION/src
 
 cmsenv
-
-# The PR for the RCT in 62X from Maria
-## git cms-merge-topic 2525
-git cms-addpkg DataFormats/L1CaloTrigger
-git cms-addpkg L1TriggerConfig/L1ScalesProducers
-git cms-addpkg L1Trigger/RegionalCaloTrigger     
-
-# The UCT2015 code
-git clone https://github.com/uwcms/UCT2015.git L1Trigger/UCT2015
-cd L1Trigger/UCT2015
-git checkout 2014-Menus-V46
-cd ../..
 
 git clone https://github.com/cms-l1-dpg/L1Ntuples.git L1TriggerDPG/L1Ntuples
 git clone https://github.com/cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu

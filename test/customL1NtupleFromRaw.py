@@ -7,7 +7,7 @@ process.p.remove(process.l1MuonRecoTreeProducer)
 
 # edit here
 
-OUTFILE="/tmp/pellicci/L1Tree_Data.root"
+OUTFILE="L1Tree.root"
 NEVTS=-1
 
 process.TFileService.fileName=OUTFILE

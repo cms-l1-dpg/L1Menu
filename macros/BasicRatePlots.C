@@ -527,7 +527,7 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     }
   else if (fileType == "13TEV_40PU_2015_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v6/25ns_40PU_ReEmul2015/L1Tree.root"); 
+      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/v7/25ns_40PU_ReEmul2015/L1Tree.root"); 
       basicRatePlots.run(false,"13TEV_40PU_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents,true);
     }
   else if (fileType == "13TEV_45p4PU_2015_RE-EMUL")

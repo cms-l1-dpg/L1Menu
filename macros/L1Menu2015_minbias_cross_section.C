@@ -1202,7 +1202,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  if(nevents > 6000000) nevents = 6000000;
+  if(nevents > 3000000) nevents = 3000000;
 
   Int_t NPASS = 0; 
 
@@ -1568,7 +1568,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==4){
     // 13 TeV ZeroBias 62X sample 40 PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v7/25ns_40PU_ReEmul2015/L1Tree.root";
+    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v8/25ns_40PU_ReEmul2015/L1Tree.root";
     themenufilename = "Menu_40PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;

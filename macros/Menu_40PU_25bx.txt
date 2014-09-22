@@ -83,7 +83,7 @@ L1_Mu6_DoubleEG10         1
 L1_DoubleMu6_EG6       100000
 L1_DoubleMu7_EG7          1
 L1_Mu6_HTT150             1
-L1_Mu0er_ETM55           1000
+L1_Mu0er_ETM55           100
 L1_Mu14er_ETM30           1
 L1_Mu10er_ETM50           1
 L1_Mu8_DoubleJetC20      -1
