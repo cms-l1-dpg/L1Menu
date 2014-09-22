@@ -7,7 +7,7 @@ Package to put together code and configuration file to prepare Winter13 version 
 Installation instructions:
 
 <pre><code>
-export MY_CMSSW_VERSION="CMSSW_7_0_pre6"
+export MY_CMSSW_VERSION="CMSSW_7_2_0_pre6"
 cmsrel $MY_CMSSW_VERSION 
 cd $MY_CMSSW_VERSION/src
 
@@ -20,3 +20,13 @@ export USER_CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-var
 
 scramv1 b -j 9
 </code></pre>
+
+In order to run on the L1Menu macro
+
+cd L1TriggerDPG/L1Menu/macros
+root
+.x  ../../L1Ntuples/macros/initL1Analysis.C+
+.L L1Menu2015_minbias_cross_section.C+
+RunL1(true,true,4)
+
+(4 being the scenario you want to test)
