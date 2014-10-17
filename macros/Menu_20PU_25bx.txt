@@ -54,7 +54,7 @@ L1_DoubleJetC100          1
 L1_DoubleJetC112          1
 L1_DoubleJetC120          1
 L1_DoubleTauJet36er       1
-L1_DoubleTauJet52er       2
+L1_DoubleTauJet52er       1
 L1_DoubleTauJet68er       1
 L1_TripleJet_92_76_64_VBF 1
 L1_QuadJetC40             500

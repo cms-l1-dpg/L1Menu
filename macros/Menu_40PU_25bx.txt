@@ -15,7 +15,7 @@ L1_SingleMu30         1
 L1_SingleMu30er       1
 L1_DoubleMu0_HighQ   10000
 L1_DoubleMu0er16_HighQ_WdEta18_OS 1
-L1_DoubleMu0er16_HighQ_WdEta18 2000
+L1_DoubleMu0er16_HighQ_WdEta18 1000
 L1_DoubleMu_10_0_HighQ_WdEta18     1
 L1_DoubleMu_10_Open     2000
 L1_DoubleMu_10_3p5      1000

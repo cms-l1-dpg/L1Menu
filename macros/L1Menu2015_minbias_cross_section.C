@@ -754,7 +754,7 @@ Bool_t L1Menu2012::MultiMuons() {
   InsertInMenu("L1_DoubleMu0_HighQ",algoFactory->DoubleMu(0.,0.,true));
   InsertInMenu("L1_DoubleMu_10_Open",algoFactory->DoubleMuXOpen(10.));
   InsertInMenu("L1_DoubleMu_10_3p5",algoFactory->DoubleMu(10.,3.5));
-  InsertInMenu("L1_DoubleMu_12_5",algoFactory->DoubleMu(12.,5.));
+  InsertInMenu("L1_DoubleMu_12_5",algoFactory->DoubleMu(12.,5.,false));
 
   InsertInMenu("L1_TripleMu0_HighQ",algoFactory->TripleMu(0.,0.,0.,4));
   InsertInMenu("L1_TripleMu_5_5_3_HighQ",algoFactory->TripleMu(5.,5.,3.,4));
@@ -798,21 +798,21 @@ Bool_t L1Menu2012::Cross() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_Mu6_HTT150", algoFactory->Mu_HTT(6.,150.) );
-  InsertInMenu("L1_Mu0er_ETM55", algoFactory->Muer_ETM(0.,55.) );
-  InsertInMenu("L1_Mu14er_ETM30", algoFactory->Muer_ETM(14.,30.) );
-  InsertInMenu("L1_Mu10er_ETM50", algoFactory->Muer_ETM(10.,50.) );
+  InsertInMenu("L1_Mu6_HTT150", algoFactory->Mu_HTT(6.,150.));
+  InsertInMenu("L1_Mu0er_ETM55", algoFactory->Muer_ETM(0.,55.));
+  InsertInMenu("L1_Mu14er_ETM30", algoFactory->Muer_ETM(14.,30.));
+  InsertInMenu("L1_Mu10er_ETM50", algoFactory->Muer_ETM(10.,50.));
   InsertInMenu("L1_Mu16er_TauJet20er", algoFactory->Muer_TauJetEta2p17(16.,20.));
   InsertInMenu("L1_IsoEG20er_TauJet20er", algoFactory->IsoEGer_TauJetEta2p17(20.,20.));
-  InsertInMenu("L1_Mu20_EG8", algoFactory->Mu_EG(20.,8.) );
-  InsertInMenu("L1_Mu20_EG10", algoFactory->Mu_EG(20.,10.) );
-  InsertInMenu("L1_Mu4_EG18", algoFactory->Mu_EG(4.,18.) );
-  InsertInMenu("L1_Mu5_EG20", algoFactory->Mu_EG(5.,20.) );
-  InsertInMenu("L1_Mu5_IsoEG18", algoFactory->Mu_EG(5.,18.,true) );
-  InsertInMenu("L1_DoubleMu6_EG6", algoFactory->DoubleMu_EG(6.,6.) );
-  InsertInMenu("L1_DoubleMu7_EG7", algoFactory->DoubleMu_EG(7,7.) );
-  InsertInMenu("L1_Mu5_DoubleEG5", algoFactory->Mu_DoubleEG(5., 5.) );
-  InsertInMenu("L1_Mu6_DoubleEG10", algoFactory->Mu_DoubleEG(6., 10.) );
+  InsertInMenu("L1_Mu20_EG8", algoFactory->Mu_EG(20.,8.));
+  InsertInMenu("L1_Mu20_EG10", algoFactory->Mu_EG(20.,10.));
+  InsertInMenu("L1_Mu4_EG18", algoFactory->Mu_EG(4.,18.));
+  InsertInMenu("L1_Mu5_EG20", algoFactory->Mu_EG(5.,20.));
+  InsertInMenu("L1_Mu5_IsoEG18", algoFactory->Mu_EG(5.,18.,true));
+  InsertInMenu("L1_DoubleMu6_EG6", algoFactory->DoubleMu_EG(6.,6.,false));
+  InsertInMenu("L1_DoubleMu7_EG7", algoFactory->DoubleMu_EG(7,7.,false));
+  InsertInMenu("L1_Mu5_DoubleEG5", algoFactory->Mu_DoubleEG(5., 5.));
+  InsertInMenu("L1_Mu6_DoubleEG10", algoFactory->Mu_DoubleEG(6., 10.));
 
   InsertInMenu("L1_Mu0er_ETM55_HTT100", algoFactory->Muer_ETM_HTT(0.,55.,100.));
   InsertInMenu("L1_Mu0er_ETM55_JetC120", algoFactory->Muer_ETM_JetC(0.,55.,120.));
@@ -1546,7 +1546,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==2){
     // 13 TeV ZeroBias 62X sample 40 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 1368; 
-    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v6/50ns_40PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v8/50ns_40PU_ReEmul2012Gct10GeV/L1Tree.root";
     themenufilename = "Menu_40PU_50bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;
@@ -1556,19 +1556,21 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     targetlumi= 70.;
   }
   else if(whichFileAndLumiToUse==3){
-    // 13 TeV ZeroBias 62X sample 40PU 25 ns, 2012 re-emulation with 10 GeV cut on jet seed
+    // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/JetCalib_V45/v4_62X_40PU_25bx_ReEmul2012Gct10GeV/L1Tree.root";
-    themenufilename = "Menu_40PU_25bx_NOSUMS.txt";
-    AveragePU = 40;
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v8/25ns_20PU_ReEmul2015/L1Tree.root";
+    themenufilename = "Menu_20PU_25bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
+    AveragePU = 20;
     L1JetCorrection=false;
     Energy = 13;
-    targetlumi= 140.;
+    noTauInJet = true;
+    targetlumi= 70.;
   }
   else if(whichFileAndLumiToUse==4){
     // 13 TeV ZeroBias 62X sample 40 PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "/data2/p/pellicci/L1DPG/root/v8/25ns_40PU_ReEmul2015/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v8/25ns_40PU_ReEmul2015/L1Tree.root";
     themenufilename = "Menu_40PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;
