@@ -21,7 +21,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         forwardJetSource = cms.InputTag("gctDigis","forJets"),
         centralJetSource = cms.InputTag("gctDigis","cenJets"),
         tauJetSource     = cms.InputTag("gctDigis","tauJets"),
-        isoTauJetSource  = cms.InputTag("gctDigis","isoTauJets")
+        isoTauJetSource  = cms.InputTag("gctDigis","isoTauJets"),
         
         etTotalSource = cms.InputTag("gctDigis"),
         etHadSource   = cms.InputTag("gctDigis"),
