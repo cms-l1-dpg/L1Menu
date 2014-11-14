@@ -2,6 +2,7 @@
 #include "L1AlgoFactory.h"
 #include <algorithm>
 #include<map>
+#include "TSystem.h"
 
 Double_t convertRegionEta(int iEta) {
   static const double rgnEtaValues[11] = {
@@ -252,8 +253,16 @@ void BasicRatePlots::setRateError(TH1F* histo) {
 
 void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int maxLs, float crossSec, float avPU, int nBunches, int isCrossSec, int nEvents, bool noTauInJet) {
 
-  system("mkdir -p results");
-  std::string resultName = "results/results_" + resultTag + (isCrossSec ? "_XSEC" : "_RATE") + ".root";
+
+  std::string resultName("");
+  const char *fhist = gSystem->Getenv("HISTOGRAMS");
+  if(!fhist){
+    system("mkdir -p results");
+    resultName = "results/results_" + resultTag + (isCrossSec ? "_XSEC" : "_RATE") + ".root";
+  }else{
+    resultName = fhist;
+  }
+  std::cout << "Output written to: " << resultName << std::endl;
   TFile *outFile = new TFile((resultName).c_str(),"recreate");
   outFile->cd();
 
