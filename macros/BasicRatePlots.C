@@ -32,7 +32,16 @@ class BasicRatePlots : public L1Ntuple
 public :
   
   //constructor    
-  BasicRatePlots(std::string filename) : L1Ntuple(filename) {}
+  // BasicRatePlots(std::string filename) : L1Ntuple(filename) {}
+  BasicRatePlots(std::string filename){
+    if (filename.find(".root") != std::string::npos) {
+      std::cout << "Reading RootFile: " << filename << std::endl;
+      L1Ntuple::Open(filename);
+    }else{
+      std::cout << "Reading Filelist: " << filename << std::endl;
+      if (! L1Ntuple::OpenWithList(filename)) exit(0);
+    }
+  }
   BasicRatePlots()  {}
   ~BasicRatePlots() {}
   
@@ -244,14 +253,16 @@ void BasicRatePlots::setRateError(TH1F* histo) {
 void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int maxLs, float crossSec, float avPU, int nBunches, int isCrossSec, int nEvents, bool noTauInJet) {
 
   system("mkdir -p results");
-  std::string resultName = "results_" + resultTag + (isCrossSec ? "_XSEC" : "_RATE") + ".root";
-  TFile *outFile = new TFile(("results/" + resultName).c_str(),"recreate");
+  std::string resultName = "results/results_" + resultTag + (isCrossSec ? "_XSEC" : "_RATE") + ".root";
+  TFile *outFile = new TFile((resultName).c_str(),"recreate");
   outFile->cd();
 
   algoFactory = new L1AlgoFactory(gt_,gmt_);
   //if(nBunches == 1368) algoFactory->setHF(true);
   algoFactory->setTau(noTauInJet);
 
+  //Event Counter
+  hTH1F["nEvts"]       = new TH1F("nEvts","Number of Events Processed",1,-0.5,.5);
   //Single stuff
   hTH1F["nJetVsPt"]    = new TH1F("nJetVsPt","SingleJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hTH1F["nTauVsPt"]    = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
@@ -329,6 +340,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     if(runOnData && !PhysicsBits[0]) continue;
       
+    hTH1F["nEvts"]->Fill(0.);  // count number of events processed
+
     nZeroBias += weight;
 
     float jetPt     = 0.; algoFactory->SingleJetPt(jetPt);
@@ -562,7 +575,7 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     }
   else if (fileType == "TEST")
     {
-      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/v4_62X_20PU_25bx_ReEmul2015/L1Tree.root"); 
+      BasicRatePlots basicRatePlots("filelist.txt"); 
       basicRatePlots.run(false,"TEST",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
     }
   else 
