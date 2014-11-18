@@ -10,6 +10,7 @@ def updatel1ExtraReEmulTag(process,inputTag):
     l1ExtraReEmul.forwardJetSource = cms.InputTag(inputTag,"forJets")
     l1ExtraReEmul.centralJetSource = cms.InputTag(inputTag,"cenJets")
     l1ExtraReEmul.tauJetSource     = cms.InputTag(inputTag,"tauJets")
+    l1ExtraReEmul.isoTauJetSource  = cms.InputTag(inputTag,"isoTauJets")
         
     l1ExtraReEmul.etTotalSource = cms.InputTag(inputTag)
     l1ExtraReEmul.etHadSource   = cms.InputTag(inputTag)
