@@ -141,8 +141,10 @@ process.GlobalTag.toGet     = cms.VPSet()
 # make ntuples from RAW (ie. remove RECO)
 
 process.p.remove(process.muonDTDigis)
-process.p.remove(process.csctfDigis)
 process.p.remove(process.l1MenuTreeProducer)
+
+if options.reEmulMuons :
+    process.p.remove(process.csctfDigis)
 
 # re-emulation customisations
 

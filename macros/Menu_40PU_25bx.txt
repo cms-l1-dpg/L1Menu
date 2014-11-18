@@ -1,7 +1,7 @@
 L1_ZeroBias                       25000
 L1_AlwaysTrue                     500
 L1_SingleMuOpen       -1
-L1_SingleMu5          50000
+L1_SingleMu5          10000
 L1_SingleMu12         3000
 L1_SingleMu14er       1000
 L1_SingleMu16         1000
@@ -30,7 +30,7 @@ L1_SingleEG20          4000
 L1_SingleEG25          1000
 L1_SingleEG30          700
 L1_SingleEG35          500
-L1_SingleEG35er        1
+L1_SingleEG35er        200
 L1_SingleEG40          1
 L1_SingleIsoEG18       3000
 L1_SingleIsoEG25       2000
@@ -87,16 +87,15 @@ L1_DoubleMu6_EG6       100000
 L1_DoubleMu7_EG7          1
 L1_Mu6_HTT150             1
 L1_Mu8_HTT125             1
-L1_Mu0er_ETM60            1
+L1_Mu0er_ETM55            1
 L1_Mu14er_ETM30           1
 L1_Mu10er_ETM50           1
 L1_Mu8_DoubleJetC20      -1
-L1_Mu3_JetC16_WdEtaPhi2  1000
+L1_Mu3_JetC16_WdEtaPhi2  500
 L1_Mu3_JetC52_WdEtaPhi2  200
 L1_Mu3_JetC92_WdEtaPhi2  -1
 L1_Mu16er_TauJet20er     1
-L1_EG20er_TripleJetCen30 -1
-L1_EG25er_TripleJetCen30 1
+L1_EG25er_HTT125         1
 L1_DoubleEG6_HTT150      1
 L1_IsoEG20er_TauJet20er  1
 L1_QuadJetC36_Tau52     20
