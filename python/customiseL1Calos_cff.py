@@ -146,8 +146,8 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
 
         l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
 
-        updatel1ExtraReEmulTag(process,"caloStage1LegacyFormatDigis")
-        updategtReEmulTag(process,"caloStage1LegacyFormatDigis")
+        updatel1ExtraReEmulTag(process,"simCaloStage1LegacyFormatDigis")
+        updategtReEmulTag(process,"simCaloStage1LegacyFormatDigis")
 
     else :
        print "[L1Menu]: ERROR: Can't customise calo chain with Stage1 emulator, reEmulCaloChain is missing!"
@@ -155,4 +155,4 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
     if hasattr(process,'l1NtupleProducer') and hasattr(process,'l1ExtraTreeProducer') :
         print "[L1Menu]:\tConfiguring Ntuple to use Stage1 emulator information"
  
-        updatel1ntupleTag(process,"caloStage1LegacyFormatDigis")
+        updatel1ntupleTag(process,"simCaloStage1LegacyFormatDigis")
