@@ -33,6 +33,7 @@ def updatel1ntupleTag(process,inputTag):
     ntuple.gctForwardJetsSource = cms.InputTag(inputTag,"forJets")
     ntuple.gctIsoEmSource       = cms.InputTag(inputTag,"isoEm")
     ntuple.gctTauJetsSource     = cms.InputTag(inputTag,"tauJets")
+    ntuple.gctIsoTauJetsSource  = cms.InputTag(inputTag,"isoTauJets")
     ntuple.gctEnergySumsSource  = cms.InputTag(inputTag,"")
     ntuple.rctSource            = cms.InputTag("none")
 
