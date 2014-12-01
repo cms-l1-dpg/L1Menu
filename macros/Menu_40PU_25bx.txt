@@ -1,7 +1,7 @@
 L1_ZeroBias                       25000
 L1_AlwaysTrue                     500
 L1_SingleMuOpen       -1
-L1_SingleMu5          10000
+L1_SingleMu5          5000
 L1_SingleMu12         3000
 L1_SingleMu14er       1000
 L1_SingleMu16         1000
@@ -91,8 +91,8 @@ L1_Mu0er_ETM55            1
 L1_Mu14er_ETM30           1
 L1_Mu10er_ETM50           1
 L1_Mu8_DoubleJetC20      -1
-L1_Mu3_JetC16_WdEtaPhi2  500
-L1_Mu3_JetC52_WdEtaPhi2  200
+L1_Mu3_JetC16_WdEtaPhi2  250
+L1_Mu3_JetC52_WdEtaPhi2  150
 L1_Mu3_JetC92_WdEtaPhi2  -1
 L1_Mu16er_TauJet20er     1
 L1_EG25er_HTT125         1

@@ -204,7 +204,7 @@ void L1Menu2012::FilL1Bits() {
 
 void L1Menu2012::MyInit() {
 
-  algoFactory = new L1AlgoFactory(gt_,gmt_);
+  algoFactory = new L1AlgoFactory(gt_,gmt_,gct_);
   algoFactory->setL1JetCorrection(theL1JetCorrection);
   algoFactory->setHF(noHF);
   algoFactory->setTau(noTauInJet);
@@ -222,6 +222,7 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_SingleMu20er");
   setHIGGS.insert("L1_SingleMu25er");
   setHIGGS.insert("L1_SingleMu30er");
+  setHIGGS.insert("L1_DoubleMu_10_3p5");
   setHIGGS.insert("L1_DoubleMu_12_5");
   setHIGGS.insert("L1_TripleMu0_HighQ");
   setHIGGS.insert("L1_TripleMu_5_5_3_HighQ");
@@ -256,9 +257,9 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_DoubleMu7_EG7");
   setHIGGS.insert("L1_Mu16er_TauJet20er");
   setHIGGS.insert("L1_IsoEG20er_TauJet20er");
-  setHIGGS.insert("L1_DoubleTauJet36er");
-  setHIGGS.insert("L1_DoubleTauJet52er");
-  setHIGGS.insert("L1_DoubleTauJet68er");
+  setHIGGS.insert("L1_DoubleIsoTau36er");
+  setHIGGS.insert("L1_DoubleIsoTau40er");
+  setHIGGS.insert("L1_DoubleIsoTau44er");
   setHIGGS.insert("L1_QuadJetC36_Tau52");
   setHIGGS.insert("L1_DoubleJetC56_ETM60");
   setHIGGS.insert("L1_DoubleJetC60_ETM60");
@@ -278,23 +279,28 @@ void L1Menu2012::MyInit() {
   setEXO.insert("L1_SingleMu30er");
   setEXO.insert("L1_DoubleMu_10_3p5");
   setEXO.insert("L1_DoubleMu_12_5");
+  setEXO.insert("L1_SingleEG25");
   setEXO.insert("L1_SingleEG30");
   setEXO.insert("L1_SingleEG35");
   setEXO.insert("L1_SingleEG35er");
+  setEXO.insert("L1_SingleIsoEG22er");
   setEXO.insert("L1_SingleIsoEG30er");
   setEXO.insert("L1_DoubleEG_15_10");
   setEXO.insert("L1_DoubleEG_22_10");
   setEXO.insert("L1_DoubleEG_20_10_1LegIso");
   setEXO.insert("L1_SingleJet52");
+  setEXO.insert("L1_SingleJet128");
   setEXO.insert("L1_SingleJet176");
   setEXO.insert("L1_SingleJet200");
   setEXO.insert("L1_SingleJet240");
-  setEXO.insert("L1_DoubleTauJet36er");
-  setEXO.insert("L1_DoubleTauJet52er");
-  setEXO.insert("L1_DoubleTauJet68er");
+  setEXO.insert("L1_DoubleIsoTau36er");
+  setEXO.insert("L1_DoubleIsoTau40er");
+  setEXO.insert("L1_DoubleIsoTau44er");
+  setEXO.insert("L1_DoubleJetC84");
   setEXO.insert("L1_DoubleJetC100");
   setEXO.insert("L1_DoubleJetC112");
   setEXO.insert("L1_DoubleJetC120");
+  setEXO.insert("L1_QuadJetC40");
   setEXO.insert("L1_QuadJetC60");
   setEXO.insert("L1_QuadJetC84");
   setEXO.insert("L1_ETM30");
@@ -302,6 +308,7 @@ void L1Menu2012::MyInit() {
   setEXO.insert("L1_ETM60");
   setEXO.insert("L1_ETM70");
   setEXO.insert("L1_ETM100");
+  setEXO.insert("L1_HTT125");
   setEXO.insert("L1_HTT150");
   setEXO.insert("L1_HTT175");
   setEXO.insert("L1_HTT200");
@@ -391,14 +398,17 @@ void L1Menu2012::MyInit() {
   setB2G.insert("L1_SingleIsoEG30er");
   setB2G.insert("L1_DoubleEG_15_10");
   setB2G.insert("L1_DoubleEG_22_10");
+  setB2G.insert("L1_SingleJet128");
   setB2G.insert("L1_SingleJet176");
   setB2G.insert("L1_SingleJet200");
   setB2G.insert("L1_SingleJet240");
+  setB2G.insert("L1_QuadJetC40");
   setB2G.insert("L1_QuadJetC60");
   setB2G.insert("L1_QuadJetC84");
   setB2G.insert("L1_ETM50");
   setB2G.insert("L1_ETM70");
   setB2G.insert("L1_ETM100");
+  setB2G.insert("L1_HTT125");
   setB2G.insert("L1_HTT150");
   setB2G.insert("L1_HTT175");
   setB2G.insert("L1_HTT200");
@@ -423,20 +433,24 @@ void L1Menu2012::MyInit() {
   setSUSY.insert("L1_DoubleEG_15_10");
   setSUSY.insert("L1_DoubleEG_22_10");
   setSUSY.insert("L1_DoubleEG_20_10_1LegIso");
+  setSUSY.insert("L1_SingleJet128");
   setSUSY.insert("L1_SingleJet176");
   setSUSY.insert("L1_SingleJet200");
   setSUSY.insert("L1_SingleJet240");
-  setSUSY.insert("L1_DoubleTauJet36er");
-  setSUSY.insert("L1_DoubleTauJet52er");
-  setSUSY.insert("L1_DoubleTauJet68er");
+  setSUSY.insert("L1_DoubleIsoTau36er");
+  setSUSY.insert("L1_DoubleIsoTau40er");
+  setSUSY.insert("L1_DoubleIsoTau44er");
+  setSUSY.insert("L1_DoubleJetC84");
   setSUSY.insert("L1_DoubleJetC100");
   setSUSY.insert("L1_DoubleJetC112");
   setSUSY.insert("L1_DoubleJetC120");
+  setSUSY.insert("L1_QuadJetC40");
   setSUSY.insert("L1_QuadJetC60");
   setSUSY.insert("L1_QuadJetC84");
   setSUSY.insert("L1_ETM50");
   setSUSY.insert("L1_ETM70");
   setSUSY.insert("L1_ETM100");
+  setSUSY.insert("L1_HTT125");
   setSUSY.insert("L1_HTT150");
   setSUSY.insert("L1_HTT175");
   setSUSY.insert("L1_HTT200");
@@ -530,9 +544,9 @@ void L1Menu2012::MyInit() {
   setHadronic.insert("L1_DoubleJetC100");
   setHadronic.insert("L1_DoubleJetC112");
   setHadronic.insert("L1_DoubleJetC120");
-  setHadronic.insert("L1_DoubleTauJet36er");
-  setHadronic.insert("L1_DoubleTauJet52er");
-  setHadronic.insert("L1_DoubleTauJet68er");
+  setHadronic.insert("L1_DoubleIsoTau36er");
+  setHadronic.insert("L1_DoubleIsoTau40er");
+  setHadronic.insert("L1_DoubleIsoTau44er");
   setHadronic.insert("L1_TripleJet_92_76_64_VBF");
   setHadronic.insert("L1_QuadJetC40");
   setHadronic.insert("L1_QuadJetC60");
@@ -594,9 +608,9 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_SingleJet128"] = 20;
   BitMapping["L1_SingleJet176"] = 21;
   BitMapping["L1_SingleJet200"] = 22;
-  BitMapping["L1_DoubleTauJet36er"] = 23;
-  BitMapping["L1_DoubleTauJet52er"] = 24;
-  BitMapping["L1_DoubleTauJet68er"] = 25;
+  BitMapping["L1_DoubleIsoTau36er"] = 23;
+  BitMapping["L1_DoubleIsoTau40er"] = 24;
+  BitMapping["L1_DoubleIsoTau44er"] = 25;
   BitMapping["L1_DoubleMu0_HighQ"] = 26;
   BitMapping["L1_SingleMu30er"] = 27;
   BitMapping["L1_Mu3_JetC16_WdEtaPhi2"] = 28;
@@ -863,6 +877,7 @@ Bool_t L1Menu2012::Cross() {
   InsertInMenu("L1_Mu0er_ETM55", algoFactory->Muer_ETM(0.,55.));
   InsertInMenu("L1_Mu14er_ETM30", algoFactory->Muer_ETM(14.,30.));
   InsertInMenu("L1_Mu10er_ETM50", algoFactory->Muer_ETM(10.,50.));
+  InsertInMenu("L1_EG25er_HTT125", algoFactory->SingleEG_Eta2p1_HTT(25., 125.,false));
   InsertInMenu("L1_Mu16er_TauJet20er", algoFactory->Muer_TauJetEta2p17(16.,20.));
   InsertInMenu("L1_IsoEG20er_TauJet20er", algoFactory->IsoEGer_TauJetEta2p17(20.,20.));
   InsertInMenu("L1_Mu20_EG8", algoFactory->Mu_EG(20.,8.));
@@ -874,8 +889,6 @@ Bool_t L1Menu2012::Cross() {
   InsertInMenu("L1_DoubleMu7_EG7", algoFactory->DoubleMu_EG(7,7.,true));
   InsertInMenu("L1_Mu5_DoubleEG5", algoFactory->Mu_DoubleEG(5., 5.));
   InsertInMenu("L1_Mu6_DoubleEG10", algoFactory->Mu_DoubleEG(6., 10.));
-
-  InsertInMenu("L1_EG25er_HTT125", algoFactory->SingleEG_Eta2p1_HTT(25., 125.,false));
 
   Int_t NN = insert_ibin;
   Int_t kOFFSET_old = kOFFSET;
@@ -1026,9 +1039,9 @@ Bool_t L1Menu2012::MultiJets() {
   InsertInMenu("L1_DoubleJetC112",DoubleJet1 >= 112. && DoubleJet2 >= 112.);
   InsertInMenu("L1_DoubleJetC120",DoubleJet1 >= 120. && DoubleJet2 >= 120.);
 
-  InsertInMenu("L1_DoubleTauJet36er", algoFactory->DoubleTauJetEta2p17(36.,36.));
-  InsertInMenu("L1_DoubleTauJet52er", algoFactory->DoubleTauJetEta2p17(52.,52.));
-  InsertInMenu("L1_DoubleTauJet68er", algoFactory->DoubleTauJetEta2p17(68.,68.));
+  InsertInMenu("L1_DoubleIsoTau36er", algoFactory->DoubleTauJetEta2p17(36.,36.,true));
+  InsertInMenu("L1_DoubleIsoTau40er", algoFactory->DoubleTauJetEta2p17(40.,40.,true));
+  InsertInMenu("L1_DoubleIsoTau44er", algoFactory->DoubleTauJetEta2p17(44.,44.,true));
 
   InsertInMenu("L1_TripleJet_92_76_64_VBF", algoFactory->TripleJet_VBF(92.,76.,64.));
 
@@ -1270,7 +1283,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Int_t nZeroBiasevents = 0;
 
-  if(nevents > 3000000) nevents = 3000000;
+  if(nevents > 4000000) nevents = 4000000;
 
   Int_t NPASS = 0; 
 
