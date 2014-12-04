@@ -257,7 +257,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   TFile *outFile = new TFile((resultName).c_str(),"recreate");
   outFile->cd();
 
-  algoFactory = new L1AlgoFactory(gt_,gmt_);
+  algoFactory = new L1AlgoFactory(gt_,gmt_,gct_);
   //if(nBunches == 1368) algoFactory->setHF(true);
   algoFactory->setTau(noTauInJet);
 
@@ -318,7 +318,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
   hTH1F["nPUvsPU"]  = new TH1F("nPUvsPU","Num. of PU iteractions; Num of iteractions; Reweighted couns [arb units]",101,-0.5,100.5);
 
-  float nZeroBias = 0;
+  Double_t nZeroBias = 0.;
 
   int nevents = nEvents == 0 ? GetEntries() : nEvents;
     
@@ -555,13 +555,18 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     }
   else if (fileType == "13TEV_40PU_50bx_2012GCT10GEV_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v9/50ns_40PU_ReEmul2012Gct10GeV/L1Tree.root");
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v10/50ns_40PU_ReEmul2012Gct10GeV/L1Tree.root");
       basicRatePlots.run(false,"13TEV_40PU_50bx_2012GCT10GEV_RE-EMUL",0,500000000,xSec13TeV,40,nBunches50ns,isCrossSec,nEvents);
     }
   else if (fileType == "13TEV_40PU_50bx_2015_RE-EMUL")
     {
       BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/JetCalib_V45/v4_62X_40PU_50bx_ReEmul2015/L1Tree.root");
       basicRatePlots.run(false,"13TEV_40PU_50bx_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches50ns,isCrossSec,nEvents,true);
+    }
+  else if (fileType == "13TEV_30PU_50bx_2012GCT10GEV_RE-EMUL")
+    {
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v10/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root");
+      basicRatePlots.run(false,"13TEV_30PU_50bx_2012GCT10GEV_RE-EMUL",0,500000000,xSec13TeV,30,nBunches50ns,isCrossSec,nEvents);
     }
   else if (fileType == "8TEV_50bx_71X_MC")
     {

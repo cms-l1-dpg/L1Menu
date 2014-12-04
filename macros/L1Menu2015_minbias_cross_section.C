@@ -1281,7 +1281,7 @@ Bool_t L1Menu2012::Technical() {
 void L1Menu2012::Loop() {
 
   Int_t nevents = GetEntries();
-  Int_t nZeroBiasevents = 0;
+  Double_t nZeroBiasevents = 0.;
 
   if(nevents > 4000000) nevents = 4000000;
 
@@ -1623,6 +1623,16 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   string themenufilename;
 
   if(whichFileAndLumiToUse==1){
+    // 13 TeV ZeroBias 72X sample 30 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
+    NumberOfBunches = 1368; 
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v10/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root";
+    themenufilename = "Menu_30PU_50bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
+    AveragePU = 30;
+    L1JetCorrection=false;
+    Energy = 13;
+    noHF = false;
+    targetlumi= 70.;
   }
   else if(whichFileAndLumiToUse==2){
     // 13 TeV ZeroBias 62X sample 40 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
