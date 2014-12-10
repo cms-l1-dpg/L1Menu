@@ -33,6 +33,7 @@ def updatel1ntupleTag(process,inputTag):
     ntuple.gctForwardJetsSource = cms.InputTag(inputTag,"forJets")
     ntuple.gctIsoEmSource       = cms.InputTag(inputTag,"isoEm")
     ntuple.gctTauJetsSource     = cms.InputTag(inputTag,"tauJets")
+    ntuple.gctIsoTauJetsSource  = cms.InputTag(inputTag,"isoTauJets")
     ntuple.gctEnergySumsSource  = cms.InputTag(inputTag,"")
     ntuple.rctSource            = cms.InputTag("none")
 
@@ -127,6 +128,7 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
             process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
             ## process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
             process.load('L1Trigger/L1TCalorimeter/caloStage1RegionSF_cfi')
+            #process.caloStage1Params.jetSeedThreshold = 5.0
             from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU20_MC13TeV
             if whichPU == 20 :
                 process.caloStage1Params.regionPUSParams = regionSubtraction_PU20_MC13TeV

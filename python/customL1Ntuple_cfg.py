@@ -141,8 +141,10 @@ process.GlobalTag.toGet     = cms.VPSet()
 # make ntuples from RAW (ie. remove RECO)
 
 process.p.remove(process.muonDTDigis)
-process.p.remove(process.csctfDigis)
 process.p.remove(process.l1MenuTreeProducer)
+
+if options.reEmulMuons :
+    process.p.remove(process.csctfDigis)
 
 # re-emulation customisations
 
@@ -152,7 +154,7 @@ if options.useUct2015 and options.useStage1Layer2:
 
 if options.reEmulation :
     from L1TriggerDPG.L1Menu.reEmulation_cff import *
-    reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1)
+    reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1, options.useStage1Layer2)
     process.p.replace(process.l1NtupleProducer, process.reEmul + process.l1NtupleProducer)
     if options.force2012Config :
          run2012CConfiguration(process)

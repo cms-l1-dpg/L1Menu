@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, runOnPostLS1 = False):
+def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, runOnPostLS1 = False, useStage1Layer2=False):
 
     print "[L1Menu]: Setting up overall re-emulation"        
 
@@ -177,10 +177,15 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             ntuple.gctIsoEmSource       = cms.InputTag("gctReEmulDigis","isoEm")
             ntuple.gctEnergySumsSource  = cms.InputTag("gctReEmulDigis","")
             ntuple.gctTauJetsSource     = cms.InputTag("gctReEmulDigis","tauJets")
+            if useStage1Layer2:
+                ntuple.gctIsoTauJetsSource  = cms.InputTag("gctReEmulDigis","isoTauJets")
+            else:
+                ntuple.gctIsoTauJetsSource  = cms.InputTag("none","isoTauJets")
 
             l1ExtraNtuple.nonIsoEmLabel = cms.untracked.InputTag("l1ExtraReEmul:NonIsolated")
             l1ExtraNtuple.isoEmLabel    = cms.untracked.InputTag("l1ExtraReEmul:Isolated")
             l1ExtraNtuple.tauJetLabel   = cms.untracked.InputTag("l1ExtraReEmul:Tau")
+            l1ExtraNtuple.isoTauJetLabel   = cms.untracked.InputTag("l1ExtraReEmul:IsoTau")
             l1ExtraNtuple.cenJetLabel   = cms.untracked.InputTag("l1ExtraReEmul:Central")
             l1ExtraNtuple.fwdJetLabel   = cms.untracked.InputTag("l1ExtraReEmul:Forward")
             l1ExtraNtuple.metLabel      = cms.untracked.InputTag("l1ExtraReEmul:MET")
