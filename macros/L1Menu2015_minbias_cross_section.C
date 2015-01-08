@@ -1341,21 +1341,6 @@ void L1Menu2012::Loop() {
     Long64_t ientry = LoadTree(i); if (ientry < 0) break;
     GetEntry(i);
 
-    //remove heavy looping PU events from sample
-    Int_t Nele = gt_ -> Nele;
-    bool moveOn = false;
-    for(Int_t ue=0; ue < Nele; ue++){  
-      Int_t bx = gt_ -> Bxel[ue];        		
-      if(bx != 0) continue;
-      float_t ietaele = gt_->Etael[ue];
-      Float_t ptele = gt_ -> Rankel[ue];
-      float_t etaele = convertRegionEta(ietaele);
-
-      if(theAveragePU == 30 && etaele > -1.3 && etaele < -1.2 && ptele > 62.5) moveOn = true;
-      if(theAveragePU == 30 && etaele > 0.17 && etaele < 1.8 && ptele > 62.5) moveOn = true;
-    }
-    if(moveOn) continue;
-
     FilL1Bits();
     if(first) MyInit();
 
@@ -1673,8 +1658,8 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     // 13 TeV ZeroBias 72X sample 30 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 1368; 
     L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v10/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root";
-    //themenufilename = "Menu_30PU_50bx.txt";
-    themenufilename = "Menu_Noprescales.txt";
+    themenufilename = "Menu_30PU_50bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 30;
     L1JetCorrection=false;
     Energy = 13;
@@ -1697,8 +1682,8 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
     L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v10/25ns_20PU_ReEmul2015/L1Tree.root";
-    //themenufilename = "Menu_20PU_25bx.txt";
-    themenufilename = "Menu_Noprescales.txt";
+    themenufilename = "Menu_20PU_25bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;
     L1JetCorrection=false;
     Energy = 13;
