@@ -58,16 +58,40 @@ void CorrectScale(TH1F* h, Float_t scal) {
   }
 }
 
+Double_t convertRegionEta(int iEta) {
+  static const double rgnEtaValues[11] = {
+     0.174, // HB and inner HE bins are 0.348 wide
+     0.522,
+     0.870,
+     1.218,
+     1.566,
+     1.956, // Last two HE bins are 0.432 and 0.828 wide
+     2.586,
+     3.250, // HF bins are 0.5 wide
+     3.750,
+     4.250,
+     4.750
+  };
+  if(iEta < 11) {
+    return -rgnEtaValues[-(iEta - 10)]; // 0-10 are negative eta values
+  }
+  else if (iEta < 22) {
+    return rgnEtaValues[iEta - 11];     // 11-21 are positive eta values
+  }
+  return -9;
+}
+
 class L1Menu2012 : public L1Ntuple {
 
  public :
 
-  L1Menu2012(string menufile, Float_t aNumberOfBunches, Bool_t aL1JetCorrection, Bool_t anoHF, Bool_t aisTauInJet) : 
+  L1Menu2012(string menufile, Float_t aNumberOfBunches, Bool_t aL1JetCorrection, Bool_t anoHF, Bool_t aisTauInJet, Int_t AveragePU) : 
     themenufilename(menufile), 
     theNumberOfBunches(aNumberOfBunches),
     theL1JetCorrection(aL1JetCorrection),
     noHF(anoHF),
-    noTauInJet(aisTauInJet)
+    noTauInJet(aisTauInJet),
+    theAveragePU(AveragePU)
   {}
 
   ~L1Menu2012() {}
@@ -78,6 +102,7 @@ class L1Menu2012 : public L1Ntuple {
   Bool_t theL1JetCorrection;
   Bool_t noHF;
   Bool_t noTauInJet;
+  Int_t theAveragePU;
 
   std::stringstream output;
   TString GetPrintout() { return output.str(); };
@@ -239,6 +264,7 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_DoubleEG_15_10");
   setHIGGS.insert("L1_DoubleEG_22_10");
   setHIGGS.insert("L1_DoubleEG_20_10_1LegIso");
+  setHIGGS.insert("L1_TripleEG5");
   setHIGGS.insert("L1_TripleEG_14_10_8");
   setHIGGS.insert("L1_ETM50");
   setHIGGS.insert("L1_ETM60");
@@ -246,9 +272,11 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_ETM100");
   setHIGGS.insert("L1_ETM60_NoJet52WdPhi2");
   setHIGGS.insert("L1_ETM70_NoJet52WdPhi2");
+  setHIGGS.insert("L1_Mu12_EG10");
   setHIGGS.insert("L1_Mu20_EG8");
   setHIGGS.insert("L1_Mu20_EG10");
   setHIGGS.insert("L1_Mu4_EG18");
+  setHIGGS.insert("L1_Mu5_EG15");
   setHIGGS.insert("L1_Mu5_EG20");
   setHIGGS.insert("L1_Mu5_IsoEG18");
   setHIGGS.insert("L1_Mu5_DoubleEG5");
@@ -504,8 +532,10 @@ void L1Menu2012::MyInit() {
   setMuonHadronic.insert("L1_Mu10er_ETM50");
   setMuonHadronic.insert("L1_Mu16er_TauJet20er");
   setMuonEG.insert("L1_Mu4_EG18");
+  setMuonEG.insert("L1_Mu5_EG15");
   setMuonEG.insert("L1_Mu5_EG20");
   setMuonEG.insert("L1_Mu5_IsoEG18");
+  setMuonEG.insert("L1_Mu12_EG10");
   setMuonEG.insert("L1_Mu20_EG8");
   setMuonEG.insert("L1_Mu20_EG10");
   setMuonEG.insert("L1_Mu5_DoubleEG5");
@@ -530,6 +560,7 @@ void L1Menu2012::MyInit() {
   setEG.insert("L1_DoubleEG_15_10");
   setEG.insert("L1_DoubleEG_22_10");
   setEG.insert("L1_DoubleEG_20_10_1LegIso");
+  setEG.insert("L1_TripleEG5");
   setEG.insert("L1_TripleEG_14_10_8");
   setHadronic.insert("L1_SingleJet36");
   setHadronic.insert("L1_SingleJet52");
@@ -672,19 +703,19 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_Mu14er_ETM30"] = 84;
   BitMapping["L1_DoubleMu7_EG7"] = 85;
   BitMapping["L1_SingleMu16er"] = 86;
-  BitMapping["FREE87"] = 87;
+  BitMapping["L1_Mu5_EG15"] = 87;
   BitMapping["L1_Mu4_EG18"] = 88;
   BitMapping["L1_SingleMu6_NotBptxOR"] = 89;
   BitMapping["L1_DoubleMu6_EG6"] = 90;
   BitMapping["L1_Mu5_DoubleEG5"] = 91;
-  BitMapping["FREE92"] = 92;
+  BitMapping["L1_Mu12_EG10"] = 92;
   BitMapping["L1_QuadJetC36_Tau52"] = 93;
   BitMapping["FREE94"] = 94;
   BitMapping["FREE95"] = 95;
   BitMapping["FREE96"] = 96;
   BitMapping["L1_TripleMu0_HighQ"] = 97;
   BitMapping["L1_TripleMu_5_5_3_HighQ"] = 98;
-  BitMapping["FREE99"] = 99;
+  BitMapping["L1_TripleEG5"] = 99;
   BitMapping["L1_TripleEG_14_10_8"] = 100;
   BitMapping["L1_DoubleEG_15_10"] = 101;
   BitMapping["L1_DoubleEG_22_10"] = 102;
@@ -880,9 +911,11 @@ Bool_t L1Menu2012::Cross() {
   InsertInMenu("L1_EG25er_HTT125", algoFactory->SingleEG_Eta2p1_HTT(25., 125.,false));
   InsertInMenu("L1_Mu16er_TauJet20er", algoFactory->Muer_TauJetEta2p17(16.,20.));
   InsertInMenu("L1_IsoEG20er_TauJet20er", algoFactory->IsoEGer_TauJetEta2p17(20.,20.));
+  InsertInMenu("L1_Mu12_EG10", algoFactory->Mu_EG(12.,10.));
   InsertInMenu("L1_Mu20_EG8", algoFactory->Mu_EG(20.,8.));
   InsertInMenu("L1_Mu20_EG10", algoFactory->Mu_EG(20.,10.));
   InsertInMenu("L1_Mu4_EG18", algoFactory->Mu_EG(4.,18.));
+  InsertInMenu("L1_Mu5_EG15", algoFactory->Mu_EG(5.,15.));
   InsertInMenu("L1_Mu5_EG20", algoFactory->Mu_EG(5.,20.));
   InsertInMenu("L1_Mu5_IsoEG18", algoFactory->Mu_EG(5.,18.,true));
   InsertInMenu("L1_DoubleMu6_EG6", algoFactory->DoubleMu_EG(6.,6.,true));
@@ -1205,6 +1238,7 @@ Bool_t L1Menu2012::MultiEGamma() {
   InsertInMenu("L1_DoubleEG_15_10", algoFactory->DoubleEG(15.,10.) );
   InsertInMenu("L1_DoubleEG_22_10", algoFactory->DoubleEG(22.,10.) );
   InsertInMenu("L1_DoubleEG_20_10_1LegIso", algoFactory->DoubleEG(20.,10.,true) );
+  InsertInMenu("L1_TripleEG5", algoFactory->TripleEG(5.,5.,5.) );
   InsertInMenu("L1_TripleEG_14_10_8", algoFactory->TripleEG(14.,10.,8.) );
 
   Int_t NN = insert_ibin;
@@ -1283,7 +1317,7 @@ void L1Menu2012::Loop() {
   Int_t nevents = GetEntries();
   Double_t nZeroBiasevents = 0.;
 
-  if(nevents > 4000000) nevents = 4000000;
+  if(nevents > 6000000) nevents = 6000000;
 
   Int_t NPASS = 0; 
 
@@ -1303,186 +1337,199 @@ void L1Menu2012::Loop() {
 	
   first = true;
 
-  for (Long64_t i=0; i<nevents; i++)
-    {     
-      Long64_t ientry = LoadTree(i); if (ientry < 0) break;
-      GetEntry(i);
+  for (Long64_t i=0; i<nevents; i++){     
+    Long64_t ientry = LoadTree(i); if (ientry < 0) break;
+    GetEntry(i);
 
-      FilL1Bits();
+    //remove heavy looping PU events from sample
+    Int_t Nele = gt_ -> Nele;
+    bool moveOn = false;
+    for(Int_t ue=0; ue < Nele; ue++){  
+      Int_t bx = gt_ -> Bxel[ue];        		
+      if(bx != 0) continue;
+      float_t ietaele = gt_->Etael[ue];
+      Float_t ptele = gt_ -> Rankel[ue];
+      float_t etaele = convertRegionEta(ietaele);
 
-      if(first) MyInit();
+      if(theAveragePU == 30 && etaele > -1.3 && etaele < -1.2 && ptele > 62.5) moveOn = true;
+      if(theAveragePU == 30 && etaele > 0.17 && etaele < 1.8 && ptele > 62.5) moveOn = true;
+    }
+    if(moveOn) continue;
 
-      Bool_t raw = PhysicsBits[0];  // check for ZeroBias triggered events
-      if(!raw) continue;
+    FilL1Bits();
+    if(first) MyInit();
 
-      nZeroBiasevents++;
+    Bool_t raw = PhysicsBits[0];  // check for ZeroBias triggered events
+    if(!raw) continue;
 
-      // reset the emulated trigger bits
-      kOFFSET = 0;
-      for (Int_t k=0; k < N128; k++) {
-	TheTriggerBits[k] = false;
-      }
+    nZeroBiasevents++;
 
-      Bool_t cross       = Cross();
-      Bool_t multicross  = MultiCross();
-      Bool_t eg          = EGamma();
-      Bool_t multieg     = MultiEGamma();
-      Bool_t muons       = Muons();
-      Bool_t multimuons  = MultiMuons();
-      Bool_t jets        = Jets() ;
-      Bool_t multijets   = MultiJets() ;
-      Bool_t sums        = Sums();
-      Bool_t technical   = Technical();
+    // reset the emulated trigger bits
+    kOFFSET = 0;
+    for (Int_t k=0; k < N128; k++) {
+      TheTriggerBits[k] = false;
+    }
 
-      Bool_t pass  = jets || multijets || eg || multieg || sums || muons || multimuons || cross || multicross || technical;
+    Bool_t cross       = Cross();
+    Bool_t multicross  = MultiCross();
+    Bool_t eg          = EGamma();
+    Bool_t multieg     = MultiEGamma();
+    Bool_t muons       = Muons();
+    Bool_t multimuons  = MultiMuons();
+    Bool_t jets        = Jets() ;
+    Bool_t multijets   = MultiJets() ;
+    Bool_t sums        = Sums();
+    Bool_t technical   = Technical();
 
-      if(pass) NPASS ++;
+    Bool_t pass  = jets || multijets || eg || multieg || sums || muons || multimuons || cross || multicross || technical;
 
-      if(cross)      NCROSS++;
-      if(multicross) MULTINCROSS++;
-      if(muons)      NMUONS++;
-      if(multimuons) MULTINMUONS++;
-      if(sums)       NSUMS++;
-      if(eg)         NEG++;
-      if(multieg)    MULTINEG++;
-      if(jets)       NJETS++;
-      if(multijets)  MULTINJETS++;
-      if(technical)  TECHNICAL++;
+    if(pass) NPASS ++;
 
-      if(pass) h_Block->Fill(10.);
+    if(cross)      NCROSS++;
+    if(multicross) MULTINCROSS++;
+    if(muons)      NMUONS++;
+    if(multimuons) MULTINMUONS++;
+    if(sums)       NSUMS++;
+    if(eg)         NEG++;
+    if(multieg)    MULTINEG++;
+    if(jets)       NJETS++;
+    if(multijets)  MULTINJETS++;
+    if(technical)  TECHNICAL++;
 
-      Bool_t dec[10];
-      dec[0] = eg;
-      dec[1] = multieg;
-      dec[2] = jets;
-      dec[3] = multijets;
-      dec[4] = muons;
-      dec[5] = multimuons;
-      dec[6] = sums;
-      dec[7] = cross;
-      dec[8] = multicross;
-      dec[9] = technical;
+    if(pass) h_Block->Fill(10.);
 
-      for (Int_t l=0; l < 9; l++) {
-	if (dec[l]) {
-	  h_Block -> Fill(l);
-	  for (Int_t k=0; k < 5; k++) {
-	    if (dec[k]) cor_Block -> Fill(l,k);
-	  }
+    Bool_t dec[10];
+    dec[0] = eg;
+    dec[1] = multieg;
+    dec[2] = jets;
+    dec[3] = multijets;
+    dec[4] = muons;
+    dec[5] = multimuons;
+    dec[6] = sums;
+    dec[7] = cross;
+    dec[8] = multicross;
+    dec[9] = technical;
+
+    for (Int_t l=0; l < 9; l++) {
+      if (dec[l]) {
+	h_Block -> Fill(l);
+	for (Int_t k=0; k < 5; k++) {
+	  if (dec[k]) cor_Block -> Fill(l,k);
 	}
-
       }
 
-      first = false;
+    }
 
-      // now the pure rate stuff
-      // kOFFSET now contains the number of triggers we have calculated
+    first = false;
 
-      Bool_t ddd[NPAGS];
-      for (Int_t idd=0; idd < NPAGS; idd++) {
-	ddd[idd] = false; 
-      } 
+    // now the pure rate stuff
+    // kOFFSET now contains the number of triggers we have calculated
 
-      Bool_t eee[NTRIGPHYS];
-      for (Int_t iee=0; iee < NTRIGPHYS; iee++) {
-	eee[iee] = false; 
+    Bool_t ddd[NPAGS];
+    for (Int_t idd=0; idd < NPAGS; idd++) {
+      ddd[idd] = false; 
+    } 
+
+    Bool_t eee[NTRIGPHYS];
+    for (Int_t iee=0; iee < NTRIGPHYS; iee++) {
+      eee[iee] = false; 
+    }
+
+    Float_t weightEventPAGs = 1.;
+    Float_t weightEventTRIGPHYS = 1.;
+
+    for (Int_t k=0; k < kOFFSET; k++) {
+      if ( ! TheTriggerBits[k] ) continue;
+      h_All -> Fill(k);
+
+      TString name = h_All -> GetXaxis() -> GetBinLabel(k+1);
+      std::string L1namest = (std::string)name;
+
+      Bool_t IsTOP   = setTOP.count(L1namest) > 0;
+      Bool_t IsHIGGS = setHIGGS.count(L1namest) > 0;
+      Bool_t IsBPH   = setBPH.count(L1namest) > 0;
+      Bool_t IsEXO   = setEXO.count(L1namest) > 0;
+      Bool_t IsSUSY  = setSUSY.count(L1namest) > 0;
+      Bool_t IsSMP   = setSMP.count(L1namest) > 0;
+      Bool_t IsB2G   = setB2G.count(L1namest) > 0;
+      if(IsHIGGS) ddd[0] = true;
+      if(IsSUSY)  ddd[1] = true;
+      if(IsEXO)   ddd[2] = true;
+      if(IsTOP)   ddd[3] = true;
+      if(IsSMP)   ddd[4] = true;
+      if(IsBPH)   ddd[5] = true;
+      if(IsB2G)   ddd[6] = true;
+
+      Float_t ww = WeightsPAGs[L1namest];
+      if (ww < weightEventPAGs) weightEventPAGs = ww;
+
+      Bool_t IsMuon     = setMuon.count(L1namest) > 0;
+      Bool_t IsEG       = setEG.count(L1namest) > 0;
+      Bool_t IsHadronic = setHadronic.count(L1namest) > 0;
+
+      Bool_t IsMuonEG       = setMuonEG.count(L1namest) > 0;
+      Bool_t IsMuonHadronic = setMuonHadronic.count(L1namest) > 0;
+      Bool_t IsEGHadronic   = setEGHadronic.count(L1namest) > 0;
+
+      if(IsMuon)     eee[0] = true;
+      if(IsEG)       eee[1] = true;
+      if(IsHadronic) eee[2] = true;
+
+      if(IsMuonEG)       eee[3] = true;
+      if(IsMuonHadronic) eee[4] = true;
+      if(IsEGHadronic)   eee[5] = true;
+
+      Float_t www = WeightsTRIGPHYS[L1namest];
+      if(www < weightEventTRIGPHYS) weightEventTRIGPHYS = www;
+
+      //did the event pass another trigger ?
+      Bool_t pure = true;
+      for (Int_t k2=0; k2 < kOFFSET; k2++) {
+	if (k2 == k) continue;
+	if ( TheTriggerBits[k2] ) pure = false;
       }
+      if (pure) h_Pure -> Fill(k);
+    }
 
-      Float_t weightEventPAGs = 1.;
-      Float_t weightEventTRIGPHYS = 1.;
-
-      for (Int_t k=0; k < kOFFSET; k++) {
-	if ( ! TheTriggerBits[k] ) continue;
-	h_All -> Fill(k);
-
-	TString name = h_All -> GetXaxis() -> GetBinLabel(k+1);
-	std::string L1namest = (std::string)name;
-
-	Bool_t IsTOP   = setTOP.count(L1namest) > 0;
-	Bool_t IsHIGGS = setHIGGS.count(L1namest) > 0;
-	Bool_t IsBPH   = setBPH.count(L1namest) > 0;
-	Bool_t IsEXO   = setEXO.count(L1namest) > 0;
-	Bool_t IsSUSY  = setSUSY.count(L1namest) > 0;
-	Bool_t IsSMP   = setSMP.count(L1namest) > 0;
-	Bool_t IsB2G   = setB2G.count(L1namest) > 0;
-	if(IsHIGGS) ddd[0] = true;
-	if(IsSUSY)  ddd[1] = true;
-	if(IsEXO)   ddd[2] = true;
-	if(IsTOP)   ddd[3] = true;
-	if(IsSMP)   ddd[4] = true;
-	if(IsBPH)   ddd[5] = true;
-	if(IsB2G)   ddd[6] = true;
-
-	Float_t ww = WeightsPAGs[L1namest];
-	if (ww < weightEventPAGs) weightEventPAGs = ww;
-
-	Bool_t IsMuon     = setMuon.count(L1namest) > 0;
-	Bool_t IsEG       = setEG.count(L1namest) > 0;
-	Bool_t IsHadronic = setHadronic.count(L1namest) > 0;
-
-	Bool_t IsMuonEG       = setMuonEG.count(L1namest) > 0;
-	Bool_t IsMuonHadronic = setMuonHadronic.count(L1namest) > 0;
-	Bool_t IsEGHadronic   = setEGHadronic.count(L1namest) > 0;
-
-	if(IsMuon)     eee[0] = true;
-	if(IsEG)       eee[1] = true;
-	if(IsHadronic) eee[2] = true;
-
-	if(IsMuonEG)       eee[3] = true;
-	if(IsMuonHadronic) eee[4] = true;
-	if(IsEGHadronic)   eee[5] = true;
-
-	Float_t www = WeightsTRIGPHYS[L1namest];
-	if(www < weightEventTRIGPHYS) weightEventTRIGPHYS = www;
-
-	//did the event pass another trigger ?
+    // for the PAG rates
+    Bool_t PAG = false;
+    for (Int_t idd=0; idd < NPAGS; idd++) {
+      if (ddd[idd]) {
 	Bool_t pure = true;
-	for (Int_t k2=0; k2 < kOFFSET; k2++) {
-	  if (k2 == k) continue;
-	  if ( TheTriggerBits[k2] ) pure = false;
-	}
-	if (pure) h_Pure -> Fill(k);
-      }
+	PAG = true;
+	for (Int_t jdd=0; jdd < NPAGS; jdd++) {
+	  if (ddd[jdd]) {
+	    cor_PAGS -> Fill(idd,jdd);
+	    if (jdd != idd) pure = false;
+	  }
+	}   
+	if(pure) h_PAGS_pure -> Fill(idd);
+	h_PAGS_shared -> Fill(idd,weightEventPAGs);
 
-      // for the PAG rates
-      Bool_t PAG = false;
-      for (Int_t idd=0; idd < NPAGS; idd++) {
-	if (ddd[idd]) {
-	  Bool_t pure = true;
-	  PAG = true;
-	  for (Int_t jdd=0; jdd < NPAGS; jdd++) {
-	    if (ddd[jdd]) {
-	      cor_PAGS -> Fill(idd,jdd);
-	      if (jdd != idd) pure = false;
-	    }
-	  }   
-	  if(pure) h_PAGS_pure -> Fill(idd);
-	  h_PAGS_shared -> Fill(idd,weightEventPAGs);
+      }  
+    }
+    if(PAG) nPAG ++;
 
-	}  
-      }
-      if(PAG) nPAG ++;
+    //for the TRIGPHYS rates :
+    Bool_t TRIGPHYS = false;
+    for (Int_t iee=0; iee < NTRIGPHYS; iee++) {
+      if (eee[iee]) {
+	Bool_t pure = true;
+	TRIGPHYS = true;
+	for (Int_t jee=0; jee < NTRIGPHYS; jee++) {
+	  if (eee[jee]) {
+	    cor_TRIGPHYS -> Fill(iee,jee);
+	    if (jee != iee) pure = false;
+	  }
+	}   
+	if(pure) h_TRIGPHYS_pure -> Fill(iee);
+	h_TRIGPHYS_shared -> Fill(iee,weightEventTRIGPHYS);
 
-      //for the TRIGPHYS rates :
-      Bool_t TRIGPHYS = false;
-      for (Int_t iee=0; iee < NTRIGPHYS; iee++) {
-	if (eee[iee]) {
-	  Bool_t pure = true;
-	  TRIGPHYS = true;
-	  for (Int_t jee=0; jee < NTRIGPHYS; jee++) {
-	    if (eee[jee]) {
-	      cor_TRIGPHYS -> Fill(iee,jee);
-	      if (jee != iee) pure = false;
-	    }
-	  }   
-	  if(pure) h_TRIGPHYS_pure -> Fill(iee);
-	  h_TRIGPHYS_shared -> Fill(iee,weightEventTRIGPHYS);
+      }  
+    }
+    if(TRIGPHYS) nTRIGPHYS++;
 
-	}  
-      }
-      if(TRIGPHYS) nTRIGPHYS++;
-
-    }  // end evt loop
+  }  // end evt loop
 
   std::cout << std::endl << std::endl << " ... number of usable events: " << nevents << std::endl;
   std::cout << std::endl << "... number of zero bias triggered events: " << nZeroBiasevents << std::endl << std::endl;
@@ -1626,8 +1673,8 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     // 13 TeV ZeroBias 72X sample 30 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 1368; 
     L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v10/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root";
-    themenufilename = "Menu_30PU_50bx.txt";
-    //themenufilename = "Menu_Noprescales.txt";
+    //themenufilename = "Menu_30PU_50bx.txt";
+    themenufilename = "Menu_Noprescales.txt";
     AveragePU = 30;
     L1JetCorrection=false;
     Energy = 13;
@@ -1649,9 +1696,9 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==3){
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v9/25ns_20PU_ReEmul2015/L1Tree.root";
-    themenufilename = "Menu_20PU_25bx.txt";
-    //themenufilename = "Menu_Noprescales.txt";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v10/25ns_20PU_ReEmul2015/L1Tree.root";
+    //themenufilename = "Menu_20PU_25bx.txt";
+    themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;
     L1JetCorrection=false;
     Energy = 13;
@@ -1703,7 +1750,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     TXTOutfile << "  L1NtupleFileName                 = " << L1NtupleFileName << std::endl;
   }
 
-  L1Menu2012 a(themenufilename,NumberOfBunches,L1JetCorrection,noHF,noTauInJet);
+  L1Menu2012 a(themenufilename,NumberOfBunches,L1JetCorrection,noHF,noTauInJet,AveragePU);
   a.Open(L1NtupleFileName);
   a.Loop();
 

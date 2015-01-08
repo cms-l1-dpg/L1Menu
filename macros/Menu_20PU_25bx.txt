@@ -3,7 +3,7 @@ L1_AlwaysTrue                     500
 L1_SingleMuOpen       -1
 L1_SingleMu5          2500
 L1_SingleMu12         500
-L1_SingleMu14er       1
+L1_SingleMu14er       200
 L1_SingleMu16         1
 L1_SingleMu16er       1
 L1_SingleMu18er       1
@@ -42,6 +42,7 @@ L1_SingleIsoEG30er     1
 L1_DoubleEG_15_10      1
 L1_DoubleEG_22_10      1
 L1_DoubleEG_20_10_1LegIso 1
+L1_TripleEG5           1000
 L1_TripleEG_14_10_8    1
 L1_SingleJet36            -1
 L1_SingleJet52            30000
@@ -77,8 +78,10 @@ L1_HTT175  1
 L1_HTT200  1
 L1_HTT250  1
 L1_Mu4_EG18               1
+L1_Mu5_EG15               1
 L1_Mu5_EG20               1
 L1_Mu5_IsoEG18            1
+L1_Mu12_EG10              1
 L1_Mu20_EG8               1
 L1_Mu20_EG10              1
 L1_Mu5_DoubleEG5         -1

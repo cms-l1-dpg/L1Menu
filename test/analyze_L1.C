@@ -21,6 +21,8 @@ void analyze_L1::Loop(){
   std::cout << "Running on " << nevents << " events." << std::endl;
   if(nevents > 1000000) nevents = 1000000;
 
+  TH1F hTT11bx("hTT11bx","hTT11bx",7,-3.5,3.5);
+
   TH1F hDTTFbx("hDTTFbx","hDTTFbx",7,-3.5,3.5);
   TH1F hCSCTFbx("hCSCTFbx","hCSCTFbx",7,-3.5,3.5);
   TH1F hRPCbbx("hRPCbbx","hRPCbbx",7,-3.5,3.5);
@@ -30,6 +32,8 @@ void analyze_L1::Loop(){
   TH1F hGMTpt("hGMTpt","hGMTpt",100,0.,100.);
   TH1F hGMTeta("hGMTeta","hGMTeta",30,-2.5,2.5);
   TH1F hGMTphi("hGMTphi","hGMTphi",30,0.,6.3);
+
+  TH1F hGMT2mubx("hGMT2mubx","hGMT2mubx",7,-3.5,3.5);
 
   for (Long64_t event=0; event<nevents; event++)
     {     
@@ -43,6 +47,9 @@ void analyze_L1::Loop(){
       //select events by technical trigger bit 11 - HO
       Int_t Bit11 = (gt_->tt[2]>>11)&1;
       //if(Bit11 != 1) continue;
+      for(int i11=0;i11<5;i11++){
+	if( (gt_->tt[i11-2]>>11)&1 ) hTT11bx->Fill(i11-2.);
+      }
 
       Int_t Ndt = gmt_->Ndt;
       for (int idt=0; idt < Ndt; idt++){
@@ -81,9 +88,16 @@ void analyze_L1::Loop(){
 	hGMTphi.Fill(phimu);
       }
 
+      if(Nmu > 1 && fabs((gmt_->Pt[0]-gmt_->Pt[1])/gmt_->Pt[0]) < 0.1){
+	hGMT2mubx->Fill(gmt_CandBx[0]);
+	hGMT2mubx->Fill(gmt_CandBx[1]);
+      }
+
     }
 
   //Aestethics
+  hTT11bx.SetTitle("");
+
   hDTTFbx.SetTitle("");
   hCSCTFbx.SetTitle("");
   hRPCbbx.SetTitle("");
@@ -94,6 +108,10 @@ void analyze_L1::Loop(){
   hGMTeta.SetTitle("");
   hGMTphi.SetTitle("");
 
+  hGMT2mubx.SetTitle("");
+
+  hTT11bx.GetXaxis()->SetTitle("TT11 BX");
+
   hDTTFbx.GetXaxis()->SetTitle("DTTF BX");
   hCSCTFbx.GetXaxis()->SetTitle("CSCTF BX");
   hRPCbbx.GetXaxis()->SetTitle("RPCb BX");
@@ -102,7 +120,13 @@ void analyze_L1::Loop(){
 
   hGMTpt.GetXaxis()->SetTitle("L1 Muon #p_{T} [GeV]");
   hGMTeta.GetXaxis()->SetTitle("L1 Muon #eta");
-  hGMTphi.GetXaxis()->SetTitle("L1 Muon #phi");
+  hGMTph.GetXaxis()->SetTitle("L1 Muon #phi");
+
+  hGMT2mubx.GetXaxis()->SetTitle("BX for identical muons");
+
+  TCanvas c0;
+  c0.cd(); hTT11bx->Draw();
+  c0.SaveAs("results/c0.gif");
 
   TCanvas c1;
   c1.Divide(2,2);
@@ -119,6 +143,10 @@ void analyze_L1::Loop(){
   c2.cd(3); hGMTeta.Draw();
   c2.cd(4); hGMTphi.Draw();
   c2.SaveAs("results/c2.gif");
+
+  TCanvas c3;
+  c3.cd(); hGMT2mubx->Draw();
+  c3.SaveAs("results/c3.gif");
 
   return;
 }

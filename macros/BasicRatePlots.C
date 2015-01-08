@@ -344,6 +344,23 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     nZeroBias += weight;
 
+    /*
+    Int_t Nele = gt_ -> Nele;
+    bool moveOn = true;
+    for(Int_t ue=0; ue < Nele; ue++){  
+      Int_t bx = gt_ -> Bxel[ue];        		
+      if(bx != 0) continue;
+      float_t ietaele = gt_->Etael[ue];
+      Float_t ptele = gt_ -> Rankel[ue];
+      float_t etaele = convertRegionEta(ietaele);
+
+      if(etaele > 0. && etaele < 0.4 && ptele > 50.) cout << "problem! " << etaele << " " << ptele << endl;
+      if(etaele > 0. && etaele < 0.4 && ptele > 50.) moveOn = false;
+    }
+
+    if(moveOn) continue;
+    */
+
     float jetPt     = 0.; algoFactory->SingleJetPt(jetPt);
     float jetCenPt  = 0.; algoFactory->SingleJetPt(jetCenPt,true);
 
