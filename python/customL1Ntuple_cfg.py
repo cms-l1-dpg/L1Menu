@@ -128,23 +128,17 @@ from L1TriggerDPG.L1Ntuples.l1Ntuple_cfg import *
 
 if options.runOnMC and hasattr(process,'l1NtupleProducer') :
     print "[L1Menu]: Running on MC reading also PileUpSummary info"
-    
     ntuple                  = getattr(process,'l1NtupleProducer')
     ntuple.simulationSource = cms.InputTag("addPileupInfo")
 
-    
 
 print "[L1Menu]: Using GlobalTag", options.globalTag
 process.GlobalTag.globaltag = options.globalTag
 process.GlobalTag.toGet     = cms.VPSet()
 
 # make ntuples from RAW (ie. remove RECO)
-
-process.p.remove(process.muonDTDigis)
-process.p.remove(process.l1MenuTreeProducer)
-
 if options.reEmulMuons :
-    process.p.remove(process.csctfDigis)
+    process.p.remove(process.muonDTDigis)
 
 # re-emulation customisations
 

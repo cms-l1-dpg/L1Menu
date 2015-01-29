@@ -45,8 +45,9 @@ void analyze_L1::Loop(){
       }
 
       //select events by technical trigger bit 11 - HO
-      Int_t Bit11 = (gt_->tt[2]>>11)&1;
+      //Int_t Bit11 = (gt_->tt[2]>>11)&1;
       //if(Bit11 != 1) continue;
+
       for(int i11=0;i11<5;i11++){
 	if( (gt_->tt[i11-2]>>11)&1 ) hTT11bx->Fill(i11-2.);
       }

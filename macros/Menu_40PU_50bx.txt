@@ -1,7 +1,7 @@
 L1_ZeroBias                       25000
 L1_AlwaysTrue                     500
 L1_SingleMuOpen       -1
-L1_SingleMu5          20000
+L1_SingleMu5          5000
 L1_SingleMu12         1000
 L1_SingleMu14er       1
 L1_SingleMu16         1
