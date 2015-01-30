@@ -129,7 +129,7 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
             ## process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
             process.load('L1Trigger/L1TCalorimeter/caloStage1RegionSF_cfi')
             #process.caloStage1Params.jetSeedThreshold = 5.0
-            from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU20_MC13TeV
+            from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU40_MC13TeV
             if whichPU == 20 :
                 process.caloStage1Params.regionPUSParams = regionSubtraction_PU20_MC13TeV
         elif not runOnMC : 
