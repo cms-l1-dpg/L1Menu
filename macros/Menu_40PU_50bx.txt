@@ -34,6 +34,7 @@ L1_SingleEG35er        1
 L1_SingleEG40          1
 L1_SingleIsoEG18       2000
 L1_SingleIsoEG25       1000
+L1_SingleIsoEG30       1000
 L1_SingleIsoEG20er     1000
 L1_SingleIsoEG22er     500
 L1_SingleIsoEG25er     1

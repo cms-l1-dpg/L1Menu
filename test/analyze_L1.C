@@ -19,7 +19,7 @@ void analyze_L1::Loop(){
 
   Int_t nevents = GetEntries();
   std::cout << "Running on " << nevents << " events." << std::endl;
-  if(nevents > 1000000) nevents = 1000000;
+  if(nevents > 2000000) nevents = 2000000;
 
   TH1F hTT11bx("hTT11bx","hTT11bx",7,-3.5,3.5);
 
@@ -34,6 +34,14 @@ void analyze_L1::Loop(){
   TH1F hGMTphi("hGMTphi","hGMTphi",30,0.,6.3);
 
   TH1F hGMT2mubx("hGMT2mubx","hGMT2mubx",7,-3.5,3.5);
+  TH1F hGMT2mupt("hGMT2mupt","hGMT2mupt",100,0.,100.);
+  TH1F hGMT2muphi("hGMT2muphi","hGMT2muphi",30,0.,6.3);
+  TH1F hGMT2mueta("hGMT2mueta","hGMT2mueta",30,-2.5,2.5);
+  TH1F hGMT2mu1BX("hGMT2mu1BX","hGMT2mu1BX",7,-3.5,3.5);
+
+  TH2F hDTRPCBX("hDTRPCBX","hDTRPCBX",7,-3.5,3.5,7,-3.5,3.5);
+  TH2F hCSCRPCBX("hCSCRPCBX","hCSCRPCBX",7,-3.5,3.5,7,-3.5,3.5);
+  TH2F hDTCSCBX("hDTCSCBX","hDTCSCBX",7,-3.5,3.5,7,-3.5,3.5);
 
   for (Long64_t event=0; event<nevents; event++)
     {     
@@ -49,7 +57,7 @@ void analyze_L1::Loop(){
       //if(Bit11 != 1) continue;
 
       for(int i11=0;i11<5;i11++){
-	if( (gt_->tt[i11-2]>>11)&1 ) hTT11bx->Fill(i11-2.);
+	if( (gt_->tt[i11-2]>>11)&1 ) hTT11bx.Fill(i11-2.);
       }
 
       Int_t Ndt = gmt_->Ndt;
@@ -89,11 +97,18 @@ void analyze_L1::Loop(){
 	hGMTphi.Fill(phimu);
       }
 
-      if(Nmu > 1 && fabs((gmt_->Pt[0]-gmt_->Pt[1])/gmt_->Pt[0]) < 0.1){
-	hGMT2mubx->Fill(gmt_CandBx[0]);
-	hGMT2mubx->Fill(gmt_CandBx[1]);
+      if(Nmu > 1 && fabs((gmt_->Pt[0]-gmt_->Pt[1])/gmt_->Pt[0]) < 0.05 && fabs((gmt_->Eta[0]-gmt_->Eta[1])/gmt_->Eta[0]) < 0.1 ){
+	hGMT2mubx.Fill(gmt_->CandBx[0] - gmt_->CandBx[1]);
+	hGMT2mupt.Fill(gmt_->Pt[0]);
+	hGMT2muphi.Fill(gmt_->Phi[0]);
+	hGMT2mueta.Fill(gmt_->Eta[0]);
+	if(gmt_->CandBx[0] <= gmt_->CandBx[1]) hGMT2mu1BX.Fill(gmt_->CandBx[0]);
+	else if(gmt_->CandBx[0] > gmt_->CandBx[1]) hGMT2mu1BX.Fill(gmt_->CandBx[1]);
       }
 
+      if(Ndt > 0 && Nrpcb > 0) hDTRPCBX.Fill(gmt_->Bxdt[0],gmt_->Bxrpcb[0]);
+      if(Ncsc > 0 && Nrpcf > 0) hCSCRPCBX.Fill(gmt_->Bxcsc[0],gmt_->Bxrpcf[0]);
+      if(Ndt > 0 && Ncsc > 0) hDTCSCBX.Fill(gmt_->Bxdt[0],gmt_->Bxcsc[0]);
     }
 
   //Aestethics
@@ -110,6 +125,14 @@ void analyze_L1::Loop(){
   hGMTphi.SetTitle("");
 
   hGMT2mubx.SetTitle("");
+  hGMT2mupt.SetTitle("");
+  hGMT2muphi.SetTitle("");
+  hGMT2mueta.SetTitle("");
+  hGMT2mu1BX.SetTitle("");
+
+  hDTRPCBX.SetTitle("");
+  hCSCRPCBX.SetTitle("");
+  hDTCSCBX.SetTitle("");
 
   hTT11bx.GetXaxis()->SetTitle("TT11 BX");
 
@@ -121,12 +144,24 @@ void analyze_L1::Loop(){
 
   hGMTpt.GetXaxis()->SetTitle("L1 Muon #p_{T} [GeV]");
   hGMTeta.GetXaxis()->SetTitle("L1 Muon #eta");
-  hGMTph.GetXaxis()->SetTitle("L1 Muon #phi");
+  hGMTphi.GetXaxis()->SetTitle("L1 Muon #phi");
 
-  hGMT2mubx.GetXaxis()->SetTitle("BX for identical muons");
+  hGMT2mubx.GetXaxis()->SetTitle("#Delta_{BX} for identical muons");
+  hGMT2mupt.GetXaxis()->SetTitle("p_{T} for identical muons");
+  hGMT2muphi.GetXaxis()->SetTitle("#phi for identical muons");
+  hGMT2mueta.GetXaxis()->SetTitle("#eta for identical muons");
+  hGMT2mu1BX.GetXaxis()->SetTitle("BX for first muon for identical muons");
+
+  hDTRPCBX.GetXaxis()->SetTitle("DT BX");
+  hCSCRPCBX.GetXaxis()->SetTitle("CSC BX");
+  hDTCSCBX.GetXaxis()->SetTitle("DT BX");
+
+  hDTRPCBX.GetYaxis()->SetTitle("RPC BX");
+  hCSCRPCBX.GetYaxis()->SetTitle("RPC BX");
+  hDTCSCBX.GetYaxis()->SetTitle("CSC BX");
 
   TCanvas c0;
-  c0.cd(); hTT11bx->Draw();
+  c0.cd(); hTT11bx.Draw();
   c0.SaveAs("results/c0.gif");
 
   TCanvas c1;
@@ -146,8 +181,23 @@ void analyze_L1::Loop(){
   c2.SaveAs("results/c2.gif");
 
   TCanvas c3;
-  c3.cd(); hGMT2mubx->Draw();
+  c3.Divide(2,2);
+  c3.cd(1); hGMT2mubx.Draw();
+  c3.cd(2); hGMT2mupt.Draw();
+  c3.cd(3); hGMT2mueta.Draw();
+  c3.cd(4); hGMT2muphi.Draw();
   c3.SaveAs("results/c3.gif");
+
+  TCanvas c4;
+  c4.cd(); hGMT2mu1BX.Draw();
+  c4.SaveAs("results/c4.gif");
+
+  TCanvas c5;
+  c5.Divide(2,2);
+  c5.cd(1); hDTRPCBX.Draw("COLZ");
+  c5.cd(2); hCSCRPCBX.Draw("COLZ");
+  c5.cd(3); hDTCSCBX.Draw("COLZ");
+  c5.SaveAs("results/c5.gif");
 
   return;
 }
@@ -161,6 +211,12 @@ void RunL1(Int_t whichFileAndLumiToUse=1){
   }
   else if(whichFileAndLumiToUse==2){
     L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Cosmics/229713_Cosmics/L1Tree.root";
+  }
+  else if(whichFileAndLumiToUse==3){
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Cosmics/232956_Cosmics/L1Tree.root";
+  }
+  else if(whichFileAndLumiToUse==4){
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Cosmics/233238_Cosmics/L1Tree.root";
   }
   else{
     std::cout << std::endl << "ERROR: Please define a ntuple file which is in the allowed range! You did use: whichFileAndLumiToUse = " << whichFileAndLumiToUse << " This is not in the allowed range" << std::endl << std::endl;

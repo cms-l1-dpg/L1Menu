@@ -13,7 +13,7 @@ L1_SingleMu25         1
 L1_SingleMu25er       1
 L1_SingleMu30         1
 L1_SingleMu30er       1
-L1_DoubleMu0        10000
+L1_DoubleMu0         1000
 L1_DoubleMu0er16_WdEta18_OS 1
 L1_DoubleMu0er16_WdEta18 1000
 L1_DoubleMu_10_0_WdEta18     1
@@ -35,6 +35,7 @@ L1_SingleEG35er        200
 L1_SingleEG40          1
 L1_SingleIsoEG18       3000
 L1_SingleIsoEG25       2000
+L1_SingleIsoEG30       1
 L1_SingleIsoEG20er     2000
 L1_SingleIsoEG22er     2000
 L1_SingleIsoEG25er     1000
