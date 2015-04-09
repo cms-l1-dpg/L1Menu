@@ -7,7 +7,7 @@ Package to put together code and configuration file to prepare Winter13 version 
 Installation instructions:
 
 <pre><code>
-export MY_CMSSW_VERSION="CMSSW_7_2_0_pre6"
+export MY_CMSSW_VERSION="CMSSW_7_3_0"
 cmsrel $MY_CMSSW_VERSION 
 cd $MY_CMSSW_VERSION/src
 
@@ -21,6 +21,7 @@ export USER_CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-var
 scramv1 b -j 9
 </code></pre>
 
+####################
 In order to run on the L1Menu macro
 
 cd L1TriggerDPG/L1Menu/macros
@@ -30,3 +31,13 @@ root
 RunL1(true,true,4)
 
 (4 being the scenario you want to test)
+####################
+In order to run a simple macro that runs over the events in the ntuple and produces simple plots:
+
+cd cd L1TriggerDPG/L1Menu/macros
+root
+.x analise_L1.C
+RunL1(4)
+
+(4 being the scenario you want to test)
+####################
