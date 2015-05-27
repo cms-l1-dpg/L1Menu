@@ -1,7 +1,6 @@
-#include "L1AlgoFactory.h"
 #include "L1Ntuple.h"
+#include "L1AlgoFactory.h"
 
-#include "TH2.h"
 #include "TString.h"
 #include "Style.C"
 
@@ -81,11 +80,11 @@ Double_t convertRegionEta(int iEta) {
   return -9;
 }
 
-class L1Menu2012 : public L1Ntuple {
+class L1Menu2015 : public L1Ntuple {
 
  public :
 
-  L1Menu2012(string menufile, Float_t aNumberOfBunches, Bool_t anoHF, Bool_t aisTauInJet, Int_t AveragePU) : 
+  L1Menu2015(string menufile, Float_t aNumberOfBunches, Bool_t anoHF, Bool_t aisTauInJet, Int_t AveragePU) : 
     themenufilename(menufile), 
     theNumberOfBunches(aNumberOfBunches),
     noHF(anoHF),
@@ -95,7 +94,7 @@ class L1Menu2012 : public L1Ntuple {
     isOneSeedNotDefined = false;
   }
 
-  ~L1Menu2012() {}
+  ~L1Menu2015() {}
 
   // the setting below are/will be specific for each L1Ntuple file used
   string themenufilename;
@@ -177,7 +176,7 @@ private :
 
 };
 
-void L1Menu2012::InsertInMenu(std::string L1name, Bool_t value) {
+void L1Menu2015::InsertInMenu(std::string L1name, Bool_t value) {
 
   Bool_t post_prescale = false;
 
@@ -207,7 +206,7 @@ void L1Menu2012::InsertInMenu(std::string L1name, Bool_t value) {
   return;
 }
 
-Int_t L1Menu2012::L1BitNumber(std::string l1name) {
+Int_t L1Menu2015::L1BitNumber(std::string l1name) {
 
   std::map<std::string, int>::const_iterator it = BitMapping.find(l1name);
   if (it == BitMapping.end() ) {
@@ -218,7 +217,7 @@ Int_t L1Menu2012::L1BitNumber(std::string l1name) {
   return BitMapping[l1name];
 }
 
-void L1Menu2012::FilL1Bits() {
+void L1Menu2015::FilL1Bits() {
   for (Int_t ibit=0; ibit < N128; ibit++) {
     PhysicsBits[ibit] = 0;
     if (ibit<64) {
@@ -232,7 +231,7 @@ void L1Menu2012::FilL1Bits() {
   return;
 }       
 
-void L1Menu2012::MyInit() {
+void L1Menu2015::MyInit() {
 
   algoFactory = new L1AlgoFactory(gt_,gmt_,gct_);
   algoFactory->setHF(noHF);
@@ -302,6 +301,7 @@ void L1Menu2012::MyInit() {
   setHIGGS.insert("L1_EG25er_HTT125");
 
   setEXO.insert("L1_SingleMuOpen");
+  setEXO.insert("L1_SingleMu3p5");
   setEXO.insert("L1_SingleMu5");
   setEXO.insert("L1_SingleMu16");
   setEXO.insert("L1_SingleMu20");
@@ -511,6 +511,7 @@ void L1Menu2012::MyInit() {
 
   // the seeds per physics triggers (TRIGPHYS));
   setMuon.insert("L1_SingleMuOpen");
+  setMuon.insert("L1_SingleMu3p5");
   setMuon.insert("L1_SingleMu5");
   setMuon.insert("L1_SingleMu12");
   setMuon.insert("L1_SingleMu16");
@@ -582,6 +583,7 @@ void L1Menu2012::MyInit() {
   setHadronic.insert("L1_SingleJet176"); 
   setHadronic.insert("L1_SingleJet200"); 
   setHadronic.insert("L1_SingleJet240");
+  setHadronic.insert("L1_DoubleJet32");
   setHadronic.insert("L1_DoubleJetC52");
   setHadronic.insert("L1_DoubleJetC72");
   setHadronic.insert("L1_DoubleJetC84");
@@ -600,6 +602,7 @@ void L1Menu2012::MyInit() {
   setHadronic.insert("L1_HTT175");
   setHadronic.insert("L1_HTT200");
   setHadronic.insert("L1_HTT250");
+  setHadronic.insert("L1_ETT130");
   setHadronic.insert("L1_ETM30");
   setHadronic.insert("L1_ETM40");
   setHadronic.insert("L1_ETM50");
@@ -626,7 +629,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_Jet32MuOpen_Mu10_dPhiMu_Mu1"] = 5;
   BitMapping["L1_Jet32MuOpen_EG10_dPhiMu_EG1"] = 6;
   BitMapping["L1_EG25er_HTT125"] = 7;
-  BitMapping["FREE8"] = 8;
+  BitMapping["L1_DoubleJet32"] = 8;
   BitMapping["FREE9"] = 9;
   BitMapping["L1_SingleIsoEG30"] = 10;
   BitMapping["L1_DoubleJetC72"] = 11;
@@ -675,7 +678,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_SingleEG35"] = 54;
   BitMapping["L1_SingleMuOpen"] = 55;
   BitMapping["L1_SingleMu16"] = 56;
-  BitMapping["FREE57"] = 57;
+  BitMapping["L1_SingleMu3p5"] = 57;
   BitMapping["L1_SingleMu5"] = 58;
   BitMapping["FREE59"] = 59;
   BitMapping["L1_SingleMu20er"] = 60;
@@ -712,7 +715,7 @@ void L1Menu2012::MyInit() {
   BitMapping["L1_Mu5_DoubleEG5"] = 91;
   BitMapping["L1_Mu12_EG10"] = 92;
   BitMapping["L1_QuadJetC36_Tau52"] = 93;
-  BitMapping["FREE94"] = 94;
+  BitMapping["L1_ETT130"] = 94;
   BitMapping["FREE95"] = 95;
   BitMapping["FREE96"] = 96;
   BitMapping["L1_TripleMu0"] = 97;
@@ -793,7 +796,7 @@ void L1Menu2012::MyInit() {
 
 }
 
-Bool_t L1Menu2012::Muons() {
+Bool_t L1Menu2015::Muons() {
 
   insert_ibin = 0;
 
@@ -801,6 +804,7 @@ Bool_t L1Menu2012::Muons() {
   algoFactory->SingleMuPt(SingleMuPt);
 
   InsertInMenu("L1_SingleMuOpen",algoFactory->SingleMu(0.,0));
+  InsertInMenu("L1_SingleMu3p5",SingleMuPt >= 3.5);
   InsertInMenu("L1_SingleMu5",SingleMuPt >= 5.);
   InsertInMenu("L1_SingleMu12",SingleMuPt >= 12.);
   InsertInMenu("L1_SingleMu16",SingleMuPt >= 16.);
@@ -851,7 +855,7 @@ Bool_t L1Menu2012::Muons() {
   return res;
 }
 
-Bool_t L1Menu2012::MultiMuons() {
+Bool_t L1Menu2015::MultiMuons() {
 
   insert_ibin = 0;
   InsertInMenu("L1_DoubleMu0er16_WdEta18_OS",algoFactory->Onia2015(0.,0.,true,true,18));
@@ -901,7 +905,7 @@ Bool_t L1Menu2012::MultiMuons() {
   return res;
 }
 
-Bool_t L1Menu2012::Cross() {
+Bool_t L1Menu2015::Cross() {
 
   insert_ibin = 0;
 
@@ -958,7 +962,7 @@ Bool_t L1Menu2012::Cross() {
   return res;
 }
 
-Bool_t L1Menu2012::MultiCross() {
+Bool_t L1Menu2015::MultiCross() {
 
   insert_ibin = 0;
 
@@ -1007,7 +1011,7 @@ Bool_t L1Menu2012::MultiCross() {
   return res;
 }
 
-Bool_t L1Menu2012::Jets() {
+Bool_t L1Menu2015::Jets() {
 
   insert_ibin = 0;
 
@@ -1059,13 +1063,15 @@ Bool_t L1Menu2012::Jets() {
   return res;
 }
 
-Bool_t L1Menu2012::MultiJets() {
+Bool_t L1Menu2015::MultiJets() {
 
   insert_ibin = 0;
 
   Float_t DoubleJet1 = -10.;
   Float_t DoubleJet2 = -10.;
   algoFactory->DoubleJetPt(DoubleJet1,DoubleJet2,true);
+
+  InsertInMenu("L1_DoubleJet32",algoFactory->DoubleJet(32.,32.,false));
 
   InsertInMenu("L1_DoubleJetC52",DoubleJet1 >= 52. && DoubleJet2 >= 52.);
   InsertInMenu("L1_DoubleJetC72",DoubleJet1 >= 72. && DoubleJet2 >= 72.);
@@ -1122,9 +1128,11 @@ Bool_t L1Menu2012::MultiJets() {
   return res;
 }
 
-Bool_t L1Menu2012::Sums() {
+Bool_t L1Menu2015::Sums() {
 
   insert_ibin = 0;
+
+  InsertInMenu("L1_ETT130",algoFactory->ETT(130.));
 
   Float_t ETM_value = -10.;
   algoFactory->ETMVal(ETM_value);
@@ -1183,7 +1191,7 @@ Bool_t L1Menu2012::Sums() {
   return res;
 }
 
-Bool_t L1Menu2012::EGamma() {
+Bool_t L1Menu2015::EGamma() {
 
   insert_ibin = 0;
 
@@ -1244,7 +1252,7 @@ Bool_t L1Menu2012::EGamma() {
   return res;
 }       
 
-Bool_t L1Menu2012::MultiEGamma() {
+Bool_t L1Menu2015::MultiEGamma() {
 
   insert_ibin = 0;
 
@@ -1287,7 +1295,7 @@ Bool_t L1Menu2012::MultiEGamma() {
   return res;
 }       
 
-Bool_t L1Menu2012::Technical() {
+Bool_t L1Menu2015::Technical() {
 
   insert_ibin = 0;
 
@@ -1324,11 +1332,11 @@ Bool_t L1Menu2012::Technical() {
 }       
 
 
-void L1Menu2012::Loop() {
+void L1Menu2015::Loop() {
 
   Int_t nevents = GetEntries();
   Double_t nZeroBiasevents = 0.;
-  //if(nevents > 6000000) nevents = 6000000;
+  if(nevents > 2000000) nevents = 2000000;
 
   Int_t NPASS = 0; 
 
@@ -1549,7 +1557,6 @@ void L1Menu2012::Loop() {
   CorrectScale(h_All, scal);
   h_Pure  -> Scale(scal);
 
-  std::cout << " Prescales for: " << themenufilename << std::endl;
   std::cout << std::endl << " --------------------------------------------------------- " << std::endl << std::endl;
   std::cout << " Rate that pass L1 " << NPASS * scal << " kHz  ( claimed by a PAG " << nPAG * scal << " kHz  i.e. " << 100.*(float)nPAG/(float)NPASS << "%. ) " << ") adding " << extrarate << " kHz = " << NPASS * scal + extrarate << " kHz " << std::endl << std::endl;
   std::cout << " --------------------------------------------------------- " << std::endl << std::endl;
@@ -1564,7 +1571,6 @@ void L1Menu2012::Loop() {
   std::cout << " Rate that pass L1 multi-Cross: " << MULTINCROSS * scal << " kHz" << std::endl;
   std::cout << " Rate that pass L1 Technical: " << TECHNICAL * scal << " kHz" << std::endl;
 
-  output << " Prescales for: L1NtupleFileName = " << themenufilename << std::endl;
   output << std::endl << " --------------------------------------------------------- " << std::endl << std::endl;
   output << " Rate that pass L1 " << NPASS * scal << " kHz  ( claimed by a PAG " << nPAG * scal << " kHz  i.e. " << 100.*(float)nPAG/(float)NPASS << "%. ) and adding " << extrarate << " kHz = " << NPASS * scal + extrarate << " kHz " << std::endl << std::endl;
   output << " --------------------------------------------------------- " << std::endl << std::endl;
@@ -1678,7 +1684,8 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   if(whichFileAndLumiToUse==1){
     // 13 TeV ZeroBias 72X sample 30 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 1368; 
-    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v11/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v13/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root";
+    //themenufilename = "Menu_lowPU.txt";
     themenufilename = "Menu_30PU_50bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 30;
@@ -1689,7 +1696,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==2){
     // 13 TeV ZeroBias 62X sample 40 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 1368; 
-    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v11/50ns_40PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v13/50ns_40PU_ReEmul2012Gct10GeV/L1Tree.root";
     themenufilename = "Menu_40PU_50bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;
@@ -1700,7 +1707,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==3){
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v12/25ns_20PU_ReEmul2015/L1Tree.root";
+    L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v13/25ns_20PU_ReEmul2015/L1Tree.root";
     themenufilename = "Menu_20PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;
@@ -1711,7 +1718,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==4){
     // 13 TeV ZeroBias 62X sample 40 PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v12/25ns_40PU_ReEmul2015/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v13/25ns_40PU_ReEmul2015/L1Tree.root";
     themenufilename = "Menu_40PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;
@@ -1754,7 +1761,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     TXTOutfile << "  L1NtupleFileName                 = " << L1NtupleFileName << std::endl;
   }
 
-  L1Menu2012 a(themenufilename,NumberOfBunches,noHF,noTauInJet,AveragePU);
+  L1Menu2015 a(themenufilename,NumberOfBunches,noHF,noTauInJet,AveragePU);
   a.Open(L1NtupleFileName);
   a.Loop();
 
