@@ -14,7 +14,9 @@ process.l1MuonRecoTreeProducer.triggerMatching = True
 # edit here
 process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(100) )
 
-readFiles.extend( ['/store/express/Run2015A/ExpressPhysics/FEVT/Express-v1/000/246/908/00000/028E87DB-D009-E511-A097-02163E012AA9.root'] )
+readFiles.extend( [ 
+        "/store/express/Run2015A/ExpressPhysics/FEVT/Express-v1/000/246/908/00000/D0E84633-D709-E511-92D8-02163E014374.root"
+        ] )
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.cerr.threshold = 'ERROR'
