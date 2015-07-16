@@ -298,6 +298,7 @@ void L1Menu2015::MyInit() {
   setHIGGS.insert("L1_DoubleJetC56_ETM60");
   setHIGGS.insert("L1_DoubleJetC60_ETM60");
   setHIGGS.insert("L1_TripleJet_92_76_64");
+  setHIGGS.insert("L1_TripleJet_92_76_64_VBF");
   setHIGGS.insert("L1_EG25er_HTT125");
 
   setEXO.insert("L1_SingleMuOpen");
@@ -594,6 +595,7 @@ void L1Menu2015::MyInit() {
   setHadronic.insert("L1_DoubleIsoTau40er");
   setHadronic.insert("L1_DoubleIsoTau44er");
   setHadronic.insert("L1_TripleJet_92_76_64");
+  setHadronic.insert("L1_TripleJet_92_76_64_VBF");
   setHadronic.insert("L1_QuadJetC40");
   setHadronic.insert("L1_QuadJetC60");
   setHadronic.insert("L1_QuadJetC84");
@@ -716,11 +718,11 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_Mu12_EG10"] = 92;
   BitMapping["L1_QuadJetC36_Tau52"] = 93;
   BitMapping["L1_ETT130"] = 94;
-  BitMapping["FREE95"] = 95;
-  BitMapping["FREE96"] = 96;
+  BitMapping["VBF1"] = 95;
+  BitMapping["VBF2"] = 96;
   BitMapping["L1_TripleMu0"] = 97;
   BitMapping["L1_TripleMu_5_5_3"] = 98;
-  BitMapping["FREE99"] = 99;
+  BitMapping["VBF3"] = 99;
   BitMapping["L1_TripleEG_14_10_8"] = 100;
   BitMapping["L1_DoubleEG_15_10"] = 101;
   BitMapping["L1_DoubleEG_22_10"] = 102;
@@ -728,8 +730,8 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_Mu0er_ETM55"] = 104;
   BitMapping["L1_DoubleJetC60_ETM60"] = 105;
   BitMapping["L1_DoubJetC32_WdPhi7_HTT125"] = 106;
-  BitMapping["FREE107"] = 107;
-  BitMapping["FREE108"] = 108;
+  BitMapping["VBF4"] = 107;
+  BitMapping["VBF5"] = 108;
   BitMapping["L1_ETM60"] = 109;
   BitMapping["L1_DoubleJetC100"] = 110;
   BitMapping["L1_QuadJetC60"] = 111;
@@ -738,15 +740,15 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_DoubleMu0er16_WdEta18"] = 114;
   BitMapping["L1_ETM60_NoJet52WdPhi2"] = 115;
   BitMapping["L1_ETM70_NoJet52WdPhi2"] = 116;
-  BitMapping["FREE117"] = 117;
-  BitMapping["FREE118"] = 118;
+  BitMapping["VBF6"] = 117;
+  BitMapping["VBF7"] = 118;
   BitMapping["L1_TripleJet_92_76_64"] = 119;
-  BitMapping["FREE120"] = 120;
+  BitMapping["L1_TripleJet_92_76_64_VBF"] = 120;
   BitMapping["L1_QuadMu0"] = 121;
   BitMapping["L1_SingleMu18er"] = 122;
   BitMapping["L1_DoubleMu0er16_WdEta18_OS"] = 123;
   BitMapping["L1_DoubleMu_12_5"] = 124;
-  BitMapping["FREE125"] = 125;
+  BitMapping["VBF8"] = 125;
   BitMapping["L1_DoubleMu_10_0_WdEta18"] = 126;
   BitMapping["L1_SingleMuBeamHalo"] = 127;
 
@@ -1080,11 +1082,21 @@ Bool_t L1Menu2015::MultiJets() {
   InsertInMenu("L1_DoubleJetC112",DoubleJet1 >= 112. && DoubleJet2 >= 112.);
   InsertInMenu("L1_DoubleJetC120",DoubleJet1 >= 120. && DoubleJet2 >= 120.);
 
-  InsertInMenu("L1_DoubleIsoTau36er", algoFactory->DoubleTauJetEta2p17(36.,36.,true));
-  InsertInMenu("L1_DoubleIsoTau40er", algoFactory->DoubleTauJetEta2p17(40.,40.,true));
-  InsertInMenu("L1_DoubleIsoTau44er", algoFactory->DoubleTauJetEta2p17(44.,44.,true));
+  InsertInMenu("L1_DoubleIsoTau36er", algoFactory->DoubleTauJetEta2p17(36.,36.,noTauInJet ? true : false));
+  InsertInMenu("L1_DoubleIsoTau40er", algoFactory->DoubleTauJetEta2p17(40.,40.,noTauInJet ? true : false));
+  InsertInMenu("L1_DoubleIsoTau44er", algoFactory->DoubleTauJetEta2p17(44.,44.,noTauInJet ? true : false));
 
   InsertInMenu("L1_TripleJet_92_76_64", algoFactory->TripleJet(92.,76.,64.,false));
+  InsertInMenu("L1_TripleJet_92_76_64_VBF", algoFactory->TripleJet_VBF(92.,76.,64.));
+
+  InsertInMenu("VBF1", algoFactory->TripleJet_VBF(92.,76.,64.,1));
+  InsertInMenu("VBF2", algoFactory->TripleJet_VBF(92.,76.,64.,2));
+  InsertInMenu("VBF3", algoFactory->TripleJet_VBF(92.,76.,64.,3));
+  InsertInMenu("VBF4", algoFactory->TripleJet_VBF(92.,76.,64.,4));
+  InsertInMenu("VBF5", algoFactory->TripleJet_VBF(92.,76.,64.,5));
+  InsertInMenu("VBF6", algoFactory->TripleJet_VBF(92.,76.,64.,6));
+  InsertInMenu("VBF7", algoFactory->TripleJet_VBF(92.,76.,64.,7));
+  InsertInMenu("VBF8", algoFactory->TripleJet_VBF(92.,76.,64.,8));
 
   InsertInMenu("L1_QuadJetC40", algoFactory->QuadJet(40.,40.,40.,40.,true));
   InsertInMenu("L1_QuadJetC60", algoFactory->QuadJet(60.,60.,60.,60.,true));
@@ -1684,13 +1696,12 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   if(whichFileAndLumiToUse==1){
     // 13 TeV ZeroBias 72X sample 30 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
     NumberOfBunches = 1368; 
-    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v13/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v14/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root";
     //themenufilename = "Menu_lowPU.txt";
     themenufilename = "Menu_30PU_50bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 30;
     Energy = 13;
-    noHF = false;
     targetlumi= 50.;
   }
   else if(whichFileAndLumiToUse==2){
@@ -1701,13 +1712,12 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;
     Energy = 13;
-    noHF = false;
     targetlumi= 70.;
   }
   else if(whichFileAndLumiToUse==3){
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v13/25ns_20PU_ReEmul2015/L1Tree.root";
+    L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2015/L1Tree.root";
     themenufilename = "Menu_20PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;
@@ -1725,6 +1735,27 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     Energy = 13;
     noTauInJet = true;
     targetlumi= 140.;
+  }
+  else if(whichFileAndLumiToUse==5){
+    // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
+    NumberOfBunches = 2508; 
+    L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
+    themenufilename = "Menu_20PU_25bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
+    AveragePU = 20;
+    Energy = 13;
+    targetlumi= 70.;
+  }
+  if(whichFileAndLumiToUse==6){
+    // 13 TeV ZeroBias 72X sample 30 PU 50 ns, 2015 re-emulation with 10 GeV cut on jet seed
+    NumberOfBunches = 1368; 
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v14/50ns_30PU_ReEmul2015/L1Tree.root";
+    themenufilename = "Menu_20PU_25bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
+    AveragePU = 30;
+    Energy = 13;
+    noTauInJet = true;
+    targetlumi= 50.;
   }
   else{
     std::cout << "##########################" << std::endl;

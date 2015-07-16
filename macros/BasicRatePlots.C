@@ -26,7 +26,6 @@ Double_t convertRegionEta(int iEta) {
   return -9;
 }
 
-
 class BasicRatePlots : public L1Ntuple
 {
 public :
@@ -57,6 +56,8 @@ private :
   float SingleTauPt();
   float SingleMuEta(float eta);
   float SingleEGEta(float ptCut, bool doIso);
+  float SingleJetEta(float pt);
+  float SingleJetPhi(float pt);
 
   //GMT stuff
   float DttfPt();
@@ -232,6 +233,52 @@ float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
   return eta;
 }
 
+float BasicRatePlots::SingleJetEta(float ptCut) {
+
+  float maxPt = -10;
+  float iJetMaxPt = -10;
+
+  Int_t Nj = gt_ -> Njet ;
+  for(Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = gt_ -> Bxjet[ue];        		
+    if(bx != 0) continue;
+
+    Float_t pt = gt_ -> Rankjet[ue]*4.;
+    if(pt >= maxPt){
+      maxPt = pt;
+      iJetMaxPt = ue;
+    }
+  }
+
+  float eta = -10.;
+  int ieta = iJetMaxPt>=0 && maxPt>ptCut ? gt_ -> Etajet[iJetMaxPt] : -10; 
+  if(ieta > 0) eta = convertRegionEta(ieta);
+  return eta;
+}
+
+float BasicRatePlots::SingleJetPhi(float ptCut) {
+
+  float maxPt = -10;
+  float iJetMaxPt = -10;
+
+  Int_t Nj = gt_ -> Njet ;
+  for(Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = gt_ -> Bxjet[ue];        		
+    if(bx != 0) continue;
+
+    Float_t pt = gt_ -> Rankjet[ue]*4.;
+    if(pt >= maxPt){
+      maxPt = pt;
+      iJetMaxPt = ue;
+    }
+  }
+
+  float phi = -10.;
+  int iphi = iJetMaxPt>=0 && maxPt>ptCut ? gt_ -> Phijet[iJetMaxPt] : -10; 
+  if(iphi > 0) phi = PHIBIN[iphi];
+  return phi;
+}
+
 void BasicRatePlots::setRateError(TH1F* histo) {
 
   int nBins = histo->GetNbinsX();
@@ -275,6 +322,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH1F["nMuVsEta"]    = new TH1F("nMuVsEta","nMuVsEta",24,-2.4,2.4);
   hTH1F["nEGVsEta"]    = new TH1F("nEGVsEta","nEGVsEta",50,-3.,3.);
   hTH1F["nIsoEGVsEta"] = new TH1F("nIsoEGVsEta","nIsoEGVsEta",50,-3.,3.);
+  hTH1F["nJetVsEta"]   = new TH1F("nJetVsEta","nJetVsEta",50,-5.,5.);
+  hTH1F["nJetVsPhi"]   = new TH1F("nJetVsPhi","nJetVsPhi",50,0.,360.);
 
   //Multistuff
   hTH1F["nDiJetVsPt"]        = new TH1F("nDiJetVsPt","DiJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
@@ -335,6 +384,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     if(event_->lumi < minLs || event_->lumi > maxLs) continue;
 
     double weight = event_->puWeight > -0.001 ? event_->puWeight : 1; 
+
+    //if(event_->nPV > 17.) continue;
       
     FillBits();
 
@@ -344,25 +395,10 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     nZeroBias += weight;
 
-    /*
-    Int_t Nele = gt_ -> Nele;
-    bool moveOn = true;
-    for(Int_t ue=0; ue < Nele; ue++){  
-      Int_t bx = gt_ -> Bxel[ue];        		
-      if(bx != 0) continue;
-      float_t ietaele = gt_->Etael[ue];
-      Float_t ptele = gt_ -> Rankel[ue];
-      float_t etaele = convertRegionEta(ietaele);
-
-      if(etaele > 0. && etaele < 0.4 && ptele > 50.) cout << "problem! " << etaele << " " << ptele << endl;
-      if(etaele > 0. && etaele < 0.4 && ptele > 50.) moveOn = false;
-    }
-
-    if(moveOn) continue;
-    */
-
     float jetPt     = 0.; algoFactory->SingleJetPt(jetPt);
     float jetCenPt  = 0.; algoFactory->SingleJetPt(jetCenPt,true);
+    float jetEta    = SingleJetEta(36.);
+    float jetPhi    = SingleJetPhi(36.);
 
     float tauPt     = SingleTauPt();
 
@@ -424,6 +460,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     hTH1F["nMuVsEta"]->Fill(muEta,weight);
     hTH1F["nEGVsEta"]->Fill(egEta,weight);
     hTH1F["nIsoEGVsEta"]->Fill(isoegEta,weight);
+    hTH1F["nJetVsEta"]->Fill(jetEta,weight);
+    hTH1F["nJetVsPhi"]->Fill(jetPhi,weight);
 
     for(int ptCut=0; ptCut<256; ++ptCut) {
       if(jetPt>=ptCut)	  hTH1F["nJetVsPt"]->Fill(ptCut,weight);
@@ -545,60 +583,45 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0) 
 {
 
+  int nBunches50ns_run251244 = 110.;
   int nBunches50ns = 1368;
   int nBunches25ns = 2508; //2508 is what agreed with TSG for # bunches
 
   float xSec13TeV = isCrossSec ? 78.26 : 80.; // Using McM for cross section comparison and 80 (agreed with TSG) for rates
   float xSec8TeV  = 72.7; 
 
-  if (fileType == "DATA") {
-      BasicRatePlots basicRatePlots("/afs/cern.ch/user/h/heistera/scratch1/L1Ntuples/L1TreeL1Accept_207477_LS_57_133.root");
-      basicRatePlots.run(true,"DATA_207477",57,133,xSec8TeV,999.,nBunches50ns,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+  if (fileType == "RUN251244") {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Data/Collisions/251244_ZeroBias.root");
+      basicRatePlots.run(true,fileType,162,327,xSec13TeV,999.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
+  else if (fileType == "MC251244") {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Spring15_50ns_Flat10_50/L1Tree.root");
+      basicRatePlots.run(true,fileType,0,500000000,xSec13TeV,10.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
     }
   else if (fileType == "13TEV_40PU_2015_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v9/25ns_40PU_ReEmul2015/L1Tree.root"); 
-      basicRatePlots.run(false,"13TEV_40PU_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents,true);
-    }
-  else if (fileType == "13TEV_45p4PU_2015_RE-EMUL")
-    {
-      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/v4_62X_45PU_25bx_ReEmul2015/L1Tree.root");
-      basicRatePlots.run(false,"13TEV_45p4PU_2015_RE-EMUL",0,500000000,xSec13TeV,45,nBunches25ns,isCrossSec,nEvents,true);
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v14/25ns_40PU_ReEmul2015/L1Tree.root"); 
+      basicRatePlots.run(false,fileType,0,500000000,xSec13TeV,40,nBunches25ns,isCrossSec,nEvents,true);
     }
   else if (fileType == "13TEV_20PU_2015_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v9/25ns_20PU_ReEmul2015/L1Tree.root");
-      basicRatePlots.run(false,"13TEV_20PU_2015_RE-EMUL",0,500000000,xSec13TeV,20,nBunches25ns,isCrossSec,nEvents,true);
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2015/L1Tree.root");
+      basicRatePlots.run(false,fileType,0,500000000,xSec13TeV,20,nBunches25ns,isCrossSec,nEvents,true);
     }
-  else if (fileType == "13TEV_40PU_50bx_2012GCT10GEV_RE-EMUL")
+  else if (fileType == "13TEV_20PU_2012GCT10GEV_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v10/50ns_40PU_ReEmul2012Gct10GeV/L1Tree.root");
-      basicRatePlots.run(false,"13TEV_40PU_50bx_2012GCT10GEV_RE-EMUL",0,500000000,xSec13TeV,40,nBunches50ns,isCrossSec,nEvents);
-    }
-  else if (fileType == "13TEV_40PU_50bx_2015_RE-EMUL")
-    {
-      BasicRatePlots basicRatePlots("/data2/p/pellicci/L1DPG/root/JetCalib_V45/v4_62X_40PU_50bx_ReEmul2015/L1Tree.root");
-      basicRatePlots.run(false,"13TEV_40PU_50bx_2015_RE-EMUL",0,500000000,xSec13TeV,40,nBunches50ns,isCrossSec,nEvents,true);
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root");
+      basicRatePlots.run(false,fileType,0,500000000,xSec13TeV,20,nBunches25ns,isCrossSec,nEvents,true);
     }
   else if (fileType == "13TEV_30PU_50bx_2012GCT10GEV_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v10/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root");
-      basicRatePlots.run(false,"13TEV_30PU_50bx_2012GCT10GEV_RE-EMUL",0,500000000,xSec13TeV,30,nBunches50ns,isCrossSec,nEvents);
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v14/50ns_30PU_ReEmul2012Gct10GeV/L1Tree.root");
+      basicRatePlots.run(false,fileType,0,500000000,xSec13TeV,30,nBunches50ns,isCrossSec,nEvents);
     }
-  else if (fileType == "8TEV_50bx_71X_MC")
+  else if (fileType == "13TEV_30PU_50bx_2015_RE-EMUL")
     {
-      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/v7/71X_8TeV/MC/L1Tree.root");
-      basicRatePlots.run(false,"8TEV_50bx_71X_MC",0,500000000,xSec8TeV,20,nBunches50ns,isCrossSec,nEvents,false);
-    }
-  else if (fileType == "8TEV_50bx_71X_Data")
-    {
-      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/v7/71X_8TeV/Data/L1Tree.root");
-      basicRatePlots.run(true,"8TEV_50bx_71X_Data",50,1600,xSec8TeV,20,nBunches50ns,isCrossSec,nEvents,false);
-    }
-  else if (fileType == "TEST")
-    {
-      BasicRatePlots basicRatePlots("filelist.txt"); 
-      basicRatePlots.run(false,"TEST",0,500000000,xSec13TeV,25,nBunches25ns,isCrossSec,nEvents);
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/v14/50ns_30PU_ReEmul2015/L1Tree.root");
+      basicRatePlots.run(false,fileType,0,500000000,xSec13TeV,30,nBunches50ns,isCrossSec,nEvents);
     }
   else 
     {

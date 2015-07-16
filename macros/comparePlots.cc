@@ -112,6 +112,20 @@ void plot( std::vector<TH1*> plots,
 
       if (dynamic_cast<TH1F*>(plots.at(0))) 
 	{
+
+         float minY = 0;
+         float maxY = 0;
+
+	  for (size_t iPlot=0; iPlot<plots.size(); ++iPlot){
+	    float tmp_minY = 999.;
+	    float tmp_maxY = -999.;
+            getRange( plots.at(iPlot), tmp_minY, tmp_maxY );
+	    if(tmp_minY < minY) minY = tmp_minY;
+	    if(tmp_maxY > maxY) maxY = tmp_maxY;
+	  }
+
+	  std::cout << "min " << minY << std::endl;
+	  std::cout << "max " << maxY << std::endl;
 	  
 	  TPad *pPlot = ( plots.size()>1 ) ? new TPad("pPlot","",0.01,0.26,0.99,0.99) :
 	    new TPad("pPlot","",0.01,0.01,0.99,0.99) ;
@@ -135,11 +149,8 @@ void plot( std::vector<TH1*> plots,
 	      plots.at(iPlot)->SetFillColor( iPlot+1 );
 	      plots.at(iPlot)->SetMarkerColor( iPlot+1 );
 	      plots.at(iPlot)->SetMarkerStyle( 21 + iPlot );
-	      
-	      float minY = 0;
-	      float maxY = 0;
-	      getRange( plots.at(iPlot), minY, maxY );
- 
+	       
+              getRange( plots.at(iPlot), minY, maxY );
 	      plots.at(iPlot)->GetYaxis()->SetRangeUser( minY, maxY );
 	      plots.at(iPlot)->Draw( iPlot ? "samePE1" : "PE1" );
 	      
@@ -156,7 +167,7 @@ void plot( std::vector<TH1*> plots,
 		  eff->SetFillColor( iPlot+1 );
 		  eff->SetMarkerColor( iPlot+1 );
 		  eff->SetMarkerStyle( 21 + iPlot );
-		  eff->GetYaxis()->SetRangeUser( .1, 2.);
+		  eff->GetYaxis()->SetRangeUser( .1, 5.);
 		  eff->GetYaxis()->SetLabelSize( .11);
 		  
 		  eff->Draw( iPlot>1 ? "samePE1" : "PE1" );

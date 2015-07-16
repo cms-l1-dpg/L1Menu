@@ -1,7 +1,8 @@
 L1_ZeroBias                       15000
 L1_AlwaysTrue                     500
 L1_SingleMuOpen       -1
-L1_SingleMu5          2000
+L1_SingleMu3p5        -1
+L1_SingleMu5          1000
 L1_SingleMu12         1000
 L1_SingleMu14er       1
 L1_SingleMu16         1
@@ -13,7 +14,7 @@ L1_SingleMu25         1
 L1_SingleMu25er       1
 L1_SingleMu30         1
 L1_SingleMu30er       1
-L1_DoubleMu0          500
+L1_DoubleMu0          250
 L1_DoubleMu0er16_WdEta18_OS 1
 L1_DoubleMu0er16_WdEta18    1
 L1_DoubleMu_10_0_WdEta18    1
@@ -53,6 +54,7 @@ L1_SingleJet128           1
 L1_SingleJet176           1
 L1_SingleJet200           1
 L1_SingleJet240           1
+L1_DoubleJet32           -1
 L1_DoubleJetC52           5000
 L1_DoubleJetC72           1
 L1_DoubleJetC84           1
@@ -62,7 +64,8 @@ L1_DoubleJetC120          1
 L1_DoubleIsoTau36er       1000
 L1_DoubleIsoTau40er       500
 L1_DoubleIsoTau44er       1
-L1_TripleJet_92_76_64     1
+L1_TripleJet_92_76_64    -1
+L1_TripleJet_92_76_64_VBF 1
 L1_QuadJetC40             1
 L1_QuadJetC60             1
 L1_QuadJetC84             1
@@ -108,3 +111,12 @@ L1_DoubleJetC60_ETM60 1
 L1_DoubJetC32_WdPhi7_HTT125 50
 L1_Jet32MuOpen_Mu10_dPhiMu_Mu1 5
 L1_Jet32MuOpen_EG10_dPhiMu_EG1 80
+L1_ETT130 -1
+VBF1 -1
+VBF2 -1
+VBF3 -1
+VBF4 -1
+VBF5 -1
+VBF6 -1
+VBF7 -1
+VBF8 -1
