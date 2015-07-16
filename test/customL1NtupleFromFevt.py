@@ -2,8 +2,8 @@ import FWCore.ParameterSet.Config as cms
 
 from L1TriggerDPG.L1Menu.customL1Ntuple_cfg import *
 
-## process.p.remove(process.l1RecoTreeProducer)
-process.p.remove(process.l1MuonRecoTreeProducer)
+# process.p.remove(process.l1RecoTreeProducer)
+#process.p.remove(process.l1MuonRecoTreeProducer)
 process.p.remove(process.l1MenuTreeProducer)
 
 process.p.remove(process.gtEvmDigis)
