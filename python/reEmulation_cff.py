@@ -125,8 +125,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
     if reEmulCalos :
         print "[L1Menu]:\tSetting up calo re-emulation"        
 
-        print "[L1Menu]:\tWARNING! Just patching GCT sequence, RCT can't be re-emulated after UCT2015 SW patches"        
-
         # Need to have RCT emulator configurable and not UCT 2015 patches
         # in order to run 2012 RCT emulator correctly
         
@@ -196,9 +194,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             #    ntuple.rctSource            = cms.InputTag("rctReEmulDigis")
 
         process.reEmulCaloChain = cms.Sequence(
-            # Need to have RCT emulator configurable and not UCT 2015 patches
-            # in order to run 2012 RCT emulator correctly
-        
             #process.hcalReEmulDigis
             #+ process.rctReEmulDigis
             process.gctReEmulDigis

@@ -56,7 +56,7 @@ private :
   float SingleTauPt();
   float SingleMuEta(float eta);
   float SingleEGEta(float ptCut, bool doIso);
-  float SingleJetEta(float pt);
+  float SingleJetEta(float pt, Int_t accept_flag = 0);
   float SingleJetPhi(float pt);
 
   //GMT stuff
@@ -233,7 +233,7 @@ float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
   return eta;
 }
 
-float BasicRatePlots::SingleJetEta(float ptCut) {
+float BasicRatePlots::SingleJetEta(float ptCut, Int_t accept_flag) {
 
   float maxPt = -10;
   float iJetMaxPt = -10;
@@ -242,6 +242,10 @@ float BasicRatePlots::SingleJetEta(float ptCut) {
   for(Int_t ue=0; ue < Nj; ue++) {
     Int_t bx = gt_ -> Bxjet[ue];        		
     if(bx != 0) continue;
+    Bool_t isFwdJet = gt_ -> Fwdjet[ue];
+
+    if(accept_flag == 1 && isFwdJet) continue;
+    if(accept_flag == 2 && !isFwdJet) continue;
 
     Float_t pt = gt_ -> Rankjet[ue]*4.;
     if(pt >= maxPt){
@@ -323,6 +327,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
   hTH1F["nEGVsEta"]    = new TH1F("nEGVsEta","nEGVsEta",50,-3.,3.);
   hTH1F["nIsoEGVsEta"] = new TH1F("nIsoEGVsEta","nIsoEGVsEta",50,-3.,3.);
   hTH1F["nJetVsEta"]   = new TH1F("nJetVsEta","nJetVsEta",50,-5.,5.);
+  hTH1F["nJetVsEta_Central"] = new TH1F("nJetVsEta_Central","nJetVsEta_Central",50,-5.,5.);
+  hTH1F["nJetVsEta_Fwd"]     = new TH1F("nJetVsEta_Fwd","nJetVsEta_Fwd",50,-5.,5.);
   hTH1F["nJetVsPhi"]   = new TH1F("nJetVsPhi","nJetVsPhi",50,0.,360.);
 
   //Multistuff
@@ -385,7 +391,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     double weight = event_->puWeight > -0.001 ? event_->puWeight : 1; 
 
-    //if(event_->nPV > 17.) continue;
+    if(event_->nPV > 17.) continue;
       
     FillBits();
 
@@ -398,6 +404,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     float jetPt     = 0.; algoFactory->SingleJetPt(jetPt);
     float jetCenPt  = 0.; algoFactory->SingleJetPt(jetCenPt,true);
     float jetEta    = SingleJetEta(36.);
+    float jetEta_Central = SingleJetEta(36.,1);
+    float jetEta_Fwd    = SingleJetEta(36.,2);
     float jetPhi    = SingleJetPhi(36.);
 
     float tauPt     = SingleTauPt();
@@ -461,6 +469,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
     hTH1F["nEGVsEta"]->Fill(egEta,weight);
     hTH1F["nIsoEGVsEta"]->Fill(isoegEta,weight);
     hTH1F["nJetVsEta"]->Fill(jetEta,weight);
+    hTH1F["nJetVsEta_Central"]->Fill(jetEta_Central,weight);
+    hTH1F["nJetVsEta_Fwd"]->Fill(jetEta_Fwd,weight);
     hTH1F["nJetVsPhi"]->Fill(jetPhi,weight);
 
     for(int ptCut=0; ptCut<256; ++ptCut) {
@@ -596,6 +606,14 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     }
   else if (fileType == "MC251244") {
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Spring15_50ns_Flat10_50/L1Tree.root");
+      basicRatePlots.run(true,fileType,0,500000000,xSec13TeV,10.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
+  else if (fileType == "MC251244_NewRCT") {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Spring15_50ns_Flat10_50_NewRCT/L1Tree.root");
+      basicRatePlots.run(true,fileType,0,500000000,xSec13TeV,10.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
+  else if (fileType == "MC251244_OldRCT") {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Spring15_50ns_Flat10_50_OldRCT/L1Tree.root");
       basicRatePlots.run(true,fileType,0,500000000,xSec13TeV,10.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
     }
   else if (fileType == "13TEV_40PU_2015_RE-EMUL")

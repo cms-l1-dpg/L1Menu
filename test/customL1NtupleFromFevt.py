@@ -20,4 +20,3 @@ readFiles.extend( [
 
 process.MessageLogger.cerr.FwkReport.reportEvery = 1000
 process.MessageLogger.cerr.threshold = 'ERROR'
-
