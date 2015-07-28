@@ -149,6 +149,11 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         #	
         #	process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
 
+        from L1Trigger.Configuration.SimL1Emulator_cff import simRctDigis
+        process.rctReEmulDigis = process.simRctDigis.clone()
+        process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
+        process.rctReEmulDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalDigis' ) )
+
         from L1Trigger.GlobalCaloTrigger.gctDigis_cfi import gctDigis
 
         process.gctReEmulDigis = gctDigis.clone()        
@@ -200,8 +205,8 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             # in order to run 2012 RCT emulator correctly
         
             #process.hcalReEmulDigis
-            #+ process.rctReEmulDigis
-            process.gctReEmulDigis
+            process.rctReEmulDigis
+            +process.gctReEmulDigis
         )
 
 
@@ -211,6 +216,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
     if reEmulMuons :
         process.gtReEmulDigis.GmtInputTag  = cms.InputTag("gmtReEmulDigis")
     if reEmulCalos :
+        process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
         process.gtReEmulDigis.GctInputTag  = cms.InputTag("gctReEmulDigis")
 
     if patchNtuple :
