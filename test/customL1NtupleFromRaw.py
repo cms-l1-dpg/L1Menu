@@ -9,6 +9,14 @@ process.p.remove(process.csctfDigis)
 
 # edit here
 
+## uncomment the following lines to override the L1RCT configuration parameters in the GlobalTag
+
+## recordOverrides = { ('L1RCTParametersRcd', None) :
+##                     ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
+##                     ## ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }
+## process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V8', recordOverrides)
+
+
 OUTFILE="L1Tree.root"
 NEVTS=200
 
