@@ -604,6 +604,14 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Data/Collisions/251244_ZeroBias.root");
       basicRatePlots.run(true,fileType,162,327,xSec13TeV,999.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
     }
+  if (fileType == "RUN251244_ECALcorr") {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Data/Collisions/251244_ZeroBias_ECALcorr.root");
+      basicRatePlots.run(true,fileType,162,327,xSec13TeV,999.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
+  if (fileType == "RUN251244_ECALnocorr") {
+      BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Data/Collisions/251244_ZeroBias_ECALnocorr.root");
+      basicRatePlots.run(true,fileType,162,327,xSec13TeV,999.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
   else if (fileType == "MC251244") {
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Spring15_50ns_Flat10_50/L1Tree.root");
       basicRatePlots.run(true,fileType,0,500000000,xSec13TeV,10.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section

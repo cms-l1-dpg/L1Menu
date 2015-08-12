@@ -7,15 +7,19 @@ process.p.remove(process.l1MuonRecoTreeProducer)
 process.p.remove(process.l1MenuTreeProducer)
 process.p.remove(process.csctfDigis)
 
-# edit here
+# uncomment the following lines to override the L1RCT configuration parameters in the GlobalTag
+recordOverrides = { ('L1RCTParametersRcd', None) :
+                    ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
+                    ## ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }
+process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9', recordOverrides)
 
-## uncomment the following lines to override the L1RCT configuration parameters in the GlobalTag
-
-## recordOverrides = { ('L1RCTParametersRcd', None) :
-##                     ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
-##                     ## ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }
-## process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V8', recordOverrides)
-
+### Get the ECAL transparency corrections
+#process.GlobalTag.toGet = cms.VPSet(
+#    cms.PSet(record = cms.string("EcalTPGLinearizationConstRcd"),
+#             tag = cms.string("EcalTPGLinearizationConst_weekly_test2_hlt"),
+#             connect =cms.untracked.string('frontier://FrontierPrep/CMS_CONDITIONS')
+#    )
+#)
 
 OUTFILE="L1Tree.root"
 NEVTS=200
@@ -32,8 +36,3 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 ## readFiles.extend( ['root://xrootd.unl.edu//store/data/Commissioning2014/Cosmics/RAW/v3/000/228/929/00000/509C6C80-3164-E411-92E0-02163E00FFE1.root'] )
 ## readFiles.extend( ['root://lxcms02//data2/p/pellicci/L1DPG/root/RelValTTbar_730_GENSIMRECO.root'] )
 
-#process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_condDBv2_cff')
-#from Configuration.AlCa.GlobalTag_condDBv2 import GlobalTag
-## Format: map{(record,label):(tag,connection),...}
-#recordOverrides = { ('L1RCTParametersRcd', None) : ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
-#process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V8', recordOverrides)

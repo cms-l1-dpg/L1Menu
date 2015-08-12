@@ -125,31 +125,20 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
     if reEmulCalos :
         print "[L1Menu]:\tSetting up calo re-emulation"        
 
-        # Need to have RCT emulator configurable and not UCT 2015 patches
-        # in order to run 2012 RCT emulator correctly
+        ## redo ECAL TP's
+        ##
+        #from SimCalorimetry.EcalTrigPrimProducers.ecalTriggerPrimitiveDigis_cff import simEcalTriggerPrimitiveDigis
+        #process.ecalReEmulDigis = simEcalTriggerPrimitiveDigis.clone()
+        #process.ecalReEmulDigis.InstanceEB = cms.string('ebDigis')
+        #process.ecalReEmulDigis.InstanceEE = cms.string('eeDigis')
+        #process.ecalReEmulDigis.Label = cms.string('ecalDigis')
         
-        #	# In MC HCAL need to be re-run as there is no TPG information stored
-        #	process.load("SimCalorimetry.HcalSimProducers.hcalUnsuppressedDigis_cfi")
-        #	process.load("SimCalorimetry.HcalTrigPrimProducers.hcaltpdigi_cff")
-        #	
-        #	from L1Trigger.RegionalCaloTrigger.rctDigis_cfi import rctDigis
-        #	from L1Trigger.GlobalCaloTrigger.gctDigis_cfi import gctDigis
-        #	
-        #	process.hcalReEmulDigis = process.simHcalTriggerPrimitiveDigis.clone()
-        #	process.rctReEmulDigis  = rctDigis.clone()
-        #	process.gctReEmulDigis  = gctDigis.clone()
-        #	
-        #	process.hcalReEmulDigis.inputLabel = cms.VInputTag(cms.InputTag('hcalDigis'), cms.InputTag('hcalDigis'))
-        #	#process.HcalTPGCoderULUT.LUTGenerationMode = cms.bool(False)
-        #	
-        #	process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
-        #	process.rctReEmulDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalReEmulDigis' ) )
-        #	
-        #	process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
-
+        ###
+        
         from L1Trigger.Configuration.SimL1Emulator_cff import simRctDigis
         process.rctReEmulDigis = process.simRctDigis.clone()
         process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
+        #process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalReEmulDigis' ) )
         process.rctReEmulDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalDigis' ) )
 
         from L1Trigger.GlobalCaloTrigger.gctDigis_cfi import gctDigis
@@ -165,7 +154,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         process.l1ExtraReEmul.tauJetSource     = cms.InputTag("gctReEmulDigis","tauJets")
         process.l1ExtraReEmul.isoTauJetSource  = cms.InputTag("gctReEmulDigis","isoTauJets")            
 
-        process.l1ExtraReEmul.etTotalSource = cms.InputTag("gctDigis")
+        process.l1ExtraReEmul.etTotalSource = cms.InputTag("gctReEmulDigis")
         process.l1ExtraReEmul.etHadSource   = cms.InputTag("gctReEmulDigis")
         process.l1ExtraReEmul.etMissSource  = cms.InputTag("gctReEmulDigis")
         process.l1ExtraReEmul.htMissSource  = cms.InputTag("gctReEmulDigis")
@@ -199,7 +188,11 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             #    ntuple.rctSource            = cms.InputTag("rctReEmulDigis")
 
         process.reEmulCaloChain = cms.Sequence(
+            # Need to have RCT emulator configurable and not UCT 2015 patches
+            # in order to run 2012 RCT emulator correctly
+        
             #process.hcalReEmulDigis
+            #process.ecalReEmulDigis
             process.rctReEmulDigis
             +process.gctReEmulDigis
         )

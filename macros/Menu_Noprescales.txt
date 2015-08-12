@@ -3,6 +3,7 @@ L1_AlwaysTrue         1
 L1_SingleMuOpen       1
 L1_SingleMu3p5        1
 L1_SingleMu5          1
+L1_SingleMu7          1
 L1_SingleMu12         1
 L1_SingleMu14er       1
 L1_SingleMu16         1
@@ -15,6 +16,7 @@ L1_SingleMu25er       1
 L1_SingleMu30         1
 L1_SingleMu30er       1
 L1_DoubleMu0          1
+L1_DoubleMuOpen       1
 L1_DoubleMu0er16_WdEta18_OS 1
 L1_DoubleMu0er16_WdEta18 1
 L1_DoubleMu_10_0_WdEta18 1
@@ -62,10 +64,13 @@ L1_DoubleJetC84           1
 L1_DoubleJetC100          1
 L1_DoubleJetC112          1
 L1_DoubleJetC120          1
+L1_DoubleIsoTau32er       1
 L1_DoubleIsoTau36er       1
 L1_DoubleIsoTau40er       1
 L1_DoubleIsoTau44er       1
+L1_DoubleTau40er          1
 L1_TripleJet_92_76_64     1
+L1_TripleJet_92_76_64_VBF 1
 L1_QuadJetC40             1
 L1_QuadJetC60             1
 L1_QuadJetC84             1
@@ -77,6 +82,8 @@ L1_ETM70   1
 L1_ETM100  1
 L1_ETM60_NoJet52WdPhi2 1
 L1_ETM70_NoJet52WdPhi2 1
+L1_HTT75   1
+L1_HTT100  1
 L1_HTT125  1
 L1_HTT150  1
 L1_HTT175  1
@@ -95,6 +102,7 @@ L1_DoubleMu6_EG6          1
 L1_DoubleMu7_EG7          1
 L1_Mu6_HTT150             1
 L1_Mu8_HTT125             1
+L1_Mu0er_ETM40            1
 L1_Mu0er_ETM55            1
 L1_Mu14er_ETM30           1
 L1_Mu10er_ETM50           1
@@ -103,6 +111,8 @@ L1_Mu3_JetC16_WdEtaPhi2   1
 L1_Mu3_JetC52_WdEtaPhi2   1
 L1_Mu3_JetC92_WdEtaPhi2   1
 L1_Mu16er_TauJet20er      1
+L1_Mu16er_IsoTau32er      1
+L1_Mu16er_IsoTau36er      1
 L1_EG25er_HTT125          1
 L1_DoubleEG6_HTT150       1
 L1_IsoEG20er_TauJet20er   1
@@ -112,4 +122,6 @@ L1_DoubleJetC60_ETM60     1
 L1_DoubJetC32_WdPhi7_HTT125    1
 L1_Jet32MuOpen_Mu10_dPhiMu_Mu1 1
 L1_Jet32MuOpen_EG10_dPhiMu_EG1 1
+L1_ETT40                1
+L1_ETT60                1
 L1_ETT130               1
