@@ -7,7 +7,7 @@ import sys
 options = VarParsing.VarParsing()
 
 options.register('globalTag',
-                 'GR_P_V41_AN1::All', #default value
+                 'GR_P_V41_AN1', #default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.string,
                  "Global Tag")
@@ -36,12 +36,6 @@ options.register('patchNtuple',
                  VarParsing.VarParsing.varType.bool,
                  "Patch ntuple inputs to use re-emulation ones")
 
-options.register('force2012Config',
-                 False, #default value
-                 VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.bool,
-                 "Force Run2012C/D config in re-emulation")
-
 options.register('jetSeedThr10GeV',
                  False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -55,7 +49,7 @@ options.register('runOnMC',
                  "Set to True when running on MC")
 
 options.register('runOnPostLS1',
-                 False, #default value
+                 True, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.bool,
                  "Set to True when running on MC and this postLS1")
@@ -102,12 +96,6 @@ options.register('customGMT',
                  VarParsing.VarParsing.varType.bool,
                  "Switches to minPT for the GMT")
 
-options.register('useUct2015',
-                 False, #default value
-                 VarParsing.VarParsing.multiplicity.singleton,
-                 VarParsing.VarParsing.varType.bool,
-                 "Enables UCT2015 emulation for calos")
-
 options.register('useStage1Layer2',
                  False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -142,18 +130,12 @@ if options.reEmulMuons :
 
 # re-emulation customisations
 
-if options.useUct2015 and options.useStage1Layer2:
-    print "[L1Menu]: ERROR !!! Currently cannot run both UCT and Stage1 Emulators at the same time"
-    sys.exit(1)
-
 if options.reEmulation :
     from L1TriggerDPG.L1Menu.reEmulation_cff import *
     reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1, options.useStage1Layer2)
     process.p.replace(process.l1NtupleProducer, process.reEmul + process.l1NtupleProducer)
-    if options.force2012Config :
-         run2012CConfiguration(process)
 
-if options.reEmulation and not options.useUct2015 and options.jetSeedThr10GeV :
+if options.reEmulCalos and options.jetSeedThr10GeV :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
     customiseL1Calos(process, True)
 
@@ -161,10 +143,8 @@ if options.reEmulation and (options.customDTTF or options.customCSCTF or options
     from L1TriggerDPG.L1Menu.customiseL1Muons_cff import *
     customiseL1Muons(process, options.customDTTF, options.customCSCTF, options.customPACT, options.customGMT, options.dttfLutsFile)
 
-if options.reEmulation and (options.useUct2015 or options.useStage1Layer2) :
+if options.reEmulation and options.useStage1Layer2 :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
-    if options.useUct2015:
-        customiseUCT2015(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
     if options.useStage1Layer2:
         customiseStage1(process, options.runOnMC, options.runOnPostLS1, options.whichPU)
 
@@ -186,7 +166,6 @@ if options.keepEDMOutput :
                                                                              'keep *_rpcTriggerReEmulDigis_*_*',
                                                                              'keep *_csctfReEmulDigis_*_*',
                                                                              'keep *_dttfReEmulDigis_*_*',
-                                                                             'keep *_uctGctDigis_*_*',
                                                                              'keep *_caloStage1LegacyFormatDigis_*_*',
                                                                              'keep *BXVector_*__L1TEMULATION',
                                                                              'keep *_gctDigis_*_*')

@@ -2,18 +2,23 @@ import FWCore.ParameterSet.Config as cms
 
 from L1TriggerDPG.L1Menu.customL1Ntuple_cfg import *
 
+from Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff import *
+
 process.p.remove(process.l1RecoTreeProducer)
 process.p.remove(process.l1MuonRecoTreeProducer)
 process.p.remove(process.l1MenuTreeProducer)
 process.p.remove(process.csctfDigis)
 
 # uncomment the following lines to override the L1RCT configuration parameters in the GlobalTag
-recordOverrides = { ('L1RCTParametersRcd', None) :
-                    ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
-                    ## ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }
-process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9', recordOverrides)
+#recordOverrides = { ('L1RCTParametersRcd', None) :
+                    ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_NewTau_FullEGTransparency_v1', None) }
+                    ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
+                    ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }
+#process.GlobalTag = GlobalTag(process.GlobalTag, '74X_mcRun2_startup_realistic50ns_v0', recordOverrides)
 
-### Get the ECAL transparency corrections
+#process.caloStage1Params.jetCalibrationLUTFile = cms.FileInPath("L1TriggerDPG/L1Menu/data/Jet_Stage1_2015_v2.txt")
+
+# Get the ECAL transparency corrections
 #process.GlobalTag.toGet = cms.VPSet(
 #    cms.PSet(record = cms.string("EcalTPGLinearizationConstRcd"),
 #             tag = cms.string("EcalTPGLinearizationConst_weekly_test2_hlt"),
@@ -21,11 +26,15 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'MCRUN2_74_V9', recordOverrides
 #    )
 #)
 
-OUTFILE="L1Tree.root"
-NEVTS=200
+#process.GlobalTag.toGet = cms.VPSet(
+#    cms.PSet(record = cms.string("EcalTPGTowerStatusRcd"),
+#             tag = cms.string("EcalTPGTowerStatus_confid722_plus_ebm10_tt64"),
+#             connect =cms.untracked.string('frontier://FrontierPrep/CMS_CONDITIONS')
+#             )
+#)
 
-process.TFileService.fileName=OUTFILE
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(NEVTS) )
+process.TFileService.fileName = "L1Tree.root"
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100

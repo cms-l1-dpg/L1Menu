@@ -2,18 +2,18 @@ from WMCore.Configuration import Configuration
 
 config = Configuration()
 
-RunOnMC = True
+RunOnMC = False
 
-requestName = '251244'
-pyCfg       = ['runOnMC=False', 'globalTag=GR_P_V56', 'reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'jetSeedThr10GeV=True', 'runOnPostLS1=True']
-dataset     = '/ZeroBias/Run2015B-v1/RAW'
+requestName = '254833_1'
+pyCfg       = ['runOnMC=False', 'globalTag=74X_dataRun2_Prompt_v1']
+dataset     = '/ZeroBias1/Run2015C-v1/RAW'
 splitting   = 'LumiBased'
 output      = '/store/group/dpg_trigger/comm_trigger/L1Trigger/Data/Collisions/'
 
 if RunOnMC :
-    requestName = 'Spring15_Flat10_50_50ns'
-    pyCfg       = ['runOnMC=True', 'globalTag=MCRUN2_74_V8', 'reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'runOnPostLS1=True', 'jetSeedThr10GeV=True']
-    dataset     = '/SingleNeutrino/RunIISpring15Digi74-Flat_10_50_50ns_tsg_MCRUN2_74_V6-v1/GEN-SIM-RAW'
+    requestName = 'MCforRun254833'
+    pyCfg       = ['runOnMC=True', 'globalTag=74X_mcRun2_startup_realistic50ns_v0', 'reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'reEmulMuons=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20']
+    dataset     = '/SingleNeutrino/RunIISpring15Digi74-AVE_30_BX_50ns_tsg_MCRUN2_74_V6-v1/GEN-SIM-RAW'
     splitting   = 'FileBased'
     output      = '/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2015/'
 

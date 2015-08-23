@@ -11,6 +11,7 @@ config.section_('JobType')
 config.JobType.psetName = '../customL1NtupleFromRaw.py'
 config.JobType.pluginName = 'Analysis'
 config.JobType.outputFiles = ['L1Tree.root']
+config.JobType.inputFiles = ['../../data/Jet_Stage1_2015_v2.txt']
 
 config.section_('Data')
 config.Data.inputDBS = 'global'
@@ -40,6 +41,7 @@ if __name__ == '__main__':
     #############################################################################################
 
     config.General.requestName = '13TeV_20PU_25ns_ReEmul2015_v16'
+    config.Data.unitsPerJob = 7
     config.Data.inputDataset = '/SingleNeutrino/RunIISpring15Digi74-AVE_20_BX_25ns_tsg_MCRUN2_74_V7-v1/GEN-SIM-RAW'
     config.Data.outLFNDirBase = '/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2015/v16/'
     config.JobType.pyCfgParams = ['reEmulation=True', 'reEmulMuons=True', 'reEmulCalos=True', 'patchNtuple=True', 'useStage1Layer2=True', 'globalTag=MCRUN2_74_V9', 'runOnMC=True', 'runOnPostLS1=True', 'whichPU=20']
@@ -55,11 +57,11 @@ if __name__ == '__main__':
     p.start()
     p.join()
 
-    config.General.requestName = '13TeV_30PU_50ns_ReEmul2012Gct10GeV_v16'
-    config.Data.inputDataset = '/SingleNeutrino/RunIISpring15Digi74-AVE_30_BX_50ns_tsg_MCRUN2_74_V6-v1/GEN-SIM-RAW'
-    config.Data.outLFNDirBase = '/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2015/v16/'
-    config.JobType.pyCfgParams = ['reEmulation=True', 'reEmulMuons=True', 'reEmulCalos=True', 'patchNtuple=True', 'globalTag=MCRUN2_74_V8', 'runOnMC=True', 'runOnPostLS1=True', 'jetSeedThr10GeV=True']
-    p = Process(target=submit, args=(config,))
-    p.start()
-    p.join()
+    #config.General.requestName = '13TeV_30PU_50ns_ReEmul2012Gct10GeV_v16'
+    #config.Data.inputDataset = '/SingleNeutrino/RunIISpring15Digi74-AVE_30_BX_50ns_tsg_MCRUN2_74_V6-v1/GEN-SIM-RAW'
+    #config.Data.outLFNDirBase = '/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2015/v16/'
+    #config.JobType.pyCfgParams = ['reEmulation=True', 'reEmulMuons=True', 'reEmulCalos=True', 'patchNtuple=True', 'globalTag=MCRUN2_74_V8', 'runOnMC=True', 'runOnPostLS1=True', 'jetSeedThr10GeV=True']
+    #p = Process(target=submit, args=(config,))
+    #p.start()
+    #p.join()
 

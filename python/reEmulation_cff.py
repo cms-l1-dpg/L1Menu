@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, runOnPostLS1 = False, useStage1Layer2=False):
+def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, runOnPostLS1 = True, useStage1Layer2=True):
 
     print "[L1Menu]: Setting up overall re-emulation"        
 
@@ -51,7 +51,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         if not runOnPostLS1 :
             from L1Trigger.CSCTrackFinder.csctfTrackDigis_cfi import csctfTrackDigis
             from L1Trigger.CSCTrackFinder.csctfDigis_cfi import csctfDigis
-
         
             process.csctfReEmulTrackDigis = csctfTrackDigis.clone()
             process.csctfReEmulDigis      = csctfDigis.clone()
@@ -133,8 +132,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         #process.ecalReEmulDigis.InstanceEE = cms.string('eeDigis')
         #process.ecalReEmulDigis.Label = cms.string('ecalDigis')
         
-        ###
-        
         from L1Trigger.Configuration.SimL1Emulator_cff import simRctDigis
         process.rctReEmulDigis = process.simRctDigis.clone()
         process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
@@ -183,28 +180,22 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             l1ExtraNtuple.metLabel      = cms.untracked.InputTag("l1ExtraReEmul:MET")
             l1ExtraNtuple.mhtLabel      = cms.untracked.InputTag("l1ExtraReEmul:MHT")
 
-            # Need to have RCT emulator configurable and not UCT 2015 patches
-            # in order to run 2012 RCT emulator correctly
-            #    ntuple.rctSource            = cms.InputTag("rctReEmulDigis")
-
         process.reEmulCaloChain = cms.Sequence(
-            # Need to have RCT emulator configurable and not UCT 2015 patches
-            # in order to run 2012 RCT emulator correctly
-        
             #process.hcalReEmulDigis
             #process.ecalReEmulDigis
             process.rctReEmulDigis
             +process.gctReEmulDigis
         )
 
+        process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
 
     from L1Trigger.GlobalTrigger.gtDigis_cfi import gtDigis
     process.gtReEmulDigis   = gtDigis.clone()
 
     if reEmulMuons :
         process.gtReEmulDigis.GmtInputTag  = cms.InputTag("gmtReEmulDigis")
+
     if reEmulCalos :
-        process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
         process.gtReEmulDigis.GctInputTag  = cms.InputTag("gctReEmulDigis")
 
     if patchNtuple :
@@ -218,63 +209,3 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         process.reEmul = cms.Sequence(process.reEmulCaloChain + process.gtReEmulDigis + process.l1ExtraReEmul)
     else :
         process.reEmul = cms.Sequence(process.gtReEmulDigis + process.l1ExtraReEmul)
-
-
-def run2012CConfiguration(process):
-
-        print "[L1Menu]: Setting up muon/calo configuration to correspond to RUN2012C"
-        print "[L1Menu]: Forcing RPC muon trigger to switch off HSCP BX extension"
-
-        process.GlobalTag.toGet.extend(
-            cms.VPSet(cms.PSet(record = cms.string("L1GtTriggerMenuRcd"),
-                               tag = cms.string("L1GtTriggerMenu_L1Menu_Collisions2012_v2_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1GctChannelMaskRcd"),
-                               tag = cms.string("L1GctChannelMask_AllEnergySumsMaskedFromHF_jetCentresToEta3Allowed_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1GctJetFinderParamsRcd"),
-                               tag = cms.string("L1GctJetFinderParams_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1HfRingEtScaleRcd"),
-                               tag = cms.string("L1HfRingEtScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1JetEtScaleRcd"),
-                               tag = cms.string("L1JetEtScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1HtMissScaleRcd"),
-                               tag = cms.string("L1HtMissScale_GCTPhysics_2012_04_27_JetSeedThresh5GeV_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1MuCSCPtLutRcd"),
-                               tag = cms.string("L1MuCSCPtLut_key-11_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1MuDTTFParametersRcd"),
-                               tag = cms.string("L1MuDTTFParameters_dttf12_TSC_03_csc_col_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      # Forcing RPCs without HSCP (also in 50 ns as it has minor impact in rates there)
-                      cms.PSet(record = cms.string("L1RPCBxOrConfigRcd"),
-                               tag = cms.string("L1RPCBxOrConfig_LHC8_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1RPCConeDefinitionRcd"),
-                               tag = cms.string("L1RPCConeDefinition_LHC8_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1RPCConfigRcd"),
-                               tag = cms.string("L1RPCConfig_LHC8_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               ),
-                      cms.PSet(record = cms.string("L1RPCHsbConfigRcd"),
-                               tag = cms.string("L1RPCHsbConfig_LHC8_mc"),
-                               connect = cms.untracked.string("frontier://FrontierProd/CMS_COND_31X_L1T")
-                               )
-                      )
-            )
-

@@ -13,6 +13,8 @@ process.load('Configuration/StandardSequences/FrontierConditions_GlobalTag_cff')
 
 process.load("L1TriggerDPG.L1Ntuples.l1ExtraTreeProducer_cfi")
 
+process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+
 # output file
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('L1Tree.root')
@@ -31,26 +33,20 @@ process.p = cms.Path(
 )
 
 # job options
-process.GlobalTag.globaltag = 'GR_R_52_V7::All'
+process.GlobalTag.globaltag = '74X_dataRun2_Prompt_v1'
 
 SkipEvent = cms.untracked.vstring('ProductNotFound')
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(10) )
-
 readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
+
 process.source = cms.Source ("PoolSource",
                              fileNames = readFiles,
                              secondaryFileNames = secFiles
                              )
 
 # edit here
-
-OUTFILE="L1Tree.root"
-NEVTS=200
-
-process.TFileService.fileName=OUTFILE
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(NEVTS) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -60,7 +56,7 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 ## readFiles.extend( ['root://eoscms.cern.ch//eos/cms/store/group/comm_trigger/L1Trigger/apana/DYJetsToLL_M-50_13TeV-pythia6_Fall13dr-tsg_PU40bx25__skim_150_1_6UN.root'] )
 ## readFiles.extend( ['root://xrootd.unl.edu//store/data/Commissioning2014/Cosmics/RAW/v3/000/228/929/00000/509C6C80-3164-E411-92E0-02163E00FFE1.root'] )
 
-readFiles.extend( ['root://lxcms02//data2/p/pellicci/L1DPG/root/RelValTTbar_730_GENSIMRECO.root'] )
+readFiles.extend( ['root://xrootd.unl.edu//store/data/Run2015C/L1Accept/RAW/v1/000/254/790/00000/16005522-3448-E511-AAFE-02163E011E5B.root'] )
 
 ## processDumpFile = open('config.dump', 'w')
 ## print >> processDumpFile, process.dumpPython()

@@ -249,10 +249,6 @@ void L1Menu2015::MyInit() {
   setHIGGS.insert("L1_SingleMu30");
   setHIGGS.insert("L1_SingleMu14er");
   setHIGGS.insert("L1_SingleMu16er");
-  setHIGGS.insert("L1_SingleMu18er");
-  setHIGGS.insert("L1_SingleMu20er");
-  setHIGGS.insert("L1_SingleMu25er");
-  setHIGGS.insert("L1_SingleMu30er");
   setHIGGS.insert("L1_DoubleMu_10_3p5");
   setHIGGS.insert("L1_DoubleMu_12_5");
   setHIGGS.insert("L1_TripleMu0");
@@ -263,7 +259,7 @@ void L1Menu2015::MyInit() {
   setHIGGS.insert("L1_SingleEG20");
   setHIGGS.insert("L1_SingleEG25");
   setHIGGS.insert("L1_SingleEG40");
-  setHIGGS.insert("L1_SingleIsoEG18");
+  setHIGGS.insert("L1_SingleIsoEG18er");
   setHIGGS.insert("L1_SingleIsoEG22er");
   setHIGGS.insert("L1_SingleIsoEG25er");
   setHIGGS.insert("L1_SingleIsoEG30er");
@@ -290,16 +286,16 @@ void L1Menu2015::MyInit() {
   setHIGGS.insert("L1_DoubleMu7_EG7");
   setHIGGS.insert("L1_Mu16er_TauJet20er");
   setHIGGS.insert("L1_IsoEG20er_TauJet20er");
+  setHIGGS.insert("L1_DoubleIsoTau28er");
   setHIGGS.insert("L1_DoubleIsoTau32er");
   setHIGGS.insert("L1_DoubleIsoTau36er");
   setHIGGS.insert("L1_DoubleIsoTau40er");
-  setHIGGS.insert("L1_DoubleIsoTau44er");
   setHIGGS.insert("L1_QuadJetC36_Tau52");
   setHIGGS.insert("L1_DoubleJetC56_ETM60");
   setHIGGS.insert("L1_DoubleJetC60_ETM60");
   setHIGGS.insert("L1_TripleJet_92_76_64");
-  setHIGGS.insert("L1_TripleJet_92_76_64_VBF");
-  setHIGGS.insert("L1_EG25er_HTT125");
+  setHIGGS.insert("L1_TripleJet_84_68_48_VBF");
+  setHIGGS.insert("L1_EG25er_HTT100");
 
   setEXO.insert("L1_SingleMuOpen");
   setEXO.insert("L1_SingleMu5");
@@ -328,10 +324,10 @@ void L1Menu2015::MyInit() {
   setEXO.insert("L1_SingleJet176");
   setEXO.insert("L1_SingleJet200");
   setEXO.insert("L1_SingleJet240");
+  setEXO.insert("L1_DoubleIsoTau28er");
   setEXO.insert("L1_DoubleIsoTau32er");
   setEXO.insert("L1_DoubleIsoTau36er");
   setEXO.insert("L1_DoubleIsoTau40er");
-  setEXO.insert("L1_DoubleIsoTau44er");
   setEXO.insert("L1_DoubleJetC84");
   setEXO.insert("L1_DoubleJetC100");
   setEXO.insert("L1_DoubleJetC112");
@@ -357,7 +353,7 @@ void L1Menu2015::MyInit() {
   setEXO.insert("L1_Mu5_EG20");
   setEXO.insert("L1_Mu5_IsoEG18");
   setEXO.insert("L1_Mu6_HTT150");
-  setEXO.insert("L1_Mu14er_ETM30");
+  setEXO.insert("L1_Mu10er_ETM30");
   setEXO.insert("L1_Mu10er_ETM50");
   setEXO.insert("L1_Mu3_JetC52_WdEtaPhi2");
 
@@ -477,10 +473,10 @@ void L1Menu2015::MyInit() {
   setSUSY.insert("L1_SingleJet176");
   setSUSY.insert("L1_SingleJet200");
   setSUSY.insert("L1_SingleJet240");
+  setSUSY.insert("L1_DoubleIsoTau28er");
   setSUSY.insert("L1_DoubleIsoTau32er");
   setSUSY.insert("L1_DoubleIsoTau36er");
   setSUSY.insert("L1_DoubleIsoTau40er");
-  setSUSY.insert("L1_DoubleIsoTau44er");
   setSUSY.insert("L1_DoubleJetC84");
   setSUSY.insert("L1_DoubleJetC100");
   setSUSY.insert("L1_DoubleJetC112");
@@ -508,7 +504,7 @@ void L1Menu2015::MyInit() {
   setSUSY.insert("L1_DoubJetC32_WdPhi7_HTT125");
   setSUSY.insert("L1_Mu0er_ETM40");
   setSUSY.insert("L1_Mu0er_ETM55");
-  setSUSY.insert("L1_Mu8_HTT125");
+  setSUSY.insert("L1_Mu8_HTT50");
   setSUSY.insert("L1_DoubleEG6_HTT150");
   setSUSY.insert("L1_Jet32MuOpen_Mu10_dPhiMu_Mu1");
   setSUSY.insert("L1_Jet32MuOpen_EG10_dPhiMu_EG1");
@@ -524,10 +520,6 @@ void L1Menu2015::MyInit() {
   setMuon.insert("L1_SingleMu30");
   setMuon.insert("L1_SingleMu14er");
   setMuon.insert("L1_SingleMu16er");
-  setMuon.insert("L1_SingleMu18er");
-  setMuon.insert("L1_SingleMu20er");
-  setMuon.insert("L1_SingleMu25er");
-  setMuon.insert("L1_SingleMu30er");
   setMuon.insert("L1_DoubleMuOpen");
   setMuon.insert("L1_DoubleMu0");
   setMuon.insert("L1_DoubleMu0er16_WdEta18_OS");
@@ -543,14 +535,14 @@ void L1Menu2015::MyInit() {
   setMuonHadronic.insert("L1_Mu3_JetC16_WdEtaPhi2");
   setMuonHadronic.insert("L1_Mu3_JetC52_WdEtaPhi2");
   setMuonHadronic.insert("L1_Mu6_HTT150");
-  setMuonHadronic.insert("L1_Mu8_HTT125");
+  setMuonHadronic.insert("L1_Mu8_HTT50");
   setMuonHadronic.insert("L1_Mu0er_ETM40");
   setMuonHadronic.insert("L1_Mu0er_ETM55");
-  setMuonHadronic.insert("L1_Mu14er_ETM30");
+  setMuonHadronic.insert("L1_Mu10er_ETM30");
   setMuonHadronic.insert("L1_Mu10er_ETM50");
   setMuonHadronic.insert("L1_Mu16er_TauJet20er");
+  setMuonHadronic.insert("L1_Mu16er_IsoTau28er");
   setMuonHadronic.insert("L1_Mu16er_IsoTau32er");
-  setMuonHadronic.insert("L1_Mu16er_IsoTau36er");
   setMuonEG.insert("L1_Mu4_EG18");
   setMuonEG.insert("L1_Mu5_EG15");
   setMuonEG.insert("L1_Mu5_EG20");
@@ -570,8 +562,8 @@ void L1Menu2015::MyInit() {
   setEG.insert("L1_SingleEG30");
   setEG.insert("L1_SingleEG35");
   setEG.insert("L1_SingleEG40");
-  setEG.insert("L1_SingleIsoEG18");
   setEG.insert("L1_SingleIsoEG25");
+  setEG.insert("L1_SingleIsoEG18er");
   setEG.insert("L1_SingleIsoEG20er");
   setEG.insert("L1_SingleIsoEG22er");
   setEG.insert("L1_SingleIsoEG25er");
@@ -594,13 +586,13 @@ void L1Menu2015::MyInit() {
   setHadronic.insert("L1_DoubleJetC100");
   setHadronic.insert("L1_DoubleJetC112");
   setHadronic.insert("L1_DoubleJetC120");
+  setHadronic.insert("L1_DoubleIsoTau28er");
   setHadronic.insert("L1_DoubleIsoTau32er");
   setHadronic.insert("L1_DoubleIsoTau36er");
   setHadronic.insert("L1_DoubleIsoTau40er");
-  setHadronic.insert("L1_DoubleIsoTau44er");
   setHadronic.insert("L1_DoubleTau40er");
   setHadronic.insert("L1_TripleJet_92_76_64");
-  setHadronic.insert("L1_TripleJet_92_76_64_VBF");
+  setHadronic.insert("L1_TripleJet_84_68_48_VBF");
   setHadronic.insert("L1_QuadJetC40");
   setHadronic.insert("L1_QuadJetC60");
   setHadronic.insert("L1_QuadJetC84");
@@ -627,7 +619,7 @@ void L1Menu2015::MyInit() {
   setHadronic.insert("L1_DoubJetC32_WdPhi7_HTT125");
   setEGHadronic.insert("L1_IsoEG20er_TauJet20er");
   setEGHadronic.insert("L1_DoubleEG6_HTT150");
-  setEGHadronic.insert("L1_EG25er_HTT125");
+  setEGHadronic.insert("L1_EG25er_HTT100");
   setEGHadronic.insert("L1_Jet32MuOpen_Mu10_dPhiMu_Mu1");
   setEGHadronic.insert("L1_Jet32MuOpen_EG10_dPhiMu_EG1");
 
@@ -656,13 +648,13 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_SingleJet200"] = 22;
   BitMapping["L1_SingleJet36"] = 23;
   BitMapping["L1_DoubleIsoTau32er"] = 24;
-  BitMapping["L1_Mu16er_IsoTau32er"] = 25;
+  BitMapping["L1_Mu16er_IsoTau28er"] = 25;
   BitMapping["L1_DoubleMu0"] = 26;
-  BitMapping["L1_SingleMu30er"] = 27;
+  BitMapping["FREE27"] = 27;
   BitMapping["FREE28"] = 28;
   BitMapping["L1_Mu3_JetC16_WdEtaPhi2"] = 29;
   BitMapping["L1_Mu3_JetC52_WdEtaPhi2"] = 30;
-  BitMapping["L1_EG25er_HTT125"] = 31;
+  BitMapping["L1_EG25er_HTT100"] = 31;
   BitMapping["L1_DoubleMuOpen"] = 32;
   BitMapping["L1_SingleIsoEG25er"] = 33;
   BitMapping["L1_SingleIsoEG25"] = 34;
@@ -681,7 +673,7 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_SingleEG5"] = 47;
   BitMapping["L1_SingleEG25"] = 48;
   BitMapping["L1_SingleEG40"] = 49;
-  BitMapping["L1_SingleIsoEG18"] = 50;
+  BitMapping["L1_SingleIsoEG18er"] = 50;
   BitMapping["L1_SingleIsoEG20er"] = 51;
   BitMapping["L1_SingleEG20"] = 52;
   BitMapping["L1_SingleEG30"] = 53;
@@ -691,10 +683,10 @@ void L1Menu2015::MyInit() {
   BitMapping["FREE57"] = 57;
   BitMapping["L1_SingleMu5"] = 58;
   BitMapping["FREE59"] = 59;
-  BitMapping["L1_SingleMu20er"] = 60;
+  BitMapping["FREE60"] = 60;
   BitMapping["L1_SingleMu12"] = 61;
   BitMapping["L1_SingleMu20"] = 62;
-  BitMapping["L1_SingleMu25er"] = 63;
+  BitMapping["FREE63"] = 63;
   BitMapping["L1_SingleMu25"] = 64;
   BitMapping["L1_SingleMu30"] = 65;
   BitMapping["L1_ETM30"] = 66;
@@ -715,10 +707,10 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_Mu20_EG8"] = 81;
   BitMapping["L1_Mu6_HTT150"] = 82;
   BitMapping["L1_Mu10er_ETM50"] = 83;
-  BitMapping["L1_Mu14er_ETM30"] = 84;
+  BitMapping["L1_Mu10er_ETM30"] = 84;
   BitMapping["L1_DoubleMu7_EG7"] = 85;
   BitMapping["L1_SingleMu16er"] = 86;
-  BitMapping["L1_Mu8_HTT125"] = 87;
+  BitMapping["L1_Mu8_HTT50"] = 87;
   BitMapping["L1_Mu4_EG18"] = 88;
   BitMapping["L1_SingleMu6_NotBptxOR"] = 89;
   BitMapping["L1_DoubleMu6_EG6"] = 90;
@@ -727,7 +719,7 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_QuadJetC36_Tau52"] = 93;
   BitMapping["L1_Mu0er_ETM40"] = 94;
   BitMapping["FREE95"] = 95;
-  BitMapping["L1_Mu16er_IsoTau36er"] = 96;
+  BitMapping["L1_Mu16er_IsoTau32er"] = 96;
   BitMapping["L1_TripleMu0"] = 97;
   BitMapping["L1_TripleMu_5_5_3"] = 98;
   BitMapping["FREE99"] = 99;
@@ -750,10 +742,10 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_ETM70_NoJet52WdPhi2"] = 116;
   BitMapping["L1_DoubleIsoTau36er"] = 117;
   BitMapping["L1_DoubleIsoTau40er"] = 118;
-  BitMapping["L1_TripleJet_92_76_64_VBF"] = 119;
-  BitMapping["L1_DoubleIsoTau44er"] = 120;
+  BitMapping["L1_TripleJet_84_68_48_VBF"] = 119;
+  BitMapping["L1_DoubleIsoTau28er"] = 120;
   BitMapping["L1_QuadMu0"] = 121;
-  BitMapping["L1_SingleMu18er"] = 122;
+  BitMapping["FREE122"] = 122;
   BitMapping["L1_DoubleMu0er16_WdEta18_OS"] = 123;
   BitMapping["L1_DoubleMu_12_5"] = 124;
   BitMapping["L1_TripleJet_92_76_64"] = 125;
@@ -827,10 +819,6 @@ Bool_t L1Menu2015::Muons() {
 
   InsertInMenu("L1_SingleMu14er",SingleMuEta2p1Pt >= 14.);
   InsertInMenu("L1_SingleMu16er",SingleMuEta2p1Pt >= 16.);
-  InsertInMenu("L1_SingleMu18er",SingleMuEta2p1Pt >= 18.);
-  InsertInMenu("L1_SingleMu20er",SingleMuEta2p1Pt >= 20.);
-  InsertInMenu("L1_SingleMu25er",SingleMuEta2p1Pt >= 25.);
-  InsertInMenu("L1_SingleMu30er",SingleMuEta2p1Pt >= 30.);
 
   Int_t NN = insert_ibin;
 
@@ -921,15 +909,15 @@ Bool_t L1Menu2015::Cross() {
   insert_ibin = 0;
 
   InsertInMenu("L1_Mu6_HTT150", algoFactory->Mu_HTT(6.,150.));
-  InsertInMenu("L1_Mu8_HTT125", algoFactory->Mu_HTT(8.,125.));
+  InsertInMenu("L1_Mu8_HTT50", algoFactory->Mu_HTT(8.,50.));
   InsertInMenu("L1_Mu0er_ETM40", algoFactory->Muer_ETM(0.,40.));
   InsertInMenu("L1_Mu0er_ETM55", algoFactory->Muer_ETM(0.,55.));
-  InsertInMenu("L1_Mu14er_ETM30", algoFactory->Muer_ETM(14.,30.));
+  InsertInMenu("L1_Mu10er_ETM30", algoFactory->Muer_ETM(10.,30.));
   InsertInMenu("L1_Mu10er_ETM50", algoFactory->Muer_ETM(10.,50.));
-  InsertInMenu("L1_EG25er_HTT125", algoFactory->SingleEG_Eta2p1_HTT(25., 125.,false));
+  InsertInMenu("L1_EG25er_HTT100", algoFactory->SingleEG_Eta2p1_HTT(25., 100.,false));
   InsertInMenu("L1_Mu16er_TauJet20er", algoFactory->Muer_TauJetEta2p17(16.,20.));
+  InsertInMenu("L1_Mu16er_IsoTau28er", algoFactory->Muer_TauJetEta2p17(16.,28.,true));
   InsertInMenu("L1_Mu16er_IsoTau32er", algoFactory->Muer_TauJetEta2p17(16.,32.,true));
-  InsertInMenu("L1_Mu16er_IsoTau36er", algoFactory->Muer_TauJetEta2p17(16.,36.,true));
   InsertInMenu("L1_IsoEG20er_TauJet20er", algoFactory->IsoEGer_TauJetEta2p17(20.,20.));
   InsertInMenu("L1_Mu12_EG10", algoFactory->Mu_EG(12.,10.));
   InsertInMenu("L1_Mu20_EG8", algoFactory->Mu_EG(20.,8.));
@@ -1091,14 +1079,14 @@ Bool_t L1Menu2015::MultiJets() {
   InsertInMenu("L1_DoubleJetC112",DoubleJet1 >= 112. && DoubleJet2 >= 112.);
   InsertInMenu("L1_DoubleJetC120",DoubleJet1 >= 120. && DoubleJet2 >= 120.);
 
+  InsertInMenu("L1_DoubleIsoTau28er", algoFactory->DoubleTauJetEta2p17(28.,28.,noTauInJet ? true : false));
   InsertInMenu("L1_DoubleIsoTau32er", algoFactory->DoubleTauJetEta2p17(32.,32.,noTauInJet ? true : false));
   InsertInMenu("L1_DoubleIsoTau36er", algoFactory->DoubleTauJetEta2p17(36.,36.,noTauInJet ? true : false));
   InsertInMenu("L1_DoubleIsoTau40er", algoFactory->DoubleTauJetEta2p17(40.,40.,noTauInJet ? true : false));
-  InsertInMenu("L1_DoubleIsoTau44er", algoFactory->DoubleTauJetEta2p17(44.,44.,noTauInJet ? true : false));
   InsertInMenu("L1_DoubleTau40er", algoFactory->DoubleTauJetEta2p17(40.,40., false));
 
   InsertInMenu("L1_TripleJet_92_76_64", algoFactory->TripleJet(92.,76.,64.,false));
-  InsertInMenu("L1_TripleJet_92_76_64_VBF", algoFactory->TripleJet_VBF(92.,76.,64.));
+  InsertInMenu("L1_TripleJet_84_68_48_VBF", algoFactory->TripleJet_VBF(84.,68.,48.));
 
   InsertInMenu("L1_QuadJetC40", algoFactory->QuadJet(40.,40.,40.,40.,true));
   InsertInMenu("L1_QuadJetC60", algoFactory->QuadJet(60.,60.,60.,60.,true));
@@ -1226,8 +1214,8 @@ Bool_t L1Menu2015::EGamma() {
   InsertInMenu("L1_SingleEG30",SingleEGPt >= 30.);
   InsertInMenu("L1_SingleEG35",SingleEGPt >= 35.);
   InsertInMenu("L1_SingleEG40",SingleEGPt >= 40.);
-  InsertInMenu("L1_SingleIsoEG18", algoFactory->SingleEG(18.,true) );
   InsertInMenu("L1_SingleIsoEG25", algoFactory->SingleEG(25.,true) );
+  InsertInMenu("L1_SingleIsoEG18er",SingleIsoEGerPt >= 18.);
   InsertInMenu("L1_SingleIsoEG20er",SingleIsoEGerPt >= 20.);
   InsertInMenu("L1_SingleIsoEG22er",SingleIsoEGerPt >= 22.);
   InsertInMenu("L1_SingleIsoEG25er",SingleIsoEGerPt >= 25.);
@@ -1351,7 +1339,7 @@ void L1Menu2015::Loop() {
 
   Int_t nevents = GetEntries();
   Double_t nZeroBiasevents = 0.;
-  if(nevents > 2000000) nevents = 2000000;
+  if(nevents > 6000000) nevents = 6000000;
 
   Int_t NPASS = 0; 
 
@@ -1711,23 +1699,43 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
     L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2015/L1Tree.root";
-    //themenufilename = "Menu_20PU_25bx.txt";
-    themenufilename = "Menu_Noprescales.txt";
+    themenufilename = "Menu_20PU_25bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;
     Energy = 13;
     noTauInJet = true;
     targetlumi= 70.;
+
+    //1e32
+    //NumberOfBunches = 26;
+    //themenufilename = "Menu_20PU_25bx_26bunch.txt";
+
+    //2e32
+    //NumberOfBunches = 74;
+    //themenufilename = "Menu_20PU_25bx_74bunch.txt";
+
+    //5e32
+    //NumberOfBunches = 158;
+    //themenufilename = "Menu_20PU_25bx_158bunch.txt";
   }
   else if(whichFileAndLumiToUse==3){
     // 13 TeV ZeroBias 62X sample 40 PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v13/25ns_40PU_ReEmul2015/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v16/25ns_40PU_ReEmul2015/L1Tree.root";
     themenufilename = "Menu_40PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 40;
     Energy = 13;
     noTauInJet = true;
     targetlumi= 140.;
+
+    //For 7E33 40 PU
+    //themenufilename = "Menu_40PU_25bx_1200bunches.txt";
+    //NumberOfBunches = 1200;
+
+    //For 5.6E33 33 PU, kind of...
+    //themenufilename = "Menu_40PU_25bx_5p6e33.txt";
+    //NumberOfBunches = 1200.*5.6/7.;
   }
   else if(whichFileAndLumiToUse==4){
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
@@ -2018,11 +2026,11 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 
     if (bias) std::cout << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t" << " ***  BIAS  *** " << std::endl;
     else
-      std::cout << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << std::endl;
+      std::cout << a.L1BitNumber(L1namest) << "\t " << name << "\t \t" << pre << "\t \t" << rate << "\t +/- \t" << err_rate << "\t " << pure << std::endl;
 
     if (writefiles) { 
-      if (bias) { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t" << " ***  BIAS  *** " << std::endl; }
-      else { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t" << pre << "\t" << rate << "\t +/- \t" << err_rate << "\t " << pure << std::endl; }
+      if (bias) { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t \t" << pre << "\t \t" << rate << "\t +/- \t" << err_rate << "\t " << pure << "\t" << " ***  BIAS  *** " << std::endl; }
+      else { TXTOutfile << a.L1BitNumber(L1namest) << "\t" << name << "\t \t" << pre << "\t \t" << rate << "\t +/- \t" << err_rate << "\t " << pure << std::endl; }
 
       CSVOutfile << a.L1BitNumber(L1namest) << ":\t" << name << ":\t" << pre << std::endl; 
     }
