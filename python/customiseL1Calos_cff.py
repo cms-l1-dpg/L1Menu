@@ -58,26 +58,23 @@ def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
     if hasattr(process,'reEmulCaloChain') :
         print "[L1Menu]: Customising calo chain with new L1 Stage1 Emulator"
 
-        if runOnMC and runOnPostLS1 :
-            ## print "[L1Menu]:\tUsing MC configuration for post LS1"
-            process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
-            process.load('L1Trigger/L1TCalorimeter/caloStage1Params_cfi')
-            process.load('L1Trigger/L1TCalorimeter/caloStage1RegionSF_cfi')
-            process.caloStage1Params.jetSeedThreshold = 5.0
-            from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU40_MC13TeV
-            from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU20_MC13TeV
-            if whichPU == 20 :
-                process.caloStage1Params.regionPUSParams = regionSubtraction_PU20_MC13TeV
-        elif not runOnMC : 
-            print "[L1Menu]:\tNot yet configured to run Stage1 emulator on DATA"
-            sys.exit(1)
-        else :
-            print "Illegal option(s) for Stage1 Emulator"
-            sys.exit(1)
+        process.load('L1Trigger.L1TCalorimeter.L1TCaloStage1_PPFromRaw_cff')
+        process.load('L1Trigger/L1TCalorimeter/caloStage1RegionSF_cfi')
+        process.caloStage1Params.jetSeedThreshold = 5.0
+        from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU40_MC13TeV
+        from L1Trigger.L1TCalorimeter.caloStage1RegionSF_cfi import regionSubtraction_PU20_MC13TeV
+        if runOnMC and whichPU == 20 :
+            process.caloStage1Params.regionPUSParams = regionSubtraction_PU20_MC13TeV
 
 
         getattr(process,'reEmul').replace(process.reEmulCaloChain, process.L1TCaloStage1_PPFromRaw)
 
+        ## unpack stage1 digis as well as gct digis
+        from EventFilter.L1TRawToDigi.caloStage1Digis_cfi import caloStage1Digis
+        process.caloStage1Digis = caloStage1Digis.clone()
+        process.p.replace(process.gctDigis, process.gctDigis + process.caloStage1Digis)
+
+        
         l1ExtraReEmul = getattr(process,'l1ExtraReEmul') 
 
         updatel1ExtraReEmulTag(process,"simCaloStage1LegacyFormatDigis")

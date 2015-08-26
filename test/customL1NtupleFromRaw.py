@@ -2,21 +2,30 @@ import FWCore.ParameterSet.Config as cms
 
 from L1TriggerDPG.L1Menu.customL1Ntuple_cfg import *
 
-from Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff import *
+## from Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff import *
 
 process.p.remove(process.l1RecoTreeProducer)
 process.p.remove(process.l1MuonRecoTreeProducer)
 process.p.remove(process.l1MenuTreeProducer)
 process.p.remove(process.csctfDigis)
+process.p.remove(process.gtEvmDigis)
+
+process.simRctDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalDigis' ) ) ## do not use re-emulated hcal TP's
 
 # uncomment the following lines to override the L1RCT configuration parameters in the GlobalTag
-#recordOverrides = { ('L1RCTParametersRcd', None) :
-                    ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_NewTau_FullEGTransparency_v1', None) }
-                    ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
-                    ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }
-#process.GlobalTag = GlobalTag(process.GlobalTag, '74X_mcRun2_startup_realistic50ns_v0', recordOverrides)
+recordOverrides = { ('L1RCTParametersRcd', None) :
+                     ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_NewTau_FullEGTransparency_v1', None) }
+                     ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }
+                     ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) } # run254790 rct params
+## process.GlobalTag = GlobalTag(process.GlobalTag, '74X_mcRun2_startup_realistic50ns_v0', recordOverrides) # for mc re-emulation
+process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_HLT_v1', recordOverrides)  # for data emulation
 
-#process.caloStage1Params.jetCalibrationLUTFile = cms.FileInPath("L1TriggerDPG/L1Menu/data/Jet_Stage1_2015_v2.txt")
+
+if options.reEmulCalos and options.useStage1Layer2:
+    process.caloStage1Params.jetCalibrationLUTFile = cms.FileInPath("L1TriggerDPG/L1Menu/data/lutAttempt_symmetric_0is0.txt") # run254790 JEC
+    #process.caloStage1Params.jetCalibrationLUTFile = cms.FileInPath("L1TriggerDPG/L1Menu/data/Jet_Stage1_2015_v2.txt")
+    process.caloStage1Params.tauCalibrationLUTFile = cms.FileInPath("L1TriggerDPG/L1Menu/data/tauL1Calib_LUT.txt") ## current tau calibration lut
+    
 
 # Get the ECAL transparency corrections
 #process.GlobalTag.toGet = cms.VPSet(
@@ -34,7 +43,8 @@ process.p.remove(process.csctfDigis)
 #)
 
 process.TFileService.fileName = "L1Tree.root"
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+##process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1) )
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(1000) )
 
 process.load('FWCore.MessageService.MessageLogger_cfi')
 process.MessageLogger.cerr.FwkReport.reportEvery = 100
@@ -44,4 +54,4 @@ process.MessageLogger.cerr.FwkReport.reportEvery = 100
 ## readFiles.extend( ['root://eoscms.cern.ch//eos/cms/store/group/comm_trigger/L1Trigger/apana/DYJetsToLL_M-50_13TeV-pythia6_Fall13dr-tsg_PU40bx25__skim_150_1_6UN.root'] )
 ## readFiles.extend( ['root://xrootd.unl.edu//store/data/Commissioning2014/Cosmics/RAW/v3/000/228/929/00000/509C6C80-3164-E411-92E0-02163E00FFE1.root'] )
 ## readFiles.extend( ['root://lxcms02//data2/p/pellicci/L1DPG/root/RelValTTbar_730_GENSIMRECO.root'] )
-
+readFiles.extend( ['/store/data/Run2015C/HLTPhysicspart0/RAW/v1/000/254/790/00000/FE944ECF-5148-E511-96F3-02163E012BBB.root'] )
