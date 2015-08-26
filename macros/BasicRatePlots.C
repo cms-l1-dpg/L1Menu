@@ -389,9 +389,24 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, int minLs, int m
 
     if(event_->lumi < minLs || event_->lumi > maxLs) continue;
 
+    //This is only for run 254790
+    /*
+    if(event_->lumi < 102) continue;
+    else if(event_->lumi > 152 && event_->lumi < 161) continue;
+    else if(event_->lumi > 166 && event_->lumi < 168) continue;
+    else if(event_->lumi > 200 && event_->lumi < 353) continue;
+    else if(event_->lumi > 392 && event_->lumi < 405) continue;
+    else if(event_->lumi > 409 && event_->lumi < 438) continue;
+    else if(event_->lumi > 448 && event_->lumi < 464) continue;
+    else if(event_->lumi > 483 && event_->lumi < 485) continue;
+    else if(event_->lumi > 502 && event_->lumi < 507) continue;
+    else if(event_->lumi > 523 && event_->lumi < 548) continue;
+    else if(event_->lumi > 553 && event_->lumi < 560) continue;
+    else if(event_->lumi > 651) continue;
+    */
     double weight = event_->puWeight > -0.001 ? event_->puWeight : 1; 
 
-    if(event_->nPV > 17.) continue;
+    if(event_->nPV > 19.) continue;
       
     FillBits();
 
@@ -594,6 +609,7 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
 {
 
   int nBunches50ns_run251244 = 110.;
+  int nBunches25ns_run254790 = 315.;
   int nBunches50ns = 1368;
   int nBunches25ns = 2508; //2508 is what agreed with TSG for # bunches
 
@@ -603,6 +619,14 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
   if (fileType == "RUN251244") {
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Data/Collisions/251244_ZeroBias.root");
       basicRatePlots.run(true,fileType,162,327,xSec13TeV,999.,nBunches50ns_run251244,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
+  else if (fileType == "RUN254790") {
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Collisions/254790_ZeroBias.root");
+      basicRatePlots.run(true,fileType,102,651,xSec13TeV,999.,nBunches25ns_run254790,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
+  else if (fileType == "MC254790") {
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/Spring15_25ns_Flat10_50/L1Tree.root");
+      basicRatePlots.run(true,fileType,0,500000000,xSec13TeV,15.,nBunches25ns_run254790,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
     }
   else if (fileType == "RUN251244_ECALcorr") {
       BasicRatePlots basicRatePlots("/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/Data/Collisions/251244_ZeroBias_ECALcorr.root");
