@@ -30,6 +30,12 @@ options.register('reEmulCalos',
                  VarParsing.VarParsing.varType.bool,
                  "Run re-emulation of L1 calos")
 
+options.register('reEmulRCT',
+                 False, #default value
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.bool,
+                 "Run re-emulation of L1 RCT")
+
 options.register('patchNtuple',
                  False, #default value
                  VarParsing.VarParsing.multiplicity.singleton,
@@ -132,12 +138,12 @@ if options.reEmulMuons :
 
 if options.reEmulation :
     from L1TriggerDPG.L1Menu.reEmulation_cff import *
-    reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1, options.useStage1Layer2)
+    reEmulation(process, options.reEmulMuons, options.reEmulCalos, options.patchNtuple, options.runOnPostLS1, options.useStage1Layer2, options.reEmulRCT)
     process.p.replace(process.l1NtupleProducer, process.reEmul + process.l1NtupleProducer)
 
 if options.reEmulCalos and options.jetSeedThr10GeV :
     from L1TriggerDPG.L1Menu.customiseL1Calos_cff import *
-    customiseL1Calos(process, True)
+    set10GCTtreshold(process)
 
 if options.reEmulation and (options.customDTTF or options.customCSCTF or options.customPACT or options.customGMT ) :
     from L1TriggerDPG.L1Menu.customiseL1Muons_cff import *

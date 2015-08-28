@@ -196,7 +196,7 @@ void plot( std::vector<TH1*> plots,
       c->Update();
       std::string printname = path + "/" + plots.at(0)->GetName();
       c->Print ( ( printname + ".gif" ).c_str() ); 
-      c->Print ( ( printname + ".C" ).c_str() ); 
+      //c->Print ( ( printname + ".C" ).c_str() ); 
     }
   
 }

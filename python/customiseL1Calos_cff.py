@@ -37,21 +37,16 @@ def updatel1ntupleTag(process,inputTag):
     ntuple.gctEnergySumsSource  = cms.InputTag(inputTag,"")
     ntuple.rctSource            = cms.InputTag("none")
 
-def customiseL1Calos(process, customGCT=True):
-
-    print "[L1Menu]: Customising legacy calo chain with possible 2015 improvements"
+def set10GCTtreshold(process):
 
     if customGCT and hasattr(process,"gctReEmulDigis") :
 
         print "[L1Menu]:\tCustomising GCT configuration to use 10 GeV jet Seeds"
 
         process.load("L1TriggerConfig.GctConfigProducers.L1GctConfig_cff")
-    
         process.L1GctConfigProducers.JetFinderCentralJetSeed = 10.0
         process.L1GctConfigProducers.JetFinderForwardJetSeed = 10.0
-    
         process.es_prefer_gct = cms.ESPrefer("L1GctConfigProducers")
-        
 
 def customiseStage1(process, runOnMC, runOnPostLS1, whichPU ):
 

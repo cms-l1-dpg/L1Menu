@@ -4,15 +4,15 @@ config = Configuration()
 
 RunOnMC = False
 
-requestName = '254790_ZeroBias_Reemul_2'
-pyCfg       = ['runOnMC=False', 'globalTag=GR_P_V56','reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20']
+requestName = '254790_ZeroBias_Reemul'
+pyCfg       = ['runOnMC=False', 'globalTag=74X_dataRun2_Prompt_v2','reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20']
 dataset     = '/ZeroBias/Run2015C-v1/RAW'
 splitting   = 'LumiBased'
 output      = '/store/group/dpg_trigger/comm_trigger/L1Trigger/Data/Collisions/'
 
 if RunOnMC :
     requestName = 'MC_50ns_Flat_for25'
-    pyCfg       = ['runOnMC=True', 'globalTag=MCRUN2_74_V9A', 'reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'reEmulMuons=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20']
+    pyCfg       = ['runOnMC=True', 'globalTag=MCRUN2_74_V9A', 'reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'reEmulMuons=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20', 'reEmulRCT=True']
     dataset     = '/SingleNeutrino/RunIISpring15Digi74-Flat_10_50_50ns_tsg_MCRUN2_74_V6-v1/GEN-SIM-RAW'
     splitting   = 'FileBased'
     output      = '/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2015/'

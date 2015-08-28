@@ -1,6 +1,6 @@
 import FWCore.ParameterSet.Config as cms
 
-def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, runOnPostLS1 = True, useStage1Layer2=True):
+def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, runOnPostLS1 = True, useStage1Layer2=True, reEmulRCT = True):
 
     print "[L1Menu]: Setting up overall re-emulation"        
 
@@ -41,7 +41,7 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         print "[L1Menu]:\tSetting up muon re-emulation"        
         
         from L1Trigger.DTTrackFinder.dttfDigis_cfi import dttfDigis
-        process.dttfReEmulDigis       = dttfDigis.clone()
+        process.dttfReEmulDigis                = dttfDigis.clone()
         process.dttfReEmulDigis.DTDigi_Source  = cms.InputTag("dttfDigis")
         process.dttfReEmulDigis.CSCStub_Source = cms.InputTag("csctfReEmulTrackDigis")
 
@@ -59,7 +59,6 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             process.csctfReEmulTrackDigis.SectorReceiverInput = cms.untracked.InputTag("csctfDigis")
             process.csctfReEmulTrackDigis.DtDirectProd        = cms.untracked.InputTag("csctfDigis","DT")
             process.csctfReEmulDigis.CSCTrackProducer         = cms.untracked.InputTag("csctfReEmulTrackDigis")
-            #process.csctfReEmulDigis.SectorProcessor.initializeFromPSet = True
             
             process.csctfReEmulSequence = cms.Sequence(
                 process.csctfReEmulTrackDigis
@@ -132,11 +131,12 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
         #process.ecalReEmulDigis.InstanceEE = cms.string('eeDigis')
         #process.ecalReEmulDigis.Label = cms.string('ecalDigis')
         
-        from L1Trigger.Configuration.SimL1Emulator_cff import simRctDigis
-        process.rctReEmulDigis = process.simRctDigis.clone()
-        process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
-        #process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalReEmulDigis' ) )
-        process.rctReEmulDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalDigis' ) )
+        if reEmulRCT :
+            from L1Trigger.Configuration.SimL1Emulator_cff import simRctDigis
+            process.rctReEmulDigis = process.simRctDigis.clone()
+            process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalDigis:EcalTriggerPrimitives' ) )
+            ##process.rctReEmulDigis.ecalDigis = cms.VInputTag( cms.InputTag( 'ecalReEmulDigis' ) )
+            process.rctReEmulDigis.hcalDigis = cms.VInputTag( cms.InputTag( 'hcalDigis' ) )
 
         from L1Trigger.GlobalCaloTrigger.gctDigis_cfi import gctDigis
 
@@ -180,14 +180,19 @@ def reEmulation(process, reEmulMuons=True, reEmulCalos=True, patchNtuple=True, r
             l1ExtraNtuple.metLabel      = cms.untracked.InputTag("l1ExtraReEmul:MET")
             l1ExtraNtuple.mhtLabel      = cms.untracked.InputTag("l1ExtraReEmul:MHT")
 
-        process.reEmulCaloChain = cms.Sequence(
-            #process.hcalReEmulDigis
-            #process.ecalReEmulDigis
-            process.rctReEmulDigis
-            +process.gctReEmulDigis
-        )
 
-        process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
+        if reEmulRCT :
+            process.gctReEmulDigis.inputLabel  = cms.InputTag("rctReEmulDigis")
+            process.reEmulCaloChain = cms.Sequence(
+                #process.hcalReEmulDigis
+                #process.ecalReEmulDigis
+                process.rctReEmulDigis
+                *process.gctReEmulDigis
+                )
+        else :
+            process.reEmulCaloChain = cms.Sequence(
+            process.gctReEmulDigis
+        )
 
     from L1Trigger.GlobalTrigger.gtDigis_cfi import gtDigis
     process.gtReEmulDigis   = gtDigis.clone()
