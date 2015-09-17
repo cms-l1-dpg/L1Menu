@@ -11,12 +11,12 @@ process.p.remove(process.gtEvmDigis)
 
 # uncomment the following lines to override the L1RCT configuration parameters in the GlobalTag
 if options.reEmulRCT :
-    #recordOverrides = { ('L1RCTParametersRcd', None) :
+    recordOverrides = { ('L1RCTParametersRcd', None) :
                           ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_NewTau_FullEGTransparency_v1', None) }   #This is like 50 ns but with transparency corrections at RCT
                           ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactors_EGOnly_v1', None) }   #This is was we use in 50 ns, new RCT for EG, old RCT for hadronic
-                          ##('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }    #This is what we use in 25 ns
-                    #process.GlobalTag = GlobalTag(process.GlobalTag,'MCRUN2_74_V9A', recordOverrides) #for MC emulation
-    #process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_HLT_v1', recordOverrides)  # for data emulation
+                          ('L1RCTParametersRcd_L1TDevelCollisions_ExtendedScaleFactorsV4', None) }    #This is what we use in 25 ns
+    process.GlobalTag = GlobalTag(process.GlobalTag,'MCRUN2_74_V9A', recordOverrides) #for MC emulation
+    process.GlobalTag = GlobalTag(process.GlobalTag, '74X_dataRun2_HLT_v1', recordOverrides)  # for data emulation
 
 #This is to use the new JEC
 if options.reEmulCalos and options.useStage1Layer2:

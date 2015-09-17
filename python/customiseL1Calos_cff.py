@@ -39,7 +39,7 @@ def updatel1ntupleTag(process,inputTag):
 
 def set10GCTtreshold(process):
 
-    if customGCT and hasattr(process,"gctReEmulDigis") :
+    if hasattr(process,"gctReEmulDigis") :
 
         print "[L1Menu]:\tCustomising GCT configuration to use 10 GeV jet Seeds"
 

@@ -265,16 +265,12 @@ void L1Menu2015::MyInit() {
   setHIGGS.insert("L1_SingleIsoEG30er");
   setHIGGS.insert("L1_DoubleEG_15_10");
   setHIGGS.insert("L1_DoubleEG_22_10");
-  setHIGGS.insert("L1_DoubleEG_20_10_1LegIso");
   setHIGGS.insert("L1_TripleEG_14_10_8");
   setHIGGS.insert("L1_ETM50");
   setHIGGS.insert("L1_ETM60");
   setHIGGS.insert("L1_ETM70");
   setHIGGS.insert("L1_ETM100");
-  setHIGGS.insert("L1_ETM60_NoJet52WdPhi2");
-  setHIGGS.insert("L1_ETM70_NoJet52WdPhi2");
   setHIGGS.insert("L1_Mu12_EG10");
-  setHIGGS.insert("L1_Mu20_EG8");
   setHIGGS.insert("L1_Mu20_EG10");
   setHIGGS.insert("L1_Mu4_EG18");
   setHIGGS.insert("L1_Mu5_EG15");
@@ -292,8 +288,7 @@ void L1Menu2015::MyInit() {
   setHIGGS.insert("L1_DoubleIsoTau40er");
   setHIGGS.insert("L1_QuadJetC36_Tau52");
   setHIGGS.insert("L1_DoubleJetC56_ETM60");
-  setHIGGS.insert("L1_DoubleJetC60_ETM60");
-  setHIGGS.insert("L1_TripleJet_92_76_64");
+  setHIGGS.insert("L1_TripleJet_92_76_64_VBF");
   setHIGGS.insert("L1_TripleJet_84_68_48_VBF");
   setHIGGS.insert("L1_EG25er_HTT100");
 
@@ -306,9 +301,6 @@ void L1Menu2015::MyInit() {
   setEXO.insert("L1_SingleMu30");
   setEXO.insert("L1_SingleMu14er");
   setEXO.insert("L1_SingleMu16er");
-  setEXO.insert("L1_SingleMu20er");
-  setEXO.insert("L1_SingleMu25er");
-  setEXO.insert("L1_SingleMu30er");
   setEXO.insert("L1_DoubleMu_10_3p5");
   setEXO.insert("L1_DoubleMu_12_5");
   setEXO.insert("L1_SingleEG25");
@@ -318,12 +310,10 @@ void L1Menu2015::MyInit() {
   setEXO.insert("L1_SingleIsoEG30er");
   setEXO.insert("L1_DoubleEG_15_10");
   setEXO.insert("L1_DoubleEG_22_10");
-  setEXO.insert("L1_DoubleEG_20_10_1LegIso");
   setEXO.insert("L1_SingleJet52");
   setEXO.insert("L1_SingleJet128");
   setEXO.insert("L1_SingleJet176");
   setEXO.insert("L1_SingleJet200");
-  setEXO.insert("L1_SingleJet240");
   setEXO.insert("L1_DoubleIsoTau28er");
   setEXO.insert("L1_DoubleIsoTau32er");
   setEXO.insert("L1_DoubleIsoTau36er");
@@ -331,10 +321,8 @@ void L1Menu2015::MyInit() {
   setEXO.insert("L1_DoubleJetC84");
   setEXO.insert("L1_DoubleJetC100");
   setEXO.insert("L1_DoubleJetC112");
-  setEXO.insert("L1_DoubleJetC120");
   setEXO.insert("L1_QuadJetC40");
   setEXO.insert("L1_QuadJetC60");
-  setEXO.insert("L1_QuadJetC84");
   setEXO.insert("L1_ETM30");
   setEXO.insert("L1_ETM50");
   setEXO.insert("L1_ETM60");
@@ -347,12 +335,11 @@ void L1Menu2015::MyInit() {
   setEXO.insert("L1_HTT175");
   setEXO.insert("L1_HTT200");
   setEXO.insert("L1_HTT250");
-  setEXO.insert("L1_Mu20_EG8");
   setEXO.insert("L1_Mu20_EG10");
   setEXO.insert("L1_Mu4_EG18");
   setEXO.insert("L1_Mu5_EG20");
   setEXO.insert("L1_Mu5_IsoEG18");
-  setEXO.insert("L1_Mu6_HTT150");
+  setEXO.insert("L1_Mu6_HTT100");
   setEXO.insert("L1_Mu10er_ETM30");
   setEXO.insert("L1_Mu10er_ETM50");
   setEXO.insert("L1_Mu3_JetC52_WdEtaPhi2");
@@ -362,9 +349,6 @@ void L1Menu2015::MyInit() {
   setSMP.insert("L1_SingleMu30");
   setSMP.insert("L1_SingleMu14er");
   setSMP.insert("L1_SingleMu16er");
-  setSMP.insert("L1_SingleMu20er");
-  setSMP.insert("L1_SingleMu25er");
-  setSMP.insert("L1_SingleMu30er");
   setSMP.insert("L1_DoubleMu_10_3p5");
   setSMP.insert("L1_DoubleMu_12_5");
   setSMP.insert("L1_SingleEG25");
@@ -375,15 +359,12 @@ void L1Menu2015::MyInit() {
   setSMP.insert("L1_SingleIsoEG30er");
   setSMP.insert("L1_DoubleEG_15_10");
   setSMP.insert("L1_DoubleEG_22_10");
-  setSMP.insert("L1_DoubleEG_20_10_1LegIso");
   setSMP.insert("L1_SingleJet52");
   setSMP.insert("L1_SingleJet68");
   setSMP.insert("L1_SingleJet92");
   setSMP.insert("L1_SingleJet128");
   setSMP.insert("L1_SingleJet176");
   setSMP.insert("L1_SingleJet200");
-  setSMP.insert("L1_SingleJet240");
-  setSMP.insert("L1_Mu20_EG8");
   setSMP.insert("L1_Mu20_EG10");
   setSMP.insert("L1_Mu4_EG18");
   setSMP.insert("L1_Mu5_EG20");
@@ -410,8 +391,6 @@ void L1Menu2015::MyInit() {
   setTOP.insert("L1_SingleIsoEG30er");
   setTOP.insert("L1_DoubleEG_15_10");
   setTOP.insert("L1_DoubleEG_22_10");
-  setTOP.insert("L1_DoubleEG_20_10_1LegIso");
-  setTOP.insert("L1_Mu20_EG8");
   setTOP.insert("L1_Mu20_EG10");
   setTOP.insert("L1_Mu4_EG18");
   setTOP.insert("L1_Mu5_EG20");
@@ -421,9 +400,6 @@ void L1Menu2015::MyInit() {
   setB2G.insert("L1_SingleMu25");
   setB2G.insert("L1_SingleMu30");
   setB2G.insert("L1_SingleMu14er");
-  setB2G.insert("L1_SingleMu20er");
-  setB2G.insert("L1_SingleMu25er");
-  setB2G.insert("L1_SingleMu30er");
   setB2G.insert("L1_DoubleMu_10_3p5");
   setB2G.insert("L1_DoubleMu_12_5");
   setB2G.insert("L1_SingleEG25");
@@ -434,10 +410,8 @@ void L1Menu2015::MyInit() {
   setB2G.insert("L1_SingleJet128");
   setB2G.insert("L1_SingleJet176");
   setB2G.insert("L1_SingleJet200");
-  setB2G.insert("L1_SingleJet240");
   setB2G.insert("L1_QuadJetC40");
   setB2G.insert("L1_QuadJetC60");
-  setB2G.insert("L1_QuadJetC84");
   setB2G.insert("L1_ETM50");
   setB2G.insert("L1_ETM70");
   setB2G.insert("L1_ETM100");
@@ -451,7 +425,6 @@ void L1Menu2015::MyInit() {
   setB2G.insert("L1_Mu4_EG18");
   setB2G.insert("L1_Mu5_EG20");
   setB2G.insert("L1_Mu5_IsoEG18");
-  setB2G.insert("L1_Mu20_EG8");
   setB2G.insert("L1_Mu20_EG10");
 
   setSUSY.insert("L1_SingleMu5");
@@ -459,20 +432,15 @@ void L1Menu2015::MyInit() {
   setSUSY.insert("L1_SingleMu12");
   setSUSY.insert("L1_SingleMu16");
   setSUSY.insert("L1_SingleMu14er");
-  setSUSY.insert("L1_SingleMu20er");
-  setSUSY.insert("L1_SingleMu25er");
-  setSUSY.insert("L1_SingleMu30er");
   setSUSY.insert("L1_DoubleMu_10_3p5");
   setSUSY.insert("L1_DoubleMu_12_5");
   setSUSY.insert("L1_SingleIsoEG22er");
   setSUSY.insert("L1_SingleIsoEG30er");
   setSUSY.insert("L1_DoubleEG_15_10");
   setSUSY.insert("L1_DoubleEG_22_10");
-  setSUSY.insert("L1_DoubleEG_20_10_1LegIso");
   setSUSY.insert("L1_SingleJet128");
   setSUSY.insert("L1_SingleJet176");
   setSUSY.insert("L1_SingleJet200");
-  setSUSY.insert("L1_SingleJet240");
   setSUSY.insert("L1_DoubleIsoTau28er");
   setSUSY.insert("L1_DoubleIsoTau32er");
   setSUSY.insert("L1_DoubleIsoTau36er");
@@ -480,10 +448,8 @@ void L1Menu2015::MyInit() {
   setSUSY.insert("L1_DoubleJetC84");
   setSUSY.insert("L1_DoubleJetC100");
   setSUSY.insert("L1_DoubleJetC112");
-  setSUSY.insert("L1_DoubleJetC120");
   setSUSY.insert("L1_QuadJetC40");
   setSUSY.insert("L1_QuadJetC60");
-  setSUSY.insert("L1_QuadJetC84");
   setSUSY.insert("L1_ETM50");
   setSUSY.insert("L1_ETM70");
   setSUSY.insert("L1_ETM100");
@@ -494,14 +460,11 @@ void L1Menu2015::MyInit() {
   setSUSY.insert("L1_HTT175");
   setSUSY.insert("L1_HTT200");
   setSUSY.insert("L1_HTT250");
-  setSUSY.insert("L1_Mu20_EG8");
   setSUSY.insert("L1_Mu20_EG10");
   setSUSY.insert("L1_Mu4_EG18");
   setSUSY.insert("L1_Mu5_EG20");
   setSUSY.insert("L1_Mu5_IsoEG18");
   setSUSY.insert("L1_DoubleJetC56_ETM60");
-  setSUSY.insert("L1_DoubleJetC60_ETM60");
-  setSUSY.insert("L1_DoubJetC32_WdPhi7_HTT125");
   setSUSY.insert("L1_Mu0er_ETM40");
   setSUSY.insert("L1_Mu0er_ETM55");
   setSUSY.insert("L1_Mu8_HTT50");
@@ -534,7 +497,7 @@ void L1Menu2015::MyInit() {
   setMuon.insert("L1_QuadMu0");
   setMuonHadronic.insert("L1_Mu3_JetC16_WdEtaPhi2");
   setMuonHadronic.insert("L1_Mu3_JetC52_WdEtaPhi2");
-  setMuonHadronic.insert("L1_Mu6_HTT150");
+  setMuonHadronic.insert("L1_Mu6_HTT100");
   setMuonHadronic.insert("L1_Mu8_HTT50");
   setMuonHadronic.insert("L1_Mu0er_ETM40");
   setMuonHadronic.insert("L1_Mu0er_ETM55");
@@ -548,7 +511,6 @@ void L1Menu2015::MyInit() {
   setMuonEG.insert("L1_Mu5_EG20");
   setMuonEG.insert("L1_Mu5_IsoEG18");
   setMuonEG.insert("L1_Mu12_EG10");
-  setMuonEG.insert("L1_Mu20_EG8");
   setMuonEG.insert("L1_Mu20_EG10");
   setMuonEG.insert("L1_Mu5_DoubleEG5");
   setMuonEG.insert("L1_Mu6_DoubleEG10");
@@ -562,16 +524,15 @@ void L1Menu2015::MyInit() {
   setEG.insert("L1_SingleEG30");
   setEG.insert("L1_SingleEG35");
   setEG.insert("L1_SingleEG40");
+  setEG.insert("L1_SingleIsoEG20");
   setEG.insert("L1_SingleIsoEG25");
   setEG.insert("L1_SingleIsoEG18er");
   setEG.insert("L1_SingleIsoEG20er");
   setEG.insert("L1_SingleIsoEG22er");
   setEG.insert("L1_SingleIsoEG25er");
-  setEG.insert("L1_SingleIsoEG28er");
   setEG.insert("L1_SingleIsoEG30er");
   setEG.insert("L1_DoubleEG_15_10");
   setEG.insert("L1_DoubleEG_22_10");
-  setEG.insert("L1_DoubleEG_20_10_1LegIso");
   setEG.insert("L1_TripleEG_14_10_8");
   setHadronic.insert("L1_SingleJet36");
   setHadronic.insert("L1_SingleJet52");
@@ -580,22 +541,19 @@ void L1Menu2015::MyInit() {
   setHadronic.insert("L1_SingleJet128");
   setHadronic.insert("L1_SingleJet176"); 
   setHadronic.insert("L1_SingleJet200"); 
-  setHadronic.insert("L1_SingleJet240");
   setHadronic.insert("L1_DoubleJetC52");
   setHadronic.insert("L1_DoubleJetC84");
   setHadronic.insert("L1_DoubleJetC100");
   setHadronic.insert("L1_DoubleJetC112");
-  setHadronic.insert("L1_DoubleJetC120");
   setHadronic.insert("L1_DoubleIsoTau28er");
   setHadronic.insert("L1_DoubleIsoTau32er");
   setHadronic.insert("L1_DoubleIsoTau36er");
   setHadronic.insert("L1_DoubleIsoTau40er");
   setHadronic.insert("L1_DoubleTau40er");
-  setHadronic.insert("L1_TripleJet_92_76_64");
+  setHadronic.insert("L1_TripleJet_92_76_64_VBF");
   setHadronic.insert("L1_TripleJet_84_68_48_VBF");
   setHadronic.insert("L1_QuadJetC40");
   setHadronic.insert("L1_QuadJetC60");
-  setHadronic.insert("L1_QuadJetC84");
   setHadronic.insert("L1_HTT75");
   setHadronic.insert("L1_HTT100");
   setHadronic.insert("L1_HTT125");
@@ -611,12 +569,8 @@ void L1Menu2015::MyInit() {
   setHadronic.insert("L1_ETM60");
   setHadronic.insert("L1_ETM70");
   setHadronic.insert("L1_ETM100");
-  setHadronic.insert("L1_ETM60_NoJet52WdPhi2");
-  setHadronic.insert("L1_ETM70_NoJet52WdPhi2");
   setHadronic.insert("L1_QuadJetC36_Tau52");
   setHadronic.insert("L1_DoubleJetC56_ETM60");
-  setHadronic.insert("L1_DoubleJetC60_ETM60");
-  setHadronic.insert("L1_DoubJetC32_WdPhi7_HTT125");
   setEGHadronic.insert("L1_IsoEG20er_TauJet20er");
   setEGHadronic.insert("L1_DoubleEG6_HTT150");
   setEGHadronic.insert("L1_EG25er_HTT100");
@@ -637,9 +591,9 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_DoubleTau40er"] = 11;
   BitMapping["L1_IsoEG20er_TauJet20er"] = 12;
   BitMapping["L1_Mu16er_TauJet20er"] = 13;
-  BitMapping["L1_QuadJetC84"] = 14;
+  BitMapping["FREE14"] = 14;
   BitMapping["L1_HTT100"] = 15;
-  BitMapping["L1_DoubleJetC120"] = 16;
+  BitMapping["FREE16"] = 16;
   BitMapping["L1_SingleJet52"] = 17;
   BitMapping["L1_SingleJet68"] = 18;
   BitMapping["L1_SingleJet92"] = 19;
@@ -658,11 +612,11 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_DoubleMuOpen"] = 32;
   BitMapping["L1_SingleIsoEG25er"] = 33;
   BitMapping["L1_SingleIsoEG25"] = 34;
-  BitMapping["L1_SingleIsoEG28er"] = 35;
+  BitMapping["FREE35"] = 35;
   BitMapping["L1_SingleIsoEG30er"] = 36;
   BitMapping["L1_SingleEG10"] = 37;
   BitMapping["L1_SingleIsoEG22er"] = 38;
-  BitMapping["L1_SingleJet240"] = 39;
+  BitMapping["FREE39"] = 39;
   BitMapping["L1_DoubleJetC52"] = 40;
   BitMapping["L1_DoubleJetC84"] = 41;
   BitMapping["L1_SingleMu14er"] = 42 ;
@@ -704,8 +658,8 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_SingleJetC32_NotBptxOr"] = 78;
   BitMapping["L1_ETM40"] = 79;
   BitMapping["L1_HTT250"] = 80;
-  BitMapping["L1_Mu20_EG8"] = 81;
-  BitMapping["L1_Mu6_HTT150"] = 82;
+  BitMapping["FREE81"] = 81;
+  BitMapping["L1_Mu6_HTT100"] = 82;
   BitMapping["L1_Mu10er_ETM50"] = 83;
   BitMapping["L1_Mu10er_ETM30"] = 84;
   BitMapping["L1_DoubleMu7_EG7"] = 85;
@@ -726,10 +680,10 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_TripleEG_14_10_8"] = 100;
   BitMapping["L1_DoubleEG_15_10"] = 101;
   BitMapping["L1_DoubleEG_22_10"] = 102;
-  BitMapping["L1_DoubleEG_20_10_1LegIso"] = 103;
+  BitMapping["FREE103"] = 103;
   BitMapping["L1_Mu0er_ETM55"] = 104;
-  BitMapping["L1_DoubleJetC60_ETM60"] = 105;
-  BitMapping["L1_DoubJetC32_WdPhi7_HTT125"] = 106;
+  BitMapping["FREE105"] = 105;
+  BitMapping["FREE106"] = 106;
   BitMapping["L1_Jet32MuOpen_Mu10_dPhiMu_Mu1"] = 107;
   BitMapping["L1_Jet32MuOpen_EG10_dPhiMu_EG1"] = 108;
   BitMapping["L1_ETM60"] = 109;
@@ -738,8 +692,8 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_SingleJetC20_NotBptxOr"] = 112;
   BitMapping["L1_DoubleJetC56_ETM60"] = 113;
   BitMapping["L1_DoubleMu0er16_WdEta18"] = 114;
-  BitMapping["L1_ETM60_NoJet52WdPhi2"] = 115;
-  BitMapping["L1_ETM70_NoJet52WdPhi2"] = 116;
+  BitMapping["FREE115"] = 115;
+  BitMapping["FREE116"] = 116;
   BitMapping["L1_DoubleIsoTau36er"] = 117;
   BitMapping["L1_DoubleIsoTau40er"] = 118;
   BitMapping["L1_TripleJet_84_68_48_VBF"] = 119;
@@ -748,7 +702,7 @@ void L1Menu2015::MyInit() {
   BitMapping["FREE122"] = 122;
   BitMapping["L1_DoubleMu0er16_WdEta18_OS"] = 123;
   BitMapping["L1_DoubleMu_12_5"] = 124;
-  BitMapping["L1_TripleJet_92_76_64"] = 125;
+  BitMapping["L1_TripleJet_92_76_64_VBF"] = 125;
   BitMapping["L1_DoubleMu_10_0_WdEta18"] = 126;
   BitMapping["L1_SingleMuBeamHalo"] = 127;
 
@@ -908,7 +862,7 @@ Bool_t L1Menu2015::Cross() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_Mu6_HTT150", algoFactory->Mu_HTT(6.,150.));
+  InsertInMenu("L1_Mu6_HTT100", algoFactory->Mu_HTT(6.,100.));
   InsertInMenu("L1_Mu8_HTT50", algoFactory->Mu_HTT(8.,50.));
   InsertInMenu("L1_Mu0er_ETM40", algoFactory->Muer_ETM(0.,40.));
   InsertInMenu("L1_Mu0er_ETM55", algoFactory->Muer_ETM(0.,55.));
@@ -920,7 +874,6 @@ Bool_t L1Menu2015::Cross() {
   InsertInMenu("L1_Mu16er_IsoTau32er", algoFactory->Muer_TauJetEta2p17(16.,32.,true));
   InsertInMenu("L1_IsoEG20er_TauJet20er", algoFactory->IsoEGer_TauJetEta2p17(20.,20.));
   InsertInMenu("L1_Mu12_EG10", algoFactory->Mu_EG(12.,10.));
-  InsertInMenu("L1_Mu20_EG8", algoFactory->Mu_EG(20.,8.));
   InsertInMenu("L1_Mu20_EG10", algoFactory->Mu_EG(20.,10.));
   InsertInMenu("L1_Mu4_EG18", algoFactory->Mu_EG(4.,18.));
   InsertInMenu("L1_Mu5_EG15", algoFactory->Mu_EG(5.,15.));
@@ -972,8 +925,6 @@ Bool_t L1Menu2015::MultiCross() {
   InsertInMenu("L1_Mu3_JetC52_WdEtaPhi2", algoFactory->Mu_JetCentral_delta(3.,52.));
 
   InsertInMenu("L1_DoubleJetC56_ETM60", algoFactory->DoubleJetCentral_ETM(56.,56.,60.));
-  InsertInMenu("L1_DoubleJetC60_ETM60", algoFactory->DoubleJetCentral_ETM(60.,60.,60.));
-  InsertInMenu("L1_DoubJetC32_WdPhi7_HTT125", algoFactory->DoubleJetC_deltaPhi7_HTT(32.,125.));
 
   InsertInMenu("L1_DoubleEG6_HTT150", algoFactory->DoubleEG_HT(6., 150.));
 
@@ -1027,7 +978,6 @@ Bool_t L1Menu2015::Jets() {
   InsertInMenu("L1_SingleJet128",SingleJetPt >= 128.);
   InsertInMenu("L1_SingleJet176",SingleJetPt >= 176.);
   InsertInMenu("L1_SingleJet200",SingleJetPt >= 200.);
-  InsertInMenu("L1_SingleJet240",SingleJetPt >= 240.);
 
   Int_t NN = insert_ibin;
 
@@ -1077,7 +1027,6 @@ Bool_t L1Menu2015::MultiJets() {
   InsertInMenu("L1_DoubleJetC84",DoubleJet1 >= 84. && DoubleJet2 >= 84.);
   InsertInMenu("L1_DoubleJetC100",DoubleJet1 >= 100. && DoubleJet2 >= 100.);
   InsertInMenu("L1_DoubleJetC112",DoubleJet1 >= 112. && DoubleJet2 >= 112.);
-  InsertInMenu("L1_DoubleJetC120",DoubleJet1 >= 120. && DoubleJet2 >= 120.);
 
   InsertInMenu("L1_DoubleIsoTau28er", algoFactory->DoubleTauJetEta2p17(28.,28.,noTauInJet ? true : false));
   InsertInMenu("L1_DoubleIsoTau32er", algoFactory->DoubleTauJetEta2p17(32.,32.,noTauInJet ? true : false));
@@ -1085,12 +1034,11 @@ Bool_t L1Menu2015::MultiJets() {
   InsertInMenu("L1_DoubleIsoTau40er", algoFactory->DoubleTauJetEta2p17(40.,40.,noTauInJet ? true : false));
   InsertInMenu("L1_DoubleTau40er", algoFactory->DoubleTauJetEta2p17(40.,40., false));
 
-  InsertInMenu("L1_TripleJet_92_76_64", algoFactory->TripleJet(92.,76.,64.,false));
+  InsertInMenu("L1_TripleJet_92_76_64_VBF", algoFactory->TripleJet_VBF(92.,76.,64.));
   InsertInMenu("L1_TripleJet_84_68_48_VBF", algoFactory->TripleJet_VBF(84.,68.,48.));
 
   InsertInMenu("L1_QuadJetC40", algoFactory->QuadJet(40.,40.,40.,40.,true));
   InsertInMenu("L1_QuadJetC60", algoFactory->QuadJet(60.,60.,60.,60.,true));
-  InsertInMenu("L1_QuadJetC84", algoFactory->QuadJet(84.,84.,84.,84.,true));
 
   InsertInMenu("L1_QuadJetC36_Tau52", algoFactory->QuadJetCentral_TauJet(36.,52.));
 
@@ -1146,9 +1094,6 @@ Bool_t L1Menu2015::Sums() {
   InsertInMenu("L1_ETM60", ETM_value >= 60.);
   InsertInMenu("L1_ETM70", ETM_value >= 70.);
   InsertInMenu("L1_ETM100",ETM_value >= 100.);
-
-  InsertInMenu("L1_ETM60_NoJet52WdPhi2",  algoFactory->ETM_NoQCD(60.));
-  InsertInMenu("L1_ETM70_NoJet52WdPhi2",  algoFactory->ETM_NoQCD(70.));
 
   Float_t HTT_value = -10.;
   algoFactory->HTTVal(HTT_value);
@@ -1214,12 +1159,12 @@ Bool_t L1Menu2015::EGamma() {
   InsertInMenu("L1_SingleEG30",SingleEGPt >= 30.);
   InsertInMenu("L1_SingleEG35",SingleEGPt >= 35.);
   InsertInMenu("L1_SingleEG40",SingleEGPt >= 40.);
+  InsertInMenu("L1_SingleIsoEG20", algoFactory->SingleEG(20.,true) );
   InsertInMenu("L1_SingleIsoEG25", algoFactory->SingleEG(25.,true) );
   InsertInMenu("L1_SingleIsoEG18er",SingleIsoEGerPt >= 18.);
   InsertInMenu("L1_SingleIsoEG20er",SingleIsoEGerPt >= 20.);
   InsertInMenu("L1_SingleIsoEG22er",SingleIsoEGerPt >= 22.);
   InsertInMenu("L1_SingleIsoEG25er",SingleIsoEGerPt >= 25.);
-  InsertInMenu("L1_SingleIsoEG28er",SingleIsoEGerPt >= 28.);
   InsertInMenu("L1_SingleIsoEG30er",SingleIsoEGerPt >= 30.);
 
   Int_t NN = insert_ibin;
@@ -1261,7 +1206,6 @@ Bool_t L1Menu2015::MultiEGamma() {
 
   InsertInMenu("L1_DoubleEG_15_10", algoFactory->DoubleEG(15.,10.) );
   InsertInMenu("L1_DoubleEG_22_10", algoFactory->DoubleEG(22.,10.) );
-  InsertInMenu("L1_DoubleEG_20_10_1LegIso", algoFactory->DoubleEG(20.,10.,true) );
   InsertInMenu("L1_TripleEG_14_10_8", algoFactory->TripleEG(14.,10.,8.) );
 
   Int_t NN = insert_ibin;
@@ -1698,7 +1642,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   else if(whichFileAndLumiToUse==2){
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2015 re-emulation
     NumberOfBunches = 2508; 
-    L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2015/L1Tree.root";
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/v17/25ns_20PU_ReEmul2015/L1Tree.root";
     themenufilename = "Menu_20PU_25bx.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;

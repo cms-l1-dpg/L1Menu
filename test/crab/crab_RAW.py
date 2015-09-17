@@ -4,8 +4,8 @@ config = Configuration()
 
 RunOnMC = False
 
-requestName = '254790_ZeroBias_Reemul'
-pyCfg       = ['runOnMC=False', 'globalTag=74X_dataRun2_Prompt_v2','reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20']
+requestName = '254833_ZeroBias_Reemul_Stage1_goodJEC'
+pyCfg       = ['runOnMC=False', 'globalTag=74X_dataRun2_Prompt_v1','reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20']
 dataset     = '/ZeroBias/Run2015C-v1/RAW'
 splitting   = 'LumiBased'
 output      = '/store/group/dpg_trigger/comm_trigger/L1Trigger/Data/Collisions/'
