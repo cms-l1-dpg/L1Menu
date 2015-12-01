@@ -336,43 +336,46 @@ void analyze_L1::Loop(){
   c5.cd(3); hDTCSCBX.Draw("COLZ");
   c5.SaveAs("results/c5.gif");
 
-  TCanvas c6;
-  c6.cd();
-  if(_isReco) hpTresidual.Draw();
-  c6.SaveAs("results/c6.gif");
+  if(_isReco){
 
-  gStyle->SetOptStat(0);
+    TCanvas c6;
+    c6.cd();
+    hpTresidual.Draw();
+    c6.SaveAs("results/c6.gif");
 
-  TCanvas c7;
-  c7.cd();
-  if(_isReco) hRecoMupT.Draw();
-  c7.SaveAs("results/c7.gif");
+    gStyle->SetOptStat(0);
 
-  TCanvas c8("c8","c8",1200,1200);
-  c8.cd();
-  c8.SetLogx(true);
-  c8.SetLogy(true);
-  if(_isReco) hRecoMuGMTpT.Draw("COLZ");
-  c8.SaveAs("results/c8.gif");
+    TCanvas c7;
+    c7.cd();
+    hRecoMupT.Draw();
+    c7.SaveAs("results/c7.gif");
 
-  TCanvas c9;
-  c9.cd();
-  hGMTMuBinpT.Draw("E");
-  if(_isReco) hRecoMuBinpT.Draw("ESAME");
-  c9.SaveAs("results/c9.gif");
+    TCanvas c8("c8","c8",1200,1200);
+    c8.cd();
+    c8.SetLogx(true);
+    c8.SetLogy(true);
+    hRecoMuGMTpT.Draw("COLZ");
+    c8.SaveAs("results/c8.gif");
 
-  TCanvas c10;
-  c10.Divide(2,1);
-  c10.cd(1);
-  if(_isReco) hpTresidual_r.Draw();
-  c10.cd(2);
-  if(_isReco) hpTresidual_z.Draw();
-  c10.SaveAs("results/c10.gif");
+    TCanvas c9;
+    c9.cd();
+    hGMTMuBinpT.Draw("E");
+    hRecoMuBinpT.Draw("ESAME");
+    c9.SaveAs("results/c9.gif");
 
-  TCanvas c11;
-  c11.cd();
-  if(_isReco) hpTresidual_eta.Draw();
-  c11.SaveAs("results/c11.gif");
+    TCanvas c10;
+    c10.Divide(2,1);
+    c10.cd(1);
+    hpTresidual_r.Draw();
+    c10.cd(2);
+    hpTresidual_z.Draw();
+    c10.SaveAs("results/c10.gif");
+
+    TCanvas c11;
+    c11.cd();
+    hpTresidual_eta.Draw();
+    c11.SaveAs("results/c11.gif");
+  }
 
   return;
 }
@@ -402,6 +405,9 @@ void RunL1(Int_t whichFileAndLumiToUse=1){
   else if(whichFileAndLumiToUse==6){
     L1NtupleFileName = "file:///data2/p/pellicci/L1DPG/root/Data/Cosmics/Full_SP_310315/L1Tree.root";
     isReco = true;
+  }
+  else if(whichFileAndLumiToUse==7){
+    L1NtupleFileName = "root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Collisions/256843_ZeroBias.root";
   }
   else{
     std::cout << std::endl << "ERROR: Please define a ntuple file which is in the allowed range! You did use: whichFileAndLumiToUse = " << whichFileAndLumiToUse << " This is not in the allowed range" << std::endl << std::endl;

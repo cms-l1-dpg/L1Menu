@@ -4,9 +4,9 @@ config = Configuration()
 
 RunOnMC = False
 
-requestName = '254833_ZeroBias_Reemul_Stage1_goodJEC'
-pyCfg       = ['runOnMC=False', 'globalTag=74X_dataRun2_Prompt_v1','reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'runOnPostLS1=True', 'useStage1Layer2=True', 'whichPU=20']
-dataset     = '/ZeroBias/Run2015C-v1/RAW'
+requestName = '256843_ZeroBias1_ReemulMario'
+pyCfg       = ['runOnMC=False', 'globalTag=74X_dataRun2_Prompt_v1', 'reEmulation=True', 'patchNtuple=True', 'reEmulCalos=True', 'runOnPostLS1=True', 'useStage1Layer2=True', "reEmulRCT=True", 'whichPU=20', 'reEmulMuons=True']
+dataset     = '/ZeroBias1/Run2015D-v1/RAW'
 splitting   = 'LumiBased'
 output      = '/store/group/dpg_trigger/comm_trigger/L1Trigger/Data/Collisions/'
 

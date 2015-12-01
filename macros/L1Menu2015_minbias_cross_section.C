@@ -612,7 +612,7 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_DoubleMuOpen"] = 32;
   BitMapping["L1_SingleIsoEG25er"] = 33;
   BitMapping["L1_SingleIsoEG25"] = 34;
-  BitMapping["FREE35"] = 35;
+  BitMapping["L1_SingleIsoEG20"] = 35;
   BitMapping["L1_SingleIsoEG30er"] = 36;
   BitMapping["L1_SingleEG10"] = 37;
   BitMapping["L1_SingleIsoEG22er"] = 38;
@@ -1283,7 +1283,7 @@ void L1Menu2015::Loop() {
 
   Int_t nevents = GetEntries();
   Double_t nZeroBiasevents = 0.;
-  if(nevents > 6000000) nevents = 6000000;
+  if(nevents > 1000000) nevents = 1000000;
 
   Int_t NPASS = 0; 
 

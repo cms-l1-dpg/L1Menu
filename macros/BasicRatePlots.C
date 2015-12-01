@@ -624,6 +624,10 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Collisions/254790_ZeroBias.root");
       basicRatePlots.run(true,fileType,102,651,xSec13TeV,999.,nBunches25ns_run254790,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
     }
+  else if (fileType == "RUN256843_ReemulMario") {
+      BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Collisions/256843_ZeroBias_ReemulMario.root");
+      basicRatePlots.run(true,fileType,105,305,xSec13TeV,999.,nBunches25ns_run254790,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
+    }
   else if (fileType == "RUN254790_Reemul") {
       BasicRatePlots basicRatePlots("root://lxcms02//data2/p/pellicci/L1DPG/root/Data/Collisions/254790_ZeroBias_Reemul.root");
       basicRatePlots.run(true,fileType,102,651,xSec13TeV,999.,nBunches25ns_run254790,isCrossSec,nEvents); // 999 is dummy do not use for cross-section
