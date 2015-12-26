@@ -9,6 +9,7 @@ __init__.py
 
 ####  C extensions
 *.so
-
+*.d
 ####  root files
 *.root
+*.pcm
