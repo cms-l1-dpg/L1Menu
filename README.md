@@ -16,7 +16,7 @@ scram b -j7
 cmsRun L1Trigger/L1TCommon/test/reEmul.py  max=1000
 </code></pre>
 
-##### L1Menu DPG package for menu-makeing ####################
+##### L1Menu DPG package for menu-making ####################
 <pre><code>
 git clone -b 2016-devel https://github.com/cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
 cd L1TriggerDPG/L1Menu
@@ -37,6 +37,9 @@ goRatePlots("RUN256843_Stage2",0,20000)
 ####################
 
 ####################
+the recipes referenced below still need to be updated for the new L1 Ntuple structure. Don't try them for now
+
+
 In order to run on the L1Menu macro
 
 <pre><code>
