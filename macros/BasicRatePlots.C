@@ -404,7 +404,7 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     {
       nBunches = nBunches25ns_run256843;
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
-      filename = "../../../l1t_stage2.root";
+      filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_1.root";
     }
   else if (fileType == "RUN256843_Stage1")
     {
@@ -421,8 +421,8 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     }
 
   TTree *tree;
-  TFile f(filename.c_str());
-  TDirectory * dir = (TDirectory*)f.Get("l1UpgradeTree");
+  TFile *f = TFile::Open(filename.c_str());
+  TDirectory * dir = (TDirectory*)f->Get("l1UpgradeTree");
   dir->GetObject("L1UpgradeTree",tree);
 
   BasicRatePlots basicRatePlots(tree); 
