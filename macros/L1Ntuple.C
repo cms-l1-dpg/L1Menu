@@ -22,7 +22,7 @@ bool L1Ntuple::OpenWithList(const std::string & fname)
   if (!CheckFirstFile())      exit(0);
   if (!OpenWithoutInit())     exit(0);
 
-  std::cout.flush();cout<<"Going to init the available trees..."<<std::endl;std::cout.flush();
+  std::cout.flush();std::cout<<"Going to init the available trees..."<<std::endl;std::cout.flush();
   Init();
 
   return true;
@@ -35,7 +35,7 @@ bool L1Ntuple::Open(const std::string & fname)
   if (!CheckFirstFile())  exit(0);
   if (!OpenWithoutInit()) exit(0);
 
-  std::cout.flush();cout<<"Going to init the available trees..."<<std::endl;std::cout.flush();
+  std::cout.flush();std::cout<<"Going to init the available trees..."<<std::endl;std::cout.flush();
   Init();
 
   return true;

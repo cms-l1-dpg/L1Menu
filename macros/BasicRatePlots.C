@@ -1,5 +1,5 @@
 #include "L1Ntuple.h"
-// #include "L1AlgoFactory.h"
+#include "L1AlgoFactory.h"
 #include <algorithm>
 #include<map>
 #include<iostream>
@@ -7,7 +7,7 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
-class BasicRatePlots : public L1Ntuple
+class BasicRatePlots : public L1AlgoFactory
 {
 public :
   
@@ -28,19 +28,19 @@ public :
 private :
   
   float ScaleFactor(float nZeroBias, float nBunches);
-  void  SingleJetPt(Float_t& ptcut, Bool_t isCentral = false);
+  //void  SingleJetPt(Float_t& ptcut, Bool_t isCentral = false);
   float SingleTauPt();
   float SingleMuEta(float eta);
-  void  SingleEGPt(Float_t& ptcut, Bool_t isIsolated, Bool_t isER);
+  //void  SingleEGPt(Float_t& ptcut, Bool_t isIsolated, Bool_t isER);
   float SingleEGEta(float ptCut, bool doIso);
   float SingleJetEta(float pt, Int_t accept_flag = 0);
 
   void setRateError(TH1F* histo);
   
-  void ETMVal(Float_t& ETMcut);
-  void HTTVal(Float_t& HTTcut);
-  void HTMVal(Float_t& HTMcut);
-  void ETTVal(Float_t& ETTcut);
+  //void ETMVal(Float_t& ETMcut);
+  //void HTTVal(Float_t& HTTcut);
+  //void HTMVal(Float_t& HTMcut);
+  //void ETTVal(Float_t& ETTcut);
   
   std::map<std::string,TH1F*> hTH1F;
   std::map<std::string,TH2F*> hTH2F;
@@ -120,48 +120,48 @@ float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
   return iEGMaxPt>=0 && maxPt>ptCut ? upgrade_ -> egEta.at(iEGMaxPt) : -10.; 
 }
 
-void BasicRatePlots::SingleEGPt(Float_t& cut, Bool_t isIsolated , Bool_t isER) {
+//void BasicRatePlots::SingleEGPt(Float_t& cut, Bool_t isIsolated , Bool_t isER) {
 
   
-  //if(nEGs < 1) return;
+  ////if(nEGs < 1) return;
 
-  Float_t ptmax = -10.;
+  //Float_t ptmax = -10.;
 
-  for(UInt_t ue=0; ue < upgrade_ -> nEGs; ue++) {
-    Int_t bx = upgrade_ -> egBx.at(ue);  
-    if(bx != 0) continue;
-    if(isIsolated && !(upgrade_ -> egIso.at(ue))) continue;
-    Float_t eta = upgrade_ -> egEta.at(ue);
-    if(fabs(eta) > 2.1 && isER) continue;  // eta = 5 - 16
+  //for(UInt_t ue=0; ue < upgrade_ -> nEGs; ue++) {
+    //Int_t bx = upgrade_ -> egBx.at(ue);  
+    //if(bx != 0) continue;
+    //if(isIsolated && !(upgrade_ -> egIso.at(ue))) continue;
+    //Float_t eta = upgrade_ -> egEta.at(ue);
+    //if(fabs(eta) > 2.1 && isER) continue;  // eta = 5 - 16
 
-    Float_t pt = upgrade_ -> egEt.at(ue);    // the rank of the electron
-    if(pt >= ptmax) ptmax = pt;
-  }
+    //Float_t pt = upgrade_ -> egEt.at(ue);    // the rank of the electron
+    //if(pt >= ptmax) ptmax = pt;
+  //}
 
-  cut = ptmax;
+  //cut = ptmax;
 
-  return;
-}
+  //return;
+//}
 
-void BasicRatePlots::SingleJetPt(Float_t& cut, Bool_t isCentral) {
+//void BasicRatePlots::SingleJetPt(Float_t& cut, Bool_t isCentral) {
 
-  Float_t ptmax = -10.;
-  Int_t Nj = upgrade_ -> nJets ;
-  for(Int_t ue=0; ue < Nj; ue++) {
-    Int_t bx = upgrade_ -> jetBx.at(ue);
-    if(bx != 0) continue;
-    Bool_t isFwdJet = fabs(upgrade_ -> jetEta.at(ue)) > 3. ? true : false;
-    if(isCentral && isFwdJet) continue;
-    //if(NOTauInJets && upgrade_->Taujet[ue]) continue;
-    //if(isCentral && noHF && (upgrade_->jetEta.at(ue) < 5 || upgrade_->jetEta.at(ue) > 17)) continue;
+  //Float_t ptmax = -10.;
+  //Int_t Nj = upgrade_ -> nJets ;
+  //for(Int_t ue=0; ue < Nj; ue++) {
+    //Int_t bx = upgrade_ -> jetBx.at(ue);
+    //if(bx != 0) continue;
+    //Bool_t isFwdJet = fabs(upgrade_ -> jetEta.at(ue)) > 3. ? true : false;
+    //if(isCentral && isFwdJet) continue;
+    ////if(NOTauInJets && upgrade_->Taujet[ue]) continue;
+    ////if(isCentral && noHF && (upgrade_->jetEta.at(ue) < 5 || upgrade_->jetEta.at(ue) > 17)) continue;
 
-    Float_t pt = upgrade_ -> jetEt.at(ue);
-    if(pt >= ptmax) ptmax = pt;
-  }
+    //Float_t pt = upgrade_ -> jetEt.at(ue);
+    //if(pt >= ptmax) ptmax = pt;
+  //}
 
-  cut = ptmax;
-  return;
-}
+  //cut = ptmax;
+  //return;
+//}
 
 float BasicRatePlots::SingleJetEta(float ptCut, Int_t accept_flag) {
 
@@ -186,37 +186,37 @@ float BasicRatePlots::SingleJetEta(float ptCut, Int_t accept_flag) {
   return iJetMaxPt>=0 && maxPt>ptCut ? upgrade_ -> jetEta.at(iJetMaxPt) : -10.;
 }
 
-void BasicRatePlots::ETMVal(Float_t& ETMcut ) {
+//void BasicRatePlots::ETMVal(Float_t& ETMcut ) {
 
-  Float_t TheETM = -10;
-  if(upgrade_ ->sumBx[2]==0) TheETM =upgrade_ ->sumEt[2];
-  ETMcut = TheETM;
-  return;
-}
+  //Float_t TheETM = -10;
+  //if(upgrade_ ->sumBx[2]==0) TheETM =upgrade_ ->sumEt[2];
+  //ETMcut = TheETM;
+  //return;
+//}
 
-void BasicRatePlots::HTTVal(Float_t& HTTcut) {
+//void BasicRatePlots::HTTVal(Float_t& HTTcut) {
 
-  Float_t TheHTT = -10;
-  if(upgrade_ ->sumBx[1]==0) TheHTT =upgrade_ ->sumEt[1];
-  HTTcut = TheHTT;
-  return;
-}
+  //Float_t TheHTT = -10;
+  //if(upgrade_ ->sumBx[1]==0) TheHTT =upgrade_ ->sumEt[1];
+  //HTTcut = TheHTT;
+  //return;
+//}
 
-void BasicRatePlots::HTMVal(Float_t& HTMcut) {
+//void BasicRatePlots::HTMVal(Float_t& HTMcut) {
 
-  Float_t TheHTM = -10;
-  if (upgrade_ ->sumBx[3]==0) TheHTM = upgrade_ ->sumEt[3];
-  HTMcut = TheHTM;
-  return;
-}
+  //Float_t TheHTM = -10;
+  //if (upgrade_ ->sumBx[3]==0) TheHTM = upgrade_ ->sumEt[3];
+  //HTMcut = TheHTM;
+  //return;
+//}
 
-void BasicRatePlots::ETTVal(Float_t& ETTcut) {
+//void BasicRatePlots::ETTVal(Float_t& ETTcut) {
 
-  Float_t TheETT = -10;
-  if(upgrade_ ->sumBx[0]==0) TheETT = upgrade_ ->sumEt[0];
-  ETTcut = TheETT;
-  return;
-}
+  //Float_t TheETT = -10;
+  //if(upgrade_ ->sumBx[0]==0) TheETT = upgrade_ ->sumEt[0];
+  //ETTcut = TheETT;
+  //return;
+//}
 
 void BasicRatePlots::setRateError(TH1F* histo) {
 
@@ -312,7 +312,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
     }
 
     if (event_ -> lumi != currentLumi){
-      cout << "New Lumi section: " << event_->lumi << endl;      
+      std::cout << "New Lumi section: " << event_->lumi << std::endl;      
       currentLumi=event_ -> lumi;
       nLumi++;
     }
@@ -454,16 +454,16 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
 
   float scaleFactor(1.);
   if (runOnData){
-    cout << "# of lumis sections used for rate computation : " << nLumi << endl;
+    std::cout << "# of lumis sections used for rate computation : " << nLumi << std::endl;
     scaleFactor = (80.*631.)/(nLumi*23.3);      
   }else{
-    cout << "# of zero bias events (weighted) used for rate computation : " << nZeroBias << endl;
+    std::cout << "# of zero bias events (weighted) used for rate computation : " << nZeroBias << std::endl;
     scaleFactor = ScaleFactor(nZeroBias,nBunches);    
   }
-  cout << "Scale factor applied to histograms = " << scaleFactor << endl;
+  std::cout << "Scale factor applied to histograms = " << scaleFactor << std::endl;
 
-  map<string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
-  map<string,TH1F*>::iterator hTH1FEnd = hTH1F.end();
+  std::map<std::string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
+  std::map<std::string,TH1F*>::iterator hTH1FEnd = hTH1F.end();
 
   for(; hTH1FIt!=hTH1FEnd; ++hTH1FIt) {
     TH1F* histo = hTH1FIt->second;
@@ -471,8 +471,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
     histo->Scale(scaleFactor);
   }
 
-  map<string,TH2F*>::iterator hTH2FIt  = hTH2F.begin();
-  map<string,TH2F*>::iterator hTH2FEnd = hTH2F.end();
+  std::map<std::string,TH2F*>::iterator hTH2FIt  = hTH2F.begin();
+  std::map<std::string,TH2F*>::iterator hTH2FEnd = hTH2F.end();
 
   for(; hTH2FIt!=hTH2FEnd; ++hTH2FIt) {
     TH2F* histo = hTH2FIt->second;

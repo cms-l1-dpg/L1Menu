@@ -2,7 +2,7 @@
 #include "L1AlgoFactory.h"
 
 #include "TString.h"
-#include "Style.C"
+//#include "Style.C"
 #include "TH1F.h"
 #include "TH2F.h"
 
@@ -87,7 +87,7 @@ class L1Menu2015 : public L1AlgoFactory {
 
  public :
 
-  L1Menu2015(string menufile, Float_t aNumberOfBunches, Bool_t anoHF, Bool_t aisTauInJet, Int_t AveragePU, TTree* tree) : L1AlgoFactory(tree)
+  L1Menu2015(std::string menufile, Float_t aNumberOfBunches, Bool_t anoHF, Bool_t aisTauInJet, Int_t AveragePU) : L1AlgoFactory()
   {
     themenufilename = menufile;
     theNumberOfBunches =aNumberOfBunches;
@@ -100,7 +100,7 @@ class L1Menu2015 : public L1AlgoFactory {
   ~L1Menu2015() {}
 
   // the setting below are/will be specific for each L1Ntuple file used
-  string themenufilename;
+  std::string themenufilename;
   Float_t theNumberOfBunches;
   Bool_t noHF;
   Bool_t noTauInJet;
@@ -707,7 +707,7 @@ void L1Menu2015::MyInit() {
   BitMapping["L1_SingleMuBeamHalo"] = 127;
 
   //Read the prescales table
-  ifstream menufile;
+  std::ifstream menufile;
   menufile.open(themenufilename);
   char path_name[50];
   Int_t prescale_value = -1;
@@ -1323,16 +1323,16 @@ void L1Menu2015::Loop() {
       TheTriggerBits[k] = false;
     }
 
-    Bool_t cross       = false; //Cross();
-    Bool_t multicross  = false; //MultiCross();
+    Bool_t jets        = Jets() ;
+    Bool_t multijets   = MultiJets() ;
     Bool_t eg          = EGamma();
     Bool_t multieg     = MultiEGamma();
     Bool_t muons       = Muons();
     Bool_t multimuons  = MultiMuons();
-    Bool_t jets        = Jets() ;
-    Bool_t multijets   = MultiJets() ;
     Bool_t sums        = Sums();
     Bool_t technical   = Technical();
+    Bool_t cross       = false; //Cross();
+    Bool_t multicross  = false; //MultiCross();
 
     Bool_t pass  = jets || multijets || eg || multieg || sums || muons || multimuons || cross || multicross || technical;
 
@@ -1581,13 +1581,13 @@ void L1Menu2015::Loop() {
   output << "  MULTICROSS : " << NBITS_MULTICROSS << std::endl << std::endl;
 
   if(isOneSeedNotDefined){
-    cout << "##########################" << endl;
-    cout << "Warning, undefined seeds! Perhaps is normal, but check!" << endl;
-    cout << "Missing seeds are in bit numbers ";
+    std::cout << "##########################" << std::endl;
+    std::cout << "Warning, undefined seeds! Perhaps is normal, but check!" << std::endl;
+    std::cout << "Missing seeds are in bit numbers ";
     for(int i=0;i<N128;i++){
-      if(MissingBits[i] == 1) cout << i << ", ";
+      if(MissingBits[i] == 1) std::cout << i << ", ";
     }
-    cout << endl << "#########################" << endl;
+    std::cout << std::endl << "#########################" << std::endl;
   }
 
 }
@@ -1628,7 +1628,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   Float_t Energy = 0.;
   Float_t targetlumi = 1.;
 
-  string themenufilename;
+  std::string themenufilename;
 
   if(whichFileAndLumiToUse==1){
     // 13 TeV ZeroBias 72X sample 30 PU 50 ns, 2012 re-emulation with 10 GeV cut on jet seed
@@ -1693,6 +1693,17 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     Energy = 13;
     targetlumi= 70.;
   }
+  else if(whichFileAndLumiToUse==5){
+    // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
+    NumberOfBunches = -1; 
+    //L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "ntuples_256843_stage2.list";
+    themenufilename = "Menu_20PU_25bx.txt";
+    //themenufilename = "Menu_Noprescales.txt";
+    AveragePU = 20;
+    Energy = 13;
+    targetlumi= 70.;
+  }
   else{
     std::cout << "##########################" << std::endl;
     std::cout << "ERROR: Please define a ntuple file which is in the allowed range! You did use: whichFileAndLumiToUse = " << whichFileAndLumiToUse << " This is not in the allowed range" << std::endl;
@@ -1728,13 +1739,14 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     TXTOutfile << "  L1NtupleFileName                 = " << L1NtupleFileName << std::endl;
   }
 
-  TFile f(L1NtupleFileName.c_str());
-  TTree *tree;
-  TDirectory * dir = (TDirectory*)f.Get("l1UpgradeTree");
-  dir->GetObject("L1UpgradeTree",tree);
+  //TFile f(L1NtupleFileName.c_str());
+  //TTree *tree;
+  //TDirectory * dir = (TDirectory*)f.Get("l1UpgradeTree");
+  //dir->GetObject("L1UpgradeTree",tree);
+  //L1Menu2015 a(themenufilename,NumberOfBunches,noHF,noTauInJet,AveragePU, tree);
 
-  L1Menu2015 a(themenufilename,NumberOfBunches,noHF,noTauInJet,AveragePU, tree);
-  //a.Open(L1NtupleFileName);
+  L1Menu2015 a(themenufilename,NumberOfBunches,noHF,noTauInJet,AveragePU);
+  a.OpenWithList(L1NtupleFileName);
   a.Loop();
   /*
   if(drawplots){
