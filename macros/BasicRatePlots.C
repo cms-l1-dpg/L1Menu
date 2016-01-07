@@ -1,4 +1,5 @@
-#include "L1AlgoFactory.h"
+#include "L1Ntuple.h"
+// #include "L1AlgoFactory.h"
 #include <algorithm>
 #include<map>
 #include<iostream>
@@ -6,33 +7,47 @@
 #include "TH1F.h"
 #include "TH2F.h"
 
-class BasicRatePlots : public L1AlgoFactory
+class BasicRatePlots : public L1Ntuple
 {
 public :
   
   //constructor    
-  BasicRatePlots(TTree *tree);
+  BasicRatePlots(std::string filename){
+    if (filename.find(".root") != std::string::npos) {
+      std::cout << "Reading RootFile: " << filename << std::endl;
+      L1Ntuple::Open(filename);
+    }else{
+      std::cout << "Reading Filelist: " << filename << std::endl;
+      if (! L1Ntuple::OpenWithList(filename)) exit(0);
+    }
+  }
   ~BasicRatePlots() {}
   
-  void run(std::string resultTag, float crossSec, int nBunches, int isCrossSec, int nEvents = 0);
+  void run(bool runOnData, std::string resultTag, float crossSec, int nBunches, int isCrossSec, int nEvents = 0);
 
 private :
   
   float ScaleFactor(float nZeroBias, float nBunches);
-
+  void  SingleJetPt(Float_t& ptcut, Bool_t isCentral = false);
   float SingleTauPt();
   float SingleMuEta(float eta);
+  void  SingleEGPt(Float_t& ptcut, Bool_t isIsolated, Bool_t isER);
   float SingleEGEta(float ptCut, bool doIso);
   float SingleJetEta(float pt, Int_t accept_flag = 0);
 
   void setRateError(TH1F* histo);
-
+  
+  void ETMVal(Float_t& ETMcut);
+  void HTTVal(Float_t& HTTcut);
+  void HTMVal(Float_t& HTMcut);
+  void ETTVal(Float_t& ETTcut);
+  
   std::map<std::string,TH1F*> hTH1F;
   std::map<std::string,TH2F*> hTH2F;
 };
 
 // ------------------------------------------------------------------
-BasicRatePlots::BasicRatePlots(TTree *tree) : L1AlgoFactory(tree) {}
+// BasicRatePlots::BasicRatePlots(TTree *tree) : L1AlgoFactory(tree) {}
 
 // scale factor computed w.r.t. ZeroBias rate fratcion and # bunches 
 float BasicRatePlots::ScaleFactor(float nZeroBias, float nBunches) {
@@ -48,12 +63,13 @@ float BasicRatePlots::SingleMuEta(float ptCut ) {
 
   float maxPt = -10;
   float iMuMaxPt = -10;
-  
+
+  UInt_t nMuons = upgrade_ -> nMuons;
   for (UInt_t imu=0; imu < nMuons; imu++) 
     {
-    Int_t bx = muonBx.at(imu);
+    Int_t bx = upgrade_ -> muonBx.at(imu);
     if(bx != 0) continue;
-    Float_t pt = muonEt.at(imu);                       
+    Float_t pt = upgrade_ -> muonEt.at(imu);                       
       if ( pt > maxPt) 
 	{
 	  maxPt = pt;
@@ -61,7 +77,7 @@ float BasicRatePlots::SingleMuEta(float ptCut ) {
 	}
     }
   
-  float eta = maxPt>ptCut ? muonEta.at(iMuMaxPt) : -10.; 
+  float eta = maxPt>ptCut ? upgrade_ -> muonEta.at(iMuMaxPt) : -10.; 
 
   //cout << "max mu pt = " << maxPt << "  max eta = " << eta << endl;
 
@@ -72,27 +88,28 @@ float BasicRatePlots::SingleTauPt() {
   
   float maxPt = -10;
 
-  for (UInt_t ue=0; ue < nTaus; ue++) {
-    Int_t bx = tauBx.at(ue);        		
+  for (UInt_t ue=0; ue < upgrade_ -> nTaus; ue++) {
+    Int_t bx = upgrade_ -> tauBx.at(ue);        		
     if (bx != 0) continue; 
-    Float_t pt = tauEt.at(ue);
+    Float_t pt = upgrade_ -> tauEt.at(ue);
     if (pt >= maxPt) maxPt = pt;
   } 
   
   return maxPt;
 }
 
+
 float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
 
   float maxPt = -10;
   float iEGMaxPt = -10;
 
-  for (UInt_t ue=0; ue < nEGs; ue++) {
-    Int_t bx = egBx.at(ue);        		
+  for (UInt_t ue=0; ue < upgrade_ -> nEGs; ue++) {
+    Int_t bx = upgrade_ -> egBx.at(ue);        		
     if (bx != 0) continue;
-    Bool_t iso = egIso.at(ue);
+    Bool_t iso = upgrade_ -> egIso.at(ue);
     if (!iso && doIso) continue;
-    Float_t pt = egEt.at(ue);
+    Float_t pt = upgrade_ -> egEt.at(ue);
     if ( pt >= maxPt) 
       {
 	maxPt = pt;
@@ -100,30 +117,105 @@ float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
       }
   }
 
-  return iEGMaxPt>=0 && maxPt>ptCut ? egEta.at(iEGMaxPt) : -10.; 
+  return iEGMaxPt>=0 && maxPt>ptCut ? upgrade_ -> egEta.at(iEGMaxPt) : -10.; 
+}
+
+void BasicRatePlots::SingleEGPt(Float_t& cut, Bool_t isIsolated , Bool_t isER) {
+
+  
+  //if(nEGs < 1) return;
+
+  Float_t ptmax = -10.;
+
+  for(UInt_t ue=0; ue < upgrade_ -> nEGs; ue++) {
+    Int_t bx = upgrade_ -> egBx.at(ue);  
+    if(bx != 0) continue;
+    if(isIsolated && !(upgrade_ -> egIso.at(ue))) continue;
+    Float_t eta = upgrade_ -> egEta.at(ue);
+    if(fabs(eta) > 2.1 && isER) continue;  // eta = 5 - 16
+
+    Float_t pt = upgrade_ -> egEt.at(ue);    // the rank of the electron
+    if(pt >= ptmax) ptmax = pt;
+  }
+
+  cut = ptmax;
+
+  return;
+}
+
+void BasicRatePlots::SingleJetPt(Float_t& cut, Bool_t isCentral) {
+
+  Float_t ptmax = -10.;
+  Int_t Nj = upgrade_ -> nJets ;
+  for(Int_t ue=0; ue < Nj; ue++) {
+    Int_t bx = upgrade_ -> jetBx.at(ue);
+    if(bx != 0) continue;
+    Bool_t isFwdJet = fabs(upgrade_ -> jetEta.at(ue)) > 3. ? true : false;
+    if(isCentral && isFwdJet) continue;
+    //if(NOTauInJets && upgrade_->Taujet[ue]) continue;
+    //if(isCentral && noHF && (upgrade_->jetEta.at(ue) < 5 || upgrade_->jetEta.at(ue) > 17)) continue;
+
+    Float_t pt = upgrade_ -> jetEt.at(ue);
+    if(pt >= ptmax) ptmax = pt;
+  }
+
+  cut = ptmax;
+  return;
 }
 
 float BasicRatePlots::SingleJetEta(float ptCut, Int_t accept_flag) {
 
   float maxPt = -10;
   float iJetMaxPt = -10;
-
-  for(UInt_t ue=0; ue < nJets; ue++) {
-    Int_t bx = jetBx.at(ue);        		
+  
+  for(UInt_t ue=0; ue < upgrade_ -> nJets; ue++) {
+    Int_t bx = upgrade_ -> jetBx.at(ue);        		
     if(bx != 0) continue;
-    Bool_t isFwdJet = fabs(jetEta.at(ue)) > 3. ? true : false;
+    Bool_t isFwdJet = fabs(upgrade_ -> jetEta.at(ue)) > 3. ? true : false;
 
     if(accept_flag == 1 && isFwdJet) continue;
     if(accept_flag == 2 && !isFwdJet) continue;
 
-    Float_t pt = jetEt.at(ue);
+    Float_t pt = upgrade_ -> jetEt.at(ue);
     if(pt >= maxPt){
       maxPt = pt;
       iJetMaxPt = ue;
     }
   }
 
-  return iJetMaxPt>=0 && maxPt>ptCut ? jetEta.at(iJetMaxPt) : -10.;
+  return iJetMaxPt>=0 && maxPt>ptCut ? upgrade_ -> jetEta.at(iJetMaxPt) : -10.;
+}
+
+void BasicRatePlots::ETMVal(Float_t& ETMcut ) {
+
+  Float_t TheETM = -10;
+  if(upgrade_ ->sumBx[2]==0) TheETM =upgrade_ ->sumEt[2];
+  ETMcut = TheETM;
+  return;
+}
+
+void BasicRatePlots::HTTVal(Float_t& HTTcut) {
+
+  Float_t TheHTT = -10;
+  if(upgrade_ ->sumBx[1]==0) TheHTT =upgrade_ ->sumEt[1];
+  HTTcut = TheHTT;
+  return;
+}
+
+void BasicRatePlots::HTMVal(Float_t& HTMcut) {
+
+  Float_t TheHTM = -10;
+  if (upgrade_ ->sumBx[3]==0) TheHTM = upgrade_ ->sumEt[3];
+  HTMcut = TheHTM;
+  return;
+}
+
+void BasicRatePlots::ETTVal(Float_t& ETTcut) {
+
+  Float_t TheETT = -10;
+  if(upgrade_ ->sumBx[0]==0) TheETT = upgrade_ ->sumEt[0];
+  ETTcut = TheETT;
+  return;
 }
 
 void BasicRatePlots::setRateError(TH1F* histo) {
@@ -135,8 +227,7 @@ void BasicRatePlots::setRateError(TH1F* histo) {
     float error = sqrt(value);
 
     histo->SetBinError(iBin,error);
-  }
-
+  }  
 }
 
 // --------------------------------------------------------------------
@@ -144,7 +235,7 @@ void BasicRatePlots::setRateError(TH1F* histo) {
 // --------------------------------------------------------------------
 
 
-void BasicRatePlots::run(std::string resultTag, float crossSec, int nBunches, int isCrossSec, int nEvents) {
+void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, int nBunches, int isCrossSec, int nEvents) {
 
   system("mkdir -p results");
   std::string resultName = "results/results_" + resultTag + (isCrossSec ? "_XSEC" : "_RATE") + ".root";
@@ -201,18 +292,31 @@ void BasicRatePlots::run(std::string resultTag, float crossSec, int nBunches, in
 
   Double_t nZeroBias = 0.;
 
-  std::cout << "Running on " << nEvents << " events." << std::endl;
-  std::cout << "Tree contains " << fChain->GetEntriesFast() << " events." << std::endl;
+  int nLumi(0),currentLumi(-1);
 
-  for (Long64_t event=0; event<nEvents; ++event) { 
-    Long64_t eventEntry = LoadTree(event); 
+  if (nEvents <= 0){
+    nEvents=fChain->GetEntriesFast();
+  }
+  std::cout << "Tree contains " << fChain->GetEntriesFast() << " events." << std::endl;
+  std::cout << "Running on " << nEvents << " events." << std::endl;
+
+  
+  for (Long64_t event=0; event<nEvents; ++event) {
+    
+    Long64_t eventEntry = LoadTree(event);
     if (eventEntry < 0) break;
     GetEntry(event);
-      
+
     if (event%200000 == 0) {
-      std::cout << "Processed " << event << " events." << std::endl;
+      std::cout << "Processed " << event << " events. Current run number: " << event_ -> run << " lumi: " << event_ -> lumi << std::endl;
     }
 
+    if (event_ -> lumi != currentLumi){
+      cout << "New Lumi section: " << event_->lumi << endl;      
+      currentLumi=event_ -> lumi;
+      nLumi++;
+    }
+    
     hTH1F["nEvts"]->Fill(0.);  // count number of events processed
 
     nZeroBias += 1.;
@@ -236,43 +340,43 @@ void BasicRatePlots::run(std::string resultTag, float crossSec, int nBunches, in
     float isoegEta  = SingleEGEta(16.,true);
 
     //cout << "Event number = " << nZeroBias << endl;
-    float muPt     = -10.; SingleMuPt(muPt,false);
+    //float muPt     = -10.; SingleMuPt(muPt,false);
     //cout << "muPt = " << muPt << endl; 
-    float muErPt   = -10.; SingleMuPt(muErPt,true);
+    //float muErPt   = -10.; SingleMuPt(muErPt,true);
 
     //cout << "Event number = " << nZeroBias << endl;
     float muEta    = SingleMuEta(16.);
     //cout << "muEta = " << muEta << endl;
 
-    float doubleMuPt1 = -10.; 
-    float doubleMuPt2 = -10.;
-    DoubleMuPt(doubleMuPt1,doubleMuPt2);
-
-    float oniaMuPt1 = 0.;
-    float oniaMuPt2 = 0.;
-    OniaPt(oniaMuPt1,oniaMuPt2,22);
-
-
-    float dijetPt1    = -10.;
-    float dijetPt2    = -10.;
-    float diCenjetPt1 = -10.;
-    float diCenjetPt2 = -10.;
-    DoubleJetPt(dijetPt1,dijetPt2);
-    DoubleJetPt(diCenjetPt1,diCenjetPt2,true);
-    Float_t dummy = -1;
-    float ditauPt    = -10.; DoubleTauJetEta2p17Pt(dummy,ditauPt);
-    dummy = -1.;
-    float quadjetPt  = -10.; QuadJetPt(dummy,dummy,dummy,quadjetPt);
-    dummy = -1.;
-    float quadjetCPt = -10.; QuadJetPt(dummy,dummy,dummy,quadjetCPt,true);
-    dummy = -1.;
-
-    float diEG1     = -10.;
-    float diEG2     = -10.;
-    float diIsolEG1 = -10.;
-    float diIsolEG2 = -10.;
-    DoubleEGPt(diEG1,diEG2,false);
-    DoubleEGPt(diIsolEG1,diIsolEG2,true);
+    // float doubleMuPt1 = -10.; 
+    // float doubleMuPt2 = -10.;
+    // DoubleMuPt(doubleMuPt1,doubleMuPt2);
+    // 
+    // float oniaMuPt1 = 0.;
+    // float oniaMuPt2 = 0.;
+    // OniaPt(oniaMuPt1,oniaMuPt2,22);
+    // 
+    // 
+    // float dijetPt1    = -10.;
+    // float dijetPt2    = -10.;
+    // float diCenjetPt1 = -10.;
+    // float diCenjetPt2 = -10.;
+    // DoubleJetPt(dijetPt1,dijetPt2);
+    // DoubleJetPt(diCenjetPt1,diCenjetPt2,true);
+    // Float_t dummy = -1;
+    // float ditauPt    = -10.; DoubleTauJetEta2p17Pt(dummy,ditauPt);
+    // dummy = -1.;
+    // float quadjetPt  = -10.; QuadJetPt(dummy,dummy,dummy,quadjetPt);
+    // dummy = -1.;
+    // float quadjetCPt = -10.; QuadJetPt(dummy,dummy,dummy,quadjetCPt,true);
+    // dummy = -1.;
+    // 
+    // float diEG1     = -10.;
+    // float diEG2     = -10.;
+    // float diIsolEG1 = -10.;
+    // float diIsolEG2 = -10.;
+    // DoubleEGPt(diEG1,diEG2,false);
+    // DoubleEGPt(diIsolEG1,diIsolEG2,true);
 
     if(muEta > -9.) hTH1F["nMuVsEta"]->Fill(muEta);
     hTH1F["nEGVsEta"]->Fill(egEta);
@@ -285,73 +389,77 @@ void BasicRatePlots::run(std::string resultTag, float crossSec, int nBunches, in
       if(jetPt>=ptCut)	  hTH1F["nJetVsPt"]->Fill(ptCut);
       if(jetCenPt>=ptCut) hTH1F["nJetCenVsPt"]->Fill(ptCut);
       if(tauPt>=ptCut)	  hTH1F["nTauVsPt"]->Fill(ptCut);
-
-      if(dijetPt2>=ptCut){
-	hTH1F["nDiJetVsPt"]->Fill(ptCut);
-
-	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-	  if(dijetPt1>=ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut);
-	}
-      }
-
-      if(diCenjetPt2>=ptCut){
-	hTH1F["nDiCenJetVsPt"]->Fill(ptCut);
-
-	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-	  if(diCenjetPt1>=ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut);
-	}
-      }
-
-      if(ditauPt>=ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut);
-      if(quadjetPt>=ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut);
-      if(quadjetCPt>=ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut);
-
+    // 
+    //   if(dijetPt2>=ptCut){
+    // 	hTH1F["nDiJetVsPt"]->Fill(ptCut);
+    // 
+    // 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
+    // 	  if(dijetPt1>=ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut);
+    // 	}
+    //   }
+    // 
+    //   if(diCenjetPt2>=ptCut){
+    // 	hTH1F["nDiCenJetVsPt"]->Fill(ptCut);
+    // 
+    // 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
+    // 	  if(diCenjetPt1>=ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut);
+    // 	}
+    //   }
+    // 
+    //   if(ditauPt>=ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut);
+    //   if(quadjetPt>=ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut);
+    //   if(quadjetCPt>=ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut);
+    // 
     }//loop on 256
-      
+    //   
     for(int ptCut=0; ptCut<65; ++ptCut) {
-      if(egPt>=ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut);
-      if(egErPt>=ptCut)  hTH1F["nEGErVsPt"]->Fill(ptCut);
-      if(isoEgPt>=ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut);
-
-      if(diEG2>=ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut);
-      if(diIsolEG2>=ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut);
-
-
-      for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
-	if(diEG1>=ptCut && diEG2>=ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
-	if(diIsolEG1>=ptCut && diIsolEG2>=ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
-      }
-
+       if(egPt>=ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut);
+       if(egErPt>=ptCut)  hTH1F["nEGErVsPt"]->Fill(ptCut);
+       if(isoEgPt>=ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut);
+    // 
+    //   if(diEG2>=ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut);
+    //   if(diIsolEG2>=ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut);
+    // 
+    // 
+    //   for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
+    // 	if(diEG1>=ptCut && diEG2>=ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
+    // 	if(diIsolEG1>=ptCut && diIsolEG2>=ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
+    //   }
+    // 
     }//loop on 65
-     
-    for(int ptCut=0; ptCut<131; ++ptCut) {
-      if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut);
-     if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut);
-    }
-      
-
-    for(int iCut=0; iCut<41; ++iCut) {
-      for(int iCut2=0; iCut2<=iCut; ++iCut2) {
-	float ptCut = iCut*0.5;
-	float ptCut2 = iCut2*0.5;
-	if (doubleMuPt1>=ptCut && doubleMuPt2>=ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
-	if (oniaMuPt1>=ptCut && oniaMuPt2>=ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
-      }
-    }
-
+    //  
+    // for(int ptCut=0; ptCut<131; ++ptCut) {
+    //   if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut);
+    //  if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut);
+    // }
+    //   
+    // 
+    // for(int iCut=0; iCut<41; ++iCut) {
+    //   for(int iCut2=0; iCut2<=iCut; ++iCut2) {
+    // 	float ptCut = iCut*0.5;
+    // 	float ptCut2 = iCut2*0.5;
+    // 	if (doubleMuPt1>=ptCut && doubleMuPt2>=ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
+    // 	if (oniaMuPt1>=ptCut && oniaMuPt2>=ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
+    //   }
+    // }
+    // 
     for(int httCut=0; httCut<512; ++httCut) {
-      if(htt>httCut) hTH1F["nHTTVsHTT"]->Fill(httCut);
-      if(ett>httCut) hTH1F["nETTVsETT"]->Fill(httCut);
-      if(etm>httCut) hTH1F["nETMVsETM"]->Fill(httCut);
+       if(htt>httCut) hTH1F["nHTTVsHTT"]->Fill(httCut);
+       if(ett>httCut) hTH1F["nETTVsETT"]->Fill(httCut);
+       if(etm>httCut) hTH1F["nETMVsETM"]->Fill(httCut);
     }
       
 
   } // end event loop
 
-  cout << "# of zero bias events (weighted) used for rate computation : " << nZeroBias << endl;
-
-  //float scaleFactor = ScaleFactor(nZeroBias,nBunches);
-  float scaleFactor = 2*23.3;
+  float scaleFactor(1.);
+  if (runOnData){
+    cout << "# of lumis sections used for rate computation : " << nLumi << endl;
+    scaleFactor = (80.*631.)/(nLumi*23.3);      
+  }else{
+    cout << "# of zero bias events (weighted) used for rate computation : " << nZeroBias << endl;
+    scaleFactor = ScaleFactor(nZeroBias,nBunches);    
+  }
   cout << "Scale factor applied to histograms = " << scaleFactor << endl;
 
   map<string,TH1F*>::iterator hTH1FIt  = hTH1F.begin();
@@ -389,26 +497,30 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
   float xSec8TeV  = 72.7; 
 
   std::string filename;
-
+  bool isData(true);
+  
   if (fileType == "13TEV_40PU_2016_RE-EMUL")
     {
+      isData = false;
       nBunches = nBunches25ns;
       filename = "/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/2016/v2/40PU_25ns_Stage2/40PU_25ns_Stage2_1.root";
     }
   else if (fileType == "13TEV_20PU_2016_RE-EMUL")
     {
+      isData = false;
       nBunches = nBunches25ns;
       filename = "/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/2016/v2/20PU_25ns_Stage2/20PU_25ns_Stage2_1.root";
     }
   else if (fileType == "RUN256843_Stage2")
     {
-      nBunches = nBunches25ns_run256843;
+      isData = true;      
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
-      filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_1.root";
+      // filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_2.root";
+      filename = "ntuples_256843_stage2.list";
     }
   else if (fileType == "RUN256843_Stage1")
     {
-      nBunches = nBunches25ns_run256843;
+      isData = true;      
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
       filename = "../../../l1t_stage1.root";
     }
@@ -420,13 +532,13 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
 		<< "13TEV_25PU_ORIG_RE-EMUL, 13TEV_25PU_2012_RE-EMUL, 13TEV_25PU_2012GCT10GEV_RE-EMUL, 13TEV_25PU_2015_RE-EMUL\n";
     }
 
-  TTree *tree;
-  TFile *f = TFile::Open(filename.c_str());
-  TDirectory * dir = (TDirectory*)f->Get("l1UpgradeTree");
-  dir->GetObject("L1UpgradeTree",tree);
+  // TTree *tree;
+  // TFile f(filename.c_str());
+  // TDirectory * dir = (TDirectory*)f.Get("l1UpgradeTree");
+  // dir->GetObject("L1UpgradeTree",tree);
 
-  BasicRatePlots basicRatePlots(tree); 
-  basicRatePlots.run(fileType,xSec13TeV,nBunches,isCrossSec,nEvents);
+  BasicRatePlots basicRatePlots(filename); 
+  basicRatePlots.run(isData,fileType,xSec13TeV,nBunches,isCrossSec,nEvents);
     
 }
 
