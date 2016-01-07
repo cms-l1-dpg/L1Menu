@@ -29,11 +29,9 @@ In order to run the BasicRatePlots macro
 
 <pre><code>
 cd L1TriggerDPG/L1Menu/macros
-root
-.L BasicRatePlots.C+
-goRatePlots("RUN256843_Stage2",0,20000)
+root runBasicRates.C
 </code></pre>
-("RUN256843_Stage2" is the sample identifier, 0=rates (1=cross sections), 20000=number of events to process)
+
 ####################
 
 ####################
