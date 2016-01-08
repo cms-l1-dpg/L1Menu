@@ -1844,3 +1844,75 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
 
   return;
 }
+
+Bool_t L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1(Float_t jetcut, Float_t egcut) {
+  Float_t tmp_jetcut = -10.;
+  Float_t tmp_egcut = -10.;
+  Jet_MuOpen_EG_dPhiMuEG1Pt(tmp_jetcut,tmp_egcut);
+  if(tmp_jetcut >= jetcut && tmp_egcut >= egcut) return true;
+  return false;
+}
+
+void L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut){
+
+  //Find the highest pt jet with deltaphi condition with MuOpen
+  Float_t jetptmax = -10.;
+  Int_t Nj = upgrade_->nJets;
+  Int_t Nmu = upgrade_->nMuons;
+
+  for(Int_t ue=0; ue < Nj; ue++){
+    Int_t bxjet = upgrade_->jetBx.at(ue);        		
+    if(bxjet != 0) continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if(pt < jetptmax) continue;
+    Float_t phijet = upgrade_->jetPhi.at(ue);
+
+    Bool_t corr = false;
+
+    //Loop over all muons to check if a MuOpen is within 2 calo phi bins
+    for(Int_t imu=0; imu < Nmu; imu++){
+      Int_t bx = upgrade_->muonBx.at(imu);
+      if (bx != 0) continue;
+      if(!PassMuonQual(imu)) continue;
+      Float_t muonpt = upgrade_->muonEt.at(imu);			
+      if(muonpt < 0.) continue;
+      Float_t muphi = upgrade_->muonPhi.at(imu);			
+      if(fabs(muphi-phijet) < MuOpenJetCordPhi) corr = true;
+    }
+
+    if(corr) jetptmax = pt;
+  }
+
+  //Loop over electrons, and save all the electrons which satisfy the deltaphi veto with a MuOpen
+  Int_t Nele = upgrade_->nEGs;
+  Float_t maxptEG = -10.;
+  for(Int_t ue=0; ue < Nele; ue++){     
+    Int_t bxele = upgrade_->egBx.at(ue);  
+    if(bxele != 0) continue;
+    Float_t pt = upgrade_->egEt.at(ue);   
+    Float_t EGphi = upgrade_->egPhi.at(ue);   
+    if(pt < maxptEG) continue;
+
+    //Check the deltaphi veto with any muon
+    Bool_t corr = false;
+    for(Int_t imu=0; imu < Nmu; imu++) {
+      Int_t bxmu = upgrade_->muonBx.at(imu);
+      if(bxmu != 0) continue;
+      if(!PassMuonQual(imu)) continue;
+      Float_t ptmu = upgrade_->muonEt.at(imu);			
+      if(ptmu < 0.) continue;
+      Float_t muphi = upgrade_->muonPhi.at(imu);			
+
+      if(fabs(muphi-EGphi) > MuOpenJetCordPhi) corr = true;
+    }
+
+    if(corr) maxptEG = pt;
+  }
+
+  if(jetptmax > 0. && maxptEG > 0.){
+    jetcut = jetptmax;
+    egcut = maxptEG;
+  }
+
+  return;
+}
