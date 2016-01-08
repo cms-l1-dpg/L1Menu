@@ -1826,3 +1826,104 @@ void L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut) {
 
   return;
 }
+
+Bool_t L1AlgoFactory::DoubleMuXOpen(Float_t mu1pt) {
+  Float_t tmp_cut = -10.;
+  DoubleMuXOpenPt(tmp_cut);
+  if(tmp_cut >= mu1pt) return true;
+  return false;
+}
+
+void L1AlgoFactory::DoubleMuXOpenPt(Float_t& cut) {
+
+  Int_t n2=0;
+  Float_t ptmax = -10.;
+
+  for(Int_t imu=0; imu < upgrade_->nMuons; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);			
+    if(!PassMuonQual(imu)) continue;
+    if( pt >= ptmax ){
+      ptmax = pt;
+    }
+    if(pt >= 0.) n2++;
+  }
+
+  if(n2>=2) cut = ptmax;
+  else cut = -10.;
+
+  return;
+}
+Bool_t L1AlgoFactory::Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta) {
+  Float_t tmp_cut1 = -10.;
+  Float_t tmp_cut2 = -10.;
+  Onia2015Pt(tmp_cut1,tmp_cut2,isER,isOS,delta);
+  if(tmp_cut1 >= mu1pt && tmp_cut2 >= mu2pt) return true;
+  return false;
+}
+
+void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta) {
+
+  Int_t Nmu = upgrade_->nMuons;
+  if(Nmu < 2) return;
+
+  Float_t maxpt1 = -10.;
+  Float_t maxpt2 = -10.;
+  Float_t corr = false;
+
+  std::vector<std::pair<Float_t,Float_t> > muonPairs;
+
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if (bx != 0) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);			
+    if(!PassMuonQual(imu)) continue;
+    Float_t eta = upgrade_->muonEta.at(imu);
+    if(isER && fabs(eta) > Onia2015ER) continue;
+    Int_t charge1 = upgrade_->muonChg.at(imu);
+
+    for (Int_t imu2=0; imu2 < Nmu; imu2++) {
+      if (imu2 == imu) continue;
+      Int_t bx2 = upgrade_->muonBx.at(imu2);
+      if (bx2 != 0) continue;
+      Float_t pt2 = upgrade_->muonEt.at(imu2);			
+      if(!PassMuonQual(imu2)) continue;
+      Float_t eta2 = upgrade_->muonEta.at(imu2);
+      if(isER && fabs(eta2) > Onia2015ER) continue;
+      Int_t charge2 = upgrade_->muonChg.at(imu2);
+
+      if(isOS && charge1*charge2 > 0) continue;
+
+      Float_t deta = eta - eta2; 
+      if(fabs(deta) <= delta){
+        corr = true;
+        muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
+      }
+
+    }
+  }
+
+  if(corr){
+    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairIt  = muonPairs.begin();
+    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairEnd = muonPairs.end();
+    for(; muonPairIt != muonPairEnd; ++muonPairIt){
+      Float_t pt1 = muonPairIt->first;
+      Float_t pt2 = muonPairIt->second;
+      
+      if(pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
+	{
+	  maxpt1 = pt1;
+	  maxpt2 = pt2;
+	}
+    }
+
+  }
+
+  if(corr && maxpt2 >= 0.){
+    ptcut1 = maxpt1;
+    ptcut2 = maxpt2;
+  }
+
+  return;
+}

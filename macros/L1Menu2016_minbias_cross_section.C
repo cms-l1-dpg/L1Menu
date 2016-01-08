@@ -810,12 +810,12 @@ Bool_t L1Menu2015::Muons() {
 Bool_t L1Menu2015::MultiMuons() {
 
   insert_ibin = 0;
-  //InsertInMenu("L1_DoubleMu0er16_WdEta18_OS",algoFactory->Onia2015(0.,0.,true,true,18));
-  //  InsertInMenu("L1_DoubleMu0er16_WdEta18",algoFactory->Onia2015(0.,0.,true,false,18));
-  //  InsertInMenu("L1_DoubleMu_10_0_WdEta18",algoFactory->Onia2015(10.,0.,false,false,18));
+  InsertInMenu("L1_DoubleMu0er16_WdEta18_OS",Onia2015(0.,0.,true,true,18));
+  InsertInMenu("L1_DoubleMu0er16_WdEta18",Onia2015(0.,0.,true,false,18));
+  InsertInMenu("L1_DoubleMu_10_0_WdEta18",Onia2015(10.,0.,false,false,18));
 
   InsertInMenu("L1_DoubleMu0",DoubleMu(0.,0.,true, false));
-  //InsertInMenu("L1_DoubleMuOpen",DoubleMuXOpen(0.));
+  InsertInMenu("L1_DoubleMuOpen",DoubleMuXOpen(0.));
   InsertInMenu("L1_DoubleMu_10_0",DoubleMu(10.,0.,true, false));
   InsertInMenu("L1_DoubleMu_10_3p5",DoubleMu(10.,3.5,true, false));
   InsertInMenu("L1_DoubleMu_12_5",DoubleMu(12.,5.,true,false));
