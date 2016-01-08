@@ -4,7 +4,7 @@
 #include "L1Ntuple.h"
 #include <iostream>
 
-const enum EtSumType { ETT, HTT, ETM, HTM }; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
+enum EtSumType { ETT, HTT, ETM, HTM }; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
 
 class L1AlgoFactory: public L1Ntuple{
  public:
@@ -39,7 +39,6 @@ class L1AlgoFactory: public L1Ntuple{
   void Muer_JetCentralPt(Float_t& mucut, Float_t& jetcut);
   void Mu_JetCentral_deltaPt(Float_t& mucut, Float_t& jetcut);
   void Mu_DoubleJetCentralPt(Float_t& mucut, Float_t& jetcut);
-  void Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t isIsolated = false);
 
   void EG_FwdJetPt(Float_t& EGcut, Float_t& FWcut);
   void EG_DoubleJetCentralPt(Float_t& EGcut, Float_t& jetcut);
@@ -79,7 +78,6 @@ class L1AlgoFactory: public L1Ntuple{
   Bool_t Muer_JetCentral(Float_t mucut, Float_t jetcut);
   Bool_t Mu_JetCentral_delta(Float_t mucut, Float_t jetcut);
   Bool_t Mu_DoubleJetCentral(Float_t mucut, Float_t jetcut);
-  Bool_t Muer_TauJetEta2p17(Float_t mucut, Float_t taucut, Bool_t isIsolated = false);
 
   Bool_t EG_FwdJet(Float_t EGcut, Float_t FWcut);
   Bool_t EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut);
@@ -130,6 +128,7 @@ class L1AlgoFactory: public L1Ntuple{
  float MuOpenJetCordPhi;
  float MuMudPhi;
  
+ bool PassMuonQual(int imu, bool isMuHighQual=true) const;
 
 };
 

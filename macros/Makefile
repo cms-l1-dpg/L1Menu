@@ -1,7 +1,8 @@
 ######### GENERAL STUFF: DON NOT CONSIDER
 CXX = g++
 CXXFLAGS  = -std=c++11
-#CXXFLAGS  += -Wall -fPIC -O2 -g -pg
+CXXFLAGS  += -Wall -fPIC -O2 -g -pg
+CXXFLAGS  += -Wextra -Weffc++ -g -Weverything #Asking for troubles
 CXXFLAGS  += $(subst -I, -isystem , $(shell root-config --cflags))
 
 LD         = g++
