@@ -329,12 +329,11 @@ void L1AlgoFactory::SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin) {
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != 0) continue;
     Float_t eta = upgrade_->muonEta.at(imu);        
-    if(fabs(eta) > 2.1 && isER) continue;
+    if(fabs(eta) > muonER && isER) continue;
     Float_t pt = upgrade_->muonEt.at(imu);                       
 
-    //if(isER == false) std::cout << "pt = " << pt << std::endl;
     if(pt >= ptmax) ptmax = pt;
- }
+  }
 
   ptcut = ptmax;
   return;
@@ -352,13 +351,14 @@ void L1AlgoFactory::DoubleMuPt(Float_t& cut1, Float_t& cut2, Bool_t isHighQual, 
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
     Float_t eta = upgrade_->muonEta.at(imu);
-    if(isER && fabs(eta) > 2.1) continue;
+    if(isER && fabs(eta) > muonER) continue;
+    if(!PassMuonQual(imu, isMuHighQual)) continue;
 
     if(pt >= mu1ptmax)
-      {
-	mu2ptmax = mu1ptmax;
-	mu1ptmax = pt;
-      }
+    {
+      mu2ptmax = mu1ptmax;
+      mu1ptmax = pt;
+    }
     else if(pt >= mu2ptmax) mu2ptmax = pt;
   }
 
@@ -399,8 +399,8 @@ void L1AlgoFactory::OniaPt(Float_t& ptcut1, Float_t& ptcut2, Int_t delta) {
 
       Float_t deta = ieta1 - ieta2; 
       if ( fabs(deta) <= delta){
-	corr = true;
-	muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
+        corr = true;
+        muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
       }
 
     }
@@ -412,12 +412,12 @@ void L1AlgoFactory::OniaPt(Float_t& ptcut1, Float_t& ptcut2, Int_t delta) {
     for (; muonPairIt != muonPairEnd; ++muonPairIt) {
       Float_t pt1 = muonPairIt->first;
       Float_t pt2 = muonPairIt->second;
-      
+
       if ( pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
-	{
-	  maxpt1 = pt1;
-	  maxpt2 = pt2;
-	}
+      {
+        maxpt1 = pt1;
+        maxpt2 = pt2;
+      }
     }
 
   }
@@ -463,8 +463,8 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
 
       Float_t deta = ieta1 - ieta2; 
       if(fabs(deta) <= delta){
-	corr = true;
-	muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
+        corr = true;
+        muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
       }
 
     }
@@ -476,12 +476,12 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
     for(; muonPairIt != muonPairEnd; ++muonPairIt){
       Float_t pt1 = muonPairIt->first;
       Float_t pt2 = muonPairIt->second;
-      
+
       if(pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
-	{
-	  maxpt1 = pt1;
-	  maxpt2 = pt2;
-	}
+      {
+        maxpt1 = pt1;
+        maxpt2 = pt2;
+      }
     }
 
   }
@@ -508,11 +508,11 @@ void L1AlgoFactory::TripleMuPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Int_
     Float_t pt = upgrade_->muonEt.at(imu);			
 
     if(pt >= mu1ptmax)
-      {
-	mu3ptmax = mu2ptmax;
-	mu2ptmax = mu1ptmax;
-	mu1ptmax = pt;
-      }
+    {
+      mu3ptmax = mu2ptmax;
+      mu2ptmax = mu1ptmax;
+      mu1ptmax = pt;
+    }
     else if(pt >= mu2ptmax){
       mu3ptmax = mu2ptmax;
       mu2ptmax = pt;
@@ -544,12 +544,12 @@ void L1AlgoFactory::QuadMuPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Float_
     Float_t pt = upgrade_->muonEt.at(imu);			
 
     if(pt >= mu1ptmax)
-      {
-	mu4ptmax = mu3ptmax;
-	mu3ptmax = mu2ptmax;
-	mu2ptmax = mu1ptmax;
-	mu1ptmax = pt;
-      }
+    {
+      mu4ptmax = mu3ptmax;
+      mu3ptmax = mu2ptmax;
+      mu2ptmax = mu1ptmax;
+      mu1ptmax = pt;
+    }
     else if(pt >= mu2ptmax){
       mu4ptmax = mu3ptmax;
       mu3ptmax = mu2ptmax;
@@ -583,7 +583,7 @@ void L1AlgoFactory::SingleEGPt(Float_t& cut, Bool_t isIsolated , Bool_t isER) {
     if(bx != 0) continue;
     if(isIsolated && !upgrade_->egIso.at(ue)) continue;
     Float_t eta = upgrade_->egEta.at(ue);
-    if(fabs(eta) > 2.1 && isER) continue;  // eta = 5 - 16
+    if(fabs(eta) > eleER && isER) continue;  // eta = 5 - 16
 
     Float_t pt = upgrade_->egEt.at(ue);    // the rank of the electron
     if(pt >= ptmax) ptmax = pt;
@@ -620,20 +620,20 @@ void L1AlgoFactory::DoubleEGPt(Float_t& cut1, Float_t& cut2, Bool_t isIsolated, 
     if(fabs(pt-ele1ptmax) < 0.001 && fabs(phi-ele1Phimax) < 0.001 && fabs(eta-ele1Etamax) < 0.001) continue; //to avoid double counting in noniso/relaxiso lists
 
     if(pt >= ele1ptmax)
-      {
-	ele2ptmax = ele1ptmax;
-	EG2_ER = EG1_ER;
-	EG2_isol = EG1_isol;
-	ele1ptmax = pt;
-	ele1Phimax = phi;
-	ele1Etamax = eta;
-	if(fabs(eta) < 2.1) EG1_ER = true;
-	else EG1_ER = false;
-	EG1_isol = upgrade_->egIso.at(ue);
-      }
+    {
+      ele2ptmax = ele1ptmax;
+      EG2_ER = EG1_ER;
+      EG2_isol = EG1_isol;
+      ele1ptmax = pt;
+      ele1Phimax = phi;
+      ele1Etamax = eta;
+      if(fabs(eta) < eleER) EG1_ER = true;
+      else EG1_ER = false;
+      EG1_isol = upgrade_->egIso.at(ue);
+    }
     else if(pt >= ele2ptmax){
       ele2ptmax = pt;
-      if(fabs(eta) < 2.1) EG2_ER = true;
+      if(fabs(eta) < eleER) EG2_ER = true;
       else EG2_ER = false;
       EG1_isol = upgrade_->egIso.at(ue);
     }
@@ -675,13 +675,13 @@ void L1AlgoFactory::TripleEGPt(Float_t& cut1, Float_t& cut2, Float_t& cut3 ) {
     if(fabs(pt-ele2ptmax) < 0.001 && fabs(phi-ele2Phimax) < 0.001 && fabs(eta-ele2Etamax) < 0.001) continue; //to avoid double counting in noniso/relaxiso lists
 
     if(pt >= ele1ptmax)
-      {
-	ele3ptmax = ele2ptmax;
-	ele2ptmax = ele1ptmax;
-	ele1ptmax = pt;
- 	ele1Phimax = phi;
-	ele1Etamax = eta;
-      }
+    {
+      ele3ptmax = ele2ptmax;
+      ele2ptmax = ele1ptmax;
+      ele1ptmax = pt;
+      ele1Phimax = phi;
+      ele1Etamax = eta;
+    }
     else if(pt >= ele2ptmax){
       ele3ptmax = ele2ptmax;
       ele2ptmax = pt;
@@ -733,10 +733,10 @@ void L1AlgoFactory::DoubleJetPt(Float_t& cut1, Float_t& cut2, Bool_t isCentral )
     Float_t pt = upgrade_->jetEt.at(ue);
 
     if(pt >= maxpt1)
-      {
-	maxpt2 = maxpt1;
-	maxpt1 = pt;
-      }
+    {
+      maxpt2 = maxpt1;
+      maxpt1 = pt;
+    }
     else if(pt >= maxpt2) maxpt2 = pt;
   }
 
@@ -773,8 +773,8 @@ void L1AlgoFactory::DoubleJet_Eta1p7_deltaEta4Pt(Float_t& cut1, Float_t& cut2 ) 
       if (fabs(eta2) > 1.7) continue;  // eta = 6 - 16
 
       if(correlateInEta((int)eta1, (int)eta2, 4)){
-	corr = true;
-	jetPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
+        corr = true;
+        jetPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
       }
 
     }
@@ -786,12 +786,12 @@ void L1AlgoFactory::DoubleJet_Eta1p7_deltaEta4Pt(Float_t& cut1, Float_t& cut2 ) 
     for (; jetPairIt != jetPairEnd; ++jetPairIt) {
       Float_t pt1 = jetPairIt->first;
       Float_t pt2 = jetPairIt->second;
-      
+
       if ( pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
-	{
-	  maxpt1 = pt1;
-	  maxpt2 = pt2;
-	}
+      {
+        maxpt1 = pt1;
+        maxpt2 = pt2;
+      }
     }
   }
 
@@ -817,10 +817,10 @@ void L1AlgoFactory::DoubleTauJetEta2p17Pt(Float_t& cut1, Float_t& cut2, Bool_t i
     if(fabs(eta) > 2.17) continue;  // eta = 5 - 16
 
     if(pt >= maxpt1)
-      {
-	maxpt2 = maxpt1;
-	maxpt1 = pt;
-      }
+    {
+      maxpt2 = maxpt1;
+      maxpt1 = pt;
+    }
     else if(pt >= maxpt2) maxpt2 = pt;
   }
 
@@ -849,11 +849,11 @@ void L1AlgoFactory::TripleJetPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Boo
     Float_t pt = upgrade_->jetEt.at(ue);
 
     if(pt >= jet1ptmax)
-      {
-	jet3ptmax = jet2ptmax;
-	jet2ptmax = jet1ptmax;
-	jet1ptmax = pt;
-      }
+    {
+      jet3ptmax = jet2ptmax;
+      jet2ptmax = jet1ptmax;
+      jet1ptmax = pt;
+    }
     else if(pt >= jet2ptmax){
       jet3ptmax = jet2ptmax;
       jet2ptmax = pt;
@@ -948,18 +948,18 @@ void L1AlgoFactory::QuadJetPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Float
   for (UInt_t ue=0; ue < upgrade_->nJets; ue++) {
     Int_t bx = upgrade_->jetBx.at(ue);        		
     if(bx != 0) continue;
-    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > 3. ? true : false;
+    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > jetCentFwd ? true : false;
     if(isCentral && isFwdJet) continue;
 
     Float_t pt = upgrade_->jetEt.at(ue);
 
     if(pt >= jet1ptmax)
-      {
-	jet4ptmax = jet3ptmax;
-	jet3ptmax = jet2ptmax;
-	jet2ptmax = jet1ptmax;
-	jet1ptmax = pt;
-      }
+    {
+      jet4ptmax = jet3ptmax;
+      jet3ptmax = jet2ptmax;
+      jet2ptmax = jet1ptmax;
+      jet1ptmax = pt;
+    }
     else if(pt >= jet2ptmax){
       jet4ptmax = jet3ptmax;
       jet3ptmax = jet2ptmax;
@@ -989,6 +989,7 @@ void L1AlgoFactory::Mu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isIsolated, I
   for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {   
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
+    if(!PassMuonQual(imu)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
     if(pt >= muptmax) muptmax = pt;
   }
@@ -1023,6 +1024,7 @@ void L1AlgoFactory::DoubleMu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isMuHig
   for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
+    if(!PassMuonQual(imu, isMuHighQual)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
     if(pt >= muptmax){
       second_muptmax = muptmax;
@@ -1058,6 +1060,7 @@ void L1AlgoFactory::Mu_DoubleEGPt(Float_t& mucut, Float_t& EGcut ) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
+    if(!PassMuonQual(imu)) continue;
     if(pt >= muptmax) muptmax = pt; 
   }
 
@@ -1168,26 +1171,28 @@ void L1AlgoFactory::Mu_JetCentral_deltaPt(Float_t& mucut, Float_t& jetcut) {
   for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
+    if(!PassMuonQual(imu)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);
     Float_t eta = upgrade_->muonEta.at(imu); 
     Float_t phi = upgrade_->muonPhi.at(imu); 
 
     for (UInt_t ue=0; ue < upgrade_->nJets; ue++) {
-    Int_t bxj = upgrade_->jetBx.at(ue);        		
-    if(bxj != 0) continue;
-    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > 3. ? true : false;
-    if(isFwdJet) continue;
+      Int_t bxj = upgrade_->jetBx.at(ue);        		
+      if(bxj != 0) continue;
+      Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > jetCentFwd ? true : false;
+      if(isFwdJet) continue;
 
-    Float_t ptj = upgrade_->jetEt.at(ue);
-    Float_t phijet = upgrade_->jetPhi.at(ue);
-    Float_t etajet = upgrade_->jetEta.at(ue);
+      Float_t ptj = upgrade_->jetEt.at(ue);
+      Float_t phijet = upgrade_->jetPhi.at(ue);
+      Float_t etajet = upgrade_->jetEta.at(ue);
 
       if(pt < mucut || ptj < jetcut) continue;
 
-      if(fabs(phi-phijet) < 0.4 && fabs(eta-etajet) < 0.4){
-	correlate = true;
-	if(pt >= muptmax) muptmax = pt;
-	if(ptj >= jetptmax) jetptmax = ptj;
+      //MuJetCordPhi,  MuJetCordEta
+      if(fabs(phi-phijet) < MuJetCordPhi && fabs(eta-etajet) < MuJetCordEta){
+        correlate = true;
+        if(pt >= muptmax) muptmax = pt;
+        if(ptj >= jetptmax) jetptmax = ptj;
       }
     }
   }
@@ -1330,7 +1335,7 @@ void L1AlgoFactory::Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);
     Float_t eta = upgrade_->muonEta.at(imu); 
-    if(fabs(eta) > 2.1) continue;
+    if(fabs(eta) > muonER) continue;
     if(pt >= maxptmu) maxptmu = pt;
   }
 
@@ -1341,7 +1346,7 @@ void L1AlgoFactory::Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t
 
     Float_t pt = upgrade_->tauEt.at(ue);
     Float_t eta = upgrade_->tauEta.at(ue);
-    if(fabs(eta) > 2.17) continue;
+    if(fabs(eta) > tauER) continue;
 
     if(pt >= maxpttau) maxpttau = pt;
   }
@@ -1368,7 +1373,7 @@ void L1AlgoFactory::IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut) {
     if(!upgrade_->egIso.at(ue)) continue;
     Float_t pt  = upgrade_->egEt.at(ue);
     Float_t eta = upgrade_->egEta.at(ue);
-    if(fabs(eta) > 2.1) continue;  // eta = 5 - 16
+    if(fabs(eta) > eleER) continue;  // eta = 5 - 16
     if(pt >= eleptmax){
       eleptmax = pt;
       eleetamax = eta;
@@ -1380,7 +1385,7 @@ void L1AlgoFactory::IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut) {
     if(bx != 0) continue; 
     Float_t pt = upgrade_->tauEt.at(ue);
     Float_t eta = upgrade_->tauEta.at(ue);
-    if(fabs(eta) > 2.17) continue;  // eta = 5 - 16
+    if(fabs(eta) > tauER) continue;  // eta = 5 - 16
 
     if(fabs(eta-eleetamax) < 0.2) continue;
 
@@ -1409,17 +1414,17 @@ void L1AlgoFactory::QuadJetCentral_TauJetPt(Float_t& jetcut, Float_t& taucut){
   for (UInt_t ue=0; ue < upgrade_->nJets; ue++) {
     Int_t bx = upgrade_->jetBx.at(ue);        		
     if(bx != 0) continue;
-    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > 3. ? true : false;
+    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > jetCentFwd ? true : false;
     if(isFwdJet) continue;
     Float_t pt = upgrade_->jetEt.at(ue);
 
     if(pt >= jet1ptmax)
-      {
-	jet4ptmax = jet3ptmax;
-	jet3ptmax = jet2ptmax;
-	jet2ptmax = jet1ptmax;
-	jet1ptmax = pt;
-      }
+    {
+      jet4ptmax = jet3ptmax;
+      jet3ptmax = jet2ptmax;
+      jet2ptmax = jet1ptmax;
+      jet1ptmax = pt;
+    }
     else if(pt >= jet2ptmax){
       jet4ptmax = jet3ptmax;
       jet3ptmax = jet2ptmax;
@@ -1477,5 +1482,347 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
   Float_t TheETT = -10;
   if(upgrade_->sumBx[EtSumType::ETT]==0) TheETT = upgrade_->sumEt[EtSumType::ETT];
   ETTcut = TheETT;
+  return;
+}
+
+//**************************************************************************//
+//                                   Cross                                  //
+//**************************************************************************//
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::PassMuonQual
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::PassMuonQual(int imu, bool isMuHighQual) const
+{
+  (void)isMuHighQual; // Not used for now as the L1UpgradeTree only store 0 or 1
+  return upgrade_->muonQual.at(imu) == 1;
+}       // -----  end of function L1AlgoFactory::PassMuonQual  -----
+
+Bool_t L1AlgoFactory::Mu_HTT(Float_t mucut, Float_t HTcut) {
+  Float_t tmp_mucut = -10.;
+  Float_t tmp_HTcut = -10.;
+  Mu_HTTPt(tmp_mucut,tmp_HTcut);
+  if(tmp_mucut >= mucut && tmp_HTcut >= HTcut) return true;
+  return false;
+}
+
+void L1AlgoFactory::Mu_HTTPt(Float_t& mucut, Float_t& HTcut ) {
+
+  Float_t muptmax = -10.;
+
+  Int_t Nmu = upgrade_->nMuons;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);                       
+    if(!PassMuonQual(imu)) continue;
+    if(pt >= muptmax) muptmax = pt;
+  }
+
+  Float_t TheHTT = -10;
+  if(upgrade_->sumBx[EtSumType::HTT]==0) 
+    TheHTT =upgrade_->sumEt[EtSumType::HTT];
+
+  if(muptmax >= 0.){
+    mucut = muptmax;
+    HTcut = TheHTT;
+  }
+
+  return;
+}
+
+Bool_t L1AlgoFactory::Muer_ETM(Float_t mucut, Float_t ETMcut) {
+  Float_t tmp_mucut = -10.;
+  Float_t tmp_ETMcut = -10.;
+  Muer_ETMPt(tmp_mucut,tmp_ETMcut);
+  if(tmp_mucut >= mucut && tmp_ETMcut >= ETMcut) return true;
+  return false;
+}
+
+void L1AlgoFactory::Muer_ETMPt(Float_t& mucut, Float_t& ETMcut ) {
+
+  Float_t muptmax = -10.;
+
+  Int_t Nmu = upgrade_->nMuons;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);                       
+    if(!PassMuonQual(imu)) continue;
+    Float_t eta = upgrade_->muonEta.at(imu); 
+    if(fabs(eta) > muonER) continue;
+    if(pt >= muptmax) muptmax = pt;
+  }
+
+  Float_t TheETM = -10;
+  if(upgrade_->sumBx[EtSumType::ETM]==0) 
+    TheETM =upgrade_->sumEt[EtSumType::ETM];
+
+  if(muptmax >= 0.){
+    mucut = muptmax;
+    ETMcut = TheETM;
+  }
+
+  return;
+}
+
+Bool_t L1AlgoFactory::SingleEG_Eta2p1_HTT(Float_t egcut, Float_t HTTcut, Bool_t isIsolated) {
+  Float_t tmp_egcut = -10.;
+  Float_t tmp_HTTcut = -10.;
+  SingleEG_Eta2p1_HTTPt(tmp_egcut,tmp_HTTcut,isIsolated);
+  if(tmp_egcut >= egcut && tmp_HTTcut >= HTTcut) return true;
+  return false;
+}
+
+void L1AlgoFactory::SingleEG_Eta2p1_HTTPt(Float_t& egcut, Float_t& HTTcut, Bool_t isIsolated) {
+
+  Float_t eleptmax = -10.;
+
+  Int_t Nele = upgrade_->nEGs;
+  for (Int_t ue=0; ue < Nele; ue++) {
+    Int_t bx = upgrade_->egBx.at(ue);  
+    if(bx != 0) continue;
+    if(isIsolated && !upgrade_->egIso.at(ue)) continue;
+    Float_t eta = upgrade_->egEta.at(ue);
+    if(fabs(eta) > eleER ) continue;  
+    Float_t pt = upgrade_->egEt.at(ue);   
+    if(pt >= eleptmax) eleptmax = pt;
+  }
+
+  Float_t TheHTT = -10;
+  if(upgrade_->sumBx[EtSumType::HTT]==0) 
+    TheHTT =upgrade_->sumEt[EtSumType::HTT];
+
+  if(eleptmax >= 0.){
+    egcut = eleptmax;
+    HTTcut = TheHTT;
+  }
+
+  return;
+}
+
+Bool_t L1AlgoFactory::Muer_TauJetEta2p17(Float_t mucut, Float_t taucut, Bool_t isIsolated){
+  Float_t tmp_mucut  = -10.;
+  Float_t tmp_taucut = -10.;
+  Muer_TauJetEta2p17Pt(tmp_mucut, tmp_taucut,isIsolated);
+  if(tmp_mucut >= mucut && tmp_taucut >= taucut) return true;
+  return false;
+}
+
+void L1AlgoFactory::Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t isIsolated) {
+
+  Float_t maxptmu  = -10.;
+  Float_t maxpttau = -10.;
+
+  Int_t Nmu = upgrade_->nMuons;
+  if(Nmu < 1) return;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);                       
+    if(!PassMuonQual(imu)) continue;
+    Float_t eta = upgrade_->muonEta.at(imu);        
+    if(fabs(eta) > muonER ) continue;
+    if(pt >= maxptmu) maxptmu = pt;
+  }
+
+  for(Int_t ue=0; ue < upgrade_->nTaus; ue++) {
+    Int_t bx = upgrade_->tauBx.at(ue);        		
+    if(bx != 0) continue; 
+    if(!isIsolated && !upgrade_->tauIso.at(ue)) continue;
+
+    Float_t pt = upgrade_->tauEt.at(ue);
+    Float_t eta = upgrade_->tauEta.at(ue);
+    if(fabs(eta) > tauER) continue;  // eta = 5 - 16
+
+    if(pt >= maxpttau) maxpttau = pt;
+  }
+
+  if(maxptmu >= 0.){
+    mucut  = maxptmu;
+    taucut = maxpttau;
+  }
+
+  return;
+
+}
+
+Bool_t L1AlgoFactory::DoubleJetCentral_ETM(Float_t jetcut1, Float_t jetcut2, Float_t ETMcut) {
+  Float_t tmp_jetcut1 = -10.;
+  Float_t tmp_jetcut2 = -10.;
+  Float_t tmp_ETMcut  = -10.;
+  DoubleJetCentral_ETMPt(tmp_jetcut1,tmp_jetcut2,tmp_ETMcut);
+  if(tmp_jetcut1 >= jetcut1 && tmp_jetcut2 >= jetcut2 && tmp_ETMcut >= ETMcut) return true;
+  return false;
+}
+
+void L1AlgoFactory::DoubleJetCentral_ETMPt(Float_t& jetcut1, Float_t& jetcut2, Float_t& ETMcut){
+
+  Float_t jetptmax1 = -10.;
+  Float_t jetptmax2 = -10.;
+
+  Float_t TheETM = -10;
+  if(upgrade_->sumBx[EtSumType::ETM]==0) 
+    TheETM =upgrade_->sumEt[EtSumType::ETM];
+
+  if(upgrade_->nJets < 2) return;
+
+  for (Int_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > jetCentFwd ? true : false;
+    if(isFwdJet) continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+
+    if(pt >= jetptmax1){
+      jetptmax2 = jetptmax1;
+      jetptmax1 = pt;
+    }
+    else if(pt >= jetptmax2) jetptmax2 = pt;
+  }       
+
+  if(jetptmax2 >= 0.){
+    jetcut1 = jetptmax1;
+    jetcut2 = jetptmax2;
+    ETMcut = TheETM;
+  }
+
+  return;
+}
+
+Bool_t L1AlgoFactory::DoubleEG_HT(Float_t egcut, Float_t HTcut) {
+  Float_t tmp_egcut = -10.;
+  Float_t tmp_HTcut = -10.;
+  DoubleEG_HTPt(tmp_egcut,tmp_HTcut);
+  if(tmp_egcut >= egcut && tmp_HTcut >= HTcut) return true;
+  return false;
+}
+
+void L1AlgoFactory::DoubleEG_HTPt(Float_t& EGcut, Float_t& HTcut) {
+
+  Float_t eleptmax1  = -10.;
+  Float_t eleptmax2  = -10.;
+  Float_t ele1Phimax = -1000.;
+  Float_t ele1Etamax = -1000.;
+
+  if(upgrade_->nEGs < 2) return;
+
+  for(Int_t ue=0; ue < upgrade_->nEGs ; ue++) {
+    Int_t bx = upgrade_->egBx.at(ue);  
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->egEt.at(ue);
+    Float_t phi = upgrade_->egPhi.at(ue);
+    Float_t eta = upgrade_->egEta.at(ue);
+
+    if(fabs(pt-ele1ptmax) < 0.001 && fabs(phi-ele1Phimax) < 0.001 && fabs(eta-ele1Etamax) < 0.001) continue; //to avoid double counting in noniso/relaxiso lists
+
+    if(pt >= eleptmax1){
+      eleptmax2 = eleptmax1;
+      eleptmax1 = pt;
+      ele1Phimax = phi;
+      ele1Etamax = eta;
+    }
+    else if(pt >= eleptmax2) eleptmax2 = pt;
+  }
+
+  Float_t TheHTT = -10;
+  if(upgrade_->sumBx[EtSumType::HTT]==0) 
+    TheHTT =upgrade_->sumEt[EtSumType::HTT];
+
+  if(eleptmax2 >= 0.){
+    EGcut = eleptmax2;
+    HTcut = TheHTT;
+  }
+
+  return;
+}
+Bool_t L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1(Float_t jetcut, Float_t mucut) {
+  Float_t tmp_jetcut = -10.;
+  Float_t tmp_mucut = -10.;
+  Jet_MuOpen_Mu_dPhiMuMu1Pt(tmp_jetcut,tmp_mucut);
+  if(tmp_jetcut >= jetcut && tmp_mucut >= mucut) return true;
+  return false;
+}
+
+void L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut) {
+
+  //Find the highest pt jet with deltaphi condition
+  Float_t jetptmax = -10.;
+  Int_t Nj = upgrade_->nJets;
+  Int_t Nmu = upgrade_->nMuons;
+
+  for(Int_t ue=0; ue < Nj; ue++){
+    Int_t bxjet = upgrade_->jetBx.at(ue);        		
+    if(bxjet != 0) continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if(pt < jetptmax) continue;
+    Float_t phijet = upgrade_->jetPhi.at(ue);
+
+    Bool_t corr = false;
+
+    for(Int_t imu=0; imu < Nmu; imu++){
+      Int_t bx = upgrade_->muonBx.at(imu);
+      if (bx != 0) continue;
+      if(!PassMuonQual(imu)) continue;
+      Float_t muonpt = upgrade_->muonEt.at(imu);			
+      if(muonpt < 0.) continue;
+      Float_t muphi = upgrade_->muonPhi.at(imu);			
+      if(fabs(muphi-phijet) < MuOpenJetCordPhi) corr = true;
+    }
+
+    if(corr) jetptmax = pt;
+  }
+
+  //Loop over the muons list twice and save all pairs that satisfy the deltaphi veto
+  Bool_t corr = false;
+  Float_t maxpt1 = -10.;
+  Float_t maxpt2 = -10.;
+
+  std::vector<std::pair<Float_t,Float_t> > muonPairs;
+  for (Int_t imu=0; imu < Nmu; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if (bx != 0) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);			
+    if(!PassMuonQual(imu)) continue;
+    Float_t phi1 = upgrade_->muonPhi.at(imu);			
+
+    for (Int_t imu2=0; imu2 < Nmu; imu2++) {
+      if (imu2 == imu) continue;
+      Int_t bx2 = upgrade_->muonBx.at(imu2);
+      if (bx2 != 0) continue;
+      Float_t pt2 = upgrade_->muonEt.at(imu2);			
+      if(!PassMuonQual(imu)) continue;
+      Float_t phi2 = upgrade_->muonPhi.at(imu2);			
+
+      Float_t dphi = phi1 - phi2; //Should get the binning, but for GMT is quite fine
+      if(fabs(dphi) > MuMudPhi){
+        corr = true;
+        muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
+      }
+    }
+  }
+
+  //Select the muon pair in which one of the two muons is the highest pt muon satisfying the deltaphi veto
+  if(corr){
+    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairIt  = muonPairs.begin();
+    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairEnd = muonPairs.end();
+    for(; muonPairIt != muonPairEnd; ++muonPairIt){
+      Float_t pt1 = muonPairIt->first;
+      Float_t pt2 = muonPairIt->second;
+
+      if(pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) {
+        maxpt1 = pt1;
+        maxpt2 = pt2;
+      }
+    }
+  }
+
+  Float_t maxptmu = maxpt1 > maxpt2 ? maxpt1 : maxpt2; //only the highest pt muon counts for the correlation, the second muon is Open
+
+  if(jetptmax > 0. && maxptmu > 0.){
+    jetcut = jetptmax;
+    mucut = maxptmu;
+  }
+
   return;
 }

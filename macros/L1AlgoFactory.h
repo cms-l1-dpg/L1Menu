@@ -2,20 +2,14 @@
 #define  __L1ALGOFACTORY_INC__
 
 #include "L1Ntuple.h"
-#include<iostream>
+#include <iostream>
 
-enum EtSumType { ETT, HTT, ETM, HTM }; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
-const size_t PHIBINS = 18;
-const Double_t PHIBIN[] = {10,30,50,70,90,110,130,150,170,190,210,230,250,270,290,310,330,350};
-const size_t ETABINS = 23;
-const Double_t ETABIN[] = {-5.,-4.5,-4.,-3.5,-3.,-2.172,-1.74,-1.392,-1.044,-0.696,-0.348,0.,0.348,0.696,1.044,1.392,1.74,2.172,3.,3.5,4.,4.5,5.};
-
-const size_t ETAMUBINS = 65;
-const Double_t ETAMU[] = { -2.45,-2.4,-2.35,-2.3,-2.25,-2.2,-2.15,-2.1,-2.05,-2,-1.95,-1.9,-1.85,-1.8,-1.75,-1.7,-1.6,-1.5,-1.4,-1.3,-1.2,-1.1,-1,-0.9,-0.8,-0.7,-0.6,-0.5,-0.4,-0.3,-0.2,-0.1,0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1,1.1,1.2,1.3,1.4,1.5,1.6,1.7,1.75,1.8,1.85,1.9,1.95,2,2.05,2.1,2.15,2.2,2.25,2.3,2.35,2.4,2.45 };
+const enum EtSumType { ETT, HTT, ETM, HTM }; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
 
 class L1AlgoFactory: public L1Ntuple{
  public:
-  L1AlgoFactory():jetCentFwd(3.0)
+  L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.17),
+  MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(3.0), MuMudPhi(1.0)
   {};
   //L1AlgoFactory(TTree *tree);
 
@@ -107,9 +101,34 @@ class L1AlgoFactory: public L1Ntuple{
   Int_t etaINjetCoord(Double_t eta);
   inline Double_t degree(Double_t radian);
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Cross ~~~~~
+  Bool_t Mu_HTT(Float_t mucut, Float_t HTcut);
+  void Mu_HTTPt(Float_t& mucut, Float_t& HTcut );
+  Bool_t Muer_ETM(Float_t mucut, Float_t ETMcut);
+  void Muer_ETMPt(Float_t& mucut, Float_t& ETMcut );
+  Bool_t SingleEG_Eta2p1_HTT(Float_t egcut, Float_t HTTcut, Bool_t isIsolated = false);
+  void SingleEG_Eta2p1_HTTPt(Float_t& egcut, Float_t& HTTcut, Bool_t isIsolated = false);
+  Bool_t Muer_TauJetEta2p17(Float_t mucut, Float_t taucut, Bool_t isIsolated = false);
+  void Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t isIsolated = false);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MultiCross ~~~~~
+  Bool_t DoubleJetCentral_ETM(Float_t jetcut1, Float_t jetcut2, Float_t ETMcut);
+  void DoubleJetCentral_ETMPt(Float_t& jetcut1, Float_t& jetcut2, Float_t& ETMcut);
+  Bool_t DoubleEG_HT(Float_t EGcut, Float_t HTcut);
+  void DoubleEG_HTPt(Float_t& EGcut, Float_t& HTcut);
+  Bool_t Jet_MuOpen_Mu_dPhiMuMu1(Float_t jetcut, Float_t mucut);
+  void Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut);
+
  private:
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Hard coded cut value ~~~~~
  float jetCentFwd;
+ float muonER;
+ float eleER;
+ float tauER;
+ float MuJetCordPhi;
+ float MuJetCordEta;
+ float MuOpenJetCordPhi;
+ float MuMudPhi;
  
 
 };

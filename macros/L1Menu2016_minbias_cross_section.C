@@ -127,8 +127,8 @@ class L1Menu2015 : public L1AlgoFactory {
 
   Int_t L1BitNumber(std::string l1name);
 
-  //  Bool_t Cross();
-  //  Bool_t MultiCross();
+  Bool_t Cross();
+  Bool_t MultiCross();
   Bool_t Jets();
   Bool_t MultiJets();
   Bool_t EGamma();
@@ -857,32 +857,32 @@ Bool_t L1Menu2015::MultiMuons() {
 
   return res;
 }
-/*
+
 Bool_t L1Menu2015::Cross() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_Mu6_HTT100", algoFactory->Mu_HTT(6.,100.));
-  InsertInMenu("L1_Mu8_HTT50", algoFactory->Mu_HTT(8.,50.));
-  InsertInMenu("L1_Mu0er_ETM40", algoFactory->Muer_ETM(0.,40.));
-  InsertInMenu("L1_Mu0er_ETM55", algoFactory->Muer_ETM(0.,55.));
-  InsertInMenu("L1_Mu10er_ETM30", algoFactory->Muer_ETM(10.,30.));
-  InsertInMenu("L1_Mu10er_ETM50", algoFactory->Muer_ETM(10.,50.));
-  InsertInMenu("L1_EG25er_HTT100", algoFactory->SingleEG_Eta2p1_HTT(25., 100.,false));
-  InsertInMenu("L1_Mu16er_TauJet20er", algoFactory->Muer_TauJetEta2p17(16.,20.));
-  InsertInMenu("L1_Mu16er_IsoTau28er", algoFactory->Muer_TauJetEta2p17(16.,28.,true));
-  InsertInMenu("L1_Mu16er_IsoTau32er", algoFactory->Muer_TauJetEta2p17(16.,32.,true));
-  InsertInMenu("L1_IsoEG20er_TauJet20er", algoFactory->IsoEGer_TauJetEta2p17(20.,20.));
-  InsertInMenu("L1_Mu12_EG10", algoFactory->Mu_EG(12.,10.));
-  InsertInMenu("L1_Mu20_EG10", algoFactory->Mu_EG(20.,10.));
-  InsertInMenu("L1_Mu4_EG18", algoFactory->Mu_EG(4.,18.));
-  InsertInMenu("L1_Mu5_EG15", algoFactory->Mu_EG(5.,15.));
-  InsertInMenu("L1_Mu5_EG20", algoFactory->Mu_EG(5.,20.));
-  InsertInMenu("L1_Mu5_IsoEG18", algoFactory->Mu_EG(5.,18.,true));
-  InsertInMenu("L1_DoubleMu6_EG6", algoFactory->DoubleMu_EG(6.,6.,true));
-  InsertInMenu("L1_DoubleMu7_EG7", algoFactory->DoubleMu_EG(7,7.,true));
-  InsertInMenu("L1_Mu5_DoubleEG5", algoFactory->Mu_DoubleEG(5., 5.));
-  InsertInMenu("L1_Mu6_DoubleEG10", algoFactory->Mu_DoubleEG(6., 10.));
+  InsertInMenu("L1_Mu6_HTT100", Mu_HTT(6.,100.));
+  InsertInMenu("L1_Mu8_HTT50", Mu_HTT(8.,50.));
+  InsertInMenu("L1_Mu0er_ETM40", Muer_ETM(0.,40.));
+  InsertInMenu("L1_Mu0er_ETM55", Muer_ETM(0.,55.));
+  InsertInMenu("L1_Mu10er_ETM30", Muer_ETM(10.,30.));
+  InsertInMenu("L1_Mu10er_ETM50", Muer_ETM(10.,50.));
+  InsertInMenu("L1_EG25er_HTT100", SingleEG_Eta2p1_HTT(25., 100.,false));
+  InsertInMenu("L1_Mu16er_TauJet20er", Muer_TauJetEta2p17(16.,20.));
+  InsertInMenu("L1_Mu16er_IsoTau28er", Muer_TauJetEta2p17(16.,28.,true));
+  InsertInMenu("L1_Mu16er_IsoTau32er", Muer_TauJetEta2p17(16.,32.,true));
+  InsertInMenu("L1_IsoEG20er_TauJet20er", IsoEGer_TauJetEta2p17(20.,20.));
+  InsertInMenu("L1_Mu12_EG10", Mu_EG(12.,10.));
+  InsertInMenu("L1_Mu20_EG10", Mu_EG(20.,10.));
+  InsertInMenu("L1_Mu4_EG18", Mu_EG(4.,18.));
+  InsertInMenu("L1_Mu5_EG15", Mu_EG(5.,15.));
+  InsertInMenu("L1_Mu5_EG20", Mu_EG(5.,20.));
+  InsertInMenu("L1_Mu5_IsoEG18", Mu_EG(5.,18.,true));
+  InsertInMenu("L1_DoubleMu6_EG6", DoubleMu_EG(6.,6.,true));
+  InsertInMenu("L1_DoubleMu7_EG7", DoubleMu_EG(7,7.,true));
+  InsertInMenu("L1_Mu5_DoubleEG5", Mu_DoubleEG(5., 5.));
+  InsertInMenu("L1_Mu6_DoubleEG10", Mu_DoubleEG(6., 10.));
 
   Int_t NN = insert_ibin;
   Int_t kOFFSET_old = kOFFSET;
@@ -921,15 +921,15 @@ Bool_t L1Menu2015::MultiCross() {
 
   insert_ibin = 0;
 
-  InsertInMenu("L1_Mu3_JetC16_WdEtaPhi2", algoFactory->Mu_JetCentral_delta(3.,16.));
-  InsertInMenu("L1_Mu3_JetC52_WdEtaPhi2", algoFactory->Mu_JetCentral_delta(3.,52.));
+  InsertInMenu("L1_Mu3_JetC16_WdEtaPhi2", Mu_JetCentral_delta(3.,16.));
+  InsertInMenu("L1_Mu3_JetC52_WdEtaPhi2", Mu_JetCentral_delta(3.,52.));
 
-  InsertInMenu("L1_DoubleJetC56_ETM60", algoFactory->DoubleJetCentral_ETM(56.,56.,60.));
+  InsertInMenu("L1_DoubleJetC56_ETM60", DoubleJetCentral_ETM(56.,56.,60.));
 
-  InsertInMenu("L1_DoubleEG6_HTT150", algoFactory->DoubleEG_HT(6., 150.));
+  InsertInMenu("L1_DoubleEG6_HTT150", DoubleEG_HT(6., 150.));
 
-  InsertInMenu("L1_Jet32MuOpen_Mu10_dPhiMu_Mu1", algoFactory->Jet_MuOpen_Mu_dPhiMuMu1(32.,10.));
-  InsertInMenu("L1_Jet32MuOpen_EG10_dPhiMu_EG1", algoFactory->Jet_MuOpen_EG_dPhiMuEG1(32.,10.));
+  InsertInMenu("L1_Jet32MuOpen_Mu10_dPhiMu_Mu1", Jet_MuOpen_Mu_dPhiMuMu1(32.,10.));
+  InsertInMenu("L1_Jet32MuOpen_EG10_dPhiMu_EG1", Jet_MuOpen_EG_dPhiMuEG1(32.,10.));
 
   Int_t NN = insert_ibin;
   Int_t kOFFSET_old = kOFFSET;
@@ -963,7 +963,7 @@ Bool_t L1Menu2015::MultiCross() {
 
   return res;
 }
-*/
+
 Bool_t L1Menu2015::Jets() {
 
   insert_ibin = 0;
@@ -1303,12 +1303,19 @@ void L1Menu2015::Loop() {
   Int_t nPAG      = 0;
   Int_t nTRIGPHYS = 0;
 	
+  int nLumi(0),currentLumi(-1);
+
   first = true;
 
   for (Long64_t i=0; i<nevents; i++){     
     Long64_t ientry = LoadTree(i); if (ientry < 0) break;
     GetEntry(i);
 
+    if (event_ -> lumi != currentLumi){
+      //std::cout << "New Lumi section: " << event_->lumi << std::endl;      
+      currentLumi=event_ -> lumi;
+      nLumi++;
+    }
     //FilL1Bits();
     if(first) MyInit();
 
@@ -1331,8 +1338,8 @@ void L1Menu2015::Loop() {
     Bool_t multimuons  = MultiMuons();
     Bool_t sums        = Sums();
     Bool_t technical   = Technical();
-    Bool_t cross       = false; //Cross();
-    Bool_t multicross  = false; //MultiCross();
+    Bool_t cross       = Cross();
+    Bool_t multicross  = MultiCross();
 
     Bool_t pass  = jets || multijets || eg || multieg || sums || muons || multimuons || cross || multicross || technical;
 
@@ -1490,6 +1497,10 @@ void L1Menu2015::Loop() {
   Float_t scal = 11246.; // ZB per bunch in kHz
   scal /= nZeroBiasevents*1000.;
   scal *= theNumberOfBunches;
+  if (theNumberOfBunches == -1)
+  {
+    scal = (80.*631.)/(nLumi*23.3);      
+  }
 
   Float_t extrarate = 10.;
 
@@ -1748,6 +1759,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   L1Menu2015 a(themenufilename,NumberOfBunches,noHF,noTauInJet,AveragePU);
   a.OpenWithList(L1NtupleFileName);
   a.Loop();
+
   /*
   if(drawplots){
 
