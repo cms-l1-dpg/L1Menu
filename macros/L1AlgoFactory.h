@@ -15,8 +15,6 @@ class L1AlgoFactory: public L1Ntuple{
 
   void SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin=4);
   void DoubleMuPt(Float_t& mu1pt, Float_t& mu2pt, Bool_t isHighQual = false, Bool_t isER = false);
-  void OniaPt(Float_t& ptcut1, Float_t& ptcut2, Int_t delta);
-  void Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta);
   void TripleMuPt(Float_t& mu1pt, Float_t& mu2pt, Float_t& mu3pt, Int_t qualmin = 4);
   void QuadMuPt(Float_t& mu1pt, Float_t& mu2pt, Float_t& mu3pt, Float_t& mu4pt, Int_t qualmin = 4);
 
@@ -55,8 +53,6 @@ class L1AlgoFactory: public L1Ntuple{
 
   Bool_t SingleMu(Float_t ptcut, Bool_t isER, Int_t qualmin=4);
   Bool_t DoubleMu(Float_t mu1pt, Float_t mu2pt, Bool_t isHighQual = false, Bool_t isER = false);
-  Bool_t Onia(Float_t mu1pt, Float_t mu2pt, Int_t delta);
-  Bool_t Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta);
   Bool_t TripleMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Int_t qualmin);
   Bool_t QuadMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Float_t mu4pt, Int_t qualmin);
 

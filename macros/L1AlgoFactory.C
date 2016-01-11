@@ -31,14 +31,6 @@ Bool_t L1AlgoFactory::DoubleMu(Float_t mu1pt, Float_t mu2pt, Bool_t isHighQual, 
   return false;
 }
 
-Bool_t L1AlgoFactory::Onia(Float_t mu1pt, Float_t mu2pt, Int_t delta) {
-  Float_t tmp_cut1 = -10.;
-  Float_t tmp_cut2 = -10.;
-  OniaPt(tmp_cut1,tmp_cut2,delta);
-  if(tmp_cut1 >= mu1pt && tmp_cut2 >= mu2pt) return true;
-  return false;
-}
-
 Bool_t L1AlgoFactory::Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta) {
   Float_t tmp_cut1 = -10.;
   Float_t tmp_cut2 = -10.;
@@ -318,130 +310,6 @@ void L1AlgoFactory::DoubleMuPt(Float_t& cut1, Float_t& cut2, Bool_t isMuHighQual
   if(mu2ptmax >= 0.){
     cut1 = mu1ptmax;
     cut2 = mu2ptmax;
-  }
-
-  return;
-}
-
-void L1AlgoFactory::OniaPt(Float_t& ptcut1, Float_t& ptcut2, Int_t delta) {
-
-  if(upgrade_->nMuons < 2) return;
-
-  Float_t maxpt1 = -10.;
-  Float_t maxpt2 = -10.;
-  Float_t corr = false;
-
-  std::vector<std::pair<Float_t,Float_t> > muonPairs;
-
-  for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
-    Int_t bx = upgrade_->muonBx.at(imu);		
-    if(bx != 0) continue;
-    Float_t pt = upgrade_->muonEt.at(imu);			
-    Float_t eta = upgrade_->muonEta.at(imu);
-    if (fabs(eta) > 2.1) continue;
-    Int_t ieta1 = etaMuIdx(eta);
-
-    for (UInt_t imu2=0; imu2 < upgrade_->nMuons; imu2++) {
-      if (imu2 == imu) continue;
-      Int_t bx2 = upgrade_->muonBx.at(imu2);		
-      if(bx2 != 0) continue;
-      Float_t pt2 = upgrade_->muonEt.at(imu2);			
-      Float_t eta2 = upgrade_->muonEta.at(imu2);
-      if (fabs(eta2) > 2.1) continue;
-      Int_t ieta2 = etaMuIdx(eta2);
-
-      Float_t deta = ieta1 - ieta2; 
-      if ( fabs(deta) <= delta){
-        corr = true;
-        muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
-      }
-
-    }
-  }
-
-  if(corr){
-    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairIt  = muonPairs.begin();
-    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairEnd = muonPairs.end();
-    for (; muonPairIt != muonPairEnd; ++muonPairIt) {
-      Float_t pt1 = muonPairIt->first;
-      Float_t pt2 = muonPairIt->second;
-
-      if ( pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
-      {
-        maxpt1 = pt1;
-        maxpt2 = pt2;
-      }
-    }
-
-  }
-
-  if(corr && maxpt2 >= 0.){
-    ptcut1 = maxpt1;
-    ptcut2 = maxpt2;
-  }
-
-  return;
-}
-
-void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta) {
-
-  if(upgrade_->nMuons < 2) return;
-
-  Float_t maxpt1 = -10.;
-  Float_t maxpt2 = -10.;
-  Float_t corr = false;
-
-  std::vector<std::pair<Float_t,Float_t> > muonPairs;
-
-  for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
-    Int_t bx = upgrade_->muonBx.at(imu);		
-    if(bx != 0) continue;
-    Float_t pt = upgrade_->muonEt.at(imu);			
-    Float_t eta = upgrade_->muonEta.at(imu);
-    if(isER && fabs(eta) > 1.6) continue;
-    Int_t ieta1 = etaMuIdx(eta);
-    Int_t charge1 = upgrade_->muonChg.at(imu);
-
-    for (UInt_t imu2=0; imu2 < upgrade_->nMuons; imu2++) {
-      if (imu2 == imu) continue;
-      Int_t bx2 = upgrade_->muonBx.at(imu2);		
-      if(bx2 != 0) continue;
-      Float_t pt2 = upgrade_->muonEt.at(imu2);			
-      Float_t eta2 = upgrade_->muonEta.at(imu2);
-      if(isER && fabs(eta2) > 1.6) continue;
-      Int_t ieta2 = etaMuIdx(eta2);
-      Int_t charge2 = upgrade_->muonChg.at(imu2);
-
-      if(isOS && charge1*charge2 > 0) continue;
-
-      Float_t deta = ieta1 - ieta2; 
-      if(fabs(deta) <= delta){
-        corr = true;
-        muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
-      }
-
-    }
-  }
-
-  if(corr){
-    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairIt  = muonPairs.begin();
-    std::vector<std::pair<Float_t,Float_t> >::const_iterator muonPairEnd = muonPairs.end();
-    for(; muonPairIt != muonPairEnd; ++muonPairIt){
-      Float_t pt1 = muonPairIt->first;
-      Float_t pt2 = muonPairIt->second;
-
-      if(pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
-      {
-        maxpt1 = pt1;
-        maxpt2 = pt2;
-      }
-    }
-
-  }
-
-  if(corr && maxpt2 >= 0.){
-    ptcut1 = maxpt1;
-    ptcut2 = maxpt2;
   }
 
   return;
@@ -1771,13 +1639,6 @@ void L1AlgoFactory::DoubleMuXOpenPt(Float_t& cut) {
   else cut = -10.;
 
   return;
-}
-Bool_t L1AlgoFactory::Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta) {
-  Float_t tmp_cut1 = -10.;
-  Float_t tmp_cut2 = -10.;
-  Onia2015Pt(tmp_cut1,tmp_cut2,isER,isOS,delta);
-  if(tmp_cut1 >= mu1pt && tmp_cut2 >= mu2pt) return true;
-  return false;
 }
 
 void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta) {
