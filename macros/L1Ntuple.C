@@ -8,6 +8,7 @@ Long64_t L1Ntuple::GetEntries()
 L1Ntuple::L1Ntuple()
 {
   doEvent=true; doreco=true; domuonreco=true; dol1extra=true; dol1emuextra=true; dol1menu=true;
+  event_ = NULL;
 }
 
 L1Ntuple::L1Ntuple(const std::string & fname)

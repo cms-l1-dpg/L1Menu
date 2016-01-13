@@ -990,12 +990,15 @@ Bool_t L1Menu2015::Jets() {
   insert_ibin = 0;
 
   Float_t SingleJetPtCut = -10.;
+  //Float_t SingleTauPtCut = -10.;
   Float_t SingleJetCPtCut = -10.;
+  //SingleTauPt(SingleTauPtCut, false);
   SingleJetPt(SingleJetPtCut, false);
   SingleJetPt(SingleJetCPtCut, true);
 
   InsertInMenu("L1_SingleJet36",SingleJetPtCut >= 36.);
   InsertInMenu("L1_SingleJet52",SingleJetPtCut >= 52.);
+  //InsertInMenu("L1_SingleTau52",SingleTauPtCut >= 52.);
   InsertInMenu("L1_SingleJet68",SingleJetPtCut >= 68.);
   InsertInMenu("L1_SingleJet92",SingleJetPtCut >= 92.);
   InsertInMenu("L1_SingleJet128",SingleJetPtCut >= 128.);
@@ -1177,7 +1180,7 @@ Bool_t L1Menu2015::EGamma() {
   SingleEGPt(SingleEGPtCut,false, false);
 
   Float_t SingleIsoEGerPtCut = -10.;
-  SingleEGPt(SingleIsoEGerPtCut,false,true);
+  SingleEGPt(SingleIsoEGerPtCut,true,true);
 
 
   InsertInMenu("L1_SingleEG2_BptxAND",SingleEGPtCut >= 2.);
@@ -1339,8 +1342,8 @@ void L1Menu2015::Loop() {
     Long64_t ientry = LoadTree(i); if (ientry < 0) break;
     GetEntry(i);
 
-    if (event_ -> lumi != currentLumi){
-      //std::cout << "New Lumi section: " << event_->lumi << std::endl;      
+    if (event_ != NULL && event_ -> lumi != currentLumi){
+      std::cout << "New Lumi section: " << event_->lumi << std::endl;      
       currentLumi=event_ -> lumi;
       nLumi++;
     }
@@ -1527,6 +1530,7 @@ void L1Menu2015::Loop() {
   scal *= theNumberOfBunches;
   if (theNumberOfBunches == -1)
   {
+    //scal = (80.*631.)/(1326*23.3);      
     scal = (80.*631.)/(nLumi*23.3);      
   }
 
@@ -1724,9 +1728,11 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   }
   else if(whichFileAndLumiToUse==4){
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
-    NumberOfBunches = 2508; 
-    L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
-    themenufilename = "Menu_20PU_25bx.txt";
+    NumberOfBunches = -1; 
+    //L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "ntuples_256843_stage1.list";
+    //L1NtupleFileName = "ntuples_256843_stage2.list";
+    themenufilename = "Menu_256843.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;
     Energy = 13;
@@ -1736,14 +1742,27 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
     NumberOfBunches = -1; 
     //L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
-    //L1NtupleFileName = "ntuples_256843_stage2_full.list";
+    L1NtupleFileName = "ntuples_256843_stage2_full.list";
     //L1NtupleFileName = "ntuples_256843_stage1.list";
-    L1NtupleFileName = "ntuples_256843_stage2.list";
+    //L1NtupleFileName = "ntuples_256843_stage2.list";
     themenufilename = "Menu_256843.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 20;
     Energy = 13;
     targetlumi= 70.;
+  }
+  else if(whichFileAndLumiToUse==6){
+    // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
+    NumberOfBunches = 1021; 
+    //L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "ntuples_256843_stage2_Simone.list";
+    //L1NtupleFileName = "ntuples_256843_stage1.list";
+    //L1NtupleFileName = "ntuples_256843_stage2.list";
+    themenufilename = "Menu_256843.txt";
+    //themenufilename = "Menu_Noprescales.txt";
+    AveragePU = 13;
+    Energy = 13;
+    targetlumi= 50.;
   }
   else{
     std::cout << "##########################" << std::endl;
@@ -1752,12 +1771,12 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   }
 
   std::stringstream txtos;
-  txtos << "L1Menu_" << Energy << "_" << AveragePU << "_rates.txt";
+  txtos << "L1Menu_" << L1NtupleFileName <<"_" << Energy << "_" << AveragePU << "_rates.txt";
   TString TXTOutPutFileName = txtos.str();
   std::ofstream TXTOutfile(TXTOutPutFileName);
 
   std::stringstream csvos;
-  csvos << "L1Menu_" << Energy << "_" << AveragePU << "_rates.csv";
+  csvos << "L1Menu_" << L1NtupleFileName <<"_" << Energy << "_" << AveragePU << "_rates.csv";
   TString CSVOutPutFileName = csvos.str();
   std::ofstream CSVOutfile(CSVOutPutFileName);
 
@@ -1790,7 +1809,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
   a.OpenWithList(L1NtupleFileName);
   a.Loop();
 
-  /*
+  
   if(drawplots){
 
     TFile fOut("plots_menu.root","RECREATE");
@@ -1806,7 +1825,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
 
     TCanvas* c1 = new TCanvas("c1","c1");
     c1 -> cd();
-    gStyle -> SetOptStat(0);
+    //gStyle -> SetOptStat(0);
     h_Cross -> SetLineColor(4);
     h_Cross -> GetXaxis() -> SetLabelSize(0.035);
     h_Cross -> SetYTitle(YaxisName);
@@ -1952,7 +1971,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_PAGS_shared -> SetYTitle("Shared rate (kHz)");
     h_PAGS_shared -> Draw();
     c13->Write();
-		
+        
     TCanvas* c14 = new TCanvas("c14","c14");
     c14 -> cd();
     cor_TRIGPHYS -> GetXaxis() -> SetBinLabel(1,"Muon");
@@ -1981,7 +2000,7 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_TRIGPHYS_pure -> GetXaxis() -> SetBinLabel(4,"Muon+EG");
     h_TRIGPHYS_pure -> GetXaxis() -> SetBinLabel(5,"Muon+Hadronic");
     h_TRIGPHYS_pure -> GetXaxis() -> SetBinLabel(6,"EG+Hadronic");
-		
+        
     h_TRIGPHYS_pure -> SetYTitle("Pure rate (kHz)");
     h_TRIGPHYS_pure -> Draw();
     c15->Write();
@@ -1994,14 +2013,14 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     h_TRIGPHYS_shared -> GetXaxis() -> SetBinLabel(4,"Muon+EG");
     h_TRIGPHYS_shared -> GetXaxis() -> SetBinLabel(5,"Muon+Hadronic");
     h_TRIGPHYS_shared -> GetXaxis() -> SetBinLabel(6,"EG+Hadronic");
-	
+    
     h_TRIGPHYS_shared -> SetYTitle("Shared rate (kHz)");
     h_TRIGPHYS_shared -> Draw();
     c16->Write();
 
     fOut.Close();
   }
-  */
+  
   std::cout << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@13TeV" << "\t +/- \t" << "error_rate@13TeV" << "\t " << "pure@13TeV" << std::endl;
   TXTOutfile << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@13TeV" << "\t +/- \t" << "error_rate@13TeV" << "\t " << "pure@13TeV" << std::endl;
 

@@ -308,10 +308,14 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
     GetEntry(event);
 
     if (event%200000 == 0) {
-      std::cout << "Processed " << event << " events. Current run number: " << event_ -> run << " lumi: " << event_ -> lumi << std::endl;
+      if (event_!=NULL)
+        std::cout << "Processed " << event << " events. Current run number: " << event_ -> run << " lumi: " << event_ -> lumi << std::endl;
+      else
+        std::cout << "Processed " << event << " events." << std::endl;
+
     }
 
-    if (event_ -> lumi != currentLumi){
+    if (event_!=NULL && event_ -> lumi != currentLumi){
       std::cout << "New Lumi section: " << event_->lumi << std::endl;      
       currentLumi=event_ -> lumi;
       nLumi++;
@@ -455,6 +459,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
   float scaleFactor(1.);
   if (runOnData){
     std::cout << "# of lumis sections used for rate computation : " << nLumi << std::endl;
+    //scaleFactor = (80.*631.)/(1326*23.3);      
     scaleFactor = (80.*631.)/(nLumi*23.3);      
   }else{
     std::cout << "# of zero bias events (weighted) used for rate computation : " << nZeroBias << std::endl;
@@ -516,13 +521,19 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       isData = true;      
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
       // filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_2.root";
-      filename = "ntuples_256843_stage2.list";
+      filename = "ntuples_256843_stage2_full.list";
     }
   else if (fileType == "RUN256843_Stage1")
     {
       isData = true;      
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
-      filename = "../../../l1t_stage1.root";
+      filename = "ntuples_256843_stage1.list";
+    }
+  else if (fileType == "Stage2_Simone")
+    {
+      isData = true;      
+      // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
+      filename = "ntuples_256843_stage2_Simone.list";
     }
   else 
     {
