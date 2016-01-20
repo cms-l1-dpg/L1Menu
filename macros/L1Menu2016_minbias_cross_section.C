@@ -1062,7 +1062,7 @@ Bool_t L1Menu2015::MultiJets() {
   InsertInMenu("L1_DoubleIsoTau32er", DoubleTauJetEta2p17(32.,32.,true));
   InsertInMenu("L1_DoubleIsoTau36er", DoubleTauJetEta2p17(36.,36.,true));
   InsertInMenu("L1_DoubleIsoTau40er", DoubleTauJetEta2p17(40.,40.,true));
-  InsertInMenu("L1_DoubleTauJet40er", DoubleTauJetEta2p17(40.,40., true));
+  InsertInMenu("L1_DoubleTauJet40er", DoubleTauJetEta2p17(40.,40.,false));
   //Not clear the logic for VBF and what jetclass variable is all about
   InsertInMenu("L1_TripleJet_92_76_64_VBF", TripleJet_VBF(92.,76.,64.,1));
   InsertInMenu("L1_TripleJet_84_68_48_VBF", TripleJet_VBF(84.,68.,48.,1));
@@ -1316,7 +1316,7 @@ void L1Menu2015::Loop() {
 
   Int_t nevents = fChain->GetEntriesFast();//GetEntries();
   Double_t nZeroBiasevents = 0.;
-  if(nevents > 1000000) nevents = 1000000;
+  //if(nevents > 1000000) nevents = 1000000;
 
   Int_t NPASS = 0; 
 
@@ -1730,7 +1730,8 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
     NumberOfBunches = -1; 
     //L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
-    L1NtupleFileName = "ntuples_256843_stage1.list";
+    L1NtupleFileName = "ntuples_256843_stage1B.list";
+    //L1NtupleFileName = "ntuples_256843_stage1.list";
     //L1NtupleFileName = "ntuples_256843_stage2.list";
     themenufilename = "Menu_256843.txt";
     //themenufilename = "Menu_Noprescales.txt";
@@ -1758,7 +1759,20 @@ void RunL1(Bool_t drawplots=true, Bool_t writefiles=true, Int_t whichFileAndLumi
     L1NtupleFileName = "ntuples_256843_stage2_Simone.list";
     //L1NtupleFileName = "ntuples_256843_stage1.list";
     //L1NtupleFileName = "ntuples_256843_stage2.list";
-    themenufilename = "Menu_256843.txt";
+    themenufilename = "Menu_256843_Simone.txt";
+    //themenufilename = "Menu_Noprescales.txt";
+    AveragePU = 13;
+    Energy = 13;
+    targetlumi= 50.;
+  }
+  else if(whichFileAndLumiToUse==7){
+    // 13 TeV ZeroBias 62X sample 20PU 25 ns, 2012 re-emulation
+    NumberOfBunches = 1021; 
+    //L1NtupleFileName = "root:///data2/p/pellicci/L1DPG/root/v14/25ns_20PU_ReEmul2012Gct10GeV/L1Tree.root";
+    L1NtupleFileName = "ntuples_260627_Aaron.list";
+    //L1NtupleFileName = "ntuples_256843_stage1.list";
+    //L1NtupleFileName = "ntuples_256843_stage2.list";
+    themenufilename = "Menu_256843_Simone.txt";
     //themenufilename = "Menu_Noprescales.txt";
     AveragePU = 13;
     Energy = 13;
