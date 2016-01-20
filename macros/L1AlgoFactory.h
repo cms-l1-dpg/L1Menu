@@ -3,6 +3,7 @@
 
 #include "L1Ntuple.h"
 #include <iostream>
+#include <cassert>
 
 enum EtSumType { ETT, HTT, ETM, HTM }; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
 
@@ -29,6 +30,7 @@ class L1AlgoFactory: public L1Ntuple{
   void TripleJetPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Bool_t isCentral = false);
   Bool_t TripleJet_VBF(Float_t jet1, Float_t jet2, Float_t jet3, Int_t jetclass = 0);
   void QuadJetPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Float_t& cut4, Bool_t isCentral = false);
+  void SingleTauPt(Float_t& cut, Bool_t isCentral);
 
   void Mu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isIsolated = false, Int_t qualmin=4);
   void DoubleMu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isMuHighQual = false );
@@ -45,6 +47,7 @@ class L1AlgoFactory: public L1Ntuple{
 
   void QuadJetCentral_TauJetPt(Float_t& jetcut, Float_t& taucut);
 
+  int GetSumEtIdx(EtSumType type);
   void ETMVal(Float_t& ETMcut);
   void HTTVal(Float_t& HTTcut);
   void HTMVal(Float_t& HTMcut);

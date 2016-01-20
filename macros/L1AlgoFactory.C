@@ -521,6 +521,24 @@ void L1AlgoFactory::TripleEGPt(Float_t& cut1, Float_t& cut2, Float_t& cut3 ) {
   return;
 }
 
+void L1AlgoFactory::SingleTauPt(Float_t& cut, Bool_t isCentral) {
+
+  Float_t ptmax = -10.;
+  for(UInt_t ue=0; ue < upgrade_->nTaus; ue++) {
+    Int_t bx = upgrade_->tauBx.at(ue);        		
+    if(bx != 0) continue;
+    Bool_t isFwdJet = fabs(upgrade_->tauEta.at(ue)) > jetCentFwd ? true : false;
+    if(isCentral && isFwdJet) continue;
+
+    Float_t pt = upgrade_->tauEt.at(ue);
+    if(pt >= ptmax) ptmax = pt;
+  }
+
+  cut = ptmax;
+  return;
+}
+
+
 void L1AlgoFactory::SingleJetPt(Float_t& cut, Bool_t isCentral) {
 
   Float_t ptmax = -10.;
@@ -632,7 +650,7 @@ void L1AlgoFactory::DoubleTauJetEta2p17Pt(Float_t& cut1, Float_t& cut2, Bool_t i
   for(UInt_t ue=0; ue < upgrade_->nTaus; ue++) {
     Int_t bx = upgrade_->tauBx.at(ue);
     if(bx != 0) continue; 
-    if(!isIsolated && !upgrade_->tauIso.at(ue)) continue;
+    if(isIsolated && !upgrade_->tauIso.at(ue)) continue;
     Float_t pt = upgrade_->tauEt.at(ue);
     Float_t eta = upgrade_->tauEta.at(ue);
     if(fabs(eta) > 2.17) continue;  // eta = 5 - 16
@@ -1237,11 +1255,28 @@ void L1AlgoFactory::QuadJetCentral_TauJetPt(Float_t& jetcut, Float_t& taucut){
   return;
 }
 
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::GetSumEtIdx
+//  Description:  /* cursor */
+// ===========================================================================
+int L1AlgoFactory::GetSumEtIdx(EtSumType type)
+{
+
+  for (unsigned int i = 0; i < upgrade_->sumType.size(); ++i)
+  {
+    if (upgrade_->sumType[i] == type)
+      return i;
+  }
+  return -1;
+}       // -----  end of function L1AlgoFactory::GetSumEtIdx  -----
+
 
 void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
 
   Float_t TheETM = -10;
-  if(upgrade_->sumBx[EtSumType::ETM]==0) TheETM =upgrade_->sumEt[EtSumType::ETM];
+  int idx= GetSumEtIdx(EtSumType::ETM);
+  assert(upgrade_->sumType[idx] == EtSumType::ETM);
+  if(upgrade_->sumBx[idx]==0) TheETM =upgrade_->sumEt[idx];
   ETMcut = TheETM;
   return;
 }
@@ -1249,7 +1284,9 @@ void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
 void L1AlgoFactory::HTTVal(Float_t& HTTcut) {
 
   Float_t TheHTT = -10;
-  if(upgrade_->sumBx[EtSumType::HTT]==0) TheHTT =upgrade_->sumEt[EtSumType::HTT];
+  int idx= GetSumEtIdx(EtSumType::HTT);
+  assert(upgrade_->sumType[idx] == EtSumType::HTT);
+  if(upgrade_->sumBx[idx]==0) TheHTT =upgrade_->sumEt[idx];
   HTTcut = TheHTT;
   return;
 }
@@ -1257,7 +1294,9 @@ void L1AlgoFactory::HTTVal(Float_t& HTTcut) {
 void L1AlgoFactory::HTMVal(Float_t& HTMcut) {
 
   Float_t TheHTM = -10;
-  if (upgrade_->sumBx[EtSumType::HTM]==0) TheHTM = upgrade_->sumEt[EtSumType::HTM];
+  int idx= GetSumEtIdx(EtSumType::HTM);
+  assert(upgrade_->sumType[idx] == EtSumType::HTM);
+  if(upgrade_->sumBx[idx]==0) TheHTM =upgrade_->sumEt[idx];
   HTMcut = TheHTM;
   return;
 }
@@ -1265,7 +1304,9 @@ void L1AlgoFactory::HTMVal(Float_t& HTMcut) {
 void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
 
   Float_t TheETT = -10;
-  if(upgrade_->sumBx[EtSumType::ETT]==0) TheETT = upgrade_->sumEt[EtSumType::ETT];
+  int idx= GetSumEtIdx(EtSumType::ETT);
+  assert(upgrade_->sumType[idx] == EtSumType::ETT);
+  if(upgrade_->sumBx[idx]==0) TheETT =upgrade_->sumEt[idx];
   ETTcut = TheETT;
   return;
 }
