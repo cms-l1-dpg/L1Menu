@@ -1,0 +1,86 @@
+# Comment Section:
+# POG Name: 
+# PAG Name: HIGGS, SUSY, EXO, TOP, SMP, BPH, B2G
+
+# Config Section, starting with % for parsing:
+% NumberOfBunches = 1025
+
+
+# L1Seed     Bit Prescale POG PAG
+L1_ZeroBias               1  631    Jet,EG HIGGS,EXO
+L1_SingleEG2_BptxAND      2  1
+L1_SingleMu7              3  50
+L1_SingleEG10             4  3000
+L1_SingleEG10er           5  3000
+L1_SingleEG2_BptxAND      6  1
+L1_SingleMu7              7  50
+L1_SingleEG15             8  4
+L1_SingleIsoEG20          9  1
+L1_SingleJet52            10 1500
+L1_SingleJet68            11 300
+L1_SingleJet92            12 800
+L1_SingleJet128           13 1
+L1_SingleJet176           14 1
+L1_SingleJet200           15 1
+L1_SingleJet36            16 3000
+L1_SingleIsoEG25er        17 1
+L1_SingleIsoEG25          18 400
+L1_SingleIsoEG30er        19 1
+L1_SingleEG10             20 3000
+L1_SingleIsoEG22er        21 1
+L1_SingleMu14er           22 75
+L1_SingleEG5              23 262139
+L1_SingleEG25             24 1
+L1_SingleEG40             25 1
+L1_SingleIsoEG18er        26 1
+L1_SingleIsoEG20er        27 4
+L1_SingleEG20             28 1
+L1_SingleEG30             29 1
+L1_SingleEG35             30 1
+L1_SingleMu16             32 1
+L1_SingleMu5              33 40
+L1_SingleMu20er           34 1
+L1_SingleMu12             35 10
+L1_SingleMu20             36 1
+L1_SingleMu25             37 1
+L1_SingleMu30             38 1
+L1_SingleMu16er           40 1
+L1_SingleMuOpen           31 262139
+L1_SingleJetC32_NotBptxOR 39 1
+L1_SingleJetC20_NotBptxOR 42 100
+#L1_SingleMuBeamHalo       43 1
+L1_SingleMuOpen_NotBptxOR 41 1
+
+L1_DoubleTauJet40er                                  1
+L1_DoubleIsoTau32er                                  1
+L1_DoubleMu0                                         60
+L1_DoubleMuOpen                                      1
+L1_DoubleJetC52                                      2000
+L1_DoubleJetC84                                      1
+L1_DoubleJetC112                                     1
+L1_DoubleMu_10_Open                                  150
+L1_DoubleMu_10_3p5                                   1
+L1_DoubleMu7_EG7                                     1
+L1_DoubleMu6_EG6                                     1
+L1_DoubleEG6_HTT150                                  1
+L1_DoubleEG_15_10                                    1
+L1_DoubleEG_22_10                                    1
+L1_DoubleJetC100                                     1
+L1_DoubleJetC56_ETM60                                1
+L1_DoubleMu0_Eta1p6_WdEta18                          1
+L1_DoubleIsoTau28er                                  1
+L1_DoubleIsoTau36er                                  1
+L1_DoubleIsoTau40er                                  1
+L1_DoubleMu0_Eta1p6_WdEta18_OS                       1
+L1_DoubleMu_12_5                                     1
+L1_DoubleMu_10_0_WdEta18                             1
+L1_DoubleTau40er                                     1
+L1_DoubleMu0er16_WdEta18_OS                          1
+L1_DoubleMu0er16_WdEta18                             1
+L1_Mu6_DoubleEG10                                    1
+L1_Mu5_DoubleEG5                                     262139
+L1_Jet32_DoubleMu_Open_10_MuMuNotWdPhi23_JetMuWdPhi1 1
+
+
+#vim syntax match Comment "\v#.*$"
+
