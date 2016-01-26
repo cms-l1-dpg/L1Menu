@@ -1263,7 +1263,7 @@ int L1AlgoFactory::GetSumEtIdx(EtSumType type)
 {
   for (unsigned int i = 0; i < upgrade_->sumType.size(); ++i )
   {
-    if (upgrade_->sumType.at(i) == type && upgrade_->sumBx.at(i) == 0)
+    if (upgrade_->sumType.at(i) == type && upgrade_->sumBx.at(i) == SelBx)
       return i;
   }
   return -1;
@@ -1275,7 +1275,7 @@ void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
   Float_t TheETM = -10;
   int idx = GetSumEtIdx(EtSumType::ETM);
   assert(upgrade_->sumType.at(idx) == EtSumType::ETM);
-  if(upgrade_->sumBx.at(idx)==0) TheETM =upgrade_->sumEt.at(idx);
+  if(upgrade_->sumBx.at(idx)==SelBx) TheETM =upgrade_->sumEt.at(idx);
   ETMcut = TheETM;
   return;
 }
@@ -1285,7 +1285,7 @@ void L1AlgoFactory::HTTVal(Float_t& HTTcut) {
   Float_t TheHTT = -10;
   int idx= GetSumEtIdx(EtSumType::HTT);
   assert(upgrade_->sumType.at(idx) == EtSumType::HTT);
-  if(upgrade_->sumBx.at(idx)==0) TheHTT =upgrade_->sumEt.at(idx);
+  if(upgrade_->sumBx.at(idx)==SelBx) TheHTT =upgrade_->sumEt.at(idx);
   HTTcut = TheHTT;
   return;
 }
@@ -1295,7 +1295,7 @@ void L1AlgoFactory::HTMVal(Float_t& HTMcut) {
   Float_t TheHTM = -10;
   int idx= GetSumEtIdx(EtSumType::HTM);
   assert(upgrade_->sumType.at(idx) == EtSumType::HTM);
-  if(upgrade_->sumBx.at(idx)==0) TheHTM =upgrade_->sumEt.at(idx);
+  if(upgrade_->sumBx.at(idx)==SelBx) TheHTM =upgrade_->sumEt.at(idx);
   HTMcut = TheHTM;
   return;
 }
@@ -1305,7 +1305,7 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
   Float_t TheETT = -10;
   int idx= GetSumEtIdx(EtSumType::ETT);
   assert(upgrade_->sumType.at(idx) == EtSumType::ETT);
-  if(upgrade_->sumBx.at(idx)==0) TheETT =upgrade_->sumEt.at(idx);
+  if(upgrade_->sumBx.at(idx)==SelBx) TheETT =upgrade_->sumEt.at(idx);
   ETTcut = TheETT;
   return;
 }

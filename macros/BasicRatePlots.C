@@ -339,7 +339,7 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
 
     float egPt      = 0.; SingleEGPt(egPt,false,false);
     float egErPt    = 0.; SingleEGPt(egErPt,false,true);
-    float isoEgPt   = 0.; SingleEGPt(isoEgPt,true,false);
+    float isoEgPt   = 0.; SingleEGPt(isoEgPt,true,true);
     float egEta     = SingleEGEta(16.,false);
     float isoegEta  = SingleEGEta(16.,true);
 
@@ -527,13 +527,21 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
     {
       isData = true;      
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
-      filename = "ntuples_256843_stage1.list";
+      filename = "ntuples_256843_stage1B.list";
     }
   else if (fileType == "Stage2_Simone")
     {
-      isData = true;      
+      isData = false;      
+      nBunches = 1021;
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
       filename = "ntuples_256843_stage2_Simone.list";
+    }
+  else if (fileType == "RUN260627_Aaron")
+    {
+      isData = false;      
+      nBunches = 1021;
+      // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
+      filename = "ntuples_260627_Aaron.list";
     }
   else 
     {
