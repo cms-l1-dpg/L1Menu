@@ -21,41 +21,57 @@
 #include <string>
 #include <vector>
 
+#include <boost/program_options.hpp>
+#include <boost/filesystem.hpp>
+
 // ===  FUNCTION  ============================================================
 //         Name:  main
 //  Description:  
 // ===========================================================================
 int main ( int argc, char *argv[] )
 {
+  namespace po = boost::program_options;
+  // Declare the supported options.
+  boost::program_options::options_description desc("Allowed options");
+  const std::string defaultMenu = "Menu_Tune.txt";
+  //const std::string defaultMenu = "Menu_256843_Tune.txt";
+  desc.add_options()
+    ("help,h", "produce help message")
+    ("menufile,m", po::value<std::string>()->default_value(defaultMenu), "set the input menu")
+    ("filelist,l", po::value<std::string>()->default_value("./ntuples_256843_stage2.list"), "set the input ntuple list")
+    ("writetext,t", po::value<bool>()->default_value(true), "write rate to output")
+    ("writecsv,c", po::value<bool>()->default_value(true), "write rate to output in CSV format")
+    ("writeplot,p", po::value<bool>()->default_value(true), "write plot to output")
+    ("outfilename,o", po::value<std::string>()->default_value("Auto"), "set output file name")
+    ("outputdir,d", po::value<std::string>()->default_value("results"), "set output directory")
+    ;
+  po::variables_map vm;
+  po::store(po::parse_command_line(argc, argv, desc), vm);
+  po::notify(vm);    
 
-  //// Declare the supported options.
-  //po::options_description desc("Allowed options");
-  //desc.add_options()
-    //("help", "produce help message")
-    //("compression", po::value<int>(), "set compression level")
-    //;
+  if (vm.count("help")) {
+    std::cout << desc << std::endl;
+    return 1;
+  }
 
-  //po::variables_map vm;
-  //po::store(po::parse_command_line(ac, av, desc), vm);
-  //po::notify(vm);    
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Create output directory ~~~~~
+  if (!boost::filesystem::is_directory(vm["outputdir"].as<std::string>() ))
+  {
+    boost::filesystem::create_directory(vm["outputdir"].as<std::string>());
+  }
 
-  //if (vm.count("help")) {
-    //cout << desc << "\n";
-    //return 1;
-  //}
+  L1Menu2016 men(vm["menufile"].as<std::string>(), vm["filelist"].as<std::string>());
 
-  //if (vm.count("compression")) {
-    //cout << "Compression level was set to " 
-      //<< vm["compression"].as<int>() << ".\n";
-  //} else {
-    //cout << "Compression level was not set.\n";
-  //}
+  men.ConfigOutput(vm["writetext"].as<bool>(), 
+      vm["writecsv"].as<bool>(), 
+      vm["writeplot"].as<bool>(), 
+      vm["outputdir"].as<std::string>(),
+      vm["outfilename"].as<std::string>());
 
-
-  L1Menu2016 men;
-  men.ReadMenu("Menu_256843_Tune.txt");
-  men.OpenWithList("./ntuples_256843_stage2.list");
-  men.PrintConfig();
+  men.PreLoop();
   men.Loop();
+  men.PostLoop();
+  //men.PrintConfig();
+  //men.Loop();
   return EXIT_SUCCESS;
 }				// ----------  end of function main  ----------

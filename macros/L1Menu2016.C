@@ -21,10 +21,11 @@
 //      Method:  L1Menu2016
 // Description:  constructor
 //----------------------------------------------------------------------------
-L1Menu2016::L1Menu2016 ():
-  writefiles(true), drawplots(true)
+L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
+  tuplefilename(filelist),
+  menufilename(MenuName),
+  writefiles(true), writeplots(true), scale(0)
 {
-  InitConfig();
 }  // -----  end of method L1Menu2016::L1Menu2016  (constructor)  -----
 
 //----------------------------------------------------------------------------
@@ -43,6 +44,14 @@ L1Menu2016::L1Menu2016 ( const L1Menu2016 &other )
 //----------------------------------------------------------------------------
 L1Menu2016::~L1Menu2016 ()
 {
+  
+  WriteHistogram();
+  outfile->close();
+  outcsv->close();
+  outrootfile->Close();
+  delete  outfile;
+  delete outcsv;
+  delete outrootfile;
 }  // -----  end of method L1Menu2016::-L1Menu2016  (destructor)  -----
 
 //----------------------------------------------------------------------------
@@ -58,6 +67,35 @@ L1Menu2016::operator = ( const L1Menu2016 &other )
   return *this;
 }  // -----  end of method L1Menu2016::operator =  (assignment operator)  ---
 
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ConfigOutput
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_, 
+    std::string outputdir_, std::string outputname_)
+{
+  writefiles = writetext_;
+  writecsv = writecsv_;
+  writeplots = writeplot_;
+  outputdir = outputdir_;
+  if (outputname_ == "Auto")
+  {
+    outputname = SetOutputName();
+  }
+  else
+    outputname = outputname_;
+
+  if (writefiles)
+    outfile = new std::fstream( outputdir + "/" + outputname +".txt", std::fstream::in);
+  if (writecsv)
+    outcsv = new std::fstream( outputdir + "/" + outputname +".csv", std::fstream::in);
+  if (writeplots)
+  {
+    std::string rootfilename = outputdir + "/" + outputname +".root";
+    outrootfile =  new TFile( rootfilename.c_str(), "RECREATE");
+  }
+  return true;
+}       // -----  end of function L1Menu2016::ConfigOutput  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::InitConfig
@@ -85,7 +123,76 @@ bool L1Menu2016::InitConfig()
   L1ObjectMap["ETM"] = &L1Event.ETM;
   L1ObjectMap["ETT"] = &L1Event.ETT;
 
+
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Map to old func for now. ~~~~~
+  // MutliJets
+  L1SeedFun["L1_DoubleJetC52"] = std::bind(&L1AlgoFactory::DoubleJet, this, 52, 52, true);
+  L1SeedFun["L1_DoubleJetC84"] = std::bind(&L1AlgoFactory::DoubleJet, this, 84, 84, true);
+  L1SeedFun["L1_DoubleJetC100"] = std::bind(&L1AlgoFactory::DoubleJet, this, 100, 100, true);
+  L1SeedFun["L1_DoubleJetC112"] = std::bind(&L1AlgoFactory::DoubleJet, this, 112, 112, true);
+  L1SeedFun["L1_DoubleIsoTau28er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 28.,28.,true);
+  L1SeedFun["L1_DoubleIsoTau32er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 32.,32.,true);
+  L1SeedFun["L1_DoubleIsoTau36er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 36.,36.,true);
+  L1SeedFun["L1_DoubleIsoTau40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,true);
+  L1SeedFun["L1_DoubleTauJet40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,false);
   L1SeedFun["L1_TripleJet_92_76_64_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 92.,76.,64.,1);
+  L1SeedFun["L1_TripleJet_84_68_48_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 84.,68.,48.,1);
+  L1SeedFun["L1_QuadJetC40"] = std::bind(&L1AlgoFactory::QuadJet, this, 40.,40.,40.,40.,true);
+  L1SeedFun["L1_QuadJetC60"] = std::bind(&L1AlgoFactory::QuadJet, this, 60.,60.,60.,60.,true);
+  L1SeedFun["L1_QuadJetC36_TauJet52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
+
+  // MultiMuon
+  L1SeedFun["L1_DoubleMu0_Eta1p6_WdEta18_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18);
+  L1SeedFun["L1_DoubleMu0_Eta1p6_WdEta18"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18);
+  L1SeedFun["L1_DoubleMu_10_0_WdEta18"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18);
+  L1SeedFun["L1_DoubleMu0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 0.,0.,true, false);
+  L1SeedFun["L1_DoubleMuOpen"] = std::bind(&L1AlgoFactory::DoubleMuXOpen, this, 0.);
+  L1SeedFun["L1_DoubleMu_10_Open"] = std::bind(&L1AlgoFactory::DoubleMuXOpen, this, 10.);
+  L1SeedFun["L1_DoubleMu_10_0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 10.,0.,true, false);
+  L1SeedFun["L1_DoubleMu_10_3p5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 10.,3.5,true, false);
+  L1SeedFun["L1_DoubleMu_12_5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 12.,5.,true,false);
+  L1SeedFun["L1_TripleMu0"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,4);
+  L1SeedFun["L1_TripleMu_5_5_3"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,5.,3.,4);
+  L1SeedFun["L1_QuadMu0"] = std::bind(&L1AlgoFactory::QuadMu, this, 0.,0.,0.,0.,4);
+
+  //Cross
+  L1SeedFun["L1_Mu6_HTT100"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 6.,100.);
+  L1SeedFun["L1_Mu8_HTT50"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 8.,50.);
+  L1SeedFun["L1_Mu0er_ETM40"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 0.,40.);
+  L1SeedFun["L1_Mu0er_ETM55"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 0.,55.);
+  L1SeedFun["L1_Mu10er_ETM30"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 10.,30.);
+  L1SeedFun["L1_Mu10er_ETM50"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 10.,50.);
+  L1SeedFun["L1_Mu14er_ETM30"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 14.,30.);
+  L1SeedFun["L1_EG25er_HTT100"] = std::bind(&L1AlgoFactory::SingleEG_Eta2p1_HTT, this, 25., 100.,false);
+  L1SeedFun["L1_Mu16er_TauJet20er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,20.,false);
+  L1SeedFun["L1_Mu16er_IsoTau28er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,28.,true);
+  L1SeedFun["L1_Mu16er_IsoTau32er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,32.,true);
+  L1SeedFun["L1_IsoEG20er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
+  L1SeedFun["L1_Mu12_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,10.,false, 4);
+  L1SeedFun["L1_Mu20_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,10.,false, 4);
+  L1SeedFun["L1_Mu4_EG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 4.,18.,false, 4);
+  L1SeedFun["L1_Mu5_EG15"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,15.,false, 4);
+  L1SeedFun["L1_Mu5_EG20"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,20.,false, 4);
+  L1SeedFun["L1_Mu5_IsoEG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,18.,true, 4);
+  L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,true);
+  L1SeedFun["L1_DoubleMu7_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,true);
+  L1SeedFun["L1_Mu5_DoubleEG5"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 5., 5.);
+  L1SeedFun["L1_Mu6_DoubleEG10"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 6., 10.);
+
+
+  //MultiCross
+  L1SeedFun["L1_Mu3_JetC16_WdEtaPhi2"] = std::bind(&L1AlgoFactory:: Mu_JetCentral_delta, this, 3.,16.);
+  L1SeedFun["L1_Mu3_JetC52_WdEtaPhi2"] = std::bind(&L1AlgoFactory:: Mu_JetCentral_delta, this, 3.,52.);
+  L1SeedFun["L1_DoubleJetC56_ETM60"] = std::bind(&L1AlgoFactory:: DoubleJetCentral_ETM, this, 56.,56.,60.);
+  L1SeedFun["L1_DoubleEG6_HTT150"] = std::bind(&L1AlgoFactory:: DoubleEG_HT, this, 6., 150.);
+  L1SeedFun["L1_Jet32MuOpen_Mu10_dPhiMu_Mu1"] = std::bind(&L1AlgoFactory:: Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
+  L1SeedFun["L1_Jet32MuOpen_EG10_dPhiMu_EG1"] = std::bind(&L1AlgoFactory:: Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
+
+  //MultiEG
+  L1SeedFun["L1_DoubleEG_15_10"] = std::bind(&L1AlgoFactory:: DoubleEG, this, 15.,10.,false );
+  L1SeedFun["L1_DoubleEG_22_10"] = std::bind(&L1AlgoFactory:: DoubleEG, this, 22.,10.,false );
+  L1SeedFun["L1_TripleEG_14_10_8"] = std::bind(&L1AlgoFactory:: TripleEG, this, 14.,10.,8. );
+  L1SeedFun["L1_ZeroBias"] = [](){return true;};
   return true;
 
 }       // -----  end of function L1Menu2016::InitConfig  -----
@@ -107,39 +214,60 @@ bool L1Menu2016::BookHistogram()
   HistMap["Sums"]            = new TH1F("h_Sums","h_Sums",Nbin_max,-0.5,(float)Nbin_max-0.5);
   HistMap["Jets"]            = new TH1F("h_Jets","h_Jets",Nbin_max,-0.5,(float)Nbin_max-0.5);
   HistMap["MultiJets"]       = new TH1F("h_MultiJets","h_MultiJets",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["Egamma"]          = new TH1F("h_Egamma","h_Egamma",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["MultiEgamma"]     = new TH1F("h_MultiEgamma","h_MultiEgamma",Nbin_max,-0.5,(float)Nbin_max-0.5);
+  HistMap["EG"]          = new TH1F("h_Egamma","h_Egamma",Nbin_max,-0.5,(float)Nbin_max-0.5);
+  HistMap["MultiEG"]     = new TH1F("h_MultiEgamma","h_MultiEgamma",Nbin_max,-0.5,(float)Nbin_max-0.5);
   HistMap["Muons"]           = new TH1F("h_Muons","h_Muons",Nbin_max,-0.5,(float)Nbin_max-0.5);
   HistMap["MultiMuons"]      = new TH1F("h_MultiMuons","h_MultiMuons",Nbin_max,-0.5,(float)Nbin_max-0.5);
   HistMap["Technical"]       = new TH1F("h_Technical","h_Technical",Nbin_max,-0.5,(float)Nbin_max-0.5);
 
   HistMap["Block"]           = new TH1F("h_Block","h_Block",11,-0.5,10.5);
-  //HistMap["cor_Block"]       = new TH2F("cor_Block","cor_Block",10,-0.5,9.5,19,-0.5,9.5);
 
-  //HistMap["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS",NPAGS,-0.5,(float)NPAGS-0.5,NPAGS,-0.5,(float)NPAGS-0.5);
   HistMap["PAGS_pure"]       = new TH1F("h_PAGS_pure","h_PAGS_pure",NPAGS,-0.5,(float)NPAGS-0.5);
   HistMap["PAGS_shared"]     = new TH1F("h_PAGS_shared","h_PAGS_shared",NPAGS,-0.5,(float)NPAGS-0.5);
 
-  //HistMap["cor_TRIGPHYS"]    = new TH2F("cor_TRIGPHYS","cor_TRIGPHYS",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5,NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
   HistMap["TRIGPHYS_pure"]   = new TH1F("h_TRIGPHYS_pure","h_TRIGPHYS_pure",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
   HistMap["TRIGPHYS_shared"] = new TH1F("h_TRIGPHYS_shared","h_TRIGPHYS_shared",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
 
   HistMap["All"]             = new TH1F("h_All","h_All",N128,-0.5,N128-0.5);
   HistMap["Pure"]           = new TH1F("h_Pure","h_Pure",N128,-0.5,N128-0.5);
+
+  Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block",10,-0.5,9.5,19,-0.5,9.5);
+  Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS",NPAGS,-0.5,(float)NPAGS-0.5,NPAGS,-0.5,(float)NPAGS-0.5);
+  Hist2D["cor_TRIGPHYS"]    = new TH2F("cor_TRIGPHYS","cor_TRIGPHYS",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5,NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
   return true;
 }       // -----  end of function L1Menu2016::BookHistogram  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::WriteHistogram
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::WriteHistogram() 
+{
+
+  outrootfile->cd();
+  for(auto h : HistMap)
+  {
+    h.second->Write();
+  }
+  for(auto h : Hist2D)
+  {
+    h.second->Write();
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::WriteHistogram  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::ReadMenu
 //  Description:  /* cursor */
 // ===========================================================================
-bool L1Menu2016::ReadMenu(std::string themenufilename)
+bool L1Menu2016::ReadMenu()
 {
   mL1Seed.clear();
 
   //Read the prescales table
   boost::char_separator<char> sep(",");
-  std::ifstream menufile(themenufilename);
+  std::ifstream menufile(menufilename);
   std::string line;
   if (!menufile)
   {
@@ -171,7 +299,11 @@ bool L1Menu2016::ReadMenu(std::string themenufilename)
     L1Seed temp;
     temp.name = seed;
     temp.bit = bit;
-    temp.prescale = prescale;
+    if (prescale < 0)
+      temp.prescale = INFTY;
+    else
+      temp.prescale = prescale;
+      
     if (pog.length() != 0)
     {
       tokenizer tokens(pog, sep);
@@ -188,7 +320,13 @@ bool L1Menu2016::ReadMenu(std::string themenufilename)
         temp.PAG.push_back(t);
       }
     }
-    std::cout << temp.name <<" " << temp.bit <<" "<< temp.prescale << " " << temp.POG.size() <<" " << temp.PAG.size() << std::endl;
+    if (writefiles)
+    {
+      assert(outfile != nullptr);
+      
+    }
+    //std::cout << temp.name <<" " << temp.bit <<" "<< temp.prescale << " " 
+      //<< temp.POG.size() <<" " << temp.PAG.size() << std::endl;
 
     mL1Seed[seed] = temp;
 
@@ -239,7 +377,9 @@ bool L1Menu2016::OpenWithList(std::string filelist)
   if (!CheckFirstFile())      exit(0);
   if (!OpenWithoutInit())     exit(0);
 
-  std::cout.flush();std::cout<<"Going to init the available trees..."<<std::endl;std::cout.flush();
+  std::cout.flush();
+  std::cout<<"Going to init the available trees..."<<std::endl;
+  std::cout.flush();
   Init();
 
   return true;
@@ -270,7 +410,7 @@ bool L1Menu2016::ParseConfig(const std::string line)
     L1Config[key] = value;
   }
   else
-    std::cout << "Not reconfiguzed config: " << key<< std::endl;
+    std::cout << "Not reconfiguzed config key " << key<< std::endl;
   
 
   return true;
@@ -295,7 +435,14 @@ bool L1Menu2016::PrintConfig() const
 // ===========================================================================
 bool L1Menu2016::PreLoop()
 {
+  InitConfig();
+  ReadMenu();
+  BuildRelation();
+  L1SeedFunc();
+
+  OpenWithList(tuplefilename);
   
+  BookHistogram();
 
   return true;
 }       // -----  end of function L1Menu2016::PreLoop  -----
@@ -325,9 +472,9 @@ bool L1Menu2016::Loop()
 {
   ////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Initial ~~~~~
   Int_t nevents = fChain->GetEntriesFast();//GetEntries();
-  //Double_t nZeroBiasevents = 0.;
-  int nLumi(0),currentLumi(-1);
-  PreLoop();
+  int currentLumi(-1);
+  nZeroBiasevents = 0.;
+  nLumi = 0;
 
   for (Long64_t i=0; i<nevents; i++){     
     Long64_t ientry = LoadTree(i); 
@@ -341,14 +488,15 @@ bool L1Menu2016::Loop()
         currentLumi=event_ -> lumi;
         nLumi++;
       } 
-    } else if (i % 20000 == 0)
+    } else if (i % 2000 == 0)
         std::cout << "Processed " << i << " events." << std::endl;
 
+    nZeroBiasevents++;
 
     GetL1Event();
     RunMenu();
 
-    //if (i > 10) break;
+    ////if (i > 10000) break;
 
   }
 
@@ -528,8 +676,6 @@ bool L1Menu2016::Loop()
 
   //}  // end evt loop
 
-  PostLoop();
-
   return true;
 }       // -----  end of function L1Menu2016::Loop  -----
 
@@ -539,10 +685,64 @@ bool L1Menu2016::Loop()
 // ===========================================================================
 bool L1Menu2016::PostLoop()
 {
+  CalScale();
+
+  std::cout << "Summary" << std::endl;
+
+  for(auto &seed : mL1Seed)
+  {
+    seed.second.firerate = seed.second.firecounts *scale;
+    seed.second.firerateerror = sqrt(seed.second.firecounts)*scale;
+    seed.second.purerate = seed.second.purecounts *scale;
+  }
   
+  PrintRates();
+  FillDefHist1D();
 
   return true;
 }       // -----  end of function L1Menu2016::PostLoop  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::PrintRates
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::PrintRates()
+{
+  
+  std::cout << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@13TeV" << "\t +/- \t" << "error_rate@13TeV" << "\t " << "pure@13TeV" << std::endl;
+
+  Float_t totalrate = 0.;
+  Float_t totalpurerate = 0.;
+  bool bybit = true;
+  if (bybit)
+  {
+    for(auto i : BitMap)
+    {
+      auto seed = mL1Seed[i.second];
+      std::cout << seed.bit <<"\t" << seed.name<<"\t " << seed.prescale << "\t" <<
+        seed.firerate <<"\t +/- \t" << seed.firerateerror <<"\t" << seed.purerate<<std::endl;
+      totalrate +=seed.firerate;
+      totalpurerate +=seed.purerate;
+    }
+    
+  }
+  else{
+    for(auto seed : mL1Seed)
+    {
+      std::cout << seed.second.bit <<"\t" << seed.first <<"\t " << seed.second.prescale << "\t" <<
+        seed.second.firerate <<"\t +/- \t" << seed.second.firerateerror <<"\t" << seed.second.purerate<<std::endl;
+      totalrate +=seed.second.firerate;
+      totalpurerate +=seed.second.purerate;
+    }
+
+  }
+
+
+  std::cout << std::endl << "Total rate (without overlaps) = " << totalrate << std::endl;
+  std::cout << std::endl << "Total pure rate  = " << totalpurerate << std::endl;
+
+  return true;
+}       // -----  end of function L1Menu2016::PrintRates  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::BuildRelation
@@ -550,6 +750,52 @@ bool L1Menu2016::PostLoop()
 // ===========================================================================
 bool L1Menu2016::BuildRelation()
 {
+  int misbit= -1;
+  for(auto &l1 : mL1Seed)
+  {
+
+    // bit
+    if (BitMap.find(l1.second.bit) != BitMap.end())
+    {
+      std::cout << "Duplicate bit number at " << l1.second.bit <<" for " 
+        << BitMap[l1.second.bit] <<" and " << l1.first 
+        << "; setting " << l1.first  << " to bit " << misbit << std::endl;
+      l1.second.bit = misbit;
+      BitMap[l1.second.bit] = l1.first;
+      misbit--;
+    } else BitMap[l1.second.bit] = l1.first;
+
+    for(auto &pog : l1.second.POG)
+    {
+      if (POGMap.find(pog) != POGMap.end())
+      {
+        POGMap[pog] = {};
+        assert(POGMap[pog].size() == 0);
+      } else POGMap[pog].push_back(l1.second.bit);
+    }
+
+    for(auto &pag : l1.second.PAG)
+    {
+      if (PAGMap.find(pag) != PAGMap.end())
+      {
+        PAGMap[pag] = {};
+        assert(PAGMap[pag].size() == 0);
+      } else PAGMap[pag].push_back(l1.second.bit);
+    }
+  }
+
+  // Total
+  for(auto& pog : POGMap)
+  {
+    PhyCounts[pog.first] = 0;
+    PhyPureCounts[pog.first] = 0;
+  }
+  for(auto& pag : PAGMap)
+  {
+    PhyCounts[pag.first] = 0;
+    PhyPureCounts[pag.first] = 0;
+  }
+  PhyCounts["All"] = 0;
   
 
   return true;
@@ -559,8 +805,23 @@ bool L1Menu2016::BuildRelation()
 //         Name:  L1Menu2016::L1SeedFunc
 //  Description:  
 // ===========================================================================
-bool L1Menu2016::L1SeedFunc() const
+bool L1Menu2016::L1SeedFunc()
 {
+  for(auto &L1Seed : mL1Seed)
+  {
+    if (L1SeedFun.find(L1Seed.first) != L1SeedFun.end())
+      continue;
+
+    if(ParseSingleObject(L1Seed.first));
+      continue;
+
+    if(ParseSingleSum(L1Seed.first));
+      continue;
+
+
+    std::cerr << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
+  }
+
   return true;
 }       // -----  end of function L1Menu2016::L1SeedFunc  -----
 
@@ -581,20 +842,26 @@ void L1Menu2016::CorrectScale(TH1F* h, Float_t scal) {
 
 bool L1Menu2016::InsertInMenu(std::string L1name, bool value) {
 
-  //bool post_prescale = false;
+
+  bool post_prescale = false;
 
   if ( mL1Seed.find(L1name) == mL1Seed.end() ) {
     std::cout << "This shouldn't happen!" << std::endl;
     return false;
   }
 
-  //if ( mL1Seed[L1name].ncounts % mL1Seed[L1name].prescale == 0) 
-    //post_prescale = value; 
+  mL1Seed[L1name].eventfire = false;
+  mL1Seed[L1name].ncounts++;
+  if ( mL1Seed[L1name].ncounts % mL1Seed[L1name].prescale == 0) 
+    post_prescale = value; 
 
-  //void(post_prescale);
-  //insert_names[insert_ibin] = L1name;
-  //insert_val[insert_ibin] = post_prescale ;
-  //insert_ibin++;
+  mL1Seed[L1name].eventfire = post_prescale;
+  if (post_prescale)
+  {
+    mL1Seed[L1name].firecounts++;
+    FireSeed.insert(L1name);
+  }
+
 
   return true;
 }
@@ -718,24 +985,68 @@ bool L1Menu2016::ParseSingleObject(const std::string SeedName)
   }
 
   L1object += postfix;
-  if (L1ObjectMap.find(L1object) != L1ObjectMap.end())
-  {
-    //std::cout << L1object <<" "<<*(L1ObjectMap[L1object])<<" "<< pt<<" ";
-    returnbool = returnbool && *(L1ObjectMap[L1object])> pt;
-  }
-
-  std::cout <<  std::distance(tokenit, tokens.end())<< std::endl;
+  //std::cout <<  std::distance(tokenit, tokens.end())<< std::endl;
   if (std::distance(tokenit, tokens.end()) > 1) 
   {
     tokenit++;
     Seedtoken = *tokenit;
     if (Seedtoken == "NotBptxOR" || Seedtoken == "BptxAND")
     {
+      //Do nothing for now
       returnbool = returnbool && true;
     }
+    else
+      returnbool = returnbool && false;
   }
+
+  if (L1ObjectMap.find(L1object) != L1ObjectMap.end())
+  {
+    //std::cout << L1object <<" "<<*(L1ObjectMap[L1object])<<" "<< pt<<" ";
+    //returnbool = returnbool && *(L1ObjectMap[L1object]) >= pt;
+    L1SeedFun[SeedName] = std::bind(&SingleObjPt, L1ObjectMap[L1object], pt);
+    returnbool = returnbool && true;
+  }
+
   return returnbool;
 }       // -----  end of function L1Menu2016::ParseSingleObject  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseSingleSum
+//  Description:  /* cursor */
+// ===========================================================================
+bool L1Menu2016::ParseSingleSum(const std::string SeedName) 
+{
+  if (SeedName.find("L1_") == std::string::npos)
+  {
+    return false;
+  }
+  if (SeedName.find("ETM") == std::string::npos &&
+      SeedName.find("ETT") == std::string::npos && 
+      SeedName.find("HTT") == std::string::npos)
+  {
+    return false;
+  }
+
+  bool returnbool = true;
+  boost::char_separator<char> sep("_");
+  tokenizer tokens(SeedName, sep);
+  if (std::distance(tokens.begin(), tokens.end()) < 2) return false;
+  boost::tokenizer<boost::char_separator<char> >::iterator tokenit = tokens.begin();
+  tokenit++;
+  std::string Seedtoken(*tokenit);
+
+  std::string L1object ="";
+  std::string postfix = "";
+  unsigned int pt = -10;
+
+  std::smatch base_match;
+  std::regex integer("Single([^0-9]+)([0-9]+)([^0-9]*)");
+  if (std::regex_match(Seedtoken, base_match, integer))
+  {
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::ParseSingleSum  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::CheckL1Seed
@@ -748,11 +1059,7 @@ bool L1Menu2016::CheckL1Seed(const std::string L1Seed)
   {
     return L1SeedFun[L1Seed]();
   }
-  if (L1Seed.find("Single") != std::string::npos)
-  {
-    return ParseSingleObject(L1Seed);
-  }
-  std::cout << "No function call for :" << L1Seed << std::endl;
+  //std::cout << "No function call for :" << L1Seed << std::endl;
   return false;
 }       // -----  end of function L1Menu2016::CheckL1Seed  -----
 
@@ -762,12 +1069,137 @@ bool L1Menu2016::CheckL1Seed(const std::string L1Seed)
 // ===========================================================================
 bool L1Menu2016::RunMenu()
 {
+  FireSeed.clear();
   for(auto& seed: mL1Seed)
   {
-    std::cout <<  seed.first <<" " << CheckL1Seed(seed.first) << std::endl;
+    //std::cout <<  seed.first <<" " << CheckL1Seed(seed.first) << std::endl;
     InsertInMenu(seed.first, CheckL1Seed(seed.first));
     //std::cout <<  seed.first <<" " << ParseSingleObject(seed.first) << std::endl;
   }
 
+  CheckPhysFire();
+  CheckPureFire();
+
   return true;
 }       // -----  end of function L1Menu2016::RunMenu  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CheckPureFire
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::CheckPureFire() 
+{
+  if (FireSeed.size() != 1) return false;
+  std::set<std::string>::const_iterator fireit = FireSeed.begin();
+  mL1Seed[*fireit].purecounts++;
+  for(auto &pog : mL1Seed[*fireit].POG)
+  {
+    PhyPureCounts[pog]++;
+  }
+  for(auto &pag : mL1Seed[*fireit].PAG)
+  {
+    PhyPureCounts[pag]++;
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::CheckPureFire  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CheckPhysFire
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::CheckPhysFire()
+{
+  for(auto &phy : PhyCounts)
+  {
+    if (phy.first == "All") continue;
+    bool phyfire = false;
+    if (POGMap.find(phy.first) != POGMap.end())
+    {
+      for(auto &pogseed : POGMap[phy.first])
+      {
+        phyfire =  phyfire || mL1Seed[BitMap[pogseed]].eventfire;
+      }
+    }
+    if (PAGMap.find(phy.first) != PAGMap.end())
+    {
+      for(auto &pagseed : PAGMap[phy.first])
+        phyfire =  phyfire || mL1Seed[BitMap[pagseed]].eventfire;
+    }
+
+    if (phyfire)
+    {
+      phy.second++;
+    }
+  }
+
+  if (FireSeed.size() > 0) PhyCounts["All"]++;
+
+  return true;
+}       // -----  end of function L1Menu2016::CheckPhysFire  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CalScale
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::CalScale() 
+{
+  if (L1Config["NumberOfBunches"] == -1)
+  {
+    //scal = (80.*631.)/(1326*23.3);      
+    scale = (80.*631.)/(nLumi*23.3);      
+  } else {
+    scale = 11246.; // ZB per bunch in kHz
+    scale /= nZeroBiasevents*1000.;
+    scale *= L1Config["NumberOfBunches"];
+  }
+  return true;
+}       // -----  end of function L1Menu2016::CalScale  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::FillDefHist1D
+//  Description:  Fill in the redantant Histogram, for comparison with the old
+//  code
+// ===========================================================================
+bool L1Menu2016::FillDefHist1D()
+{
+  for(auto pog : POGMap)
+  {
+    if (HistMap.find(pog.first) == HistMap.end())
+      continue;
+    //Sort by bit
+    std::sort( pog.second.begin(), pog.second.end());
+    int binidx =1;
+    for(auto l1bit : pog.second)
+    {
+      std::string l1name = BitMap[l1bit];
+      std::cout << l1bit << " " << l1name<< std::endl;
+      HistMap[pog.first]->GetXaxis()->SetBinLabel(binidx, l1name.c_str());
+      HistMap[pog.first]->SetBinContent(binidx, mL1Seed[l1name].firecounts);
+      binidx++;
+    }
+    //assert(binidx == pog.second.size());
+    CorrectScale(HistMap[pog.first], scale);
+
+    //for (int i = 0; i < HistMap[pog.first]->GetNbinsX(); ++i)
+    //{
+      //std::cout << HistMap[pog.first]->GetXaxis()->GetBinLabel(i) <<" " 
+        //<< HistMap[pog.first]->GetBinContent(i) << std::endl;
+    //}
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::FillDefHist1D  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::SetOutputName
+//  Description:  
+// ===========================================================================
+std::string L1Menu2016::SetOutputName() const
+{
+  boost::filesystem::path menupath(menufilename);
+  boost::filesystem::path flistpath(tuplefilename);
+  std::stringstream ss;
+  ss << menupath.stem().string() << "-" << flistpath.stem().string();
+  return ss.str();
+}       // -----  end of function L1Menu2016::SetOutputName  -----

@@ -33,18 +33,26 @@
 
 // boost
 #include "boost/tokenizer.hpp"
-#include "boost/bind.hpp"
+#include "boost/filesystem.hpp"
 
 // Local
 #include "L1AlgoFactory.h"
+#define INFTY 262139
 struct L1Seed
 {
   std::string name;
   int bit;
-  unsigned int prescale;
+  int prescale;
   std::vector<std::string> POG;
   std::vector<std::string> PAG;
   unsigned int ncounts;
+  bool eventfire;
+  unsigned int firecounts;
+  unsigned int purecounts;
+  double firerate;
+  double firerateerror;
+  double purerate;
+
   L1Seed()
   {
     name = "";
@@ -53,6 +61,9 @@ struct L1Seed
     POG.clear();
     PAG.clear();
     ncounts = 0;
+    firecounts = 0;
+    purecounts = 0;
+    eventfire = false;
   }
 };
 
@@ -86,9 +97,17 @@ struct StructL1Event
   
 };
 
-typedef bool(*FUNCPTR)();
 typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
+
+// ===  FUNCTION  ============================================================
+//         Name:  SingleObjPt
+//  Description:  /* cursor */
+// ===========================================================================
+inline bool SingleObjPt(float* obj, double pt)
+{
+  return *obj >=pt ;
+}       // -----  end of function SingleObjPt  -----
 // ===========================================================================
 //        Class:  L1Menu2016
 //  Description:  A class to handle the L1Menu
@@ -98,25 +117,31 @@ class L1Menu2016 : public L1AlgoFactory
   public:
 
     // ====================  LIFECYCLE     ===============================
-    L1Menu2016 ();                             // constructor
+    L1Menu2016 (std::string MenuName, std::string filelist);                             // constructor
     L1Menu2016 ( const L1Menu2016 &other );   // copy constructor
     ~L1Menu2016 ();                            // destructor
 
     // ====================  ACCESSORS     ===============================
     bool BindAlgo();
     bool InitConfig();
+    bool PrintRates();
     bool OpenWithList(std::string filelist);
     bool ParseConfig(const std::string line);
     bool PrintConfig() const;
     bool PostLoop();
     bool Loop();
     bool CheckL1Seed(const std::string L1Seed);
-    bool L1SeedFunc() const;
+    bool L1SeedFunc();
     bool PreLoop();
     bool BookHistogram();
-    bool ReadMenu(std::string MenuName);
+    bool ReadMenu();
     bool BuildRelation();
+    bool WriteHistogram();
+    bool InitOutput();
 
+    bool ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_, 
+        std::string outputdir_, std::string outputname_);
+    std::string SetOutputName() const;
     // ====================  MUTATORS      ===============================
 
     // ====================  OPERATORS     ===============================
@@ -126,7 +151,13 @@ class L1Menu2016 : public L1AlgoFactory
     // ====================  DATA MEMBERS  ===============================
     bool writefiles;
     bool writecsv;
-    bool drawplots;
+    bool writeplots;
+    std::string  outputdir;
+    std::string  outputname;
+    std::fstream *outfile;
+    std::fstream *outcsv;
+    TFile        *outrootfile;
+
 
   protected:
     // ====================  METHODS       ===============================
@@ -135,23 +166,47 @@ class L1Menu2016 : public L1AlgoFactory
     void CorrectScale(TH1F* h, Float_t scal);
     bool InsertInMenu(std::string L1name, bool value);
     Bool_t EGamma();
+    bool CheckPureFire();
+    bool CheckPhysFire();
     bool ParseSingleObject(const std::string SeedName);
+    bool ParseSingleSum(const std::string SeedName);
     // ====================  DATA MEMBERS  ===============================
 
   private:
     // ====================  METHODS       ===============================
+    bool CalScale();
+    bool RunMenu();
+    bool FillDefHist1D();
 
     // ====================  DATA MEMBERS  ===============================
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Configurations ~~~~~
+    std::string outfilename;
+    std::string outfiledir;
+    std::string menufilename;
+    std::string tuplefilename;
+
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Rate variables ~~~~~
+    double scale;
+    unsigned int nZeroBiasevents;
+    unsigned int nLumi;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;
     std::map<std::string, float*> L1ObjectMap;
-    bool RunMenu();
     std::map<std::string, double> L1Config;
     std::map<std::string, L1Seed> mL1Seed;
     std::map<std::string, TH1F*> HistMap;
-
+    std::map<std::string, TH2F*> Hist2D;
 	std::map<std::string, std::function<bool()>> L1SeedFun;
-    std::map<std::string, std::map<int, int> > L1LSCount; // counting lumi section
+    std::map<int, std::string> BitMap;
 
+    //Relationship
+    std::set<std::string> FireSeed;
+    std::map<std::string, std::map<int, int> > L1LSCount; // counting lumi section
+    std::map<std::string, std::vector<int> > POGMap;
+    std::map<std::string, std::vector<int> > PAGMap;
+    std::map<std::string, int > PhyCounts;
+    std::map<std::string, int > PhyPureCounts;
 
 
 }; // -----  end of class L1Menu2016  -----
