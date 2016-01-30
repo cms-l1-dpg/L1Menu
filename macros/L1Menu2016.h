@@ -23,6 +23,7 @@
 #include <sstream>
 #include <vector>
 #include <iostream>
+#include <iomanip>
 #include <fstream>
 #include <sstream>
 #include <functional>
@@ -52,6 +53,7 @@ struct L1Seed
   double firerate;
   double firerateerror;
   double purerate;
+  std::string comment;
 
   L1Seed()
   {
@@ -64,6 +66,7 @@ struct L1Seed
     firecounts = 0;
     purecounts = 0;
     eventfire = false;
+    comment = "";
   }
 };
 
@@ -94,7 +97,6 @@ struct StructL1Event
     MuPt      = -10;
     MuerPt    = -10;
   }
-  
 };
 
 typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -124,7 +126,7 @@ class L1Menu2016 : public L1AlgoFactory
     // ====================  ACCESSORS     ===============================
     bool BindAlgo();
     bool InitConfig();
-    bool PrintRates();
+    bool PrintRates(std::ostream &out);
     bool OpenWithList(std::string filelist);
     bool ParseConfig(const std::string line);
     bool PrintConfig() const;
@@ -139,11 +141,22 @@ class L1Menu2016 : public L1AlgoFactory
     bool WriteHistogram();
     bool InitOutput();
 
+
     bool ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_, 
         std::string outputdir_, std::string outputname_);
     std::string SetOutputName() const;
     // ====================  MUTATORS      ===============================
 
+    bool ParseL1Seed(const std::string SeedName);
+    bool ParseSingleObject(const std::string SeedName);
+    bool ParseTripleJetVBF(const std::string& SeedName);
+    bool ParseDoubleTau(const std::string& SeedName);
+    bool ParseDoubleJet(const std::string& SeedName);
+    bool ParseQuadJet(const std::string& SeedName);
+    bool ParseDoubleEG(const std::string& SeedName);
+    bool ParseTripleEG(const std::string& SeedName);
+    bool ParseCrossMu(const std::string& SeedName);
+    std::function<bool()> ParseBptx(const std::string Seedtoken);
     // ====================  OPERATORS     ===============================
 
     L1Menu2016& operator = ( const L1Menu2016 &other ); // assignment operator
@@ -168,8 +181,6 @@ class L1Menu2016 : public L1AlgoFactory
     Bool_t EGamma();
     bool CheckPureFire();
     bool CheckPhysFire();
-    bool ParseSingleObject(const std::string SeedName);
-    bool ParseSingleSum(const std::string SeedName);
     // ====================  DATA MEMBERS  ===============================
 
   private:
@@ -192,6 +203,7 @@ class L1Menu2016 : public L1AlgoFactory
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;
+
     std::map<std::string, float*> L1ObjectMap;
     std::map<std::string, double> L1Config;
     std::map<std::string, L1Seed> mL1Seed;

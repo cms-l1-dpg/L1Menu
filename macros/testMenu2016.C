@@ -34,11 +34,11 @@ int main ( int argc, char *argv[] )
   // Declare the supported options.
   boost::program_options::options_description desc("Allowed options");
   const std::string defaultMenu = "Menu_Tune.txt";
-  //const std::string defaultMenu = "Menu_256843_Tune.txt";
+  const std::string defaultntuple = "ntuples_256843_stage2_Tune.list";
   desc.add_options()
     ("help,h", "produce help message")
     ("menufile,m", po::value<std::string>()->default_value(defaultMenu), "set the input menu")
-    ("filelist,l", po::value<std::string>()->default_value("./ntuples_256843_stage2.list"), "set the input ntuple list")
+    ("filelist,l", po::value<std::string>()->default_value(defaultntuple), "set the input ntuple list")
     ("writetext,t", po::value<bool>()->default_value(true), "write rate to output")
     ("writecsv,c", po::value<bool>()->default_value(true), "write rate to output in CSV format")
     ("writeplot,p", po::value<bool>()->default_value(true), "write plot to output")
@@ -71,6 +71,7 @@ int main ( int argc, char *argv[] )
   men.PreLoop();
   men.Loop();
   men.PostLoop();
+
   //men.PrintConfig();
   //men.Loop();
   return EXIT_SUCCESS;

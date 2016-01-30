@@ -44,12 +44,11 @@ L1Menu2016::L1Menu2016 ( const L1Menu2016 &other )
 //----------------------------------------------------------------------------
 L1Menu2016::~L1Menu2016 ()
 {
-  
   WriteHistogram();
   outfile->close();
   outcsv->close();
   outrootfile->Close();
-  delete  outfile;
+  delete outfile;
   delete outcsv;
   delete outrootfile;
 }  // -----  end of method L1Menu2016::-L1Menu2016  (destructor)  -----
@@ -126,19 +125,19 @@ bool L1Menu2016::InitConfig()
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Map to old func for now. ~~~~~
   // MutliJets
-  L1SeedFun["L1_DoubleJetC52"] = std::bind(&L1AlgoFactory::DoubleJet, this, 52, 52, true);
-  L1SeedFun["L1_DoubleJetC84"] = std::bind(&L1AlgoFactory::DoubleJet, this, 84, 84, true);
-  L1SeedFun["L1_DoubleJetC100"] = std::bind(&L1AlgoFactory::DoubleJet, this, 100, 100, true);
-  L1SeedFun["L1_DoubleJetC112"] = std::bind(&L1AlgoFactory::DoubleJet, this, 112, 112, true);
-  L1SeedFun["L1_DoubleIsoTau28er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 28.,28.,true);
-  L1SeedFun["L1_DoubleIsoTau32er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 32.,32.,true);
-  L1SeedFun["L1_DoubleIsoTau36er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 36.,36.,true);
-  L1SeedFun["L1_DoubleIsoTau40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,true);
+  //L1SeedFun["L1_DoubleJetC52"] = std::bind(&L1AlgoFactory::DoubleJet, this, 52, 52, true);
+  //L1SeedFun["L1_DoubleJetC84"] = std::bind(&L1AlgoFactory::DoubleJet, this, 84, 84, true);
+  //L1SeedFun["L1_DoubleJetC100"] = std::bind(&L1AlgoFactory::DoubleJet, this, 100, 100, true);
+  //L1SeedFun["L1_DoubleJetC112"] = std::bind(&L1AlgoFactory::DoubleJet, this, 112, 112, true);
+  //L1SeedFun["L1_DoubleIsoTau28er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 28.,28.,true);
+  //L1SeedFun["L1_DoubleIsoTau32er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 32.,32.,true);
+  //L1SeedFun["L1_DoubleIsoTau36er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 36.,36.,true);
+  //L1SeedFun["L1_DoubleIsoTau40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,true);
   L1SeedFun["L1_DoubleTauJet40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,false);
-  L1SeedFun["L1_TripleJet_92_76_64_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 92.,76.,64.,1);
-  L1SeedFun["L1_TripleJet_84_68_48_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 84.,68.,48.,1);
-  L1SeedFun["L1_QuadJetC40"] = std::bind(&L1AlgoFactory::QuadJet, this, 40.,40.,40.,40.,true);
-  L1SeedFun["L1_QuadJetC60"] = std::bind(&L1AlgoFactory::QuadJet, this, 60.,60.,60.,60.,true);
+  //L1SeedFun["L1_TripleJet_92_76_64_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 92.,76.,64.,1);
+  //L1SeedFun["L1_TripleJet_84_68_48_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 84.,68.,48.,1);
+  //L1SeedFun["L1_QuadJetC40"] = std::bind(&L1AlgoFactory::QuadJet, this, 40.,40.,40.,40.,true);
+  //L1SeedFun["L1_QuadJetC60"] = std::bind(&L1AlgoFactory::QuadJet, this, 60.,60.,60.,60.,true);
   L1SeedFun["L1_QuadJetC36_TauJet52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
 
   // MultiMuon
@@ -167,31 +166,31 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu16er_TauJet20er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,20.,false);
   L1SeedFun["L1_Mu16er_IsoTau28er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,28.,true);
   L1SeedFun["L1_Mu16er_IsoTau32er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,32.,true);
-  L1SeedFun["L1_IsoEG20er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
   L1SeedFun["L1_Mu12_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,10.,false, 4);
   L1SeedFun["L1_Mu20_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,10.,false, 4);
   L1SeedFun["L1_Mu4_EG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 4.,18.,false, 4);
   L1SeedFun["L1_Mu5_EG15"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,15.,false, 4);
   L1SeedFun["L1_Mu5_EG20"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,20.,false, 4);
   L1SeedFun["L1_Mu5_IsoEG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,18.,true, 4);
+  L1SeedFun["L1_IsoEG20er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
   L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,true);
   L1SeedFun["L1_DoubleMu7_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,true);
   L1SeedFun["L1_Mu5_DoubleEG5"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 5., 5.);
   L1SeedFun["L1_Mu6_DoubleEG10"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 6., 10.);
 
-
   //MultiCross
-  L1SeedFun["L1_Mu3_JetC16_WdEtaPhi2"] = std::bind(&L1AlgoFactory:: Mu_JetCentral_delta, this, 3.,16.);
-  L1SeedFun["L1_Mu3_JetC52_WdEtaPhi2"] = std::bind(&L1AlgoFactory:: Mu_JetCentral_delta, this, 3.,52.);
-  L1SeedFun["L1_DoubleJetC56_ETM60"] = std::bind(&L1AlgoFactory:: DoubleJetCentral_ETM, this, 56.,56.,60.);
-  L1SeedFun["L1_DoubleEG6_HTT150"] = std::bind(&L1AlgoFactory:: DoubleEG_HT, this, 6., 150.);
-  L1SeedFun["L1_Jet32MuOpen_Mu10_dPhiMu_Mu1"] = std::bind(&L1AlgoFactory:: Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
-  L1SeedFun["L1_Jet32MuOpen_EG10_dPhiMu_EG1"] = std::bind(&L1AlgoFactory:: Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
+  L1SeedFun["L1_Mu3_JetC16_WdEtaPhi2"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,16.);
+  L1SeedFun["L1_Mu3_JetC52_WdEtaPhi2"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,52.);
+  L1SeedFun["L1_DoubleJetC56_ETM60"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 56.,56.,60.);
+  L1SeedFun["L1_DoubleEG6_HTT150"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 150.);
+  L1SeedFun["L1_Jet32MuOpen_Mu10_dPhiMu_Mu1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
+  L1SeedFun["L1_Jet32MuOpen_EG10_dPhiMu_EG1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
 
   //MultiEG
-  L1SeedFun["L1_DoubleEG_15_10"] = std::bind(&L1AlgoFactory:: DoubleEG, this, 15.,10.,false );
-  L1SeedFun["L1_DoubleEG_22_10"] = std::bind(&L1AlgoFactory:: DoubleEG, this, 22.,10.,false );
-  L1SeedFun["L1_TripleEG_14_10_8"] = std::bind(&L1AlgoFactory:: TripleEG, this, 14.,10.,8. );
+  //L1SeedFun["L1_DoubleEG_15_10"] = std::bind(&L1AlgoFactory::DoubleEG, this, 15.,10.,false );
+  //L1SeedFun["L1_DoubleEG_22_10"] = std::bind(&L1AlgoFactory::DoubleEG, this, 22.,10.,false );
+  //L1SeedFun["L1_TripleEG_14_10_8"] = std::bind(&L1AlgoFactory::TripleEG, this, 14.,10.,8. );
+
   L1SeedFun["L1_ZeroBias"] = [](){return true;};
   return true;
 
@@ -286,7 +285,18 @@ bool L1Menu2016::ReadMenu()
       continue;
     }
 
-    std::istringstream iss(line);
+    std::size_t commentpos = line.find_first_of("#");
+    std::string goodline = "";
+    std::string comline = "";
+
+    if (commentpos != std::string::npos)
+    {
+      goodline = line.substr(0, commentpos);
+      comline = line.substr(commentpos, line.length() - commentpos);
+    }
+    else
+      goodline = line;
+    std::istringstream iss(goodline);
 
     std::string seed;
     int bit;
@@ -299,6 +309,7 @@ bool L1Menu2016::ReadMenu()
     L1Seed temp;
     temp.name = seed;
     temp.bit = bit;
+    temp.comment = comline;
     if (prescale < 0)
       temp.prescale = INFTY;
     else
@@ -455,12 +466,27 @@ bool L1Menu2016::GetL1Event()
 {
   L1Event = {};
 
-  SingleEGPt(L1Event.EGPt,false, false);
-  SingleEGPt(L1Event.EGerPt,false, true);
-  SingleEGPt(L1Event.IsoEGPt,true, false);
-  SingleEGPt(L1Event.IsoEGerPt,true, true);
+  //Jet
+  L1AlgoFactory::SingleJetPt(L1Event.JetPt,false);
+  L1AlgoFactory::SingleJetPt(L1Event.JetCenPt,true);
 
+  //EG
+  L1AlgoFactory::SingleEGPt(L1Event.EGPt,false, false);
+  L1AlgoFactory::SingleEGPt(L1Event.EGerPt,false, true);
+  L1AlgoFactory::SingleEGPt(L1Event.IsoEGPt,true, false);
+  L1AlgoFactory::SingleEGPt(L1Event.IsoEGerPt,true, true);
 
+  //Tau
+  L1AlgoFactory::SingleTauPt(L1Event.TauPt, false);
+
+  //Mu
+  L1AlgoFactory::SingleMuPt(L1Event.MuPt, false);
+  L1AlgoFactory::SingleMuPt(L1Event.MuerPt, true);
+
+  //Sum
+  L1AlgoFactory::HTTVal(L1Event.HTT);
+  L1AlgoFactory::ETMVal(L1Event.ETM);
+  L1AlgoFactory::ETTVal(L1Event.ETT);
 
   return true;
 }       // -----  end of function L1Menu2016::GetL1Event  -----
@@ -488,7 +514,7 @@ bool L1Menu2016::Loop()
         currentLumi=event_ -> lumi;
         nLumi++;
       } 
-    } else if (i % 2000 == 0)
+    } else if (i % 10000 == 0)
         std::cout << "Processed " << i << " events." << std::endl;
 
     nZeroBiasevents++;
@@ -496,185 +522,7 @@ bool L1Menu2016::Loop()
     GetL1Event();
     RunMenu();
 
-    ////if (i > 10000) break;
-
   }
-
-
-    ////FilL1Bits();
-    //if(first) MyInit();
-
-    //Bool_t raw = true; //= PhysicsBits[0];  // check for ZeroBias triggered events
-    //if(!raw) continue;
-
-    //nZeroBiasevents++;
-
-    //// reset the emulated trigger bits
-    //kOFFSET = 0;
-    //for (Int_t k=0; k < N128; k++) {
-      //TheTriggerBits[k] = false;
-    //}
-
-    //Bool_t jets        = Jets() ;
-    //Bool_t multijets   = MultiJets() ;
-    //Bool_t eg          = EGamma();
-    //Bool_t multieg     = MultiEGamma();
-    //Bool_t muons       = Muons();
-    //Bool_t multimuons  = MultiMuons();
-    //Bool_t sums        = Sums();
-    //Bool_t technical   = Technical();
-    //Bool_t cross       = Cross();
-    //Bool_t multicross  = MultiCross();
-
-    //Bool_t pass  = jets || multijets || eg || multieg || sums || muons || multimuons || cross || multicross || technical;
-
-    //if(pass) NPASS ++;
-
-    //if(cross)      NCROSS++;
-    //if(multicross) MULTINCROSS++;
-    //if(muons)      NMUONS++;
-    //if(multimuons) MULTINMUONS++;
-    //if(sums)       NSUMS++;
-    //if(eg)         NEG++;
-    //if(multieg)    MULTINEG++;
-    //if(jets)       NJETS++;
-    //if(multijets)  MULTINJETS++;
-    //if(technical)  TECHNICAL++;
-
-    //if(pass) h_Block->Fill(10.);
-
-    //Bool_t dec[10];
-    //dec[0] = eg;
-    //dec[1] = multieg;
-    //dec[2] = jets;
-    //dec[3] = multijets;
-    //dec[4] = muons;
-    //dec[5] = multimuons;
-    //dec[6] = sums;
-    //dec[7] = cross;
-    //dec[8] = multicross;
-    //dec[9] = technical;
-
-    //for (Int_t l=0; l < 9; l++) {
-      //if(dec[l]){
-	//h_Block -> Fill(l);
-	//for (Int_t k=0; k < 5; k++) {
-	  //if (dec[k]) cor_Block -> Fill(l,k);
-	//}
-      //}
-
-    //}
-
-    //first = false;
-
-    //// now the pure rate stuff
-    //// kOFFSET now contains the number of triggers we have calculated
-
-    //Bool_t ddd[NPAGS];
-    //for (Int_t idd=0; idd < NPAGS; idd++) {
-      //ddd[idd] = false; 
-    //} 
-
-    //Bool_t eee[NTRIGPHYS];
-    //for (Int_t iee=0; iee < NTRIGPHYS; iee++) {
-      //eee[iee] = false; 
-    //}
-
-    //Float_t weightEventPAGs = 1.;
-    //Float_t weightEventTRIGPHYS = 1.;
-
-    //for (Int_t k=0; k < kOFFSET; k++) {
-      //if ( ! TheTriggerBits[k] ) continue;
-      //h_All -> Fill(k);
-
-      //TString name = h_All -> GetXaxis() -> GetBinLabel(k+1);
-      //std::string L1namest = (std::string)name;
-
-      //Bool_t IsTOP   = setTOP.count(L1namest) > 0;
-      //Bool_t IsHIGGS = setHIGGS.count(L1namest) > 0;
-      //Bool_t IsBPH   = setBPH.count(L1namest) > 0;
-      //Bool_t IsEXO   = setEXO.count(L1namest) > 0;
-      //Bool_t IsSUSY  = setSUSY.count(L1namest) > 0;
-      //Bool_t IsSMP   = setSMP.count(L1namest) > 0;
-      //Bool_t IsB2G   = setB2G.count(L1namest) > 0;
-      //if(IsHIGGS) ddd[0] = true;
-      //if(IsSUSY)  ddd[1] = true;
-      //if(IsEXO)   ddd[2] = true;
-      //if(IsTOP)   ddd[3] = true;
-      //if(IsSMP)   ddd[4] = true;
-      //if(IsBPH)   ddd[5] = true;
-      //if(IsB2G)   ddd[6] = true;
-
-      //Float_t ww = WeightsPAGs[L1namest];
-      //if (ww < weightEventPAGs) weightEventPAGs = ww;
-
-      //Bool_t IsMuon     = setMuon.count(L1namest) > 0;
-      //Bool_t IsEG       = setEG.count(L1namest) > 0;
-      //Bool_t IsHadronic = setHadronic.count(L1namest) > 0;
-
-      //Bool_t IsMuonEG       = setMuonEG.count(L1namest) > 0;
-      //Bool_t IsMuonHadronic = setMuonHadronic.count(L1namest) > 0;
-      //Bool_t IsEGHadronic   = setEGHadronic.count(L1namest) > 0;
-
-      //if(IsMuon)     eee[0] = true;
-      //if(IsEG)       eee[1] = true;
-      //if(IsHadronic) eee[2] = true;
-
-      //if(IsMuonEG)       eee[3] = true;
-      //if(IsMuonHadronic) eee[4] = true;
-      //if(IsEGHadronic)   eee[5] = true;
-
-      //Float_t www = WeightsTRIGPHYS[L1namest];
-      //if(www < weightEventTRIGPHYS) weightEventTRIGPHYS = www;
-
-      ////did the event pass another trigger ?
-      //Bool_t pure = true;
-      //for (Int_t k2=0; k2 < kOFFSET; k2++) {
-	//if (k2 == k) continue;
-	//if ( TheTriggerBits[k2] ) pure = false;
-      //}
-      //if (pure) h_Pure -> Fill(k);
-    //}
-
-    //// for the PAG rates
-    //Bool_t PAG = false;
-    //for (Int_t idd=0; idd < NPAGS; idd++) {
-      //if (ddd[idd]) {
-	//Bool_t pure = true;
-	//PAG = true;
-	//for (Int_t jdd=0; jdd < NPAGS; jdd++) {
-	  //if (ddd[jdd]) {
-		//cor_PAGS -> Fill(idd,jdd);
-		//if (jdd != idd) pure = false;
-	  //}
-	//}   
-	//if(pure) h_PAGS_pure -> Fill(idd);
-	//h_PAGS_shared -> Fill(idd,weightEventPAGs);
-
-      //}  
-    //}
-    //if(PAG) nPAG ++;
-
-    ////for the TRIGPHYS rates :
-    //Bool_t TRIGPHYS = false;
-    //for (Int_t iee=0; iee < NTRIGPHYS; iee++) {
-      //if (eee[iee]) {
-	//Bool_t pure = true;
-	//TRIGPHYS = true;
-	//for (Int_t jee=0; jee < NTRIGPHYS; jee++) {
-	  //if (eee[jee]) {
-		//cor_TRIGPHYS -> Fill(iee,jee);
-		//if (jee != iee) pure = false;
-	  //}
-	//}   
-	//if(pure) h_TRIGPHYS_pure -> Fill(iee);
-	//h_TRIGPHYS_shared -> Fill(iee,weightEventTRIGPHYS);
-
-      //}  
-    //}
-    //if(TRIGPHYS) nTRIGPHYS++;
-
-  //}  // end evt loop
 
   return true;
 }       // -----  end of function L1Menu2016::Loop  -----
@@ -696,7 +544,11 @@ bool L1Menu2016::PostLoop()
     seed.second.purerate = seed.second.purecounts *scale;
   }
   
-  PrintRates();
+  PrintRates(std::cout);
+  if (writefiles)
+  {
+    PrintRates(*outfile);
+  }
   FillDefHist1D();
 
   return true;
@@ -706,21 +558,38 @@ bool L1Menu2016::PostLoop()
 //         Name:  L1Menu2016::PrintRates
 //  Description:  
 // ===========================================================================
-bool L1Menu2016::PrintRates()
+bool L1Menu2016::PrintRates(std::ostream &out)
 {
   
-  std::cout << "L1Bit" << "\t" << "L1SeedName" << "\t" << "pre-scale" << "\t" << "rate@13TeV" << "\t +/- \t" << "error_rate@13TeV" << "\t " << "pure@13TeV" << std::endl;
-
-  Float_t totalrate = 0.;
-  Float_t totalpurerate = 0.;
+  float totalrate = 0.;
+  float totalpurerate = 0.;
   bool bybit = true;
+  std::size_t L1NameLength = 0;
+  for(auto k : mL1Seed)
+  {
+    L1NameLength = k.first.size() > L1NameLength ? k.first.size() : L1NameLength;
+  }
+
+  out << std::left
+      << std::setw(10)             << "L1Bit"
+      << std::setw(L1NameLength+2) << "L1SeedName"
+      << std::setw(10)             << "pre-scale"
+      << std::setw(10)             << "rate@13TeV"       << " +/- "
+      << std::setw(20)             << "error_rate@13TeV"
+      << std::setw(10)             << "pure@13TeV"       << std::endl;
+
   if (bybit)
   {
     for(auto i : BitMap)
     {
       auto seed = mL1Seed[i.second];
-      std::cout << seed.bit <<"\t" << seed.name<<"\t " << seed.prescale << "\t" <<
-        seed.firerate <<"\t +/- \t" << seed.firerateerror <<"\t" << seed.purerate<<std::endl;
+      out << std::left
+          << std::setw(10)             << seed.bit
+          << std::setw(L1NameLength+2) << seed.name
+          << std::setw(10)             << seed.prescale
+          << std::setw(10)             << seed.firerate      << " +/- "
+          << std::setw(20)             << seed.firerateerror
+          << std::setw(10)             << seed.purerate      << std::endl;
       totalrate +=seed.firerate;
       totalpurerate +=seed.purerate;
     }
@@ -729,8 +598,13 @@ bool L1Menu2016::PrintRates()
   else{
     for(auto seed : mL1Seed)
     {
-      std::cout << seed.second.bit <<"\t" << seed.first <<"\t " << seed.second.prescale << "\t" <<
-        seed.second.firerate <<"\t +/- \t" << seed.second.firerateerror <<"\t" << seed.second.purerate<<std::endl;
+      out << std::left
+          << std::setw(10)             << seed.second.bit
+          << std::setw(L1NameLength+2) << seed.first
+          << std::setw(10)             << seed.second.prescale
+          << std::setw(10)             << seed.second.firerate      << " +/- "
+          << std::setw(20)             << seed.second.firerateerror
+          << std::setw(10)             << seed.second.purerate      << std::endl;
       totalrate +=seed.second.firerate;
       totalpurerate +=seed.second.purerate;
     }
@@ -738,8 +612,8 @@ bool L1Menu2016::PrintRates()
   }
 
 
-  std::cout << std::endl << "Total rate (without overlaps) = " << totalrate << std::endl;
-  std::cout << std::endl << "Total pure rate  = " << totalpurerate << std::endl;
+  out << std::endl << "Total rate (without overlaps) = " << totalrate << std::endl;
+  out << std::endl << "Total pure rate  = " << totalpurerate << std::endl;
 
   return true;
 }       // -----  end of function L1Menu2016::PrintRates  -----
@@ -812,14 +686,10 @@ bool L1Menu2016::L1SeedFunc()
     if (L1SeedFun.find(L1Seed.first) != L1SeedFun.end())
       continue;
 
-    if(ParseSingleObject(L1Seed.first));
+    if(ParseL1Seed(L1Seed.first))
       continue;
 
-    if(ParseSingleSum(L1Seed.first));
-      continue;
-
-
-    std::cerr << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
+    std::cout << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
   }
 
   return true;
@@ -937,116 +807,6 @@ bool L1Menu2016::BindAlgo()
 
   return true;
 }       // -----  end of function L1Menu2016::BindAlgo  -----
-
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::ParseSingleObject
-//  Description:  /* cursor */
-// ===========================================================================
-bool L1Menu2016::ParseSingleObject(const std::string SeedName)
-{
-  if (SeedName.find("L1_") == std::string::npos)
-  {
-    return false;
-  }
-  if (SeedName.find("Single") == std::string::npos)
-  {
-    return false;
-  }
-
-  bool returnbool = true;
-  boost::char_separator<char> sep("_");
-  tokenizer tokens(SeedName, sep);
-  if (std::distance(tokens.begin(), tokens.end()) < 2) return false;
-  boost::tokenizer<boost::char_separator<char> >::iterator tokenit = tokens.begin();
-  tokenit++;
-  std::string Seedtoken(*tokenit);
-
-  std::string L1object ="";
-  std::string postfix = "";
-  unsigned int pt = -10;
-
-  std::smatch base_match;
-  std::regex integer("Single([^0-9]+)([0-9]+)([^0-9]*)");
-  if (std::regex_match(Seedtoken, base_match, integer))
-  {
-	// The first sub_match is the whole string; the next
-	// sub_match is the first parenthesized expression.
-    if (base_match.size() >= 3) {
-      std::ssub_match base_sub_match = base_match[1];
-      L1object = base_sub_match.str();
-      base_sub_match = base_match[2];
-      pt = std::stoi(base_sub_match.str(), nullptr);
-      if (base_match.size() > 3)
-      {
-        base_sub_match = base_match[3];
-        postfix = base_sub_match.str();
-      }
-    }
-  }
-
-  L1object += postfix;
-  //std::cout <<  std::distance(tokenit, tokens.end())<< std::endl;
-  if (std::distance(tokenit, tokens.end()) > 1) 
-  {
-    tokenit++;
-    Seedtoken = *tokenit;
-    if (Seedtoken == "NotBptxOR" || Seedtoken == "BptxAND")
-    {
-      //Do nothing for now
-      returnbool = returnbool && true;
-    }
-    else
-      returnbool = returnbool && false;
-  }
-
-  if (L1ObjectMap.find(L1object) != L1ObjectMap.end())
-  {
-    //std::cout << L1object <<" "<<*(L1ObjectMap[L1object])<<" "<< pt<<" ";
-    //returnbool = returnbool && *(L1ObjectMap[L1object]) >= pt;
-    L1SeedFun[SeedName] = std::bind(&SingleObjPt, L1ObjectMap[L1object], pt);
-    returnbool = returnbool && true;
-  }
-
-  return returnbool;
-}       // -----  end of function L1Menu2016::ParseSingleObject  -----
-
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::ParseSingleSum
-//  Description:  /* cursor */
-// ===========================================================================
-bool L1Menu2016::ParseSingleSum(const std::string SeedName) 
-{
-  if (SeedName.find("L1_") == std::string::npos)
-  {
-    return false;
-  }
-  if (SeedName.find("ETM") == std::string::npos &&
-      SeedName.find("ETT") == std::string::npos && 
-      SeedName.find("HTT") == std::string::npos)
-  {
-    return false;
-  }
-
-  bool returnbool = true;
-  boost::char_separator<char> sep("_");
-  tokenizer tokens(SeedName, sep);
-  if (std::distance(tokens.begin(), tokens.end()) < 2) return false;
-  boost::tokenizer<boost::char_separator<char> >::iterator tokenit = tokens.begin();
-  tokenit++;
-  std::string Seedtoken(*tokenit);
-
-  std::string L1object ="";
-  std::string postfix = "";
-  unsigned int pt = -10;
-
-  std::smatch base_match;
-  std::regex integer("Single([^0-9]+)([0-9]+)([^0-9]*)");
-  if (std::regex_match(Seedtoken, base_match, integer))
-  {
-  }
-
-  return true;
-}       // -----  end of function L1Menu2016::ParseSingleSum  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::CheckL1Seed
@@ -1203,3 +963,287 @@ std::string L1Menu2016::SetOutputName() const
   ss << menupath.stem().string() << "-" << flistpath.stem().string();
   return ss.str();
 }       // -----  end of function L1Menu2016::SetOutputName  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseL1Seed
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseL1Seed(const std::string SeedName)
+{
+  if (SeedName.find("L1_") == std::string::npos)
+  {
+    return false;
+  }
+
+  if (ParseSingleObject(SeedName)) return true;
+
+  // Jets
+  if (ParseDoubleJet(SeedName)) return true;
+  if (ParseTripleJetVBF(SeedName)) return true;
+  if (ParseQuadJet(SeedName)) return true;
+  // EG
+  if (ParseDoubleEG(SeedName)) return true;
+  if (ParseTripleEG(SeedName)) return true;
+  // Tau
+  if (ParseDoubleTau(SeedName)) return true;
+
+
+  return false;
+}       // -----  end of function L1Menu2016::ParseL1Seed  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseSingleObject
+//  Description:  /* cursor */
+// ===========================================================================
+bool L1Menu2016::ParseSingleObject(const std::string SeedName)
+{
+  std::string L1object ="";
+  std::string postfix = "";
+  int pt = -10;
+
+  boost::char_separator<char> sep("_");
+  tokenizer tokens(SeedName, sep);
+  if (std::distance(tokens.begin(), tokens.end()) < 2) return false;
+  boost::tokenizer<boost::char_separator<char> >::iterator tokenit = tokens.begin();
+  tokenit++;
+  std::string Seedtoken(*tokenit);
+
+  std::smatch base_match;
+  std::regex integerobj("Single([^0-9]+)([0-9]+)([^0-9]*)");
+  std::regex integerSum("(ETM|HTT|ETT)([0-9]+)");
+  if (std::regex_match(Seedtoken, base_match, integerobj))
+  {
+	// The first sub_match is the whole string; the next
+	// sub_match is the first parenthesized expression.
+    L1object = base_match[1].str();
+    pt = std::stoi(base_match[2].str(), nullptr);
+    postfix = base_match[3].str();
+  }else if (std::regex_match(Seedtoken, base_match, integerSum))
+  {
+	// The first sub_match is the whole string; the next
+	// sub_match is the first parenthesized expression.
+    L1object = base_match[1].str();
+    pt = std::stoi(base_match[2].str(), nullptr);
+    postfix = "";
+  } else if(Seedtoken == "SingleMuOpen")
+  {
+    L1object = "Mu";
+    postfix = "Open";
+    pt = 0;
+  }
+    
+
+  L1object += postfix;
+  std::vector<std::function<bool()>> funs;
+
+  //std::cout <<  std::distance(tokenit, tokens.end())<< std::endl;
+  if (std::distance(tokenit, tokens.end()) > 1) 
+  {
+    tokenit++;
+    Seedtoken = *tokenit;
+    if (Seedtoken == "NotBptxOR" || Seedtoken == "BptxAND")
+    {
+      funs.push_back(ParseBptx(Seedtoken));
+    }
+    else return false;
+  }
+
+  if (L1ObjectMap.find(L1object) != L1ObjectMap.end())
+  {
+    //funs.push_back(std::bind(&SingleObjPt, L1ObjectMap[L1object], pt));
+    // No idea for the funs vector 
+    L1SeedFun[SeedName] = std::bind(&SingleObjPt, L1ObjectMap[L1object], pt);
+  } else return false;
+
+  return true;
+}       // -----  end of function L1Menu2016::ParseSingleObject  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseBptx
+//  Description:  /* cursor */
+// ===========================================================================
+std::function<bool()> L1Menu2016::ParseBptx(const std::string Seedtoken)
+{
+  return [](){return true;};
+}       // -----  end of function L1Menu2016::ParseBptx  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseDoubleJet
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseDoubleJet(const std::string& SeedName)
+{
+  std::smatch base_match;
+  std::regex integer("L1_DoubleJet([C]*)([0-9]+)");
+  if (std::regex_match(SeedName, base_match, integer))
+  {
+    bool isCentral = base_match.length(1) == 1;
+    unsigned int pt = std::stoi(base_match[2].str(), nullptr);
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::DoubleJet, this, pt, pt, isCentral);
+    return true;
+  }
+  else return false;
+}       // -----  end of function L1Menu2016::ParseDoubleJet  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseDoubleTau
+//  Description:  /* cursor */
+// ===========================================================================
+bool L1Menu2016::ParseDoubleTau(const std::string& SeedName) 
+{
+  std::smatch base_match;
+  std::regex integer("L1_Double(Iso|)Tau([0-9]+)er");
+  if (std::regex_match(SeedName, base_match, integer))
+  {
+    bool isIso = base_match.length(1) == 3;
+    unsigned int pt = std::stoi(base_match[2].str(), nullptr);
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, pt, pt, isIso);
+    return true;
+  }
+  else return false;
+}       // -----  end of function L1Menu2016::ParseDoubleTau  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseTripleJetVBF
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseTripleJetVBF(const std::string& SeedName)
+{
+  const int jetclass = 1; 
+  std::smatch base_match;
+  std::regex integer("L1_TripleJet_([0-9]+)_([0-9]+)_([0-9]+)_VBF");
+  if (std::regex_match(SeedName, base_match, integer))
+  {
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 
+        std::stoi(base_match[1].str(), nullptr),
+        std::stoi(base_match[2].str(), nullptr),
+        std::stoi(base_match[3].str(), nullptr), jetclass);
+    return true;
+  }
+  else return false;
+}       // -----  end of function L1Menu2016::ParseTripleJetVBF  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseQuadJet
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseQuadJet(const std::string& SeedName)
+{
+  int pt1 = -10;
+  int pt2 = -10;
+  int pt3 = -10;
+  int pt4 = -10;
+  bool isCentral = false;
+
+  std::smatch base_match;
+  std::regex integer_sys("L1_QuadJet([C]*)([0-9]+)");
+  std::regex integer_asys("L1_QuadJet([C]*)_([0-9]+)_([0-9]+)_([0-9]+)_([0-9]+)");
+  if (std::regex_match(SeedName, base_match, integer_sys))
+  {
+    isCentral = base_match.length(1) == 1;
+    pt1 = std::stoi(base_match[2].str(), nullptr);
+    pt2 = pt3 = pt4 = pt1;
+  } else if (std::regex_match(SeedName, base_match, integer_asys))
+  {
+    isCentral = base_match.length(1) == 1;
+    pt1 = std::stoi(base_match[2].str(), nullptr);
+    pt2 = std::stoi(base_match[3].str(), nullptr);
+    pt3 = std::stoi(base_match[4].str(), nullptr);
+    pt4 = std::stoi(base_match[5].str(), nullptr);
+  }
+
+  if (pt1 != -10 && pt2 != -10 && pt3 != -10 && pt4 != -10)
+  {
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::QuadJet, this, pt1, pt2, pt3, pt4, isCentral);
+    return true;
+  }
+  else return false;
+}       // -----  end of function L1Menu2016::ParseQuadJet  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseDoubleEG
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseDoubleEG(const std::string& SeedName)
+{
+  int pt1 = -10;
+  int pt2 = -10;
+  bool isIso = false;
+
+  std::smatch base_match;
+  std::regex integer_sys("L1_Double(Iso|)EG([0-9]+)");
+  std::regex integer_asys("L1_Double(Iso|)EG_([0-9]+)_([0-9]+)");
+  if (std::regex_match(SeedName, base_match, integer_sys))
+  {
+    isIso = base_match.length(1) == 3;
+    pt1 = std::stoi(base_match[2].str(), nullptr);
+    pt2 = pt1;
+  }else if (std::regex_match(SeedName, base_match, integer_asys))
+  {
+    isIso = base_match.length(1) == 3;
+    pt1 = std::stoi(base_match[2].str(), nullptr);
+    pt2 = std::stoi(base_match[3].str(), nullptr);
+  }
+
+  if (pt1 != -10 && pt2 != -10)
+  {
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::DoubleEG, this, pt1, pt2, isIso);
+    return true;
+  }
+  else
+    return false;
+}       // -----  end of function L1Menu2016::ParseDoubleEG  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseTripleEG
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseTripleEG(const std::string& SeedName)
+{
+  int pt1 = -10;
+  int pt2 = -10;
+  int pt3 = -10;
+
+  std::smatch base_match;
+  std::regex integer_sys("L1_TripleEG([0-9]+)");
+  std::regex integer_asys("L1_TripleEG_([0-9]+)_([0-9]+)_([0-9]+)");
+  if (std::regex_match(SeedName, base_match, integer_sys))
+  {
+    pt1 = std::stoi(base_match[1].str(), nullptr);
+    pt2 = pt1;
+    pt3 = pt1;
+  }else if (std::regex_match(SeedName, base_match, integer_asys))
+  {
+    pt1 = std::stoi(base_match[1].str(), nullptr);
+    pt2 = std::stoi(base_match[2].str(), nullptr);
+    pt3 = std::stoi(base_match[3].str(), nullptr);
+  }
+
+  if (pt1 != -10 && pt2 != -10 && pt3 != -10)
+  {
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::TripleEG, this, pt1, pt2, pt3);
+    return true;
+  }
+  else
+    return false;
+}       // -----  end of function L1Menu2016::ParseTripleEG  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseCrossMu
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseCrossMu(const std::string& SeedName)
+{
+  //std::smatch base_match;
+  //std::regex integer("L1_QuadJet([C]*)([0-9]+)");
+  //if (std::regex_match(SeedName, base_match, integer))
+  //{
+    //if (base_match.size() != 2) return false;
+    //bool isCentral = base_match.length(1) == 1;
+    //unsigned int pt = std::stoi(base_match[2].str(), nullptr);
+    //L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::QuadJet, this, pt, pt, pt, pt, isCentral);
+    //return true;
+  //}
+  //else return false;
+  return false;
+}       // -----  end of function L1Menu2016::ParseCrossMu  -----
