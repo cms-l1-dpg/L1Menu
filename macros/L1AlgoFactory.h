@@ -2,15 +2,21 @@
 #define  __L1ALGOFACTORY_INC__
 
 #include "L1Ntuple.h"
+#include "DataFormats/L1Trigger/interface/EtSum.h"
 #include <iostream>
 #include <cassert>
 
-enum EtSumType { ETT, HTT, ETM, HTM }; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
+enum EtSumType { 
+  ETT = l1t::EtSum::EtSumType::kTotalEt,
+  HTT = l1t::EtSum::EtSumType::kTotalHt,
+  ETM = l1t::EtSum::EtSumType::kMissingEt,
+  HTM = l1t::EtSum::EtSumType::kMissingHt,
+}; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
 
 class L1AlgoFactory: public L1Ntuple{
  public:
   L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.17),
-  MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(3.0), MuMudPhi(1.0), Onia2015ER(1.6)
+  MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(3.0), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0)
   {};
   //L1AlgoFactory(TTree *tree);
 
@@ -135,6 +141,7 @@ class L1AlgoFactory: public L1Ntuple{
  float MuOpenJetCordPhi;
  float MuMudPhi;
  float Onia2015ER;
+ int SelBx;
  
  bool PassMuonQual(int imu, bool isMuHighQual=true) const;
 
