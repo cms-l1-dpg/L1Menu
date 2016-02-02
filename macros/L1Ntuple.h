@@ -63,12 +63,13 @@ public:
   void     Test2();
   Long64_t GetEntries();
 
- private :
+protected:
   bool CheckFirstFile();
   bool OpenWithoutInit();
   bool OpenNtupleList(const std::string & fname);
 
   std::vector<std::string> listNtuples;
+private :
   Long64_t nentries_;
   TFile* rf;
 };

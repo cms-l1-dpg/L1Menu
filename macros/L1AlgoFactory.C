@@ -261,9 +261,6 @@ Bool_t L1AlgoFactory::ETT(Float_t ETTcut) {
 }
 
 
-
-
-
 void L1AlgoFactory::SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin) {
 
   if(upgrade_->nMuons < 1) return;
@@ -1817,3 +1814,83 @@ void L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut){
 
   return;
 }
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::MultiEGMass
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bool isIsolated, bool isER) const
+{
+  
+  std::vector<TLorentzVector> vEG;
+  const float EMass = 0.510998 / 1000; // MeV / 1000 to GeV
+
+  for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {               
+    Int_t bx = upgrade_->egBx.at(ue);  
+    if(bx != 0) continue;
+    if (isIsolated && !upgrade_->egIso.at(ue)) continue;
+    Float_t eta = upgrade_->egEta.at(ue);
+    if(fabs(eta) > eleER && isER) continue;  // eta = 5 - 16
+
+    Float_t pt = upgrade_->egEt.at(ue);
+    if (pt < pt4) continue;
+    TLorentzVector temp(0,0,0,0);
+    temp.SetPtEtaPhiM(pt,eta, upgrade_->egPhi.at(ue), EMass);
+    vEG.push_back(temp);
+  }
+
+  std::sort(vEG.begin(), vEG.end(), 
+      [](const TLorentzVector& a, const TLorentzVector& b ) -> bool
+      { return a.Pt() > b.Pt(); }
+      );
+
+  //for(auto aj : vEG)
+  //{
+    //std::cout << aj.Pt() <<" : ";
+  //}
+  //std::cout << "" << std::endl;
+
+  // Check each pt cut
+  if (pt1 > 0 && vEG.size() > 0)
+  {
+    if (vEG.at(0).Pt() < pt1)
+      return false;
+  }
+  if (pt2 > 0 && vEG.size() > 1)
+  {
+    if (vEG.at(1).Pt() < pt2)
+      return false;
+  }
+  if (pt3 > 0 && vEG.size() > 2)
+  {
+    if (vEG.at(2).Pt() < pt3)
+      return false;
+  }
+  if (pt4 > 0 && vEG.size() > 3)
+  {
+    if (vEG.at(3).Pt() < pt4)
+      return false;
+  }
+
+  std::vector<int> Ptcuts = {pt1, pt2, pt3, pt4};
+  unsigned int nEG = 0;
+  nEG = std::count_if(Ptcuts.begin(), Ptcuts.end(), [](int i){return i > 0;}); 
+  //nEG = vEG.size();
+  if (nEG > vEG.size()) return false;
+
+  for(unsigned int i=0; i < nEG; ++i)
+  {
+    TLorentzVector eg1 = vEG.at(i);
+    for(unsigned int j=i+1; j < nEG; ++j)
+    {
+      TLorentzVector eg2 = vEG.at(j);
+      TLorentzVector sum = eg1 + eg2;
+      if (sum.M() >= Mcut)
+      {
+        return true;
+      }
+
+    }
+  }
+  return false;
+}       // -----  end of function L1AlgoFactory::MultiEGMass  -----

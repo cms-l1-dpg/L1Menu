@@ -1,7 +1,9 @@
 ######### GENERAL STUFF: DON NOT CONSIDER
 CXX = g++
 CXXFLAGS  = -std=c++11
-CXXFLAGS  += -Wall -fPIC -O2 -g -pg
+CXXFLAGS  += -Wall -fPIC -O3
+#C++FLAGS  += -g -pg
+#CXXFLAGS  += -Wextra
 #CXXFLAGS += -Wextra -Weffc++ #Asking for troubles
 #CXXFLAGS += -Wno-reorder #Dirty fix
 CXXFLAGS  += $(subst -I, -isystem , $(shell root-config --cflags))

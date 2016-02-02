@@ -5,6 +5,7 @@
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 #include <iostream>
 #include <cassert>
+#include "TLorentzVector.h"
 
 enum EtSumType { 
   ETT = l1t::EtSum::EtSumType::kTotalEt,
@@ -129,6 +130,8 @@ class L1AlgoFactory: public L1Ntuple{
   void Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut);
   Bool_t Jet_MuOpen_EG_dPhiMuEG1(Float_t jetcut, Float_t egcut);
   void Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass ~~~~~
+  bool MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bool isIsolated, bool isER) const;
 
  private:
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Hard coded cut value ~~~~~

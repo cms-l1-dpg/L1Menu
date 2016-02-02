@@ -22,20 +22,12 @@
 // Description:  constructor
 //----------------------------------------------------------------------------
 L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
+  writefiles(true),writecsv(false),writeplots(true),
+  menufilename(MenuName), 
   tuplefilename(filelist),
-  menufilename(MenuName),
-  writefiles(true), writeplots(true), scale(0)
+  scale(0)
 {
 }  // -----  end of method L1Menu2016::L1Menu2016  (constructor)  -----
-
-//----------------------------------------------------------------------------
-//       Class:  L1Menu2016
-//      Method:  L1Menu2016
-// Description:  copy constructor
-//----------------------------------------------------------------------------
-L1Menu2016::L1Menu2016 ( const L1Menu2016 &other )
-{
-}  // -----  end of method L1Menu2016::L1Menu2016  (copy constructor)  -----
 
 //----------------------------------------------------------------------------
 //       Class:  L1Menu2016
@@ -48,9 +40,9 @@ L1Menu2016::~L1Menu2016 ()
   outfile->close();
   outcsv->close();
   outrootfile->Close();
-  delete outfile;
-  delete outcsv;
-  delete outrootfile;
+  //delete outfile;
+  //delete outcsv;
+  //delete outrootfile;
 }  // -----  end of method L1Menu2016::-L1Menu2016  (destructor)  -----
 
 //----------------------------------------------------------------------------
@@ -85,9 +77,11 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
     outputname = outputname_;
 
   if (writefiles)
-    outfile = new std::fstream( outputdir + "/" + outputname +".txt", std::fstream::in);
+    outfile = new std::fstream( outputdir + "/" + outputname +".txt",
+        std::fstream::in | std::fstream::out );
   if (writecsv)
-    outcsv = new std::fstream( outputdir + "/" + outputname +".csv", std::fstream::in);
+    outcsv = new std::fstream( outputdir + "/" + outputname +".csv",
+        std::fstream::in | std::fstream::out );
   if (writeplots)
   {
     std::string rootfilename = outputdir + "/" + outputname +".root";
@@ -514,13 +508,14 @@ bool L1Menu2016::Loop()
         currentLumi=event_ -> lumi;
         nLumi++;
       } 
-    } else if (i % 10000 == 0)
+    } else if (i % 20000 == 0)
         std::cout << "Processed " << i << " events." << std::endl;
 
     nZeroBiasevents++;
 
     GetL1Event();
     RunMenu();
+    FillLumiSection(currentLumi);
 
   }
 
@@ -544,12 +539,11 @@ bool L1Menu2016::PostLoop()
     seed.second.purerate = seed.second.purecounts *scale;
   }
   
+  FillDefHist1D();
   PrintRates(std::cout);
   if (writefiles)
-  {
     PrintRates(*outfile);
-  }
-  FillDefHist1D();
+  PrintCSV(*outcsv);
 
   return true;
 }       // -----  end of function L1Menu2016::PostLoop  -----
@@ -576,7 +570,9 @@ bool L1Menu2016::PrintRates(std::ostream &out)
       << std::setw(10)             << "pre-scale"
       << std::setw(10)             << "rate@13TeV"       << " +/- "
       << std::setw(20)             << "error_rate@13TeV"
-      << std::setw(10)             << "pure@13TeV"       << std::endl;
+      << std::setw(10)             << "pure@13TeV"       
+      << "Comments"
+      << std::endl;
 
   if (bybit)
   {
@@ -589,7 +585,9 @@ bool L1Menu2016::PrintRates(std::ostream &out)
           << std::setw(10)             << seed.prescale
           << std::setw(10)             << seed.firerate      << " +/- "
           << std::setw(20)             << seed.firerateerror
-          << std::setw(10)             << seed.purerate      << std::endl;
+          << std::setw(10)             << seed.purerate      
+          << seed.comment
+          << std::endl;
       totalrate +=seed.firerate;
       totalpurerate +=seed.purerate;
     }
@@ -604,7 +602,9 @@ bool L1Menu2016::PrintRates(std::ostream &out)
           << std::setw(10)             << seed.second.prescale
           << std::setw(10)             << seed.second.firerate      << " +/- "
           << std::setw(20)             << seed.second.firerateerror
-          << std::setw(10)             << seed.second.purerate      << std::endl;
+          << std::setw(10)             << seed.second.purerate      
+          << seed.second.comment
+          << std::endl;
       totalrate +=seed.second.firerate;
       totalpurerate +=seed.second.purerate;
     }
@@ -819,7 +819,6 @@ bool L1Menu2016::CheckL1Seed(const std::string L1Seed)
   {
     return L1SeedFun[L1Seed]();
   }
-  //std::cout << "No function call for :" << L1Seed << std::endl;
   return false;
 }       // -----  end of function L1Menu2016::CheckL1Seed  -----
 
@@ -909,8 +908,9 @@ bool L1Menu2016::CalScale()
     //scal = (80.*631.)/(1326*23.3);      
     scale = (80.*631.)/(nLumi*23.3);      
   } else {
-    scale = 11246.; // ZB per bunch in kHz
-    scale /= nZeroBiasevents*1000.;
+    scale = 11246.; // ZB per bunch in Hz
+    //scale /= nZeroBiasevents*1000.; // in kHz
+    scale /= nZeroBiasevents; // in Hz
     scale *= L1Config["NumberOfBunches"];
   }
   return true;
@@ -987,6 +987,8 @@ bool L1Menu2016::ParseL1Seed(const std::string SeedName)
   // Tau
   if (ParseDoubleTau(SeedName)) return true;
 
+  // EGMass
+  if (ParseMultiEGMass(SeedName)) return true;
 
   return false;
 }       // -----  end of function L1Menu2016::ParseL1Seed  -----
@@ -1062,7 +1064,7 @@ bool L1Menu2016::ParseSingleObject(const std::string SeedName)
 //         Name:  L1Menu2016::ParseBptx
 //  Description:  /* cursor */
 // ===========================================================================
-std::function<bool()> L1Menu2016::ParseBptx(const std::string Seedtoken)
+std::function<bool()> L1Menu2016::ParseBptx(const std::string /*Seedtoken*/)
 {
   return [](){return true;};
 }       // -----  end of function L1Menu2016::ParseBptx  -----
@@ -1228,11 +1230,83 @@ bool L1Menu2016::ParseTripleEG(const std::string& SeedName)
     return false;
 }       // -----  end of function L1Menu2016::ParseTripleEG  -----
 
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseMultiEGMass
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseMultiEGMass(const std::string& SeedName)
+{
+  
+  int pts = -10;
+  int pt1 = -10;
+  int pt2 = -10;
+  int pt3 = -10;
+  int pt4 = -10;
+  int Mcut = -10;
+  bool isIso = false;
+  bool isER = false;
+  int EGcount = 0;
+
+  std::map<std::string, int> CountMap;
+  CountMap["Single"] = 1;
+  CountMap["Double"] = 2;
+  CountMap["Triple"] = 3;
+  CountMap["Quad"] = 4;
+
+
+  std::smatch base_match;
+  std::regex integer("L1_(Single|Double|Triple|Quad)(Iso|)EG([0-9]*)(er|)(_{0,1}[0-9]*)(_{0,1}[0-9]*)(_{0,1}[0-9]*)(_{0,1}[0-9]*)_M([0-9]+)");
+  if (std::regex_match(SeedName, base_match, integer))
+  {
+    EGcount = CountMap[base_match[1].str()];
+    isIso = base_match.length(2) != 0;
+    if (base_match[3].str() != "")
+      pts =std::stoi(base_match[3].str(), nullptr);
+    isER = base_match.length(4) != 0;
+    if (base_match[5].str() != "")
+      pt1 = std::stoi(base_match[5].str().erase(0, 1), nullptr);
+    if (base_match[6].str() != "")
+      pt2 = std::stoi(base_match[6].str().erase(0, 1), nullptr);
+    if (base_match[7].str() != "")
+      pt3 = std::stoi(base_match[7].str().erase(0, 1), nullptr);
+    if (base_match[8].str() != "")
+      pt4 = std::stoi(base_match[8].str().erase(0, 1), nullptr);
+    Mcut = std::stoi(base_match[9].str(), nullptr);
+  }
+
+
+  std::vector<int> Ptcuts;
+  if (pts > 0) // Set to all legs
+  {
+    pt1 = pt2 = pt3 = pt4 = pts;
+    for (int i = 0; i < 4; ++i)
+    {
+      if (i <= EGcount)
+        Ptcuts.push_back(pts);
+      else
+        Ptcuts.push_back(-10);
+    }
+  } else{
+    Ptcuts.push_back(pt1);
+    Ptcuts.push_back(pt2);
+    Ptcuts.push_back(pt3);
+    Ptcuts.push_back(pt4);
+    std::sort(Ptcuts.begin(), Ptcuts.end(), std::greater<int>());
+  }
+
+  assert(EGcount == std::count_if(Ptcuts.begin(), Ptcuts.end(), [](int i){return i > 0;}));
+  L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::MultiEGMass, this, Ptcuts.at(0), 
+      Ptcuts.at(1), Ptcuts.at(2),  Ptcuts.at(3), Mcut, isIso, isER);
+
+  return true;
+}       // -----  end of function L1Menu2016::ParseMultiEGMass  -----
+
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::ParseCrossMu
 //  Description:  
 // ===========================================================================
-bool L1Menu2016::ParseCrossMu(const std::string& SeedName)
+bool L1Menu2016::ParseCrossMu(const std::string& /*SeedName*/)
 {
   //std::smatch base_match;
   //std::regex integer("L1_QuadJet([C]*)([0-9]+)");
@@ -1247,3 +1321,56 @@ bool L1Menu2016::ParseCrossMu(const std::string& SeedName)
   //else return false;
   return false;
 }       // -----  end of function L1Menu2016::ParseCrossMu  -----
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::FillLumiSection
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::FillLumiSection(int currentLumi)
+{
+  if (currentLumi == -1) return false;
+
+  for(auto l1 : mL1Seed)
+  {
+    if(L1LSCount[l1.first].find(currentLumi) == L1LSCount[l1.first].end())
+    {
+      L1LSCount[l1.first][currentLumi] = 0;
+    }
+    if (l1.second.eventfire)
+    {
+      L1LSCount[l1.first][currentLumi]++;
+    }
+  }
+  
+  return true;
+}       // -----  end of function L1Menu2016::FillLumiSection  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::PrintCSV
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::PrintCSV(std::ostream &out)
+{
+  if (!writecsv) return false;
+  out << "L1Bit"
+      << "," << "L1SeedName"
+      << "," << "pre-scale"
+      << "," << "rate"
+      << "," << "error_rate"
+      << "," << "pure"       
+      << "," << "Comments"
+      << std::endl;
+
+  for(auto i : BitMap)
+  {
+    auto seed = mL1Seed[i.second];
+    out << seed.bit
+      << "," << seed.name
+      << "," << seed.prescale
+      << "," << seed.firerate     
+      << "," << seed.firerateerror
+      << "," << seed.purerate      
+      << ",\""<<seed.comment<<"\""
+      << std::endl;
+  }
+  return true;
+}       // -----  end of function L1Menu2016::PrintCSV  -----

@@ -120,7 +120,6 @@ class L1Menu2016 : public L1AlgoFactory
 
     // ====================  LIFECYCLE     ===============================
     L1Menu2016 (std::string MenuName, std::string filelist);                             // constructor
-    L1Menu2016 ( const L1Menu2016 &other );   // copy constructor
     ~L1Menu2016 ();                            // destructor
 
     // ====================  ACCESSORS     ===============================
@@ -157,6 +156,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseTripleEG(const std::string& SeedName);
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);
+    bool ParseMultiEGMass(const std::string& SeedName);
     // ====================  OPERATORS     ===============================
 
     L1Menu2016& operator = ( const L1Menu2016 &other ); // assignment operator
@@ -178,6 +178,8 @@ class L1Menu2016 : public L1AlgoFactory
     bool GetL1Event();
     void CorrectScale(TH1F* h, Float_t scal);
     bool InsertInMenu(std::string L1name, bool value);
+    bool FillLumiSection(int currentLumi);
+    bool PrintCSV(std::ostream &out);
     Bool_t EGamma();
     bool CheckPureFire();
     bool CheckPhysFire();
