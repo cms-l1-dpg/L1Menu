@@ -78,10 +78,10 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
 
   if (writefiles)
     outfile = new std::fstream( outputdir + "/" + outputname +".txt",
-        std::fstream::in | std::fstream::out );
+        std::fstream::in | std::fstream::out | std::fstream::app );
   if (writecsv)
     outcsv = new std::fstream( outputdir + "/" + outputname +".csv",
-        std::fstream::in | std::fstream::out );
+        std::fstream::in | std::fstream::out | std::fstream::app );
   if (writeplots)
   {
     std::string rootfilename = outputdir + "/" + outputname +".root";
@@ -449,6 +449,8 @@ bool L1Menu2016::PreLoop()
   
   BookHistogram();
 
+  PrintConfig();
+
   return true;
 }       // -----  end of function L1Menu2016::PreLoop  -----
 
@@ -471,7 +473,7 @@ bool L1Menu2016::GetL1Event()
   L1AlgoFactory::SingleEGPt(L1Event.IsoEGerPt,true, true);
 
   //Tau
-  L1AlgoFactory::SingleTauPt(L1Event.TauPt, false);
+  L1AlgoFactory::SingleTauPt(L1Event.TauPt, false, false);
 
   //Mu
   L1AlgoFactory::SingleMuPt(L1Event.MuPt, false);
@@ -500,6 +502,7 @@ bool L1Menu2016::Loop()
     Long64_t ientry = LoadTree(i); 
     if (ientry < 0) break;
     GetEntry(i);
+    //if (i > 100000) break;
 
     if (event_ != NULL )
     {
@@ -907,11 +910,14 @@ bool L1Menu2016::CalScale()
   {
     //scal = (80.*631.)/(1326*23.3);      
     scale = (80.*631.)/(nLumi*23.3);      
+    std::cout << "Scale by "   << "(80.*631.)/(nLumi*23.3) with nLumi = " << nLumi      << std::endl;
   } else {
     scale = 11246.; // ZB per bunch in Hz
     //scale /= nZeroBiasevents*1000.; // in kHz
     scale /= nZeroBiasevents; // in Hz
     scale *= L1Config["NumberOfBunches"];
+    std::cout << "Scale by "   << " 11246 / nZeroBiasevents * NumberOfBunches, with nZeroBiasevents = " 
+      << nZeroBiasevents    <<" NumberOfBunches = " << L1Config["NumberOfBunches"] << std::endl;
   }
   return true;
 }       // -----  end of function L1Menu2016::CalScale  -----

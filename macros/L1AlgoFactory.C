@@ -270,6 +270,7 @@ void L1AlgoFactory::SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin) {
   for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != 0) continue;
+    if(!PassMuonQual(imu, qualmin)) continue;
     Float_t eta = upgrade_->muonEta.at(imu);        
     if(fabs(eta) > muonER && isER) continue;
     Float_t pt = upgrade_->muonEt.at(imu);                       
@@ -323,6 +324,7 @@ void L1AlgoFactory::TripleMuPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Int_
   for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
+    if(!PassMuonQual(imu, qualmin)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
 
     if(pt >= mu1ptmax)
@@ -359,6 +361,7 @@ void L1AlgoFactory::QuadMuPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Float_
   for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
+    if(!PassMuonQual(imu, qualmin)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
 
     if(pt >= mu1ptmax)
@@ -518,7 +521,7 @@ void L1AlgoFactory::TripleEGPt(Float_t& cut1, Float_t& cut2, Float_t& cut3 ) {
   return;
 }
 
-void L1AlgoFactory::SingleTauPt(Float_t& cut, Bool_t isCentral) {
+void L1AlgoFactory::SingleTauPt(Float_t& cut, Bool_t isCentral, Bool_t isIsolated) {
 
   Float_t ptmax = -10.;
   for(UInt_t ue=0; ue < upgrade_->nTaus; ue++) {
@@ -526,6 +529,7 @@ void L1AlgoFactory::SingleTauPt(Float_t& cut, Bool_t isCentral) {
     if(bx != 0) continue;
     Bool_t isFwdJet = fabs(upgrade_->tauEta.at(ue)) > jetCentFwd ? true : false;
     if(isCentral && isFwdJet) continue;
+    if(isIsolated && !upgrade_->tauIso.at(ue)) continue;
 
     Float_t pt = upgrade_->tauEt.at(ue);
     if(pt >= ptmax) ptmax = pt;
@@ -937,6 +941,7 @@ void L1AlgoFactory::Mu_DoubleJetCentralPt(Float_t& mucut, Float_t& jetcut) {
   for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
+    if(!PassMuonQual(imu)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
     if (pt >= muptmax) muptmax = pt;
   }
@@ -973,6 +978,7 @@ void L1AlgoFactory::Muer_JetCentralPt(Float_t& mucut, Float_t& jetcut) {
   for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
+    if(!PassMuonQual(imu)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);
     Float_t eta = upgrade_->muonEta.at(imu); 
     if(fabs(eta) > 2.1) continue;

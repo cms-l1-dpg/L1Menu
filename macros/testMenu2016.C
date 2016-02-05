@@ -33,8 +33,8 @@ int main ( int argc, char *argv[] )
   namespace po = boost::program_options;
   // Declare the supported options.
   boost::program_options::options_description desc("Allowed options");
-  const std::string defaultMenu = "Menu_Tune.txt";
-  const std::string defaultntuple = "ntuples_256843_stage2_Tune.list";
+  const std::string defaultMenu = "menu/Menu_256843_Stage2.txt";
+  const std::string defaultntuple = "ntuple/Run256843_stage2_Len.list";
   desc.add_options()
     ("help,h", "produce help message")
     ("menufile,m", po::value<std::string>()->default_value(defaultMenu), "set the input menu")

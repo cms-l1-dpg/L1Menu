@@ -1,6 +1,7 @@
 #ifndef  __L1ALGOFACTORY_INC__
 #define  __L1ALGOFACTORY_INC__
 
+#include <cmath>
 #include "L1Ntuple.h"
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 #include <iostream>
@@ -37,7 +38,7 @@ class L1AlgoFactory: public L1Ntuple{
   void TripleJetPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Bool_t isCentral = false);
   Bool_t TripleJet_VBF(Float_t jet1, Float_t jet2, Float_t jet3, Int_t jetclass = 0);
   void QuadJetPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Float_t& cut4, Bool_t isCentral = false);
-  void SingleTauPt(Float_t& cut, Bool_t isCentral);
+  void SingleTauPt(Float_t& cut, Bool_t isCentral, Bool_t isIsolated);
 
   void Mu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isIsolated = false, Int_t qualmin=4);
   void DoubleMu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isMuHighQual = false );
