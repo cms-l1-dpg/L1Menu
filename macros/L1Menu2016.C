@@ -496,6 +496,7 @@ bool L1Menu2016::Loop()
   Int_t nevents = fChain->GetEntriesFast();//GetEntries();
   int currentLumi(-1);
   nZeroBiasevents = 0.;
+  nFireevents = 0.;
   nLumi = 0;
 
   for (Long64_t i=0; i<nevents; i++){     
@@ -511,15 +512,15 @@ bool L1Menu2016::Loop()
         currentLumi=event_ -> lumi;
         nLumi++;
       } 
-    } else if (i % 20000 == 0)
-        std::cout << "Processed " << i << " events." << std::endl;
+    } else if (i % 200000 == 0)
+      std::cout << "Processed " << i << " events." << std::endl;
 
     nZeroBiasevents++;
 
     GetL1Event();
-    RunMenu();
+    if (RunMenu())
+      nFireevents++;
     FillLumiSection(currentLumi);
-
   }
 
   return true;
@@ -560,7 +561,7 @@ bool L1Menu2016::PrintRates(std::ostream &out)
   
   float totalrate = 0.;
   float totalpurerate = 0.;
-  bool bybit = true;
+  bool bybit = false;
   std::size_t L1NameLength = 0;
   for(auto k : mL1Seed)
   {
@@ -615,8 +616,10 @@ bool L1Menu2016::PrintRates(std::ostream &out)
   }
 
 
-  out << std::endl << "Total rate (without overlaps) = " << totalrate << std::endl;
-  out << std::endl << "Total pure rate  = " << totalpurerate << std::endl;
+  out << std::endl << "Total rate  = " << nFireevents / 1000 * scale 
+    <<" +/- " << sqrt(nFireevents) * scale / 1000 << " (kHz)" << std::endl;
+  out << std::endl << "Total rate (with overlaps) = " << totalrate / 1000 << " (kHz)" << std::endl;
+  out << std::endl << "Total pure rate  = " << totalpurerate / 1000 <<" (kHz)" << std::endl;
 
   return true;
 }       // -----  end of function L1Menu2016::PrintRates  -----
@@ -842,7 +845,7 @@ bool L1Menu2016::RunMenu()
   CheckPhysFire();
   CheckPureFire();
 
-  return true;
+  return FireSeed.size() > 0;
 }       // -----  end of function L1Menu2016::RunMenu  -----
 
 // ===  FUNCTION  ============================================================

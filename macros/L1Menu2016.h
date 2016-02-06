@@ -220,6 +220,7 @@ class L1Menu2016 : public L1AlgoFactory
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Rate variables ~~~~~
     double scale;
+    double nFireevents;
     unsigned int nZeroBiasevents;
     unsigned int nLumi;
 
