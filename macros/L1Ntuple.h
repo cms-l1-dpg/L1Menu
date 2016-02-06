@@ -25,6 +25,11 @@
 
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisEventDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisL1UpgradeDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoJetDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMetDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoElectronDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMuon2DataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
 
 class L1Ntuple {
 public:
@@ -36,6 +41,11 @@ public:
   TChain          *ftreeExtra;
   TChain          *ftreeMenu;
   TChain          *ftreeEmuExtra;
+  TChain          *ftreeRecoJet;
+  TChain          *ftreeRecoMet;
+  TChain          *ftreeRecoEle;
+  TChain          *ftreeRecoMuon;
+  TChain          *ftreeRecoTau;
   Int_t            fCurrent; //!current Tree number in a TChain
 
   bool doreco;
@@ -44,9 +54,19 @@ public:
   bool dol1extra;
   bool dol1emuextra;
   bool dol1menu;  
+  bool doRecoJet;
+  bool doRecoMet;
+  bool doRecoEle;
+  bool doRecoMuon;
+  bool doRecoTau;
 
   L1Analysis::L1AnalysisEventDataFormat        *event_;
   L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade_;
+  L1Analysis::L1AnalysisRecoJetDataFormat      *recoJet_;
+  L1Analysis::L1AnalysisRecoMetDataFormat      *recoSum_;
+  L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle_;
+  L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
+  L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau_;
 
   L1Ntuple();
   L1Ntuple(const std::string & fname);
@@ -61,6 +81,7 @@ public:
   //virtual void     Loop();
   void     Test();
   void     Test2();
+  bool PrintRecoTree() const;
   Long64_t GetEntries();
 
 protected:
@@ -72,6 +93,7 @@ protected:
 private :
   Long64_t nentries_;
   TFile* rf;
+  std::string MainTreePath;
 };
 
 #endif

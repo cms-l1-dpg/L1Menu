@@ -2,7 +2,7 @@
 CXX = g++
 CXXFLAGS  = -std=c++11
 CXXFLAGS  += -Wall -fPIC -O3
-#C++FLAGS  += -g -pg
+#CXXFLAGS  += -g -pg
 #CXXFLAGS  += -Wextra
 #CXXFLAGS += -Wextra -Weffc++ #Asking for troubles
 #CXXFLAGS += -Wno-reorder #Dirty fix
@@ -21,7 +21,7 @@ ifneq ($(shell echo $$CMSSW_BASE), )
 		  -lboost_program_options -lboost_filesystem
 endif
 
-OBJS = L1Ntuple.o L1AlgoFactory.o
+OBJS = L1Ntuple.o L1AlgoFactory.o L1Plot.o
 
 PROGRAM = testMenu2016 RunL1Menu2016
 
