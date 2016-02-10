@@ -25,7 +25,8 @@ L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
   writefiles(true),writecsv(false),writeplots(true),
   menufilename(MenuName), 
   tuplefilename(filelist),
-  scale(0)
+  scale(0),
+  l1Plot(nullptr)
 {
 }  // -----  end of method L1Menu2016::L1Menu2016  (constructor)  -----
 
@@ -86,6 +87,8 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
   {
     std::string rootfilename = outputdir + "/" + outputname +".root";
     outrootfile =  new TFile( rootfilename.c_str(), "RECREATE");
+    l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
+        recoSum_, recoEle_, recoMuon_, recoTau_);
   }
   return true;
 }       // -----  end of function L1Menu2016::ConfigOutput  -----
@@ -451,6 +454,9 @@ bool L1Menu2016::PreLoop()
 
   PrintConfig();
 
+  if (l1Plot != NULL)
+    l1Plot->PreRun();
+    
   return true;
 }       // -----  end of function L1Menu2016::PreLoop  -----
 
@@ -503,7 +509,7 @@ bool L1Menu2016::Loop()
     Long64_t ientry = LoadTree(i); 
     if (ientry < 0) break;
     GetEntry(i);
-    //if (i > 100000) break;
+    if (i > 100) break;
 
     if (event_ != NULL )
     {
@@ -521,6 +527,9 @@ bool L1Menu2016::Loop()
     if (RunMenu())
       nFireevents++;
     FillLumiSection(currentLumi);
+
+    if (l1Plot != NULL)
+      l1Plot->RunPlot(&L1Event, &mL1Seed);
   }
 
   return true;
@@ -532,7 +541,7 @@ bool L1Menu2016::Loop()
 // ===========================================================================
 bool L1Menu2016::PostLoop()
 {
-  CalScale();
+  scale = CalScale();
 
   std::cout << "Summary" << std::endl;
 
@@ -548,6 +557,9 @@ bool L1Menu2016::PostLoop()
   if (writefiles)
     PrintRates(*outfile);
   PrintCSV(*outcsv);
+
+  if (l1Plot != NULL)
+    l1Plot->PostRun(scale);
 
   return true;
 }       // -----  end of function L1Menu2016::PostLoop  -----
@@ -907,8 +919,12 @@ bool L1Menu2016::CheckPhysFire()
 //         Name:  L1Menu2016::CalScale
 //  Description:  
 // ===========================================================================
-bool L1Menu2016::CalScale() 
+double L1Menu2016::CalScale(int nEvents_, int nBunches_) 
 {
+  double scale = 0.0;
+  int nEvents = nEvents_ == 0 ? nZeroBiasevents : nEvents_;
+  int nBunches = nBunches_ == 0 ?  L1Config["NumberOfBunches"] : nBunches_;
+
   if (L1Config["NumberOfBunches"] == -1)
   {
     //scal = (80.*631.)/(1326*23.3);      
@@ -917,12 +933,12 @@ bool L1Menu2016::CalScale()
   } else {
     scale = 11246.; // ZB per bunch in Hz
     //scale /= nZeroBiasevents*1000.; // in kHz
-    scale /= nZeroBiasevents; // in Hz
-    scale *= L1Config["NumberOfBunches"];
+    scale /= nEvents; // in Hz
+    scale *= nBunches;
     std::cout << "Scale by "   << " 11246 / nZeroBiasevents * NumberOfBunches, with nZeroBiasevents = " 
-      << nZeroBiasevents    <<" NumberOfBunches = " << L1Config["NumberOfBunches"] << std::endl;
+      << nEvents    <<" NumberOfBunches = " << nBunches << std::endl;
   }
-  return true;
+  return scale;
 }       // -----  end of function L1Menu2016::CalScale  -----
 
 // ===  FUNCTION  ============================================================

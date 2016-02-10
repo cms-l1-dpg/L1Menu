@@ -29,7 +29,6 @@ private :
   
   float ScaleFactor(float nZeroBias, float nBunches);
   //void  SingleJetPt(Float_t& ptcut, Bool_t isCentral = false);
-  float SingleTauPt();
   float SingleMuEta(float eta);
   //void  SingleEGPt(Float_t& ptcut, Bool_t isIsolated, Bool_t isER);
   float SingleEGEta(float ptCut, bool doIso);
@@ -84,19 +83,6 @@ float BasicRatePlots::SingleMuEta(float ptCut ) {
   return eta;
 }
 
-float BasicRatePlots::SingleTauPt() {
-  
-  float maxPt = -10;
-
-  for (UInt_t ue=0; ue < upgrade_ -> nTaus; ue++) {
-    Int_t bx = upgrade_ -> tauBx.at(ue);        		
-    if (bx != 0) continue; 
-    Float_t pt = upgrade_ -> tauEt.at(ue);
-    if (pt >= maxPt) maxPt = pt;
-  } 
-  
-  return maxPt;
-}
 
 
 float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
@@ -246,10 +232,13 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
   hTH1F["nEvts"]       = new TH1F("nEvts","Number of Events Processed",1,-0.5,.5);
   //Single stuff
   hTH1F["nJetVsPt"]    = new TH1F("nJetVsPt","SingleJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
-  hTH1F["nTauVsPt"]    = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hTH1F["nJetCenVsPt"] = new TH1F("nJetCenVsPt","SingleJetCentral; E_{T} cut; rate [Hz]",256,-0.5,255.5);
-  hTH1F["nEGVsPt"]     = new TH1F("nEGVsPt","SingleEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
-  hTH1F["nEGErVsPt"]   = new TH1F("nEGErVsPt","SingleEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+
+  hTH1F["nTauVsPt"]     = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hTH1F["nTauErVsPt"]   = new TH1F("nTauErVsPt","SingleTauer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hTH1F["nIsoTauVsPt"]  = new TH1F("nIsoTauVsPt","SingleIsoTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hTH1F["nIsoTauErVsPt"]  = new TH1F("nIsoTauErVsPt","SingleIsoTauEr; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+
   hTH1F["nIsoEGVsPt"]  = new TH1F("nIsoEGVsPt","SingleIsoEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hTH1F["nMuVsPt"]     = new TH1F("nMuVsPt","SingleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hTH1F["nMuErVsPt"]   = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
@@ -331,7 +320,15 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
     float jetEta_Central = SingleJetEta(36.,1);
     float jetEta_Fwd    = SingleJetEta(36.,2);
 
-    float tauPt     = SingleTauPt();
+    float TauPt      = 0.;
+    float TauErPt    = 0.;
+    float isoTauPt   = 0.;
+    float isoTauErPt = 0.;
+    SingleTauPt(TauPt      , false, false);
+    SingleTauPt(TauErPt    , true,  false);
+    SingleTauPt(isoTauPt   , false, true);
+    SingleTauPt(isoTauErPt , true,  true);
+
 
     float htt       = 0.; HTTVal(htt);
     float ett       = 0.; ETTVal(ett);
@@ -344,43 +341,43 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
     float isoegEta  = SingleEGEta(16.,true);
 
     //cout << "Event number = " << nZeroBias << endl;
-    //float muPt     = -10.; SingleMuPt(muPt,false);
+    float muPt     = -10.; SingleMuPt(muPt,false);
     //cout << "muPt = " << muPt << endl; 
-    //float muErPt   = -10.; SingleMuPt(muErPt,true);
+    float muErPt   = -10.; SingleMuPt(muErPt,true);
 
     //cout << "Event number = " << nZeroBias << endl;
     float muEta    = SingleMuEta(16.);
     //cout << "muEta = " << muEta << endl;
 
-    // float doubleMuPt1 = -10.; 
-    // float doubleMuPt2 = -10.;
-    // DoubleMuPt(doubleMuPt1,doubleMuPt2);
+     float doubleMuPt1 = -10.; 
+     float doubleMuPt2 = -10.;
+     DoubleMuPt(doubleMuPt1,doubleMuPt2);
+     
+     float oniaMuPt1 = 0.;
+     float oniaMuPt2 = 0.;
+     Onia2015Pt(oniaMuPt1,oniaMuPt2,true, false, 22);
+     
+     
+     float dijetPt1    = -10.;
+     float dijetPt2    = -10.;
+     float diCenjetPt1 = -10.;
+     float diCenjetPt2 = -10.;
+     DoubleJetPt(dijetPt1,dijetPt2);
+     DoubleJetPt(diCenjetPt1,diCenjetPt2,true);
+     Float_t dummy = -1;
+     float ditauPt    = -10.; DoubleTauJetEta2p17Pt(dummy,ditauPt);
+     dummy = -1.;
+     float quadjetPt  = -10.; QuadJetPt(dummy,dummy,dummy,quadjetPt);
+     dummy = -1.;
+     float quadjetCPt = -10.; QuadJetPt(dummy,dummy,dummy,quadjetCPt,true);
+     dummy = -1.;
     // 
-    // float oniaMuPt1 = 0.;
-    // float oniaMuPt2 = 0.;
-    // OniaPt(oniaMuPt1,oniaMuPt2,22);
-    // 
-    // 
-    // float dijetPt1    = -10.;
-    // float dijetPt2    = -10.;
-    // float diCenjetPt1 = -10.;
-    // float diCenjetPt2 = -10.;
-    // DoubleJetPt(dijetPt1,dijetPt2);
-    // DoubleJetPt(diCenjetPt1,diCenjetPt2,true);
-    // Float_t dummy = -1;
-    // float ditauPt    = -10.; DoubleTauJetEta2p17Pt(dummy,ditauPt);
-    // dummy = -1.;
-    // float quadjetPt  = -10.; QuadJetPt(dummy,dummy,dummy,quadjetPt);
-    // dummy = -1.;
-    // float quadjetCPt = -10.; QuadJetPt(dummy,dummy,dummy,quadjetCPt,true);
-    // dummy = -1.;
-    // 
-    // float diEG1     = -10.;
-    // float diEG2     = -10.;
-    // float diIsolEG1 = -10.;
-    // float diIsolEG2 = -10.;
-    // DoubleEGPt(diEG1,diEG2,false);
-    // DoubleEGPt(diIsolEG1,diIsolEG2,true);
+     float diEG1     = -10.;
+     float diEG2     = -10.;
+     float diIsolEG1 = -10.;
+     float diIsolEG2 = -10.;
+     DoubleEGPt(diEG1,diEG2,false);
+     DoubleEGPt(diIsolEG1,diIsolEG2,true);
 
     if(muEta > -9.) hTH1F["nMuVsEta"]->Fill(muEta);
     hTH1F["nEGVsEta"]->Fill(egEta);
@@ -392,61 +389,64 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
     for(int ptCut=0; ptCut<256; ++ptCut) {
       if(jetPt>=ptCut)	  hTH1F["nJetVsPt"]->Fill(ptCut);
       if(jetCenPt>=ptCut) hTH1F["nJetCenVsPt"]->Fill(ptCut);
-      if(tauPt>=ptCut)	  hTH1F["nTauVsPt"]->Fill(ptCut);
-    // 
-    //   if(dijetPt2>=ptCut){
-    // 	hTH1F["nDiJetVsPt"]->Fill(ptCut);
-    // 
-    // 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-    // 	  if(dijetPt1>=ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut);
-    // 	}
-    //   }
-    // 
-    //   if(diCenjetPt2>=ptCut){
-    // 	hTH1F["nDiCenJetVsPt"]->Fill(ptCut);
-    // 
-    // 	for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-    // 	  if(diCenjetPt1>=ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut);
-    // 	}
-    //   }
-    // 
-    //   if(ditauPt>=ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut);
-    //   if(quadjetPt>=ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut);
-    //   if(quadjetCPt>=ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut);
-    // 
+      if(TauPt>=ptCut)	  hTH1F["nTauVsPt"]->Fill(ptCut);
+      if(TauErPt>=ptCut)	  hTH1F["nTauErVsPt"]->Fill(ptCut);
+      if(isoTauPt>=ptCut)	  hTH1F["nIsoTauVsPt"]->Fill(ptCut);
+      if(isoTauErPt>=ptCut)	  hTH1F["nIsoTauErVsPt"]->Fill(ptCut);
+     
+       if(dijetPt2>=ptCut){
+         hTH1F["nDiJetVsPt"]->Fill(ptCut);
+     
+         for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
+           if(dijetPt1>=ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut);
+         }
+       }
+     
+       if(diCenjetPt2>=ptCut){
+         hTH1F["nDiCenJetVsPt"]->Fill(ptCut);
+     
+         for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
+           if(diCenjetPt1>=ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut);
+         }
+       }
+     
+       if(ditauPt>=ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut);
+       if(quadjetPt>=ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut);
+       if(quadjetCPt>=ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut);
+     
     }//loop on 256
     //   
     for(int ptCut=0; ptCut<65; ++ptCut) {
        if(egPt>=ptCut)    hTH1F["nEGVsPt"]->Fill(ptCut);
        if(egErPt>=ptCut)  hTH1F["nEGErVsPt"]->Fill(ptCut);
        if(isoEgPt>=ptCut) hTH1F["nIsoEGVsPt"]->Fill(ptCut);
-    // 
-    //   if(diEG2>=ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut);
-    //   if(diIsolEG2>=ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut);
-    // 
-    // 
-    //   for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
-    // 	if(diEG1>=ptCut && diEG2>=ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
-    // 	if(diIsolEG1>=ptCut && diIsolEG2>=ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
-    //   }
-    // 
+     
+       if(diEG2>=ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut);
+       if(diIsolEG2>=ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut);
+     
+     
+       for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
+         if(diEG1>=ptCut && diEG2>=ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
+         if(diIsolEG1>=ptCut && diIsolEG2>=ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
+       }
+     
     }//loop on 65
     //  
-    // for(int ptCut=0; ptCut<131; ++ptCut) {
-    //   if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut);
-    //  if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut);
-    // }
-    //   
-    // 
-    // for(int iCut=0; iCut<41; ++iCut) {
-    //   for(int iCut2=0; iCut2<=iCut; ++iCut2) {
-    // 	float ptCut = iCut*0.5;
-    // 	float ptCut2 = iCut2*0.5;
-    // 	if (doubleMuPt1>=ptCut && doubleMuPt2>=ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
-    // 	if (oniaMuPt1>=ptCut && oniaMuPt2>=ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
-    //   }
-    // }
-    // 
+     for(int ptCut=0; ptCut<131; ++ptCut) {
+       if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut);
+      if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut);
+     }
+       
+     
+     for(int iCut=0; iCut<41; ++iCut) {
+       for(int iCut2=0; iCut2<=iCut; ++iCut2) {
+         float ptCut = iCut*0.5;
+         float ptCut2 = iCut2*0.5;
+         if (doubleMuPt1>=ptCut && doubleMuPt2>=ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
+         if (oniaMuPt1>=ptCut && oniaMuPt2>=ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
+       }
+     }
+     
     for(int httCut=0; httCut<512; ++httCut) {
        if(htt>httCut) hTH1F["nHTTVsHTT"]->Fill(httCut);
        if(ett>httCut) hTH1F["nETTVsETT"]->Fill(httCut);
@@ -516,25 +516,46 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       nBunches = nBunches25ns;
       filename = "/afs/cern.ch/user/p/pellicci/data2/L1DPG/root/2016/v2/20PU_25ns_Stage2/20PU_25ns_Stage2_1.root";
     }
-  else if (fileType == "RUN256843_Stage2")
-    {
-      isData = true;      
-      // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
-      // filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_2.root";
-      filename = "ntuples_256843_stage2_full.list";
-    }
   else if (fileType == "RUN256843_Stage1")
     {
       isData = true;      
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
-      filename = "ntuples_256843_stage1B.list";
+      filename = "ntuple/Run256843_stage1_Tune.list";
+      //filename = "ntuples_256843_stage1B.list";
+    }
+  else if (fileType == "RUN256843_Stage2_8X")
+    {
+      isData = true;      
+      //isData = false;      
+      //nBunches = 1021;
+      // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
+      // filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_2.root";
+      filename = "ntuple/Run256843_stage2_8X.list";
+      //filename = "ntuples_256843_stage2_full.list";
+    }
+  else if (fileType == "RUN256843_Stage2_76")
+    {
+      isData = true;      
+      // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
+      // filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_2.root";
+      filename = "ntuple/Run256843_stage2_Len.list";
+      //filename = "ntuples_256843_stage2_full.list";
     }
   else if (fileType == "Stage2_Simone")
     {
       isData = false;      
       nBunches = 1021;
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
-      filename = "ntuples_256843_stage2_Simone.list";
+      filename = "ntuple/Run256843_stage2_Simone.list";
+      //filename = "ntuples_256843_stage2_Simone.list";
+    }
+  else if (fileType == "RUN259721_Stage2")
+  {
+    isData = false;      
+    nBunches = 517; 
+    // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
+    filename = "ntuple/Run259721_stage2_Simone.list";
+    //filename = "ntuples_256843_stage2_Simone.list";
     }
   else if (fileType == "RUN260627_Aaron")
     {

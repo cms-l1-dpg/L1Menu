@@ -7,13 +7,46 @@ Long64_t L1Ntuple::GetEntries()
 
 L1Ntuple::L1Ntuple()
 {
-  doEvent=true; doreco=true; domuonreco=true; dol1extra=true; dol1emuextra=true; dol1menu=true;
-  event_ = NULL;
+  doEvent       = true;
+  doreco        = true;
+  domuonreco    = true;
+  dol1extra     = true;
+  dol1emuextra  = true;
+  dol1menu      = true;
+  doRecoJet     = true;
+  doRecoMet     = true;
+  doRecoEle     = true;
+  doRecoMuon    = true;
+  doRecoTau     = true;
+
+  fChain        = nullptr;
+  fEvent        = nullptr;
+  ftreeEvent    = nullptr;
+  ftreemuon     = nullptr;
+  ftreereco     = nullptr;
+  ftreeExtra    = nullptr;
+  ftreeMenu     = nullptr;
+  ftreeEmuExtra = nullptr;
+  ftreeRecoJet  = nullptr;
+  ftreeRecoMet  = nullptr;
+  ftreeRecoEle  = nullptr;
+  ftreeRecoMuon = nullptr;
+  ftreeRecoTau  = nullptr;
+
+  event_        = nullptr;
+  upgrade_      = nullptr;
+  recoJet_       = nullptr;
+  recoSum_       = nullptr;
+  recoEle_       = nullptr;
+  recoMuon_      = nullptr;
+  recoTau_       = nullptr;
+  //MainTreePath = "l1UpgradeEmuTree/L1UpgradeTree";
+  MainTreePath = "l1UpgradeTree/L1UpgradeTree";
 }
 
 L1Ntuple::L1Ntuple(const std::string & fname)
 {
-  doEvent=true; doreco=true; domuonreco=true; dol1extra=true;  dol1emuextra=true; dol1menu=true;
+  L1Ntuple();
   Open(fname);
 }
 
@@ -46,20 +79,20 @@ bool L1Ntuple::OpenNtupleList(const std::string & fname)
 {
   std::ifstream flist(fname.c_str());
   if (!flist)
-    {
-      std::cout << "File "<<fname<<" is not found !"<<std::endl;
-      return false;
-    }
+  {
+    std::cout << "File "<<fname<<" is not found !"<<std::endl;
+    return false;
+  }
 
   while(!flist.eof())
-    {
-      std::string str;
-      getline(flist,str);
-      if (!flist.fail())
   {
-           if (str!="") listNtuples.push_back(str);
-  }
+    std::string str;
+    getline(flist,str);
+    if (!flist.fail())
+    {
+      if (str!="") listNtuples.push_back(str);
     }
+  }
 
   return true;
 }
@@ -73,14 +106,19 @@ bool L1Ntuple::CheckFirstFile()
   if (rf==0) return false;
   if (rf->IsOpen()==0) return false;
 
-  //TTree * myChain     = (TTree*) rf->Get("l1NtupleProducer/L1Tree");
-  TTree * myChain     = (TTree*) rf->Get("l1UpgradeTree/L1UpgradeTree");
-  TTree * mytreeEvent = (TTree*) rf->Get("l1EventTree/L1EventTree");
-  TTree * mytreemuon  = (TTree*) rf->Get("l1MuonRecoTreeProducer/MuonRecoTree");
-  TTree * mytreejets  = (TTree*) rf->Get("l1RecoTreeProducer/RecoTree");
-  TTree * mytreeExtra = (TTree*) rf->Get("l1ExtraTreeProducer/L1ExtraTree");
+  TTree * myChain        = (TTree*) rf->Get(MainTreePath.c_str());
+  TTree * mytreeEvent    = (TTree*) rf->Get("l1EventTree/L1EventTree");
+  TTree * mytreemuon     = (TTree*) rf->Get("l1MuonRecoTreeProducer/MuonRecoTree");
+  TTree * mytreejets     = (TTree*) rf->Get("l1RecoTreeProducer/RecoTree");
+  TTree * mytreeExtra    = (TTree*) rf->Get("l1ExtraTreeProducer/L1ExtraTree");
   TTree * mytreeEmuExtra = (TTree*) rf->Get("l1EmulatorExtraTree/L1ExtraTree");
-  TTree * mytreeMenu  = (TTree*) rf->Get("l1MenuTreeProducer/L1MenuTree");
+  TTree * mytreeMenu     = (TTree*) rf->Get("l1MenuTreeProducer/L1MenuTree");
+  TTree * mytreeRecoJet  = (TTree*) rf->Get("l1JetRecoTree/JetRecoTree");
+  TTree * mytreeRecoMet  = nullptr;
+  //TTree * mytreeRecoMet  = (TTree*) rf->Get("l1MetFilterRecoTree/MetFilterRecoTree");
+  TTree * mytreeRecoEle  = (TTree*) rf->Get("l1ElectronRecoTree/ElectronRecoTree");
+  TTree * mytreeRecoMuon = (TTree*) rf->Get("l1MuonRecoTree/Muon2RecoTree");
+  TTree * mytreeRecoTau  = (TTree*) rf->Get("l1TauRecoTree/TauRecoTree");
 
   if (!myChain) {
     std::cout<<"L1Tree not found .... "<<std::endl;
@@ -93,51 +131,93 @@ bool L1Ntuple::CheckFirstFile()
     std::cout<<"EventTree not found, it will be skipped..."<<std::endl;
     doEvent=false;
   } else
-    {
-      std::cout << "EventTree is found ..."<<std::endl;
-    }
-  
+  {
+    std::cout << "EventTree is found ..."<<std::endl;
+  }
+
+  if (!mytreeRecoJet) {
+    std::cout<<"RecoJet not found, it will be skipped..."<<std::endl;
+    doRecoJet=false;
+  } else
+  {
+    std::cout << "RecoJet is found ..."<<std::endl;
+  }
+
+  if (!mytreeRecoMet) {
+    std::cout<<"RecoMet not found, it will be skipped..."<<std::endl;
+    doRecoMet=false;
+  } else
+  {
+    std::cout << "RecoMet is found ..."<<std::endl;
+  }
+  doRecoMet=false;
+
+  if (!mytreeRecoEle) {
+    std::cout<<"RecoEle not found, it will be skipped..."<<std::endl;
+    doRecoEle=false;
+  } else
+  {
+    std::cout << "RecoEle is found ..."<<std::endl;
+  }
+
+  if (!mytreeRecoMuon) {
+    std::cout<<"RecoMuon not found, it will be skipped..."<<std::endl;
+    doRecoMuon=false;
+  } else
+  {
+    std::cout << "RecoMuon is found ..."<<std::endl;
+  }
+
+  if (!mytreeRecoTau) {
+    std::cout<<"RecoTau not found, it will be skipped..."<<std::endl;
+    doRecoTau=false;
+  } else
+  {
+    std::cout << "RecoTau is found ..."<<std::endl;
+  }
+
   if (!mytreejets) {
     std::cout<<"RecoTree not found, it will be skipped..."<<std::endl;
     doreco=false;
   } else
-    {
-      std::cout << "RecoTree is found ..."<<std::endl;
-    }
+  {
+    std::cout << "RecoTree is found ..."<<std::endl;
+  }
+
 
   if (!mytreemuon) {
     std::cout<<"MuonRecoTree not found, it will be skipped..."<<std::endl;
     domuonreco=false;
   }
-else
-    {
-      std::cout << "MuonRecoTree is found ..."<<std::endl;
-    }
+  else
+  {
+    std::cout << "MuonRecoTree is found ..."<<std::endl;
+  }
 
   if (!mytreeExtra) {
     std::cout<<"L1ExtraTree not found, it will be skipped..."<<std::endl;
     dol1extra=false;
   }
-else
-    {
-      std::cout << "L1ExtraTree is found ..."<<std::endl;
-    }
-    if(!mytreeEmuExtra){
+  else
+  {
+    std::cout << "L1ExtraTree is found ..."<<std::endl;
+  }
+  if(!mytreeEmuExtra){
     std::cout<<"L1EmuExtraTree not found, it will be skipped..."<<std::endl;
     dol1emuextra=false;
-    }
-    else{
-      std::cout << "L1EmuExtraTree is found ..."<<std::endl;
-    }
+  }
+  else{
+    std::cout << "L1EmuExtraTree is found ..."<<std::endl;
+  }
 
   if (!mytreeMenu) {
     std::cout<<"L1MenuTree not found, it will be skipped..."<<std::endl;
     dol1menu=false;
   }
-else
-    {
-      std::cout << "L1MenuTree is found ..."<<std::endl;
-    }
+  else
+  {
+    std::cout << "L1MenuTree is found ..."<<std::endl;
+  }
 
   return true;
 }
@@ -145,47 +225,68 @@ else
 
 bool L1Ntuple::OpenWithoutInit()
 {
-  fChain     = new TChain("l1UpgradeTree/L1UpgradeTree");
-  ftreeEvent = new TChain("l1EventTree/L1EventTree");
-  ftreemuon  = new TChain("l1MuonRecoTreeProducer/MuonRecoTree");
-  ftreereco  = new TChain("l1RecoTreeProducer/RecoTree");
-  ftreeExtra = new TChain("l1ExtraTreeProducer/L1ExtraTree");
+  fChain        = new TChain(MainTreePath.c_str());
+  ftreeEvent    = new TChain("l1EventTree/L1EventTree");
+  ftreemuon     = new TChain("l1MuonRecoTreeProducer/MuonRecoTree");
+  ftreereco     = new TChain("l1RecoTreeProducer/RecoTree");
+  ftreeExtra    = new TChain("l1ExtraTreeProducer/L1ExtraTree");
   ftreeEmuExtra = new TChain("l1EmulatorExtraTree/L1ExtraTree");
-  ftreeMenu  = new TChain("l1MenuTreeProducer/L1MenuTree");
+  ftreeMenu     = new TChain("l1MenuTreeProducer/L1MenuTree");
+  ftreeRecoJet  = new TChain("l1JetRecoTree/JetRecoTree");
+  //ftreeRecoMet  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
+  ftreeRecoEle  = new TChain("l1ElectronRecoTree/ElectronRecoTree");
+  ftreeRecoMuon = new TChain("l1MuonRecoTree/Muon2RecoTree");
+  ftreeRecoTau  = new TChain("l1TauRecoTree/TauRecoTree");
+
 
   for (unsigned int i=0;i<listNtuples.size();i++)
   {
     std::cout << " -- Adding " << listNtuples[i] << std::endl;
     fChain->Add(listNtuples[i].c_str());
 
-    if (doEvent)    ftreeEvent -> Add(listNtuples[i].c_str());
-    if (doreco)     ftreereco  -> Add(listNtuples[i].c_str());
-    if (domuonreco) ftreemuon  -> Add(listNtuples[i].c_str());
-    if (dol1extra)  ftreeExtra -> Add(listNtuples[i].c_str());
-    if (dol1emuextra) ftreeEmuExtra ->Add(listNtuples[i].c_str());
-    if (dol1menu)   ftreeMenu  -> Add(listNtuples[i].c_str());
+    if (doEvent)      ftreeEvent    -> Add(listNtuples[i].c_str());
+    if (doreco)       ftreereco     -> Add(listNtuples[i].c_str());
+    if (domuonreco)   ftreemuon     -> Add(listNtuples[i].c_str());
+    if (dol1extra)    ftreeExtra    -> Add(listNtuples[i].c_str());
+    if (dol1emuextra) ftreeEmuExtra -> Add(listNtuples[i].c_str());
+    if (dol1menu)     ftreeMenu     -> Add(listNtuples[i].c_str());
+    if (doRecoJet)    ftreeRecoJet  -> Add(listNtuples[i].c_str());
+    if (doRecoMet)    ftreeRecoMet  -> Add(listNtuples[i].c_str());
+    if (doRecoEle)    ftreeRecoEle  -> Add(listNtuples[i].c_str());
+    if (doRecoMuon)   ftreeRecoMuon -> Add(listNtuples[i].c_str());
+    if (doRecoTau)    ftreeRecoTau  -> Add(listNtuples[i].c_str());
 
   }
 
-  if (doEvent)    fChain-> AddFriend(ftreeEvent);
-  if (doreco)     fChain->AddFriend(ftreereco);
-  if (domuonreco) fChain->AddFriend(ftreemuon);
-  if (dol1extra)  fChain->AddFriend(ftreeExtra);
+  if (doEvent)    fChain->AddFriend(ftreeEvent);
+  if (doreco)       fChain->AddFriend(ftreereco);
+  if (domuonreco)   fChain->AddFriend(ftreemuon);
+  if (dol1extra)    fChain->AddFriend(ftreeExtra);
   if (dol1emuextra) fChain->AddFriend(ftreeEmuExtra);
-  if (dol1menu)   fChain->AddFriend(ftreeMenu);
+  if (dol1menu)     fChain->AddFriend(ftreeMenu);
+  if (doRecoJet)    fChain->AddFriend(ftreeRecoJet);
+  if (doRecoMet)    fChain->AddFriend(ftreeRecoMet);
+  if (doRecoEle)    fChain->AddFriend(ftreeRecoEle);
+  if (doRecoMuon)   fChain->AddFriend(ftreeRecoMuon);
+  if (doRecoTau)    fChain->AddFriend(ftreeRecoTau);
 
   return true;
 }
 
 L1Ntuple::~L1Ntuple()
 {
-  if (ftreemuon)  delete ftreemuon;
-  if (ftreereco)  delete ftreereco;
-  if (ftreeExtra) delete ftreeExtra;
+  if (ftreeRecoJet)  delete ftreeRecoJet;
+  if (ftreeRecoMet)  delete ftreeRecoMet;
+  if (ftreeRecoEle)  delete ftreeRecoEle;
+  if (ftreeRecoMuon) delete ftreeRecoMuon;
+  if (ftreeRecoTau)  delete ftreeRecoTau;
+  if (ftreemuon)     delete ftreemuon;
+  if (ftreereco)     delete ftreereco;
+  if (ftreeExtra)    delete ftreeExtra;
   if (ftreeEmuExtra) delete ftreeEmuExtra;
-  if (ftreeMenu)  delete ftreeMenu;
-  if (fChain)     delete fChain;
-  if (rf)         delete rf;
+  if (ftreeMenu)     delete ftreeMenu;
+  if (fChain)        delete fChain;
+  if (rf)            delete rf;
 }
 
 
@@ -236,6 +337,49 @@ void L1Ntuple::Init()
      
      ftreeEvent->SetBranchAddress("Event", &event_ );
      fChain-> AddFriend(ftreeEvent);     
+   }
+
+   if (doRecoJet)
+   {
+     std::cout<<"Setting branch addresses for reco Jets...   "<<std::endl;
+     recoJet_ = new L1Analysis::L1AnalysisRecoJetDataFormat();
+     recoSum_ = new L1Analysis::L1AnalysisRecoMetDataFormat();
+     ftreeRecoJet->SetBranchAddress("Jet",&recoJet_);
+     ftreeRecoJet->SetBranchAddress("Sums",&recoSum_);
+   }
+
+
+
+   if (doRecoMet)
+   {
+     //std::cout<<"Setting branch addresses for reco Jets...   "<<std::endl;
+     //recoJet_ = new L1Analysis::L1AnalysisRecoJetDataFormat();
+     //recoSum_ = new L1Analysis::L1AnalysisRecoMetDataFormat();
+     //ftreeRecoJet->SetBranchAddress("Jet",&recoJet_);
+     //ftreeRecoJet->SetBranchAddress("Sums",&recoSum_);
+   }
+
+
+
+   if (doRecoEle)
+   {
+     std::cout<<"Setting branch addresses for reco Eles...   "<<std::endl;
+     recoEle_ = new L1Analysis::L1AnalysisRecoElectronDataFormat();
+     ftreeRecoEle->SetBranchAddress("Electron",&recoEle_);
+   }
+
+   if (doRecoMuon)
+   {
+     std::cout<<"Setting branch addresses for reco Muons...   "<<std::endl;
+     recoMuon_ = new L1Analysis::L1AnalysisRecoMuon2DataFormat();
+     ftreeRecoMuon->SetBranchAddress("Muon",&recoMuon_);
+   }
+
+   if (doRecoTau)
+   {
+     std::cout<<"Setting branch addresses for reco Taus...   "<<std::endl;
+     recoTau_ = new L1Analysis::L1AnalysisRecoTauDataFormat();
+     ftreeRecoTau->SetBranchAddress("Tau",&recoTau_);
    }
 
    // if (fChain->GetBranch("Simulation"))
@@ -338,3 +482,20 @@ void L1Ntuple::Test()
   }
    
 }
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Ntuple::PrintRecoTree
+//  Description:  
+// ===========================================================================
+bool L1Ntuple::PrintRecoTree() const
+{
+  if (recoJet_ != NULL)
+  {
+    for (int i = 0; i < recoJet_->nJets; ++i)
+    {
+      std::cout << recoJet_->eta.at(i) << " ";
+    }
+    std::cout << "." << std::endl;
+  }
+  return true;
+}       // -----  end of function L1Ntuple::PrintRecoTree  -----

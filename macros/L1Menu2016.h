@@ -17,7 +17,6 @@
 #ifndef  MY_L1MENU2016_INC
 #define  MY_L1MENU2016_INC
 
-
 #include <map>
 #include <regex>
 #include <sstream>
@@ -38,87 +37,10 @@
 
 // Local
 #include "L1AlgoFactory.h"
+#include "L1Plot.h"
+#include "L1Struct.h"
+
 #define INFTY 262139
-struct L1Seed
-{
-  std::string name;
-  int bit;
-  int prescale;
-  std::vector<std::string> POG;
-  std::vector<std::string> PAG;
-  unsigned int ncounts;
-  bool eventfire;
-  unsigned int firecounts;
-  unsigned int purecounts;
-  double firerate;
-  double firerateerror;
-  double purerate;
-  std::string comment;
-
-  L1Seed()
-  {
-    name = "";
-    bit = -1;
-    prescale = 0;
-    POG.clear();
-    PAG.clear();
-    ncounts = 0;
-    firecounts = 0;
-    purecounts = 0;
-    eventfire = false;
-    comment = "";
-  }
-};
-
-struct StructL1Event
-{
-  float JetPt;
-  float JetCenPt;
-  float TauPt;
-  float TauCPt;
-  float IsoTauPt;
-  float IsoTauCPt;
-  float EGPt;
-  float EGerPt;
-  float MuPt;
-  float MuerPt;
-  float IsoEGPt;
-  float IsoEGerPt;
-  float HTT;
-  float ETM;
-  float ETT;
-
-
-  float oniaMuPt1 = 0.;
-  float oniaMuPt2 = 0.;
-  float doubleMuPt1 = -10.; 
-  float doubleMuPt2 = -10.;
-  float dijetPt1    = -10.;
-  float dijetPt2    = -10.;
-  float diCenjetPt1 = -10.;
-  float diCenjetPt2 = -10.;
-  float ditauPt    = -10.; 
-  float quadjetPt  = -10.; 
-  float quadjetCPt = -10.; 
-  float diEG1     = -10.;
-  float diEG2     = -10.;
-  float diIsolEG1 = -10.;
-  float diIsolEG2 = -10.;
-
-  StructL1Event()
-  {
-    JetPt     = -10;
-    JetCenPt  = -10;
-    TauPt     = -10;
-    EGPt      = -10;
-    EGerPt    = -10;
-    IsoEGPt   = -10;
-    IsoEGerPt = -10;
-    MuPt      = -10;
-    MuerPt    = -10;
-  }
-};
-
 typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
 
 
@@ -207,7 +129,7 @@ class L1Menu2016 : public L1AlgoFactory
 
   private:
     // ====================  METHODS       ===============================
-    bool CalScale();
+    double CalScale(int nEvents_ = 0, int nBunches_ = 0);
     bool RunMenu();
     bool FillDefHist1D();
 
@@ -226,6 +148,7 @@ class L1Menu2016 : public L1AlgoFactory
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;
+    L1Plot *l1Plot;
 
     std::map<std::string, float*> L1ObjectMap;
     std::map<std::string, double> L1Config;
