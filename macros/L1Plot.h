@@ -19,11 +19,16 @@
 
 #include <map>
 #include <iostream>
+#include <functional>
 
 
 #include "TH1F.h"
 #include "TH2F.h"
 #include "TFile.h"
+#include "TEfficiency.h"
+#include "TLorentzVector.h"
+#include "TCanvas.h"
+#include "TGraphAsymmErrors.h"
 
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisEventDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisL1UpgradeDataFormat.h"
@@ -61,10 +66,12 @@ class L1Plot
     // ====================  ACCESSORS     ===============================
 
     // ====================  MUTATORS      ===============================
-    bool RunPlot( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_);
+    bool PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_);
+    bool RunPlot();
     bool PostRun(double scale);
-    bool PreRun();
+    void SetTodo (bool doPlotRate_, bool doPlotEff_);
 
+    bool GetRecoEvent();
     // ====================  OPERATORS     ===============================
 
     L1Plot& operator = ( const L1Plot &other ); // assignment operator
@@ -74,13 +81,22 @@ class L1Plot
   protected:
     // ====================  METHODS       ===============================
     bool BookRateHistogram();
-    bool FillWriteRateHistogram();
+    bool FillRateHistogram();
     bool WriteRateHistogram(double scale) const;
 
+    bool BookEffHistogram();
+    bool FillEffHistogram();
+    bool WriteEffHistogram();
     // ====================  DATA MEMBERS  ===============================
 
   private:
     // ====================  METHODS       ===============================
+    std::vector<TLorentzVector> GetRecoTau(bool isER=false, int Iso =0) const;
+    std::vector<TLorentzVector> GetRecoMuon(int qual=0, bool isER=false, float IsoCut=0) const;
+    std::vector<TLorentzVector> GetRecoEle(int qual=0, bool isER=false, float IsoCut=0) const;
+    std::vector<TLorentzVector> GetRecoJet(bool isCent=false) const;
+    std::vector<TLorentzVector> GetRecoSum(std::string type ) const;
+    inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
 
     // ====================  DATA MEMBERS  ===============================
     TFile        *outfile;
@@ -91,14 +107,20 @@ class L1Plot
     L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle_;
     L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
     L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau_;
+    bool doPlotRate;
+    bool doPlotEff;
 
 
 
     StructL1Event *L1Event;
     std::map<std::string, L1Seed> *mL1Seed;
+    std::map<std::string, std::vector<TLorentzVector> > recoEvent;
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Plots ~~~~~
     std::map<std::string,TH1F*> hRate1F;
     std::map<std::string,TH2F*> hRate2F;
+    std::map<std::string,TEfficiency*> hEff;
+	std::map<std::string, std::function<double(std::vector<TLorentzVector>&)> > hEffFun;
 }; // -----  end of class L1Plot  -----
 
 

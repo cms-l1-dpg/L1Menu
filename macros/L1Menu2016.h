@@ -75,11 +75,14 @@ class L1Menu2016 : public L1AlgoFactory
     bool Loop();
     bool CheckL1Seed(const std::string L1Seed);
     bool L1SeedFunc();
-    bool PreLoop();
+    bool PreLoop(std::map<std::string, float> &config);
     bool BookHistogram();
     bool ReadMenu();
+    bool ReadDataPU();
     bool BuildRelation();
+    bool PrintPUCSV();
     bool WriteHistogram();
+    bool GetRunConfig(std::map<std::string, float> &config);
     bool InitOutput();
 
 
@@ -121,6 +124,7 @@ class L1Menu2016 : public L1AlgoFactory
     void CorrectScale(TH1F* h, Float_t scal);
     bool InsertInMenu(std::string L1name, bool value);
     bool FillLumiSection(int currentLumi);
+    bool FillPileUpSec();
     bool PrintCSV(std::ostream &out);
     Bool_t EGamma();
     bool CheckPureFire();
@@ -151,7 +155,7 @@ class L1Menu2016 : public L1AlgoFactory
     L1Plot *l1Plot;
 
     std::map<std::string, float*> L1ObjectMap;
-    std::map<std::string, double> L1Config;
+    std::map<std::string, float> L1Config;
     std::map<std::string, L1Seed> mL1Seed;
     std::map<std::string, TH1F*> HistMap;
     std::map<std::string, TH2F*> Hist2D;
@@ -161,6 +165,11 @@ class L1Menu2016 : public L1AlgoFactory
     //Relationship
     std::set<std::string> FireSeed;
     std::map<std::string, std::map<int, int> > L1LSCount; // counting lumi section
+
+    // Seed, PU, count
+    std::map<std::string, std::map<double, int> > L1PUCount; // counting lumi section
+    std::map<unsigned, std::map<unsigned, double> > DataLSPU; // mapping of PU for data
+
     std::map<std::string, std::vector<int> > POGMap;
     std::map<std::string, std::vector<int> > PAGMap;
     std::map<std::string, int > PhyCounts;

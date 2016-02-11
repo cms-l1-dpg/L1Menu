@@ -28,6 +28,7 @@ L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
   scale(0),
   l1Plot(nullptr)
 {
+  InitConfig();
 }  // -----  end of method L1Menu2016::L1Menu2016  (constructor)  -----
 
 //----------------------------------------------------------------------------
@@ -87,8 +88,6 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
   {
     std::string rootfilename = outputdir + "/" + outputname +".root";
     outrootfile =  new TFile( rootfilename.c_str(), "RECREATE");
-    l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
-        recoSum_, recoEle_, recoMuon_, recoTau_);
   }
   return true;
 }       // -----  end of function L1Menu2016::ConfigOutput  -----
@@ -100,10 +99,15 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
 bool L1Menu2016::InitConfig()
 {
   L1Config["isData"] = 0;
-  L1Config["NumberOfBunches"] = 0;
+  L1Config["nBunches"] = 0;
   L1Config["AveragePU"] = 0;
   L1Config["Energy"] = 0;
   L1Config["targetlumi"] = 0;
+  L1Config["doPlotRate"] = 0;
+  L1Config["doPlotEff"] = 0;
+  L1Config["doPrintLS"] = 0;
+  L1Config["doPrintPU"] = 1;
+  L1Config["maxEvent"] = -1;
   
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -425,6 +429,24 @@ bool L1Menu2016::ParseConfig(const std::string line)
 }       // -----  end of function L1Menu2016::ParseConfig  -----
 
 // ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::GetRunConfig
+//  Description:  Get the running time config from command line
+// ===========================================================================
+bool L1Menu2016::GetRunConfig(std::map<std::string, float> &config)
+{
+
+  for(auto c : config)
+  {
+    if (L1Config.find(c.first) != L1Config.end())
+    {
+      L1Config[c.first] = c.second;
+    }
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::GetRunConfig  -----
+
+// ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::PrintConfig
 //  Description:  
 // ===========================================================================
@@ -432,8 +454,8 @@ bool L1Menu2016::PrintConfig() const
 {
   std::cout << "Printing configuration ___________________________ " << std::endl;
   for(auto &x: L1Config)
-    std::cout << x.first <<" : " << x.second << std::endl;
-  std::cout << std::endl;
+    std::cout << std::setw(20) <<x.first <<" : " << x.second << std::endl;
+  std::cout << "Printed configuration ============================ " << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::PrintConfig  -----
 
@@ -441,21 +463,30 @@ bool L1Menu2016::PrintConfig() const
 //         Name:  L1Menu2016::PreLoop
 //  Description:  
 // ===========================================================================
-bool L1Menu2016::PreLoop()
+bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
 {
-  InitConfig();
   ReadMenu();
   BuildRelation();
   L1SeedFunc();
 
   OpenWithList(tuplefilename);
-  
   BookHistogram();
 
+  GetRunConfig(config);
   PrintConfig();
 
-  if (l1Plot != NULL)
-    l1Plot->PreRun();
+  if (writeplots)
+  {
+    l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
+        recoSum_, recoEle_, recoMuon_, recoTau_);
+    l1Plot->SetTodo(L1Config["doPlotRate"], L1Config["doPlotEff"]);
+    l1Plot->PreRun(&L1Event, &mL1Seed);
+  }
+
+  if (L1Config["doPrintPU"])
+  {
+    ReadDataPU();
+  }
     
   return true;
 }       // -----  end of function L1Menu2016::PreLoop  -----
@@ -509,7 +540,7 @@ bool L1Menu2016::Loop()
     Long64_t ientry = LoadTree(i); 
     if (ientry < 0) break;
     GetEntry(i);
-    if (i > 100) break;
+    if (L1Config["maxEvent"] != -1 && i > L1Config["maxEvent"]) break;
 
     if (event_ != NULL )
     {
@@ -524,12 +555,18 @@ bool L1Menu2016::Loop()
     nZeroBiasevents++;
 
     GetL1Event();
+
     if (RunMenu())
       nFireevents++;
-    FillLumiSection(currentLumi);
+
+    if (L1Config["doPrintLS"])
+      FillLumiSection(currentLumi);
+
+    if (L1Config["doPrintPU"])
+      FillPileUpSec();
 
     if (l1Plot != NULL)
-      l1Plot->RunPlot(&L1Event, &mL1Seed);
+      l1Plot->RunPlot();
   }
 
   return true;
@@ -560,9 +597,41 @@ bool L1Menu2016::PostLoop()
 
   if (l1Plot != NULL)
     l1Plot->PostRun(scale);
-
+  
+  if (L1Config["doPrintPU"])
+  {
+    PrintPUCSV();
+  }
   return true;
 }       // -----  end of function L1Menu2016::PostLoop  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::PrintPUCSV
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::PrintPUCSV()
+{
+  const int nBunches = 2736;
+  std::fstream pucsv (outputdir + "/" + outputname+"_PU" +".csv", 
+      std::fstream::in | std::fstream::out | std::fstream::app );
+  pucsv <<"L1Seed,PileUp,Fired,Total,Rate,Error"<<std::endl;
+  for(auto l1seed : L1PUCount)
+  {
+    if (l1seed.first == "Count") continue;
+    for(auto pu : l1seed.second)
+    {
+      pucsv << l1seed.first <<","<< pu.first <<","
+        <<pu.second<<","
+        <<L1PUCount["Count"][pu.first]<<","
+        <<pu.second * CalScale(L1PUCount["Count"][pu.first], nBunches) <<","
+        <<sqrt(pu.second) * CalScale(L1PUCount["Count"][pu.first], nBunches)
+        <<std::endl;
+    }
+  }
+  pucsv.close();
+
+  return true;
+}       // -----  end of function L1Menu2016::PrintPUCSV  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::PrintRates
@@ -750,7 +819,6 @@ bool L1Menu2016::InsertInMenu(std::string L1name, bool value) {
     FireSeed.insert(L1name);
   }
 
-
   return true;
 }
 
@@ -832,7 +900,6 @@ bool L1Menu2016::BindAlgo()
 // ===========================================================================
 bool L1Menu2016::CheckL1Seed(const std::string L1Seed)
 {
-  assert(L1Seed.find("L1_") != std::string::npos);
   if (L1SeedFun.find(L1Seed) != L1SeedFun.end())
   {
     return L1SeedFun[L1Seed]();
@@ -923,9 +990,9 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_)
 {
   double scale = 0.0;
   int nEvents = nEvents_ == 0 ? nZeroBiasevents : nEvents_;
-  int nBunches = nBunches_ == 0 ?  L1Config["NumberOfBunches"] : nBunches_;
+  int nBunches = nBunches_ == 0 ?  L1Config["nBunches"] : nBunches_;
 
-  if (L1Config["NumberOfBunches"] == -1)
+  if (L1Config["nBunches"] == -1)
   {
     //scal = (80.*631.)/(1326*23.3);      
     scale = (80.*631.)/(nLumi*23.3);      
@@ -1061,6 +1128,7 @@ bool L1Menu2016::ParseSingleObject(const std::string SeedName)
     
 
   L1object += postfix;
+  mL1Seed[SeedName].singleObj = L1object;
   std::vector<std::function<bool()>> funs;
 
   //std::cout <<  std::distance(tokenit, tokens.end())<< std::endl;
@@ -1346,6 +1414,7 @@ bool L1Menu2016::ParseCrossMu(const std::string& /*SeedName*/)
   //else return false;
   return false;
 }       // -----  end of function L1Menu2016::ParseCrossMu  -----
+
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::FillLumiSection
 //  Description:  
@@ -1365,9 +1434,57 @@ bool L1Menu2016::FillLumiSection(int currentLumi)
       L1LSCount[l1.first][currentLumi]++;
     }
   }
+
+  L1LSCount["Count"][currentLumi]++;
   
   return true;
 }       // -----  end of function L1Menu2016::FillLumiSection  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::FillPileUpSec
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::FillPileUpSec()
+{
+  float pu = -1;
+  bool eFired = false;
+  // Data
+  if (event_->run > 1 && DataLSPU.find(event_->run) != DataLSPU.end())
+  {
+    if (DataLSPU[event_->run].find(event_->lumi) != DataLSPU[event_->run].end())
+    {
+      pu = DataLSPU[event_->run][event_->lumi];
+    }
+  }
+
+  // MC
+  if (event_->run == 1)
+  {
+    //pu = event_->event
+  }
+
+  for(auto l1 : mL1Seed)
+  {
+    if(L1PUCount[l1.first].find(pu) == L1PUCount[l1.first].end())
+    {
+      L1PUCount[l1.first][pu] = 0;
+    }
+    if (l1.second.eventfire)
+    {
+      eFired= true;
+      L1PUCount[l1.first][pu]++;
+    }
+  }
+
+  L1PUCount["Count"][pu]++;
+  if (eFired)
+  {
+    L1PUCount["L1APhysics"][pu]++;
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::FillPileUpSec  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::PrintCSV
@@ -1399,3 +1516,35 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
   }
   return true;
 }       // -----  end of function L1Menu2016::PrintCSV  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ReadDataPU
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ReadDataPU() 
+{
+  const std::string pucsv = "menu/run_lumi.csv";
+  std::ifstream csvfile(pucsv);
+  if (!csvfile)
+  {
+    std::cout << "Data PU CSV File "<<pucsv<<" is not found !"<<std::endl;
+    return false;
+  }
+
+  std::string line;
+  DataLSPU.clear();
+  std::getline(csvfile, line); // Skip the first line;
+  while (std::getline(csvfile, line))
+  {
+    std::istringstream iss(line);
+    std::string seed;
+    char c;
+    int Fill, Run, LS;
+    float pileup;
+    iss >> Fill >> c >> Run >> c >> LS >> c >> pileup;
+    DataLSPU[Run][LS] = pileup;
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::ReadDataPU  -----

@@ -40,7 +40,6 @@ L1Ntuple::L1Ntuple()
   recoEle_       = nullptr;
   recoMuon_      = nullptr;
   recoTau_       = nullptr;
-  //MainTreePath = "l1UpgradeEmuTree/L1UpgradeTree";
   MainTreePath = "l1UpgradeTree/L1UpgradeTree";
 }
 
@@ -107,6 +106,12 @@ bool L1Ntuple::CheckFirstFile()
   if (rf->IsOpen()==0) return false;
 
   TTree * myChain        = (TTree*) rf->Get(MainTreePath.c_str());
+  if (myChain == NULL) // in case other name
+  {
+    MainTreePath = "l1UpgradeEmuTree/L1UpgradeTree";
+    myChain = (TTree*) rf->Get(MainTreePath.c_str());
+  }
+
   TTree * mytreeEvent    = (TTree*) rf->Get("l1EventTree/L1EventTree");
   TTree * mytreemuon     = (TTree*) rf->Get("l1MuonRecoTreeProducer/MuonRecoTree");
   TTree * mytreejets     = (TTree*) rf->Get("l1RecoTreeProducer/RecoTree");
@@ -124,7 +129,7 @@ bool L1Ntuple::CheckFirstFile()
     std::cout<<"L1Tree not found .... "<<std::endl;
     return false;
   } else {
-    std::cout<<"Main tree is found .."<<std::endl;
+    std::cout<<"Main tree is found .." <<std::endl;
   }
 
   if (!mytreeEvent) {
@@ -323,7 +328,7 @@ void L1Ntuple::Init()
    ftreereco->SetMakeClass(1);
    ftreeExtra->SetMakeClass(1); */
 
-   std::cout << "Estimate the number of entries ..."<<std::endl;
+   std::cout << "Estimate the number of entries ... ";
    nentries_=fChain->GetEntries();
    std::cout << nentries_ << std::endl;
 

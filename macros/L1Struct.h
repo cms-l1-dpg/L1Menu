@@ -32,6 +32,7 @@ struct L1Seed
   double firerateerror;
   double purerate;
   std::string comment;
+  std::string singleObj;
 
   L1Seed()
   {
@@ -45,6 +46,7 @@ struct L1Seed
     purecounts = 0;
     eventfire = false;
     comment = "";
+    singleObj = "";
   }
 };
 
