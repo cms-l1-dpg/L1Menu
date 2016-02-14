@@ -79,11 +79,9 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
     outputname = outputname_;
 
   if (writefiles)
-    outfile = new std::fstream( outputdir + "/" + outputname +".txt",
-        std::fstream::in | std::fstream::out | std::fstream::app );
+    outfile = new std::fstream( outputdir + "/" + outputname +".txt", std::fstream::out  );
   if (writecsv)
-    outcsv = new std::fstream( outputdir + "/" + outputname +".csv",
-        std::fstream::in | std::fstream::out | std::fstream::app );
+    outcsv = new std::fstream( outputdir + "/" + outputname +".csv", std::fstream::out  );
   if (writeplots)
   {
     std::string rootfilename = outputdir + "/" + outputname +".root";
@@ -99,11 +97,12 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
 bool L1Menu2016::InitConfig()
 {
   L1Config["isData"] = 0;
-  L1Config["nBunches"] = 0;
+  L1Config["nBunches"] = 2736;
+  //L1Config["nBunches"] = 0;
   L1Config["AveragePU"] = 0;
   L1Config["Energy"] = 0;
   L1Config["targetlumi"] = 0;
-  L1Config["doPlotRate"] = 0;
+  L1Config["doPlotRate"] = 1;
   L1Config["doPlotEff"] = 0;
   L1Config["doPrintLS"] = 0;
   L1Config["doPrintPU"] = 1;
@@ -530,13 +529,16 @@ bool L1Menu2016::GetL1Event()
 bool L1Menu2016::Loop()
 {
   ////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Initial ~~~~~
-  Int_t nevents = fChain->GetEntriesFast();//GetEntries();
+  //Int_t nevents = fChain->GetEntriesFast();//GetEntries();
   int currentLumi(-1);
   nZeroBiasevents = 0.;
   nFireevents = 0.;
   nLumi = 0;
+  int i = 0;
 
-  for (Long64_t i=0; i<nevents; i++){     
+  //for (Long64_t i=0; i<nevents; i++){     
+  while(true)
+  {
     Long64_t ientry = LoadTree(i); 
     if (ientry < 0) break;
     GetEntry(i);
@@ -567,6 +569,7 @@ bool L1Menu2016::Loop()
 
     if (l1Plot != NULL)
       l1Plot->RunPlot();
+    i++;
   }
 
   return true;
@@ -612,8 +615,7 @@ bool L1Menu2016::PostLoop()
 bool L1Menu2016::PrintPUCSV()
 {
   const int nBunches = 2736;
-  std::fstream pucsv (outputdir + "/" + outputname+"_PU" +".csv", 
-      std::fstream::in | std::fstream::out | std::fstream::app );
+  std::fstream pucsv (outputdir + "/" + outputname+"_PU" +".csv", std::fstream::out );
   pucsv <<"L1Seed,PileUp,Fired,Total,Rate,Error"<<std::endl;
   for(auto l1seed : L1PUCount)
   {
@@ -996,14 +998,14 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_)
   {
     //scal = (80.*631.)/(1326*23.3);      
     scale = (80.*631.)/(nLumi*23.3);      
-    std::cout << "Scale by "   << "(80.*631.)/(nLumi*23.3) with nLumi = " << nLumi      << std::endl;
+    //std::cout << "Scale by "   << "(80.*631.)/(nLumi*23.3) with nLumi = " << nLumi      << std::endl;
   } else {
     scale = 11246.; // ZB per bunch in Hz
     //scale /= nZeroBiasevents*1000.; // in kHz
     scale /= nEvents; // in Hz
     scale *= nBunches;
-    std::cout << "Scale by "   << " 11246 / nZeroBiasevents * NumberOfBunches, with nZeroBiasevents = " 
-      << nEvents    <<" NumberOfBunches = " << nBunches << std::endl;
+    //std::cout << "Scale by "   << " 11246 / nZeroBiasevents * NumberOfBunches, with nZeroBiasevents = " 
+      //<< nEvents    <<" NumberOfBunches = " << nBunches << std::endl;
   }
   return scale;
 }       // -----  end of function L1Menu2016::CalScale  -----

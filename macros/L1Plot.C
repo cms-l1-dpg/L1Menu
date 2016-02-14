@@ -281,7 +281,8 @@ std::vector<TLorentzVector> L1Plot::GetRecoJet(bool isCent) const
   std::vector<TLorentzVector> reTLVs;
   const float jetERcut = 3.0;
   if (recoJet_ == NULL) return reTLVs;
-
+  std::cout << "Njets " << recoJet_->nJets << std::endl;
+ 
   for (int i = 0; i < recoJet_->nJets; ++i)
   {
     if (isCent && fabs(recoJet_->eta.at(i)) > jetERcut )
@@ -480,21 +481,22 @@ bool L1Plot::BookEffHistogram()
     {
       std::string hname = l1.first +"_Pt";
       hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 256,-0.5,255.5);
-      hEffFun[hname] = []( std::vector<TLorentzVector>& vs ){return vs.front().Pt();};
+      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this, std::placeholders::_1);
+      //hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
     }
 
     if (objstr.find("EG") != std::string::npos)
     {
       std::string hname = l1.first +"_Pt";
       hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 65,-0.5,64.5);
-      hEffFun[hname] = []( std::vector<TLorentzVector>& vs ){return vs.front().Pt();};
+      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
     }
 
     if (objstr.find("Mu") != std::string::npos)
     {
       std::string hname = l1.first +"_Pt";
       hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 131,-0.5,130.5);
-      hEffFun[hname] = []( std::vector<TLorentzVector>& vs ){return vs.front().Pt();};
+      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
     }
 
     if (objstr.find("HTT") != std::string::npos ||
@@ -503,11 +505,24 @@ bool L1Plot::BookEffHistogram()
     {
       std::string hname = l1.first +"_Pt";
       hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 512,-.5,511.5);
-      hEffFun[hname] = []( std::vector<TLorentzVector>& vs ){return vs.front().Pt();};
+      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
+        //[]( std::vector<TLorentzVector>& vs ){return vs.front().Pt();};
     }
   }
   return true;
 }       // -----  end of function L1Plot::BookEffHistogram  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::FunLeadingPt
+//  Description:  /* cursor */
+// ===========================================================================
+double L1Plot::FunLeadingPt(std::vector<TLorentzVector>& vs) const
+{
+  if (vs.size() == 0) return -1;
+  else
+    return vs.front().Pt();
+}       // -----  end of function L1Plot::FunLeadingPt  -----
+
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::FillEffHistogram
 //  Description:  
@@ -521,6 +536,9 @@ bool L1Plot::FillEffHistogram()
     std::string objname = (*mL1Seed)[l1seed].singleObj;
     if (recoEvent.find(objname) == recoEvent.end())
       continue;
+    std::cout << h.first <<" "  << l1seed
+      <<" " << recoEvent[(*mL1Seed)[l1seed].singleObj].size()
+      << std::endl;
     h.second->Fill((*mL1Seed)[l1seed].eventfire, 
         hEffFun[h.first](recoEvent[(*mL1Seed)[l1seed].singleObj]));
   }

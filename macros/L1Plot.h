@@ -97,6 +97,7 @@ class L1Plot
     std::vector<TLorentzVector> GetRecoJet(bool isCent=false) const;
     std::vector<TLorentzVector> GetRecoSum(std::string type ) const;
     inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
+    double FunLeadingPt(std::vector<TLorentzVector>& vs) const;
 
     // ====================  DATA MEMBERS  ===============================
     TFile        *outfile;
@@ -120,7 +121,7 @@ class L1Plot
     std::map<std::string,TH1F*> hRate1F;
     std::map<std::string,TH2F*> hRate2F;
     std::map<std::string,TEfficiency*> hEff;
-	std::map<std::string, std::function<double(std::vector<TLorentzVector>&)> > hEffFun;
+	std::map<std::string, std::function<double()> > hEffFun;
 }; // -----  end of class L1Plot  -----
 
 

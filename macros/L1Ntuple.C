@@ -328,9 +328,7 @@ void L1Ntuple::Init()
    ftreereco->SetMakeClass(1);
    ftreeExtra->SetMakeClass(1); */
 
-   std::cout << "Estimate the number of entries ... ";
-   nentries_=fChain->GetEntries();
-   std::cout << nentries_ << std::endl;
+   std::cout << "Estimate the number of entries ... " <<std::endl;
 
    upgrade_      = new L1Analysis::L1AnalysisL1UpgradeDataFormat();
    std::cout<<"Setting branch addresses for L1Upgrade tree...  "<<std::endl;
