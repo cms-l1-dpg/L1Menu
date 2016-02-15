@@ -92,12 +92,12 @@ class L1Plot
   private:
     // ====================  METHODS       ===============================
     std::vector<TLorentzVector> GetRecoTau(bool isER=false, int Iso =0) const;
-    std::vector<TLorentzVector> GetRecoMuon(int qual=0, bool isER=false, float IsoCut=0) const;
-    std::vector<TLorentzVector> GetRecoEle(int qual=0, bool isER=false, float IsoCut=0) const;
+    std::vector<TLorentzVector> GetRecoMuon(bool isER=false, float IsoCut=0, int qual=0) const;
+    std::vector<TLorentzVector> GetRecoEle(bool isER=false, float IsoCut=0, int qual=0) const;
     std::vector<TLorentzVector> GetRecoJet(bool isCent=false) const;
     std::vector<TLorentzVector> GetRecoSum(std::string type ) const;
     inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
-    double FunLeadingPt(std::vector<TLorentzVector>& vs) const;
+    double FunLeadingPt(std::string obj);
 
     // ====================  DATA MEMBERS  ===============================
     TFile        *outfile;

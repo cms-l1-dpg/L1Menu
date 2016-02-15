@@ -564,7 +564,7 @@ bool L1Menu2016::Loop()
     if (L1Config["doPrintLS"])
       FillLumiSection(currentLumi);
 
-    if (L1Config["doPrintPU"])
+    if (L1Config["doPrintPU"] && event_ != NULL)
       FillPileUpSec();
 
     if (l1Plot != NULL)

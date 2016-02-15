@@ -281,7 +281,6 @@ std::vector<TLorentzVector> L1Plot::GetRecoJet(bool isCent) const
   std::vector<TLorentzVector> reTLVs;
   const float jetERcut = 3.0;
   if (recoJet_ == NULL) return reTLVs;
-  std::cout << "Njets " << recoJet_->nJets << std::endl;
  
   for (int i = 0; i < recoJet_->nJets; ++i)
   {
@@ -337,7 +336,7 @@ std::vector<TLorentzVector> L1Plot::GetRecoSum(std::string type ) const
 //         Name:  L1Plot::GetRecoEle
 //  Description:  /* cursor */
 // ===========================================================================
-std::vector<TLorentzVector> L1Plot::GetRecoEle(int qual, bool isER, float IsoCut) const
+std::vector<TLorentzVector> L1Plot::GetRecoEle(bool isER, float IsoCut, int qual) const
 {
   std::vector<TLorentzVector> reTLVs;
   const float EleERcut = 2.1;
@@ -371,7 +370,7 @@ std::vector<TLorentzVector> L1Plot::GetRecoEle(int qual, bool isER, float IsoCut
 //         Name:  L1Plot::GetRecoMuon
 //  Description:  
 // ===========================================================================
-std::vector<TLorentzVector> L1Plot::GetRecoMuon(int qual, bool isER, float IsoCut) const
+std::vector<TLorentzVector> L1Plot::GetRecoMuon(bool isER, float IsoCut, int qual) const
 {
   std::vector<TLorentzVector> reTLVs;
   const float MuERcut = 2.1;
@@ -439,26 +438,21 @@ std::vector<TLorentzVector> L1Plot::GetRecoTau(bool isER, int Iso) const
 bool L1Plot::GetRecoEvent()
 {
   recoEvent.clear();
-  recoEvent["Jet"] = GetRecoJet();
-  recoEvent["JetC"] = GetRecoJet(true);
-  recoEvent["HTT"] = GetRecoSum("HTT");
-  recoEvent["ETM"] = GetRecoSum("ETM");
-  recoEvent["ETT"] = GetRecoSum("ETT");
-  recoEvent["HTM"] = GetRecoSum("HTM");
-
-  //L1ObjectMap["JetC"] = &L1Event.JetCenPt;
-  //L1ObjectMap["Tau"] = &L1Event.TauPt;
-  //L1ObjectMap["EG"] = &L1Event.EGPt;
-  //L1ObjectMap["EGer"] = &L1Event.EGerPt;
-  //L1ObjectMap["IsoEG"] = &L1Event.IsoEGPt;
-  //L1ObjectMap["IsoEGer"] = &L1Event.IsoEGerPt;
-  //L1ObjectMap["Mu"] = &L1Event.MuPt;
-  //L1ObjectMap["MuOpen"] = &L1Event.MuPt;
-  //L1ObjectMap["Muer"] = &L1Event.MuerPt;
-  //L1ObjectMap["HTT"] = &L1Event.HTT;
-  //L1ObjectMap["ETM"] = &L1Event.ETM;
-  //L1ObjectMap["ETT"] = &L1Event.ETT;
-
+  recoEvent["Jet"]     = GetRecoJet();
+  recoEvent["JetC"]    = GetRecoJet(true);
+  recoEvent["Tau"]     = GetRecoTau();
+  recoEvent["Tauer"]   = GetRecoTau(true);
+  recoEvent["EG"]      = GetRecoEle();
+  recoEvent["EGer"]    = GetRecoEle(true,   false, 0 );
+  recoEvent["IsoEG"]   = GetRecoEle(false,  true,  0 );
+  recoEvent["IsoEGer"] = GetRecoEle(true,   true,  0 );
+  recoEvent["Mu"]      = GetRecoMuon();
+  recoEvent["MuOpen"]  = GetRecoMuon();
+  recoEvent["Muer"]    = GetRecoMuon(true);
+  recoEvent["HTT"]     = GetRecoSum("HTT");
+  recoEvent["ETM"]     = GetRecoSum("ETM");
+  recoEvent["ETT"]     = GetRecoSum("ETT");
+  recoEvent["HTM"]     = GetRecoSum("HTM");
   return true;
 }       // -----  end of function L1Plot::GetRecoEvent  -----
 
@@ -474,40 +468,43 @@ bool L1Plot::BookEffHistogram()
 
   for(const auto& l1 : *mL1Seed)
   {
-    if (l1.second.singleObj == "") continue;
-    std::string objstr = l1.second.singleObj;
-
-    if (objstr.find("Jet") != std::string::npos || objstr.find("Tau") != std::string::npos )
+    if (l1.second.singleObj != "")
     {
-      std::string hname = l1.first +"_Pt";
-      hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 256,-0.5,255.5);
-      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this, std::placeholders::_1);
-      //hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
-    }
+      std::string objstr = l1.second.singleObj;
+      if (objstr.find("Jet") != std::string::npos || objstr.find("Tau") != std::string::npos )
+      {
+        std::string hname = l1.first +"_Pt";
+        hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 60, 0, 300);
+        hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this, l1.second.singleObj);
+      }
 
-    if (objstr.find("EG") != std::string::npos)
-    {
-      std::string hname = l1.first +"_Pt";
-      hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 65,-0.5,64.5);
-      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
-    }
+      if (objstr.find("EG") != std::string::npos)
+      {
+        std::string hname = l1.first +"_Pt";
+        hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 50, 0, 100);
+        hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this, l1.second.singleObj);
+      }
 
-    if (objstr.find("Mu") != std::string::npos)
-    {
-      std::string hname = l1.first +"_Pt";
-      hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 131,-0.5,130.5);
-      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
-    }
+      if (objstr.find("Mu") != std::string::npos)
+      {
+        std::string hname = l1.first +"_Pt";
+        hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 50, 0, 150);
+        hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this, l1.second.singleObj);
+      }
 
-    if (objstr.find("HTT") != std::string::npos ||
-        objstr.find("ETT") != std::string::npos ||
-        objstr.find("HTM") != std::string::npos )
-    {
-      std::string hname = l1.first +"_Pt";
-      hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 512,-.5,511.5);
-      hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this);
-        //[]( std::vector<TLorentzVector>& vs ){return vs.front().Pt();};
-    }
+      if (objstr.find("HTT") != std::string::npos ||
+          objstr.find("ETT") != std::string::npos ||
+          objstr.find("ETM") != std::string::npos ||
+          objstr.find("HTM") != std::string::npos )
+      {
+        std::string hname = l1.first +"_Pt";
+        if (objstr.find("ETM") != std::string::npos )
+          hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 100,0,500);
+        else
+          hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 30,0,600);
+        hEffFun[hname] = std::bind(&L1Plot::FunLeadingPt, this, l1.second.singleObj);
+      }
+    } // End of SingleObj
   }
   return true;
 }       // -----  end of function L1Plot::BookEffHistogram  -----
@@ -516,8 +513,9 @@ bool L1Plot::BookEffHistogram()
 //         Name:  L1Plot::FunLeadingPt
 //  Description:  /* cursor */
 // ===========================================================================
-double L1Plot::FunLeadingPt(std::vector<TLorentzVector>& vs) const
+double L1Plot::FunLeadingPt(std::string obj)
 {
+  const std::vector<TLorentzVector> &vs = recoEvent[obj];
   if (vs.size() == 0) return -1;
   else
     return vs.front().Pt();
@@ -536,11 +534,8 @@ bool L1Plot::FillEffHistogram()
     std::string objname = (*mL1Seed)[l1seed].singleObj;
     if (recoEvent.find(objname) == recoEvent.end())
       continue;
-    std::cout << h.first <<" "  << l1seed
-      <<" " << recoEvent[(*mL1Seed)[l1seed].singleObj].size()
-      << std::endl;
-    h.second->Fill((*mL1Seed)[l1seed].eventfire, 
-        hEffFun[h.first](recoEvent[(*mL1Seed)[l1seed].singleObj]));
+    //std::cout << l1seed <<" " << (*mL1Seed)[l1seed].eventfire <<"  " << hEffFun[h.first]() << std::endl;
+    h.second->Fill((*mL1Seed)[l1seed].eventfire, hEffFun[h.first]());
   }
 
   return true;
