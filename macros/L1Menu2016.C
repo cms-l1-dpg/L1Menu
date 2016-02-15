@@ -103,7 +103,7 @@ bool L1Menu2016::InitConfig()
   L1Config["Energy"] = 0;
   L1Config["targetlumi"] = 0;
   L1Config["doPlotRate"] = 1;
-  L1Config["doPlotEff"] = 0;
+  L1Config["doPlotEff"] = 1;
   L1Config["doPrintLS"] = 0;
   L1Config["doPrintPU"] = 1;
   L1Config["maxEvent"] = -1;
@@ -520,6 +520,18 @@ bool L1Menu2016::GetL1Event()
   L1AlgoFactory::ETMVal(L1Event.ETM);
   L1AlgoFactory::ETTVal(L1Event.ETT);
 
+  // Mulit
+  float dummy = 0;
+  L1AlgoFactory::DoubleMuPt(L1Event.doubleMuPt1,L1Event.doubleMuPt2);
+  L1AlgoFactory::Onia2015Pt(L1Event.oniaMuPt1, L1Event.oniaMuPt2,true, false, 22);
+  L1AlgoFactory::DoubleJetPt(L1Event.dijetPt1,L1Event.dijetPt2);
+  L1AlgoFactory::DoubleJetPt(L1Event.diCenjetPt1,L1Event.diCenjetPt2,true);
+  L1AlgoFactory::DoubleTauJetEta2p17Pt(dummy,L1Event.ditauPt);
+  L1AlgoFactory::QuadJetPt(dummy,dummy,dummy,L1Event.quadjetPt);
+  L1AlgoFactory::QuadJetPt(dummy,dummy,dummy,L1Event.quadjetCPt,true);
+  L1AlgoFactory::DoubleEGPt(L1Event.diEG1,L1Event.diEG2,false);
+  L1AlgoFactory::DoubleEGPt(L1Event.diIsolEG1,L1Event.diIsolEG2,true);
+
   return true;
 }       // -----  end of function L1Menu2016::GetL1Event  -----
 // ===  FUNCTION  ============================================================
@@ -581,7 +593,7 @@ bool L1Menu2016::Loop()
 // ===========================================================================
 bool L1Menu2016::PostLoop()
 {
-  scale = CalScale();
+  scale = CalScale(0, 0, true);
 
   std::cout << "Summary" << std::endl;
 
@@ -988,7 +1000,7 @@ bool L1Menu2016::CheckPhysFire()
 //         Name:  L1Menu2016::CalScale
 //  Description:  
 // ===========================================================================
-double L1Menu2016::CalScale(int nEvents_, int nBunches_) 
+double L1Menu2016::CalScale(int nEvents_, int nBunches_, bool print) 
 {
   double scale = 0.0;
   int nEvents = nEvents_ == 0 ? nZeroBiasevents : nEvents_;
@@ -998,14 +1010,16 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_)
   {
     //scal = (80.*631.)/(1326*23.3);      
     scale = (80.*631.)/(nLumi*23.3);      
-    //std::cout << "Scale by "   << "(80.*631.)/(nLumi*23.3) with nLumi = " << nLumi      << std::endl;
+    if (print)
+      std::cout << "Scale by "   << "(80.*631.)/(nLumi*23.3) with nLumi = " << nLumi      << std::endl;
   } else {
     scale = 11246.; // ZB per bunch in Hz
     //scale /= nZeroBiasevents*1000.; // in kHz
     scale /= nEvents; // in Hz
     scale *= nBunches;
-    //std::cout << "Scale by "   << " 11246 / nZeroBiasevents * NumberOfBunches, with nZeroBiasevents = " 
-      //<< nEvents    <<" NumberOfBunches = " << nBunches << std::endl;
+    if (print)
+      std::cout << "Scale by "   << " 11246 / nZeroBiasevents * NumberOfBunches, with nZeroBiasevents = " 
+        << nEvents    <<" NumberOfBunches = " << nBunches << std::endl;
   }
   return scale;
 }       // -----  end of function L1Menu2016::CalScale  -----

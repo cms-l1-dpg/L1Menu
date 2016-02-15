@@ -78,7 +78,6 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nEvts"]       = new TH1F("nEvts","Number of Events Processed",1,-0.5,.5);
   //Single stuff
   hRate1F["nJetVsPt"]    = new TH1F("nJetVsPt","SingleJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
-  hRate1F["nTauVsPt"]    = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hRate1F["nJetCenVsPt"] = new TH1F("nJetCenVsPt","SingleJetCentral; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hRate1F["nEGVsPt"]     = new TH1F("nEGVsPt","SingleEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nEGErVsPt"]   = new TH1F("nEGErVsPt","SingleEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
@@ -91,6 +90,10 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nJetVsEta"]   = new TH1F("nJetVsEta","nJetVsEta",50,-5.,5.);
   hRate1F["nJetVsEta_Central"] = new TH1F("nJetVsEta_Central","nJetVsEta_Central",50,-5.,5.);
   hRate1F["nJetVsEta_Fwd"]     = new TH1F("nJetVsEta_Fwd","nJetVsEta_Fwd",50,-5.,5.);
+  hRate1F["nTauVsPt"]     = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hRate1F["nTauErVsPt"]   = new TH1F("nTauErVsPt","SingleTauer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hRate1F["nIsoTauVsPt"]  = new TH1F("nIsoTauVsPt","SingleIsoTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hRate1F["nIsoTauErVsPt"]  = new TH1F("nIsoTauErVsPt","SingleIsoTauEr; E_{T} cut; rate [Hz]",65,-0.5,64.5);
 
   //Multistuff
   hRate1F["nDiJetVsPt"]        = new TH1F("nDiJetVsPt","DiJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
@@ -152,26 +155,32 @@ bool L1Plot::FillRateHistogram()
     if(L1Event->JetPt>=ptCut)	  hRate1F["nJetVsPt"]->Fill(ptCut);
     if(L1Event->JetCenPt>=ptCut) hRate1F["nJetCenVsPt"]->Fill(ptCut);
     if(L1Event->TauPt>=ptCut)	  hRate1F["nTauVsPt"]->Fill(ptCut);
+    if(L1Event->TauCPt>=ptCut)	  hRate1F["nTauErVsPt"]->Fill(ptCut);
+    if(L1Event->IsoTauPt>=ptCut)	  hRate1F["nIsoTauVsPt"]->Fill(ptCut);
+    if(L1Event->IsoTauCPt>=ptCut)	  hRate1F["nIsoTauErVsPt"]->Fill(ptCut);
 
-    //if(dijetPt2>=ptCut){
-    //hTH1F["nDiJetVsPt"]->Fill(ptCut);
+    if(L1Event->dijetPt2>=ptCut)
+    {
+      hRate1F["nDiJetVsPt"]->Fill(ptCut);
 
-    //for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-    //if(dijetPt1>=ptCut_0) hTH2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut);
-    //}
-    //}
+      for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) 
+      {
+        if(L1Event->dijetPt1>=ptCut_0) hRate2F["nAsymDiJetVsPt"]->Fill(ptCut_0,ptCut);
+      }
+    }
 
-    //if(diCenjetPt2>=ptCut){
-    //hTH1F["nDiCenJetVsPt"]->Fill(ptCut);
+    if(L1Event->diCenjetPt2>=ptCut)
+    {
+      hRate1F["nDiCenJetVsPt"]->Fill(ptCut);
+      for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0)
+      {
+        if(L1Event->diCenjetPt1>=ptCut_0) hRate2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut);
+      }
+    }
 
-    //for(int ptCut_0=ptCut; ptCut_0<256; ++ptCut_0) {
-    //if(diCenjetPt1>=ptCut_0) hTH2F["nAsymDiCenJetVsPt"]->Fill(ptCut_0,ptCut);
-    //}
-    //}
-
-    //if(ditauPt>=ptCut)    hTH1F["nDiTauVsPt"]->Fill(ptCut);
-    //if(quadjetPt>=ptCut)  hTH1F["nQuadJetVsPt"]->Fill(ptCut);
-    //if(quadjetCPt>=ptCut) hTH1F["nQuadCenJetVsPt"]->Fill(ptCut);
+    if(L1Event->ditauPt>=ptCut)    hRate1F["nDiTauVsPt"]->Fill(ptCut);
+    if(L1Event->quadjetPt>=ptCut)  hRate1F["nQuadJetVsPt"]->Fill(ptCut);
+    if(L1Event->quadjetCPt>=ptCut) hRate1F["nQuadCenJetVsPt"]->Fill(ptCut);
 
   } //loop on 256
 
@@ -182,33 +191,32 @@ bool L1Plot::FillRateHistogram()
     if(L1Event->EGPt>=ptCut)    hRate1F["nEGVsPt"]->Fill(ptCut);
     if(L1Event->EGerPt>=ptCut)  hRate1F["nEGErVsPt"]->Fill(ptCut);
     if(L1Event->IsoEGerPt>=ptCut) hRate1F["nIsoEGVsPt"]->Fill(ptCut);
-    // 
-    //   if(diEG2>=ptCut)     hTH1F["nDiEGVsPt"]->Fill(ptCut);
-    //   if(diIsolEG2>=ptCut) hTH1F["nDiIsoEGVsPt"]->Fill(ptCut);
-    // 
-    // 
-    //   for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
-    // 	if(diEG1>=ptCut && diEG2>=ptCut2 && ptCut2 <= ptCut) hTH2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
-    // 	if(diIsolEG1>=ptCut && diIsolEG2>=ptCut2 && ptCut2<= ptCut) hTH2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
-    //   }
-    // 
+     
+       if(L1Event->diEG2>=ptCut)     hRate1F["nDiEGVsPt"]->Fill(ptCut);
+       if(L1Event->diIsolEG2>=ptCut) hRate1F["nDiIsoEGVsPt"]->Fill(ptCut);
+     
+     
+       for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
+         if(L1Event->diEG1>=ptCut && L1Event->diEG2>=ptCut2 && ptCut2 <= ptCut) hRate2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
+         if(L1Event->diIsolEG1>=ptCut && L1Event->diIsolEG2>=ptCut2 && ptCut2<= ptCut) hRate2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
+       }
+     
   }//loop on 65
-  //  
-  // for(int ptCut=0; ptCut<131; ++ptCut) {
-  //   if (muPt>=ptCut)    hTH1F["nMuVsPt"]->Fill(ptCut);
-  //  if (muErPt>=ptCut)  hTH1F["nMuErVsPt"]->Fill(ptCut);
-  // }
-  //   
-  // 
-  // for(int iCut=0; iCut<41; ++iCut) {
-  //   for(int iCut2=0; iCut2<=iCut; ++iCut2) {
-  // 	float ptCut = iCut*0.5;
-  // 	float ptCut2 = iCut2*0.5;
-  // 	if (doubleMuPt1>=ptCut && doubleMuPt2>=ptCut2) hTH2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
-  // 	if (oniaMuPt1>=ptCut && oniaMuPt2>=ptCut2)     hTH2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
-  //   }
-  // }
-  // 
+    
+   for(int ptCut=0; ptCut<131; ++ptCut) {
+     if (L1Event->MuPt>=ptCut)    hRate1F["nMuVsPt"]->Fill(ptCut);
+    if (L1Event->MuerPt>=ptCut)  hRate1F["nMuErVsPt"]->Fill(ptCut);
+   }
+     
+   for(int iCut=0; iCut<41; ++iCut) {
+     for(int iCut2=0; iCut2<=iCut; ++iCut2) {
+       float ptCut = iCut*0.5;
+       float ptCut2 = iCut2*0.5;
+       if (L1Event->doubleMuPt1>=ptCut && L1Event->doubleMuPt2>=ptCut2) hRate2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
+       if (L1Event->oniaMuPt1>=ptCut && L1Event->oniaMuPt2>=ptCut2)     hRate2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
+     }
+   }
+   
   for(int httCut=0; httCut<512; ++httCut) {
     if(L1Event->HTT>httCut) hRate1F["nHTTVsHTT"]->Fill(httCut);
     if(L1Event->ETT>httCut) hRate1F["nETTVsETT"]->Fill(httCut);

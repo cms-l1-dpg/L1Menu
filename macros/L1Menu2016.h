@@ -133,7 +133,7 @@ class L1Menu2016 : public L1AlgoFactory
 
   private:
     // ====================  METHODS       ===============================
-    double CalScale(int nEvents_ = 0, int nBunches_ = 0);
+    double CalScale(int nEvents_ = 0, int nBunches_ = 0, bool print=false);
     bool RunMenu();
     bool FillDefHist1D();
 

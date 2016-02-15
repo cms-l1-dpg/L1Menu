@@ -60,10 +60,10 @@ struct StructL1Event
   float IsoTauCPt;
   float EGPt;
   float EGerPt;
-  float MuPt;
-  float MuerPt;
   float IsoEGPt;
   float IsoEGerPt;
+  float MuPt;
+  float MuerPt;
   float HTT;
   float ETM;
   float ETT;
@@ -87,15 +87,31 @@ struct StructL1Event
 
   StructL1Event()
   {
-    JetPt     = -10;
-    JetCenPt  = -10;
-    TauPt     = -10;
-    EGPt      = -10;
-    EGerPt    = -10;
-    IsoEGPt   = -10;
-    IsoEGerPt = -10;
-    MuPt      = -10;
-    MuerPt    = -10;
+    JetPt       = -10;
+    JetCenPt    = -10;
+    TauPt       = -10;
+    EGPt        = -10;
+    EGerPt      = -10;
+    IsoEGPt     = -10;
+    IsoEGerPt   = -10;
+    MuPt        = -10;
+    MuerPt      = -10;
+
+    oniaMuPt1   = -10;
+    oniaMuPt2   = -10;
+    doubleMuPt1 = -10.;
+    doubleMuPt2 = -10.;
+    dijetPt1    = -10.;
+    dijetPt2    = -10.;
+    diCenjetPt1 = -10.;
+    diCenjetPt2 = -10.;
+    ditauPt     = -10.;
+    quadjetPt   = -10.;
+    quadjetCPt  = -10.;
+    diEG1       = -10.;
+    diEG2       = -10.;
+    diIsolEG1   = -10.;
+    diIsolEG2   = -10.;
   }
 };
 
