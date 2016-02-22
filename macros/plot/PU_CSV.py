@@ -16,78 +16,165 @@ import math
 import ROOT
 import collections
 import os
+import tdrstyle
+from rootpy.interactive import wait
+from Config import DualMap, S1S2Map, S2S1Map
 
 freq = 11245.6
-nBunches = 2736
+nBunches = 1
+# nBunches = 2736
 pubins = np.arange(0, 30, 0.2)
 pumap = collections.defaultdict(list)
+filedir = "./PU/*csv"
+# filedir = "../results/Menu_*_pre6_PU.csv"
+s1csv = pd.read_csv("HLT_Fit_Run258425-260627_Tot10_fit.csv")
+
+def GetStage1Fun(l1seed):
+    s1seed = l1seed
+    if l1seed in S2S1Map:
+        s1seed = S2S1Map[l1seed]
+    print l1seed, s1seed
+    s1df = s1csv.loc[s1csv['path name'] == s1seed]
+    if len(s1df) == 0:
+        return None
+    # if s1df['fit function'] != 'quad':
+        # return None
+    x0 = s1df.X0
+    x1 = s1df.X1
+    x2 = s1df.X2
+    name = "S1 = %.2f + %.2f*x + %.2f*x^2" % (x0, x1, x2)
+    fun = "%f + %f*x + %f*x*x" % (x0, x1, x2)
+    # fun = s1df.X0 + s1
+    s1fun = ROOT.TF1(name, fun, 0, 35 )
+    return s1fun
+
+
+
+
 
 def DrawPU(f, l1seed):
     df = f[(f.L1Seed == l1seed )]
-    # PileUp = pd.unique(df.PileUp)
 
     for i in range(0, len(pubins) -1):
         pumap[pubins[i]] = []
         pumap[pubins[i]].append(df[np.logical_and(df.PileUp > pubins[i], df.PileUp <= pubins[i+1])].Fired.sum())
         pumap[pubins[i]].append(df[np.logical_and(df.PileUp > pubins[i], df.PileUp <= pubins[i+1])].Total.sum())
 
+    # # No merging
+    # PileUp = pd.unique(df.PileUp)
+    # for i in PileUp:
+        # pumap[i] = []
+        # pumap[i].append(df[df.PileUp == i].Fired.sum())
+        # pumap[i].append(df[df.PileUp == i].Total.sum())
+
     x = []
     y = []
     yerr = []
     for k, v in pumap.iteritems():
-        x.append(k)
-        if v[1] == 0:
-            y.append(0)
-            yerr.append(0)
-        else:
+        if v[1] != 0:
+            x.append(k)
             # print float(v[0])/v[1] * freq * nBunches
-            y.append(float(v[0])/v[1] * freq * nBunches / 1000)
-            yerr.append( math.sqrt(float(v[0]))/v[1] * freq * nBunches / 1000)
+            y.append(float(v[0])/v[1] * freq * nBunches )
+            yerr.append( math.sqrt(float(v[0]))/v[1] * freq * nBunches )
+            # y.append(float(v[0])/v[1] * freq * nBunches / 1000)
+            # yerr.append( math.sqrt(float(v[0]))/v[1] * freq * nBunches / 1000)
 
-    glen = len([x_ for x_ in y if x_>0])
     ## Draw the plot
-    graph = ROOT.TGraphErrors(glen)
-    validx = [ i for i, e in zip(x, y) if e != 0]
-    minx = min(validx)
+    graph = ROOT.TGraphErrors(len(x))
+    minx = min(x)
     maxx = 31
-    # maxx = max(validx)
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
         # print i, xx, yy
         graph.SetPoint(i, xx, yy)
         graph.SetPointError(i, 0, yee)
 
     c1 = ROOT.TCanvas("fd","Fdf", 600, 500)
+    ROOT.gStyle.SetOptStat(000000000)
     # tdrstyle.setTDRStyle()
     graph.Draw("AP")
-    graph.Fit("pol2", "QF", "", minx, maxx)
-    # graph.Fit("pol2", minx, maxx)
-    f = graph.GetFunction("pol2")
-    f.SetLineColor(ROOT.kRed)
-    graph.GetXaxis().SetTitle("PileUp")
-    graph.GetYaxis().SetTitle("Rate (nBunches = %d) [kHz]" % nBunches)
     graph.SetTitle(l1seed)
+    graph.GetXaxis().SetTitle("PileUp")
+    graph.GetXaxis().SetLimits(0, 35)
+    graph.GetYaxis().SetTitle("Rate (nBunches = %d) [Hz]" % nBunches)
+    # graph.GetYaxis().SetTitle("Rate (nBunches = %d) [kHz]" % nBunches)
+    # graph.Fit("pol2", minx, maxx)
+    
+    ## Get Stage1
+    s1fun = GetStage1Fun(l1seed)
+    if s1fun is not None:
+        s1fun.SetLineColor(ROOT.kGreen+2)
+        s1fun.SetLineWidth(2)
+        s1fun.Draw("same")
+        tex = ROOT.TLatex(0.19, 0.81, s1fun.GetName())
+        tex.SetNDC()
+        tex.SetTextAlign(13)
+        tex.SetTextFont(61)
+        tex.SetTextSize(0.04)
+        tex.SetTextColor(ROOT.kGreen+2)
+        tex.SetLineWidth(2)
+        tex.Draw()
 
-    fun = "f = %.2f + %.2f*x + %.2f*x^2" % (f.GetParameter(0), f.GetParameter(1), f.GetParameter(2) )
-    tex = ROOT.TLatex(0.15, 0.8, fun)
+
+    tex = ROOT.TLatex(0.19, 0.9, l1seed)
+    # f2.Draw()
+    tex.SetNDC()
+    tex.SetTextAlign(13)
+    tex.SetTextFont(61)
+    tex.SetTextSize(0.05)
+    tex.SetTextColor(ROOT.kBlack)
+    tex.SetLineWidth(2)
+    tex.Draw()
+    ## Pol2
+    fitname = "pol2"
+    graph.Fit("pol2", "QF", "", minx, maxx)
+    f2 = graph.GetFunction(fitname).Clone()
+    f2.SetLineColor(ROOT.kBlue)
+    f2.SetLineWidth(2)
+    fun = "f2 = %.2f + %.2f*x + %.2f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
+    tex = ROOT.TLatex(0.19, 0.75, fun)
+    f2.Draw("same")
     tex.SetNDC()
     tex.SetTextAlign(13)
     tex.SetTextFont(61)
     tex.SetTextSize(0.04)
+    tex.SetTextColor(ROOT.kBlue)
     tex.SetLineWidth(2)
     tex.Draw()
+
+    ## Pol1
+    fitname = "pol1"
+    graph.Fit("pol1", "QF", "", minx, maxx)
+    f1 = graph.GetFunction(fitname)
+    f1.SetLineColor(ROOT.kRed)
+    f1.SetLineWidth(2)
+    # f1.Draw()
+    fun = "f1 = %.2f + %.2f*x " % (f1.GetParameter(0), f1.GetParameter(1))
+    tex = ROOT.TLatex(0.19, 0.69, fun)
+    tex.SetNDC()
+    tex.SetTextAlign(13)
+    tex.SetTextFont(61)
+    tex.SetTextSize(0.04)
+    tex.SetTextColor(ROOT.kRed)
+    tex.SetLineWidth(2)
+    tex.Draw()
+
 
     c1.SetGridy()
     c1.SetGridx()
     c1.Update()
+    # c1.SaveAs("plots/PU_%s.root" % l1seed)
     c1.SaveAs("plots/PU_%s.png" % l1seed)
+    # wait()
     return
 
 
 if __name__ == "__main__":
-    allfiles = glob.glob("./*PU.csv")
+    allfiles = glob.glob(filedir)
     if not os.path.exists("plots"):
         os.mkdir("plots")
 
+    tdrstyle.setTDRStyle()
+    ROOT.gStyle.SetOptStat(000000000)
     df = pd.DataFrame()
     flist = [ ]
     for file_ in allfiles:
@@ -95,7 +182,16 @@ if __name__ == "__main__":
         flist.append(df_)
     df = pd.concat(flist)
 
+    # GetStage1Fun("L1APhysics")
+    # GetStage1Fun("L1_HTT100")
+    # DrawPU(df, "L1_HTT100")
+    # DrawPU(df, "L1_SingleMu16er")
+    # exit()
+    DrawPU(df, "L1_HTT200")
     # DrawPU(df, "L1APhysics")
-    for seed in pd.unique(df.L1Seed):
-        DrawPU(df, seed)
+    # DrawPU(df, "L1_SingleMu16er")
+    # DrawPU(df, "L1_HTT100")
+    # exit()
+    # for seed in pd.unique(df.L1Seed):
+        # DrawPU(df, seed)
     exit()

@@ -1,6 +1,8 @@
 from ROOT import *
 from sys import argv
 import os
+import copy
+from Config import DualMap
 
 NORM=False
 LOG=True
@@ -50,7 +52,20 @@ for k, o in getall(files[0]):
         fileName=fileNames[lp]
 
         file.cd()
-        h=file.Get(k)
+        h = file.Get(k)
+        if h == None:
+            temph = None
+            tempk = copy.copy(k)
+            for mapk in DualMap.keys():
+                if mapk in tempk:
+                    tempk =tempk.replace(mapk, DualMap[mapk])
+
+            temph = file.Get(tempk)
+            if temph == None:
+                continue
+            else:
+                h = temph
+
         #h.Rebin(4)
         hists.append(h)
 
@@ -80,6 +95,7 @@ for k, o in getall(files[0]):
               h.SetMinimum(0)
             if type(h) == type(TGraphAsymmErrors()):
                 c.SetLogy(False)
+                h.SetMaximum(1.8)
                 h.Draw("AP")
             else:
                 h.Draw("hist")
