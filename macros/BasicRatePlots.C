@@ -234,6 +234,9 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
   hTH1F["nJetVsPt"]    = new TH1F("nJetVsPt","SingleJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hTH1F["nJetCenVsPt"] = new TH1F("nJetCenVsPt","SingleJetCentral; E_{T} cut; rate [Hz]",256,-0.5,255.5);
 
+  hTH1F["nEGVsPt"]     = new TH1F("nEGVsPt","SingleEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hTH1F["nEGErVsPt"]   = new TH1F("nEGErVsPt","SingleEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+
   hTH1F["nTauVsPt"]     = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hTH1F["nTauErVsPt"]   = new TH1F("nTauErVsPt","SingleTauer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hTH1F["nIsoTauVsPt"]  = new TH1F("nIsoTauVsPt","SingleIsoTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
@@ -289,7 +292,6 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
   std::cout << "Tree contains " << fChain->GetEntriesFast() << " events." << std::endl;
   std::cout << "Running on " << nEvents << " events." << std::endl;
 
-  
   for (Long64_t event=0; event<nEvents; ++event) {
     
     Long64_t eventEntry = LoadTree(event);
@@ -531,6 +533,15 @@ void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0)
       // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
       // filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_2.root";
       filename = "ntuple/Run256843_stage2_8X.list";
+      //filename = "ntuples_256843_stage2_full.list";
+    }
+  else if (fileType == "RUN259721_Stage1v2")
+    {
+      isData = false;      
+      nBunches = 517;
+      // filename = "/data/user/gennai/L1Ntuple/l1t_debug-stage-2_256843.root";
+      // filename = "root://cmseos.fnal.gov//store/user/lpctrig/apana/Stage2/ZeroBias1/crab_ZeroBias1_Run2015D-v1/151230_012024/0000/l1t_stage2_2.root";
+      filename = "ntuple/r259721_Stage1v2.list";
       //filename = "ntuples_256843_stage2_full.list";
     }
   else if (fileType == "RUN256843_Stage2_76")

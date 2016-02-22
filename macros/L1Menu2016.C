@@ -97,6 +97,7 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
 bool L1Menu2016::InitConfig()
 {
   L1Config["isData"] = 0;
+  L1Config["SumJetET"] = 0;
   L1Config["nBunches"] = 2736;
   //L1Config["nBunches"] = 0;
   L1Config["AveragePU"] = 0;
@@ -111,6 +112,8 @@ bool L1Menu2016::InitConfig()
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
   L1ObjectMap["Tau"] = &L1Event.TauPt;
+  L1ObjectMap["Tauer"] = &L1Event.TauCPt;
+  L1ObjectMap["IsoTau"] = &L1Event.IsoTauPt;
   L1ObjectMap["EG"] = &L1Event.EGPt;
   L1ObjectMap["EGer"] = &L1Event.EGerPt;
   L1ObjectMap["IsoEG"] = &L1Event.IsoEGPt;
@@ -119,6 +122,7 @@ bool L1Menu2016::InitConfig()
   L1ObjectMap["MuOpen"] = &L1Event.MuPt;
   L1ObjectMap["Muer"] = &L1Event.MuerPt;
   L1ObjectMap["HTT"] = &L1Event.HTT;
+  L1ObjectMap["HTM"] = &L1Event.HTM;
   L1ObjectMap["ETM"] = &L1Event.ETM;
   L1ObjectMap["ETT"] = &L1Event.ETT;
 
@@ -516,7 +520,12 @@ bool L1Menu2016::GetL1Event()
   L1AlgoFactory::SingleMuPt(L1Event.MuerPt, true);
 
   //Sum
-  L1AlgoFactory::HTTVal(L1Event.HTT);
+  if (L1Config["SumJetET"] != 0)
+    CalLocalHT(L1Event.HTT);
+  else
+    L1AlgoFactory::HTTVal(L1Event.HTT);
+
+  L1AlgoFactory::HTMVal(L1Event.HTM);
   L1AlgoFactory::ETMVal(L1Event.ETM);
   L1AlgoFactory::ETTVal(L1Event.ETT);
 
@@ -1120,7 +1129,7 @@ bool L1Menu2016::ParseSingleObject(const std::string SeedName)
 
   std::smatch base_match;
   std::regex integerobj("Single([^0-9]+)([0-9]+)([^0-9]*)");
-  std::regex integerSum("(ETM|HTT|ETT)([0-9]+)");
+  std::regex integerSum("(ETM|HTT|ETT|HTM)([0-9]+)");
   if (std::regex_match(Seedtoken, base_match, integerobj))
   {
 	// The first sub_match is the whole string; the next
@@ -1564,3 +1573,22 @@ bool L1Menu2016::ReadDataPU()
 
   return true;
 }       // -----  end of function L1Menu2016::ReadDataPU  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CalLocalHT
+//  Description:  
+// ===========================================================================
+void L1Menu2016::CalLocalHT(float &HTTcut)
+{
+  float sumJetHt= 0;
+  for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if (pt >= L1Config["SumJetET"])
+      sumJetHt += pt;
+  }
+  HTTcut = sumJetHt;
+  return;
+
+}       // -----  end of function L1Menu2016::CalLocalHT  -----

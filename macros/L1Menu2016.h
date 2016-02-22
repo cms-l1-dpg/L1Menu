@@ -136,6 +136,7 @@ class L1Menu2016 : public L1AlgoFactory
     double CalScale(int nEvents_ = 0, int nBunches_ = 0, bool print=false);
     bool RunMenu();
     bool FillDefHist1D();
+    void CalLocalHT(float &HTTcut);
 
     // ====================  DATA MEMBERS  ===============================
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Configurations ~~~~~

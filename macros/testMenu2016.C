@@ -51,6 +51,7 @@ int main ( int argc, char *argv[] )
     ("doPrintPU",     po::value<bool>(),                                      "print out rate per PU to file")
     ("maxEvent,n",    po::value<int>()->default_value(-1),                    "run number of events; -1 for all")
     ("nBunches,b",    po::value<int>(),                                       "set number of bunches")
+    ("SumJetET",      po::value<int>(),                                       "PT threshold of Jet for HT")
     ;
 
 

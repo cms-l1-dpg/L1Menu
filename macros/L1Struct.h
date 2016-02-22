@@ -65,6 +65,7 @@ struct StructL1Event
   float MuPt;
   float MuerPt;
   float HTT;
+  float HTM;
   float ETM;
   float ETT;
 
@@ -90,13 +91,19 @@ struct StructL1Event
     JetPt       = -10;
     JetCenPt    = -10;
     TauPt       = -10;
+    TauCPt       = -10;
+    IsoTauPt       = -10;
+    IsoTauCPt       = -10;
     EGPt        = -10;
     EGerPt      = -10;
     IsoEGPt     = -10;
     IsoEGerPt   = -10;
     MuPt        = -10;
     MuerPt      = -10;
-
+    HTT         = -10;
+    HTM         = -10;
+    ETM         = -10;
+    ETT         = -10;
     oniaMuPt1   = -10;
     oniaMuPt2   = -10;
     doubleMuPt1 = -10.;

@@ -13,3 +13,4 @@ __init__.py
 ####  root files
 *.root
 *.pcm
+*.log

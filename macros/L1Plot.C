@@ -112,6 +112,7 @@ bool L1Plot::BookRateHistogram()
 
   //Sums
   hRate1F["nHTTVsHTT"] = new TH1F("nHTTVsHTT","HTT; HTT cut; rate [Hz]",512,-.5,511.5);
+  hRate1F["nHTMVsHTM"] = new TH1F("nHTMVsHTM","HTM; HTM cut; rate [Hz]",512,-.5,511.5);
   hRate1F["nETTVsETT"] = new TH1F("nETTVsETT","ETT; ETT cut; rate [Hz]",512,-.5,511.5);
   hRate1F["nETMVsETM"] = new TH1F("nETMVsETM","ETM; ETM cut; rate [Hz]",512,-.5,511.5);
 
@@ -219,10 +220,12 @@ bool L1Plot::FillRateHistogram()
    
   for(int httCut=0; httCut<512; ++httCut) {
     if(L1Event->HTT>httCut) hRate1F["nHTTVsHTT"]->Fill(httCut);
+    if(L1Event->HTM>httCut) hRate1F["nHTMVsHTM"]->Fill(httCut);
     if(L1Event->ETT>httCut) hRate1F["nETTVsETT"]->Fill(httCut);
     if(L1Event->ETM>httCut) hRate1F["nETMVsETM"]->Fill(httCut);
   }
 
+  //std::cout <<  "sumJetHt " << sumJetHt <<" HTT " << L1Event->HTT << std::endl;
   return true;
 }       // -----  end of function L1Plot::FillRateHistogram  -----
 
@@ -294,7 +297,10 @@ std::vector<TLorentzVector> L1Plot::GetRecoJet(bool isCent) const
   {
     if (isCent && fabs(recoJet_->eta.at(i)) > jetERcut )
       continue;
+
     if (!recoJet_->isPF.at(i)) continue;
+    if (!GoodRecoJet(i)) continue;
+    
     TLorentzVector temp(0, 0, 0, 0);
 
 
@@ -308,6 +314,57 @@ std::vector<TLorentzVector> L1Plot::GetRecoJet(bool isCent) const
   return reTLVs;
 }       // -----  end of function L1Plot::GetRecoJet  -----
 
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::GoodRecoJet
+//  Description:  
+// ===========================================================================
+bool L1Plot::GoodRecoJet(int ijet) const
+{
+  bool tmp = true;
+  tmp &= recoJet_ ->nhef[ijet] < 0.9 ;
+  tmp &= recoJet_ ->nemef[ijet] < 0.9 ;
+  tmp &= (recoJet_ ->cMult[ijet] + recoJet_ ->nMult[ijet]) > 1 ;
+  tmp &= recoJet_ ->mef[ijet] < 0.8 ;
+  if (fabs(recoJet_ ->eta[ijet]) < 2.4) {
+    tmp &= recoJet_ ->chef[ijet] > 0.0 ;
+    tmp &= recoJet_ ->cMult[ijet] > 0 ;
+    tmp &= recoJet_ ->cemef[ijet] < 0.9 ;
+  }
+  if (fabs(recoJet_ ->eta[ijet]) > 3.0) {
+    tmp &= recoJet_ ->nemef[ijet] < 0.9 ;
+    tmp &= recoJet_ ->nMult[ijet] > 10 ;
+  }
+
+  // our custom selection
+  tmp &= recoJet_ ->muMult[ijet] == 0;
+  tmp &= recoJet_ ->elMult[ijet] == 0;
+
+  return tmp;
+}       // -----  end of function L1Plot::GoodRecoJet  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::GetRecoHTLocal
+//  Description:  From Jim Brooke
+//  offline HT is computed by hand from PF jets with V6 JEC, eta < 3 and pT > 30.
+// ===========================================================================
+std::vector<TLorentzVector> L1Plot::GetRecoHTLocal() const
+{
+  double ht = 0;
+
+  for (int i = 0; i < recoJet_->nJets; ++i)
+  {
+    if (!recoJet_->isPF.at(i)) continue;
+    if (fabs(recoJet_->eta.at(i)) > 3) continue;
+    if (recoJet_->etCorr.at(i) < 30) continue;
+    ht += recoJet_->etCorr.at(i);
+  }
+  std::vector<TLorentzVector> reTLVs;
+  TLorentzVector temp(0, 0, 0, 0);
+  temp.SetPtEtaPhiE(ht, 0, 0, 0);
+  reTLVs.push_back(temp);
+
+  return reTLVs;
+}       // -----  end of function L1Plot::GetRecoHTLocal  -----
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::GetRecoSum
 //  Description:  
@@ -449,6 +506,7 @@ bool L1Plot::GetRecoEvent()
   recoEvent["Jet"]     = GetRecoJet();
   recoEvent["JetC"]    = GetRecoJet(true);
   recoEvent["Tau"]     = GetRecoTau();
+  recoEvent["IsoTau"]     = GetRecoTau(false, 1);
   recoEvent["Tauer"]   = GetRecoTau(true);
   recoEvent["EG"]      = GetRecoEle();
   recoEvent["EGer"]    = GetRecoEle(true,   false, 0 );
@@ -461,6 +519,7 @@ bool L1Plot::GetRecoEvent()
   recoEvent["ETM"]     = GetRecoSum("ETM");
   recoEvent["ETT"]     = GetRecoSum("ETT");
   recoEvent["HTM"]     = GetRecoSum("HTM");
+  //recoEvent["HTM"]     = GetRecoSum("ETM");
   return true;
 }       // -----  end of function L1Plot::GetRecoEvent  -----
 
@@ -506,7 +565,8 @@ bool L1Plot::BookEffHistogram()
           objstr.find("HTM") != std::string::npos )
       {
         std::string hname = l1.first +"_Pt";
-        if (objstr.find("ETM") != std::string::npos )
+        if (objstr.find("ETM") != std::string::npos ||
+            objstr.find("HTM") != std::string::npos)
           hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 100,0,500);
         else
           hEff[hname] = new TEfficiency(hname.c_str(), l1.first.c_str(), 30,0,600);
