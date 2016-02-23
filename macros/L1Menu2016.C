@@ -481,7 +481,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
   if (writeplots)
   {
     l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
-        recoSum_, recoEle_, recoMuon_, recoTau_);
+        recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_);
     l1Plot->SetTodo(L1Config["doPlotRate"], L1Config["doPlotEff"]);
     l1Plot->PreRun(&L1Event, &mL1Seed);
   }

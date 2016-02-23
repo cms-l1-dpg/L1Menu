@@ -29,6 +29,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMetDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoElectronDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMuon2DataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMetFilterDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
 
 class L1Ntuple {
@@ -46,6 +47,7 @@ public:
   TChain          *ftreeRecoEle;
   TChain          *ftreeRecoMuon;
   TChain          *ftreeRecoTau;
+  TChain          *ftreeRecoFilter;
   Int_t            fCurrent; //!current Tree number in a TChain
 
   bool doreco;
@@ -59,6 +61,7 @@ public:
   bool doRecoEle;
   bool doRecoMuon;
   bool doRecoTau;
+  bool doRecoFilter;
 
   L1Analysis::L1AnalysisEventDataFormat        *event_;
   L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade_;
@@ -67,6 +70,7 @@ public:
   L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle_;
   L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
   L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau_;
+  L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
 
   L1Ntuple();
   L1Ntuple(const std::string & fname);

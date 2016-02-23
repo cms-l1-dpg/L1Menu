@@ -18,28 +18,31 @@ L1Ntuple::L1Ntuple()
   doRecoEle     = true;
   doRecoMuon    = true;
   doRecoTau     = true;
+  doRecoFilter  = true;
 
-  fChain        = nullptr;
-  fEvent        = nullptr;
-  ftreeEvent    = nullptr;
-  ftreemuon     = nullptr;
-  ftreereco     = nullptr;
-  ftreeExtra    = nullptr;
-  ftreeMenu     = nullptr;
-  ftreeEmuExtra = nullptr;
-  ftreeRecoJet  = nullptr;
-  ftreeRecoMet  = nullptr;
-  ftreeRecoEle  = nullptr;
-  ftreeRecoMuon = nullptr;
-  ftreeRecoTau  = nullptr;
+  fChain          = nullptr;
+  fEvent          = nullptr;
+  ftreeEvent      = nullptr;
+  ftreemuon       = nullptr;
+  ftreereco       = nullptr;
+  ftreeExtra      = nullptr;
+  ftreeMenu       = nullptr;
+  ftreeEmuExtra   = nullptr;
+  ftreeRecoJet    = nullptr;
+  ftreeRecoMet    = nullptr;
+  ftreeRecoEle    = nullptr;
+  ftreeRecoMuon   = nullptr;
+  ftreeRecoTau    = nullptr;
+  ftreeRecoFilter = nullptr;
 
-  event_        = nullptr;
-  upgrade_      = nullptr;
-  recoJet_       = nullptr;
-  recoSum_       = nullptr;
-  recoEle_       = nullptr;
-  recoMuon_      = nullptr;
-  recoTau_       = nullptr;
+  event_          = nullptr;
+  upgrade_        = nullptr;
+  recoJet_        = nullptr;
+  recoSum_        = nullptr;
+  recoEle_        = nullptr;
+  recoMuon_       = nullptr;
+  recoTau_        = nullptr;
+  recoFilter_     = nullptr;
   MainTreePath = "l1UpgradeTree/L1UpgradeTree";
 }
 
@@ -124,6 +127,7 @@ bool L1Ntuple::CheckFirstFile()
   TTree * mytreeRecoEle  = (TTree*) rf->Get("l1ElectronRecoTree/ElectronRecoTree");
   TTree * mytreeRecoMuon = (TTree*) rf->Get("l1MuonRecoTree/Muon2RecoTree");
   TTree * mytreeRecoTau  = (TTree*) rf->Get("l1TauRecoTree/TauRecoTree");
+  TTree * mytreeRecoFilter  = (TTree*) rf->Get("l1MetFilterRecoTree/MetFilterRecoTree");
 
   if (!myChain) {
     std::cout<<"L1Tree not found .... "<<std::endl;
@@ -176,6 +180,14 @@ bool L1Ntuple::CheckFirstFile()
   if (!mytreeRecoTau) {
     std::cout<<"RecoTau not found, it will be skipped..."<<std::endl;
     doRecoTau=false;
+  } else
+  {
+    std::cout << "RecoTau is found ..."<<std::endl;
+  }
+
+  if (!mytreeRecoFilter) {
+    std::cout<<"RecoFilter not found, it will be skipped..."<<std::endl;
+    doRecoFilter=false;
   } else
   {
     std::cout << "RecoTau is found ..."<<std::endl;
@@ -242,6 +254,7 @@ bool L1Ntuple::OpenWithoutInit()
   ftreeRecoEle  = new TChain("l1ElectronRecoTree/ElectronRecoTree");
   ftreeRecoMuon = new TChain("l1MuonRecoTree/Muon2RecoTree");
   ftreeRecoTau  = new TChain("l1TauRecoTree/TauRecoTree");
+  ftreeRecoFilter  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
 
 
   for (unsigned int i=0;i<listNtuples.size();i++)
@@ -260,6 +273,7 @@ bool L1Ntuple::OpenWithoutInit()
     if (doRecoEle)    ftreeRecoEle  -> Add(listNtuples[i].c_str());
     if (doRecoMuon)   ftreeRecoMuon -> Add(listNtuples[i].c_str());
     if (doRecoTau)    ftreeRecoTau  -> Add(listNtuples[i].c_str());
+    if (doRecoFilter)    ftreeRecoFilter  -> Add(listNtuples[i].c_str());
 
   }
 
@@ -274,6 +288,7 @@ bool L1Ntuple::OpenWithoutInit()
   if (doRecoEle)    fChain->AddFriend(ftreeRecoEle);
   if (doRecoMuon)   fChain->AddFriend(ftreeRecoMuon);
   if (doRecoTau)    fChain->AddFriend(ftreeRecoTau);
+  if (doRecoFilter)    fChain->AddFriend(ftreeRecoFilter);
 
   return true;
 }
@@ -285,6 +300,7 @@ L1Ntuple::~L1Ntuple()
   if (ftreeRecoEle)  delete ftreeRecoEle;
   if (ftreeRecoMuon) delete ftreeRecoMuon;
   if (ftreeRecoTau)  delete ftreeRecoTau;
+  if (ftreeRecoFilter)  delete ftreeRecoFilter;
   if (ftreemuon)     delete ftreemuon;
   if (ftreereco)     delete ftreereco;
   if (ftreeExtra)    delete ftreeExtra;
@@ -385,6 +401,12 @@ void L1Ntuple::Init()
      ftreeRecoTau->SetBranchAddress("Tau",&recoTau_);
    }
 
+   if (doRecoFilter)
+   {
+     std::cout<<"Setting branch addresses for reco Filters...   "<<std::endl;
+     recoFilter_ = new L1Analysis::L1AnalysisRecoMetFilterDataFormat();
+     ftreeRecoFilter->SetBranchAddress("MetFilters",&recoFilter_);
+   }
    // if (fChain->GetBranch("Simulation"))
    //   fChain->SetBranchAddress("Simulation", &simulation_ );
    // else

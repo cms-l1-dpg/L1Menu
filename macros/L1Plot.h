@@ -34,6 +34,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisL1UpgradeDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoJetDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMetDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMetFilterDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoElectronDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMuon2DataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
@@ -51,13 +52,14 @@ class L1Plot
     // ====================  LIFECYCLE     ===============================
     L1Plot (
         TFile* outrootfile_,
-        L1Analysis::L1AnalysisEventDataFormat        *event__ = nullptr,
-        L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade__ = nullptr,
-        L1Analysis::L1AnalysisRecoJetDataFormat      *recoJet__ = nullptr,
-        L1Analysis::L1AnalysisRecoMetDataFormat      *recoSum__ = nullptr,
-        L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle__ = nullptr,
-        L1Analysis::L1AnalysisRecoMuon2DataFormat    *recoMuon__ = nullptr,
-        L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau__ = nullptr
+        L1Analysis::L1AnalysisEventDataFormat         *event__      = nullptr,
+        L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade__    = nullptr,
+        L1Analysis::L1AnalysisRecoJetDataFormat       *recoJet__    = nullptr,
+        L1Analysis::L1AnalysisRecoMetDataFormat       *recoSum__    = nullptr,
+        L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle__    = nullptr,
+        L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon__   = nullptr,
+        L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__    = nullptr,
+        L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__ = nullptr
         );
 
     L1Plot ( const L1Plot &other );   // copy constructor
@@ -103,13 +105,14 @@ class L1Plot
 
     // ====================  DATA MEMBERS  ===============================
     TFile        *outfile;
-    L1Analysis::L1AnalysisEventDataFormat        *event_;
-    L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade_;
-    L1Analysis::L1AnalysisRecoJetDataFormat      *recoJet_;
-    L1Analysis::L1AnalysisRecoMetDataFormat      *recoSum_;
-    L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle_;
+    L1Analysis::L1AnalysisEventDataFormat         *event_;
+    L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade_;
+    L1Analysis::L1AnalysisRecoJetDataFormat       *recoJet_;
+    L1Analysis::L1AnalysisRecoMetDataFormat       *recoSum_;
+    L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle_;
     L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
-    L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau_;
+    L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau_;
+    L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
     bool doPlotRate;
     bool doPlotEff;
 

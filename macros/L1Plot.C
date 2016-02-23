@@ -29,7 +29,8 @@ L1Plot::L1Plot (
     L1Analysis::L1AnalysisRecoMetDataFormat      *recoSum__,
     L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle__,
     L1Analysis::L1AnalysisRecoMuon2DataFormat    *recoMuon__,
-    L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau__
+    L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau__,
+    L1Analysis::L1AnalysisRecoMetFilterDataFormat      *recoFilter__
     ):
   outfile(outrootfile_),
   event_(event__),
@@ -39,6 +40,7 @@ L1Plot::L1Plot (
   recoEle_(recoEle__),
   recoMuon_(recoMuon__),
   recoTau_(recoTau__),
+  recoFilter_(recoFilter__),
   doPlotRate(false),
   doPlotEff(false)
 {
@@ -596,6 +598,7 @@ double L1Plot::FunLeadingPt(std::string obj)
 bool L1Plot::FillEffHistogram()
 {
   if (!doPlotEff) return false;
+
   for(auto h : hEff)
   {
     std::string l1seed = h.second->GetTitle();
