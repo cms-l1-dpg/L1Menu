@@ -160,35 +160,50 @@ bool L1Menu2016::InitConfig()
 
   //Cross
   L1SeedFun["L1_Mu6_HTT100"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 6.,100.);
+  L1SeedFun["L1_Mu6_HTT194"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 6.,194.); // l1t-tsg-v3:  L1_Mu6_HTT100
   L1SeedFun["L1_Mu8_HTT50"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 8.,50.);
+  L1SeedFun["L1_Mu8_HTT150"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 8.,150.); // l1t-tsg-v3:  L1_Mu8_HTT50
   L1SeedFun["L1_Mu0er_ETM40"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 0.,40.);
   L1SeedFun["L1_Mu0er_ETM55"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 0.,55.);
   L1SeedFun["L1_Mu10er_ETM30"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 10.,30.);
   L1SeedFun["L1_Mu10er_ETM50"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 10.,50.);
   L1SeedFun["L1_Mu14er_ETM30"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 14.,30.);
   L1SeedFun["L1_EG25er_HTT100"] = std::bind(&L1AlgoFactory::SingleEG_Eta2p1_HTT, this, 25., 100.,false);
+  L1SeedFun["L1_EG27er_HTT194"] = std::bind(&L1AlgoFactory::SingleEG_Eta2p1_HTT, this, 27., 194.,false);  // l1t-tsg-v3:  L1_EG25er_HTT100
   L1SeedFun["L1_Mu16er_TauJet20er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,20.,false);
   L1SeedFun["L1_Mu16er_IsoTau28er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,28.,true);
   L1SeedFun["L1_Mu16er_IsoTau32er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,32.,true);
   L1SeedFun["L1_Mu12_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,10.,false, 4);
+  L1SeedFun["L1_Mu12_EG17"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,17.,false, 4); // l1t-tsg-v3:  L1_Mu12_EG10
   L1SeedFun["L1_Mu20_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,10.,false, 4);
+  L1SeedFun["L1_Mu20_EG17"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,17.,false, 4); // l1t-tsg-v3:  L1_Mu20_EG10
   L1SeedFun["L1_Mu4_EG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 4.,18.,false, 4);
+  L1SeedFun["L1_Mu4_EG23"] = std::bind(&L1AlgoFactory::Mu_EG, this, 4.,23.,false, 4); // l1t-tsg-v3:  L1_Mu4_EG18
   L1SeedFun["L1_Mu5_EG15"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,15.,false, 4);
+  L1SeedFun["L1_Mu5_EG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,18.,false, 4); // l1t-tsg-v3:  L1_Mu5_EG15
   L1SeedFun["L1_Mu5_EG20"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,20.,false, 4);
+  L1SeedFun["L1_Mu5_EG23"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,23.,false, 4); // l1t-tsg-v3:  L1_Mu5_EG20
   L1SeedFun["L1_Mu5_IsoEG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,18.,true, 4);
+  L1SeedFun["L1_Mu5_IsoEG23"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,23.,true, 4); // l1t-tsg-v3:  L1_Mu5_IsoEG18
   L1SeedFun["L1_IsoEG20er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
+  L1SeedFun["L1_IsoEG23er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 23.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
   L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,true);
+  L1SeedFun["L1_DoubleMu6_EG16"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,16.,true); // l1t-tsg-v3:  L1_DoubleMu6_EG6
   L1SeedFun["L1_DoubleMu7_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,true);
+  L1SeedFun["L1_DoubleMu7_EG17"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,17.,true);  // l1t-tsg-v3:  L1_DoubleMu7_EG7
   L1SeedFun["L1_Mu5_DoubleEG5"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 5., 5.);
   L1SeedFun["L1_Mu6_DoubleEG10"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 6., 10.);
+  L1SeedFun["L1_Mu6_DoubleEG17"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 6., 17.); // l1t-tsg-v3:  L1_Mu6_DoubleEG10
 
   //MultiCross
   L1SeedFun["L1_Mu3_JetC16_WdEtaPhi2"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,16.);
   L1SeedFun["L1_Mu3_JetC52_WdEtaPhi2"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,52.);
   L1SeedFun["L1_DoubleJetC56_ETM60"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 56.,56.,60.);
   L1SeedFun["L1_DoubleEG6_HTT150"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 150.);
+  L1SeedFun["L1_DoubleEG6_HTT258"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 258.); // l1t-tsg-v3:  L1_DoubleEG6_HTT150
   L1SeedFun["L1_Jet32MuOpen_Mu10_dPhiMu_Mu1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
   L1SeedFun["L1_Jet32MuOpen_EG10_dPhiMu_EG1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
+  L1SeedFun["L1_Jet32MuOpen_EG17_dPhiMu_EG1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,17.); // l1t-tsg-v3:  L1_Jet32MuOpen_EG10_dPhiMu_EG1
 
   //MultiEG
   //L1SeedFun["L1_DoubleEG_15_10"] = std::bind(&L1AlgoFactory::DoubleEG, this, 15.,10.,false );
@@ -1105,7 +1120,7 @@ bool L1Menu2016::ParseL1Seed(const std::string SeedName)
   if (ParseDoubleTau(SeedName)) return true;
 
   // EGMass
-  if (ParseMultiEGMass(SeedName)) return true;
+  //if (ParseMultiEGMass(SeedName)) return true;
 
   return false;
 }       // -----  end of function L1Menu2016::ParseL1Seed  -----

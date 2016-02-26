@@ -244,9 +244,9 @@ bool L1Plot::RunPlot()
 
   if (doPlotEff) 
   {
-    GetRecoEvent();
     FillEffHistogram();
   }
+
   return true;
 }       // -----  end of function L1Plot::RunPlot  -----
 // ===  FUNCTION  ============================================================
@@ -301,7 +301,6 @@ std::vector<TLorentzVector> L1Plot::GetRecoJet(bool isCent) const
       continue;
 
     if (!recoJet_->isPF.at(i)) continue;
-    if (!GoodRecoJet(i)) continue;
     
     TLorentzVector temp(0, 0, 0, 0);
 
@@ -598,7 +597,9 @@ double L1Plot::FunLeadingPt(std::string obj)
 bool L1Plot::FillEffHistogram()
 {
   if (!doPlotEff) return false;
+  if (!GetRecoFilter()) return false;
 
+  GetRecoEvent();
   for(auto h : hEff)
   {
     std::string l1seed = h.second->GetTitle();
@@ -646,3 +647,30 @@ void L1Plot::SetTodo (bool doPlotRate_, bool doPlotEff_)
   doPlotRate = doPlotRate_;
   doPlotEff = doPlotEff_;
 }       // -----  end of function L1Plot::SetTodo  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::GetRecoFilter
+//  Description:  
+// ===========================================================================
+bool L1Plot::GetRecoFilter() const
+{
+  bool pass = true && recoFilter_->goodVerticesFilter
+                   && recoFilter_->cscTightHalo2015Filter
+                   && recoFilter_->eeBadScFilter
+                   && recoFilter_->ecalDeadCellTPFilter
+                   && recoFilter_->hbheNoiseIsoFilter
+                   && recoFilter_->hbheNoiseFilter
+                   && recoFilter_->chHadTrackResFilter
+                   && recoFilter_->muonBadTrackFilter;
+
+  if (!pass) return pass; // If event is skip aleady
+
+  for (int i = 0; i < recoJet_->nJets; ++i)
+  {
+    if (recoJet_->etCorr.at(i) < 30) continue;
+    pass = pass && GoodRecoJet(i);
+    if (!pass) return pass; // If event is skip aleady
+  }
+
+  return pass;
+}       // -----  end of function L1Plot::GetRecoFilter  -----

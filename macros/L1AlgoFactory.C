@@ -1323,7 +1323,8 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
 bool L1AlgoFactory::PassMuonQual(int imu, bool isMuHighQual) const
 {
   (void)isMuHighQual; // Not used for now as the L1UpgradeTree only store 0 or 1
-  return upgrade_->muonQual.at(imu) == 1;
+  return upgrade_->muonQual.at(imu) > 0; // l1t-tsg-v3 quarlity bit as 0 and 12.
+  //return upgrade_->muonQual.at(imu) == 1;
 }       // -----  end of function L1AlgoFactory::PassMuonQual  -----
 
 Bool_t L1AlgoFactory::Mu_HTT(Float_t mucut, Float_t HTcut) {

@@ -100,6 +100,7 @@ class L1Plot
     std::vector<TLorentzVector> GetRecoSum(std::string type ) const;
     std::vector<TLorentzVector> GetRecoHTLocal() const;
     bool GoodRecoJet(int ijet) const;
+    bool GetRecoFilter() const;
     inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
     double FunLeadingPt(std::string obj);
 
