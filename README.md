@@ -1,61 +1,62 @@
-
 L1TMenu
 =======
 
+## Check out the code
 Package to put together code and configuration file to prepare first version of the 2016 L1 menu
 
-Instructions for running the Stage2 emulator and create L1Ntuples:
+#### The Stage2 emulator and L1Ntuples package
 
 <pre><code>
-export MY_CMSSW_VERSION="CMSSW_7_6_0"
-cmsrel $MY_CMSSW_VERSION 
-cd $MY_CMSSW_VERSION/src
+cmsrel CMSSW_8_0_0_pre6
+cd CMSSW_8_0_0_pre6/src
 cmsenv
-git cms-merge-topic cms-l1t-offline:l1t-dev-recipe-CMSSW_7_6_0
-scram b -j7
-cmsRun L1Trigger/L1TCommon/test/reEmul.py  max=1000
+git cms-init
+git remote add cms-l1t-offline git@github.com:cms-l1t-offline/cmssw.git
+git fetch cms-l1t-offline
+git cms-merge-topic cms-l1t-offline:l1t-tsg-v3
+git cms-addpkg L1Trigger/L1TCommon
+scram b -j 8
 </code></pre>
 
-##### L1Menu DPG package for menu-making ####################
+#### L1Menu DPG package for menu-making 
 <pre><code>
-git clone -b 2016-devel https://github.com/cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
+git clone -b 2016-Tune https://github.com/cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
 cd L1TriggerDPG/L1Menu
-export USER_CXXFLAGS="-Wno-delete-non-virtual-dtor -Wno-error=unused-but-set-variable -Wno-error=unused-variable"
 scramv1 b -j 9
+cd macros
+make -j 9
 </code></pre>
 
-####################
-In order to run the BasicRatePlots macro
+
+## Menu Tuning
+
+Beside the old code inherited from 2015 L1Menu, a new executable *testMenu2016* is rewritten for easier tunning process.
 
 <pre><code>
-cd L1TriggerDPG/L1Menu/macros
-root runBasicRates.C
+$ ./testMenu2016 --help
+Allowed options:
+  -h [ --help ]                         produce help message
+  -m [ --menufile ] arg (=menu/Menu_259721_Stage2_Tune.txt)
+                                        set the input menu
+  -l [ --filelist ] arg (=ntuple/Run259721_stage2_Len_New.list)
+                                        set the input ntuple list
+  -o [ --outfilename ] arg (=Auto)      set output file name
+  -d [ --outputdir ] arg (=results)     set output directory
+  -t [ --writetext ] arg (=1)           write rate to output
+  -c [ --writecsv ] arg (=1)            write rate to output in CSV format
+  -p [ --writeplot ] arg (=1)           write plot to output
+  --doPlotRate arg                      save rate plot to output
+  --doPlotEff arg                       save efficiency plot to output
+  --doPrintLS arg                       print out rate per LS to file
+  --doPrintPU arg                       print out rate per PU to file
+  -n [ --maxEvent ] arg (=-1)           run number of events; -1 for all
+  -b [ --nBunches ] arg                 set number of bunches
+  --SumJetET arg                        PT threshold of Jet for HT
 </code></pre>
 
-####################
-
-####################
-the recipes referenced below still need to be updated for the new L1 Ntuple structure. Don't try them for now
-
-
-In order to run on the L1Menu macro
-
-<pre><code>
-cd L1TriggerDPG/L1Menu/macros
-root
-.x  ../../L1Ntuples/macros/initL1Analysis.C+
-.L L1Menu2016_minbias_cross_section.C+
-RunL1(true,true,4)
-</code></pre>
-(4 being the scenario you want to test)
-####################
-In order to run a simple macro that runs over the events in the ntuple and produces simple plots:
-
-<pre><code>
-cd L1TriggerDPG/L1Menu/macros
-root
-.x analise_L1.C
-RunL1(4)
-</code></pre>
-(4 being the scenario you want to test)
-####################
+To reproduce the current menu for 1.2E34 Hz/cm^2, you can run the following command:
+```
+./testMenu2016 -b 4136
+```
+> Run259721 has 517 bunches, corresponding to 1.5E33 Hz/cm^2. To scale to
+> 1.2E34Hz/cm^2, you need to scale 517 * (1.2E34/1.5E33) = 4136.
