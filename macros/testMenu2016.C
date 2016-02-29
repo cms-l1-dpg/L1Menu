@@ -33,7 +33,7 @@ int main ( int argc, char *argv[] )
   namespace po = boost::program_options;
   // Declare the supported options.
   boost::program_options::options_description desc("Allowed options");
-  const std::string defaultMenu = "menu/Menu_259721_TSGv3_FixPre.txt";
+  const std::string defaultMenu = "menu/Menu_259721_TSGv3_FixPre_Mu18.txt";
   const std::string defaultntuple = "ntuple/r259721_tsgv3.list";
 
   desc.add_options()

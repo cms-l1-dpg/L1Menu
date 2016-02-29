@@ -1542,18 +1542,37 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
       << "," << "Comments"
       << std::endl;
 
-  for(auto i : BitMap)
+
+  bool bybit = false;
+
+  if (bybit)
   {
-    auto seed = mL1Seed[i.second];
-    out << seed.bit
-      << "," << seed.name
-      << "," << seed.prescale
-      << "," << seed.firerate     
-      << "," << seed.firerateerror
-      << "," << seed.purerate      
-      << ",\""<<seed.comment<<"\""
-      << std::endl;
+    for(auto i : BitMap)
+    {
+      auto seed = mL1Seed[i.second];
+      out << seed.bit
+        << "," << seed.name
+        << "," << seed.prescale
+        << "," << seed.firerate     
+        << "," << seed.firerateerror
+        << "," << seed.purerate      
+        << ",\""<<seed.comment<<"\""
+        << std::endl;
+    }
+  } else{
+    for(auto seed : mL1Seed)
+    {
+      out << seed.second.bit
+          << "," << seed.first
+          << "," << seed.second.prescale
+          << "," << seed.second.firerate
+          << "," << seed.second.firerateerror
+          << "," << seed.second.purerate      
+          << ",\""<<seed.second.comment<<"\""
+          << std::endl;
+    }
   }
+
   return true;
 }       // -----  end of function L1Menu2016::PrintCSV  -----
 

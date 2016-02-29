@@ -47,6 +47,7 @@ L1_SingleEG40                         54   1      EG      EXO                   
 L1_SingleEG45                         49   1      EG      HIGGS,SMP                    #Stage1 EG40, Eff51
 #L1_SingleIsoEG23                      16   1      EG                                  #Stage1 EG20, Eff29
 #L1_SingleIsoEG27                      34   1      EG                                  #Stage1 EG25, Eff32
+L1_SingleIsoEG32                      35   1      EG                                   #Stage1 EG25~30
 #L1_SingleIsoEG20er                    50   1      EG      HIGGS                       #Stage1 EG18, Eff26
 #L1_SingleIsoEG23er                    51   1      EG      TOP                         #Stage1 EG20, Eff29 (2.4kHz pure rate, too close to EG24er. Stop)
 L1_SingleIsoEG24er                    38   1      EG TOP,HIGGS,EXO,SMP,SUSY,B2G        #Stage1 EG22, Eff30 (Next is IsoEG23er, too close)
