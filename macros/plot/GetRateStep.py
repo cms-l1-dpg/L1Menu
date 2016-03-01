@@ -17,15 +17,17 @@ from Config import DualMap
 import re
 import matplotlib.pyplot as plt
 
-filename = "./r259721_tsgv3_rate.root"
+filename = "./r259721_tsgv3_rate_test.root"
+# filename = "./r259721_tsgv3_rate.root"
 folder = "Rate"
-margin2D = 0.0001
+margin2D = 0.0005
 fraction = [1, 0.55, 0.25, 0, -0.2, -0.35, -0.5, -0.6]
 objectStart = {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SingleEG ~~~~~
-    "nEGVsPt"         : 40, # SingleEG
-    # "nEGErVsPt"       : 100, # SingleEGer
-    "nIsoEGVsPt"      : 27, # SingleIsoEG
+    "nEGVsPt"      : 40,  # SingleEG
+    #"nEGErVsPt"   : 100, # SingleEGer
+    "nIsoEGVsPt"   : 27,  # SingleIsoEG
+    # "nIsoEGerVsPt" : 22,  # SingleIsoEG
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SingleMu ~~~~~
     "nMuVsPt"         : 20, # SingleMu
     "nMuErVsPt"       : 16, # SingleMu         |#eta|<2.1
@@ -52,11 +54,11 @@ objectStart = {
     # "nQuadJetVsPt"    : 100, # QuadJet
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DoubleTrigger in 2D ~~~~~
     "nAsymDiCenJetVsPt" : (100, 100), # DiCenJet
-    # "nAsymDiJetVsPt"    : [100, 100], # DiJet
-    # "nEGPtVsPt"         : [100, 100], # DoubleEle
-    # "nIsoEGPtVsPt"      : [100, 100], # DoubleIsolEle
-    # "nMuPtVsPt"         : [100, 100], # DoubleMu
-    # "nOniaMuPtVsPt"     : [100, 100], # DoubleMu_Er_HighQ_WdEta22 (Quarkonia)
+    # "nAsymDiJetVsPt"    : (100, 100), # DiJet
+    "nEGPtVsPt"         : (24, 10), # DoubleEle
+    # "nIsoEGPtVsPt"      : (100, 100), # DoubleIsolEle
+    "nMuPtVsPt"         : (12, 5), # DoubleMu
+    # "nOniaMuPtVsPt"     : (100, 100), # DoubleMu_Er_HighQ_WdEta22 (Quarkonia)
 }
 
 
