@@ -547,7 +547,7 @@ bool L1Menu2016::GetL1Event()
   // Mulit
   float dummy = 0;
   L1AlgoFactory::DoubleMuPt(L1Event.doubleMuPt1,L1Event.doubleMuPt2);
-  L1AlgoFactory::Onia2015Pt(L1Event.oniaMuPt1, L1Event.oniaMuPt2,true, false, 22);
+  L1AlgoFactory::Onia2015Pt(L1Event.oniaMuPt1, L1Event.oniaMuPt2,true, false, 18);
   L1AlgoFactory::DoubleJetPt(L1Event.dijetPt1,L1Event.dijetPt2);
   L1AlgoFactory::DoubleJetPt(L1Event.diCenjetPt1,L1Event.diCenjetPt2,true);
   L1AlgoFactory::DoubleTauJetEta2p17Pt(dummy,L1Event.ditauPt);

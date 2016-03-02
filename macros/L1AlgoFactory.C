@@ -1718,7 +1718,8 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
       if(isOS && charge1*charge2 > 0) continue;
 
       Float_t deta = eta - eta2; 
-      if(fabs(deta) <= delta){
+      //Assuming ieta corresponds to 0.1 eta, which is true for barrel, but not for endcap
+      if(fabs(deta) <= delta/10){  
         corr = true;
         muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
       }
