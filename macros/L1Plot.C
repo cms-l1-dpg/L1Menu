@@ -83,7 +83,8 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nJetCenVsPt"] = new TH1F("nJetCenVsPt","SingleJetCentral; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hRate1F["nEGVsPt"]     = new TH1F("nEGVsPt","SingleEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nEGErVsPt"]   = new TH1F("nEGErVsPt","SingleEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
-  hRate1F["nIsoEGVsPt"]  = new TH1F("nIsoEGVsPt","SingleIsoEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hRate1F["nIsoEGVsPt"]  = new TH1F("nIsoEGVsPt","SingleIsoEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hRate1F["nIsoEGerVsPt"]  = new TH1F("nIsoEGerVsPt","SingleIsoEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nMuVsPt"]     = new TH1F("nMuVsPt","SingleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hRate1F["nMuErVsPt"]   = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hRate1F["nMuVsEta"]    = new TH1F("nMuVsEta","nMuVsEta",24,-2.4,2.4);
@@ -132,12 +133,14 @@ bool L1Plot::WriteRateHistogram(double scale) const
   outfile->cd("Rate");
   for(auto f : hRate1F)
   {
+    f.second->Sumw2();
     f.second->Scale(scale);
     f.second->Write();
   }
   
   for(auto f : hRate2F)
   {
+    f.second->Sumw2();
     f.second->Scale(scale);
     f.second->Write();
   }
@@ -193,7 +196,8 @@ bool L1Plot::FillRateHistogram()
   for(int ptCut=0; ptCut<65; ++ptCut) {
     if(L1Event->EGPt>=ptCut)    hRate1F["nEGVsPt"]->Fill(ptCut);
     if(L1Event->EGerPt>=ptCut)  hRate1F["nEGErVsPt"]->Fill(ptCut);
-    if(L1Event->IsoEGerPt>=ptCut) hRate1F["nIsoEGVsPt"]->Fill(ptCut);
+    if(L1Event->IsoEGPt>=ptCut) hRate1F["nIsoEGVsPt"]->Fill(ptCut);
+    if(L1Event->IsoEGerPt>=ptCut) hRate1F["nIsoEGerVsPt"]->Fill(ptCut);
      
        if(L1Event->diEG2>=ptCut)     hRate1F["nDiEGVsPt"]->Fill(ptCut);
        if(L1Event->diIsolEG2>=ptCut) hRate1F["nDiIsoEGVsPt"]->Fill(ptCut);

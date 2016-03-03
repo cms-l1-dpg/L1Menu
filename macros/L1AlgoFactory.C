@@ -1458,7 +1458,7 @@ void L1AlgoFactory::Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t
   for(Int_t ue=0; ue < upgrade_->nTaus; ue++) {
     Int_t bx = upgrade_->tauBx.at(ue);        		
     if(bx != 0) continue; 
-    if(!isIsolated && !upgrade_->tauIso.at(ue)) continue;
+    if(isIsolated && !upgrade_->tauIso.at(ue)) continue;
 
     Float_t pt = upgrade_->tauEt.at(ue);
     Float_t eta = upgrade_->tauEta.at(ue);
