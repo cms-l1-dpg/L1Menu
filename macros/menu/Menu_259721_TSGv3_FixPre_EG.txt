@@ -1,0 +1,158 @@
+## Start with 100kHz for 1.2e34
+## Assume 20kHz for ETM, and ETM with HF rates
+## Assume 1kHz for Zero bias (originally 10kHz)
+## Assume bptx trigger rates are PU independant, get them from WBM
+## Assume 1kHz for bxpt seeds (originally 2kHz)
+## Assume 5kHz for prescale rate (masked in this menu)
+## Menu rate =  100 - 20 - 1 - 1 - 5 = 73kHz
+
+## EG map from https://indico.cern.ch/event/493290/contribution/2/attachments/1221650/1786361/Zhenbin_Stage2_L1Menu.pdf
+## HT map from https://indico.cern.ch/event/502206/contribution/2/attachments/1233163/1809079/Zhenbin_Stage2_Calov0.pdf
+
+#============================================================================#
+#-------------------------------     Menu     -------------------------------#
+#============================================================================#
+# L1Seed                              Bit  Prescale POG     PAG
+#L1_ZeroBias                           0    631   Tech                                 #Assumed 1kHz flat
+
+#L1_SingleMu5                          58   500     Mu      HIGGS,EXO,SUSY
+#L1_SingleMu7                          3    250     Mu      HIGGS,EXO,BPH,SUSY
+#L1_SingleMu12                         61   50      Mu      HIGGS,SUSY
+#L1_SingleMu16                         56   1      Mu     TOP,HIGGS,EXO,SMP,BPH,SUSY,B2G#(19kHz with 2kHz pure, mark)
+#L1_SingleMu18                         56   1      Mu     TOP,HIGGS,EXO,SMP,BPH,SUSY,B2G#Stage2 new (14kHz with 930Hz pure)
+#L1_SingleMu20                         62   1      Mu     HIGGS,EXO                     #(10kHz with 1kHz pure, mark)
+L1_SingleMu25                         64   1      Mu     TOP,HIGGS,EXO,SMP,BPH,B2G
+L1_SingleMu30                         65   1      Mu     TOP,HIGGS,EXO,SMP,BPH,B2G
+#L1_SingleMu14er                       42   50     Mu      HIGGS,EXO,SMP,SUSY,B2G
+#L1_SingleMu16er                       86   1      Mu      HIGGS,EXO,SMP                #(5kHz pure rate, mark)
+L1_SingleMu18er                       86   1      Mu      HIGGS,EXO,SMP                #(5kHz pure rate, mark)
+L1_SingleMu20er                       60   1      Mu      HIGGS,EXO
+
+#L1_DoubleMu0                          26   60     Mu      BPH
+#L1_DoubleMu_10_Open                   44   100    Mu
+L1_DoubleMu_10_3p5                    45   1      Mu      TOP,HIGGS,EXO,SMP,SUSY,B2G   #(4KHz, not mask yet)
+L1_DoubleMu_12_5                      124  1      Mu      TOP,HIGGS,EXO,SMP,SUSY,B2G
+#L1_DoubleMu0_Eta1p6_WdEta18           114  1      Mu      BPH
+#L1_DoubleMu0_Eta1p6_WdEta18_OS        123  1      Mu      BPH                         #No muon charges, mask for now
+L1_DoubleMu_10_0_WdEta18              126  1      Mu      BPH
+
+#L1_TripleMu0                          97   1      Mu      HIGGS,BPH
+L1_TripleMu_5_5_3                     98   1      Mu      HIGGS
+L1_QuadMu0                            121  1      Mu      BPH
+
+#L1_SingleEG17                         37   1500   EG      HIGGS                       #Stage1 EG10, Eff24/23
+#L1_SingleEG18                         4    200      EG      HIGGS                     #Stage1 EG15, Eff25
+#L1_SingleEG23                         52   1      EG      HIGGS                       #Stage1 EG20, Eff29
+#L1_SingleEG27                         48   1      EG      HIGGS,EXO,SMP,B2G           #Stage1 EG25, Eff32 (10kHz pure rate, stop)
+#L1_SingleEG30                         48   1      EG      HIGGS,EXO,SMP,B2G           #Stage2, between Stage1 EG25~30 (25kHz, 4kHz pure rate)
+L1_SingleEG34                         53   1      EG      EXO,SMP                      #Stage1 EG30, Eff39
+L1_SingleEG40                         54   1      EG      EXO                          #Stage1 EG35, Eff45
+L1_SingleEG45                         49   1      EG      HIGGS,SMP                    #Stage1 EG40, Eff51
+L1_SingleIsoEG24                      16   1      EG                                   #Stage1 EG20, Eff29 (25kHz, 5kHz pure for all IsoEG)
+L1_SingleIsoEG27                      34   1      EG                                   #Stage1 EG25, Eff32
+L1_SingleIsoEG22er                    50   1      EG      HIGGS                        #Stage1 EG18, Eff26
+#L1_SingleIsoEG20er                    50   1      EG      HIGGS                        #Stage1 EG18, Eff26
+#L1_SingleIsoEG21er                   150   1      EG      HIGGS                        #Stage1 EG18, Eff26
+#L1_SingleIsoEG22er                   250   1      EG      HIGGS                        #Stage1 EG18, Eff26
+#L1_SingleIsoEG23er                    51   1      EG      TOP                         #Stage1 EG20, Eff29 (2.4kHz pure rate, too close to EG24er. Stop)
+#L1_SingleIsoEG24er                    38   1      EG TOP,HIGGS,EXO,SMP,SUSY,B2G       #Stage1 EG22, Eff30 (Next is IsoEG23er, too close)
+L1_SingleIsoEG27er                    33   1      EG      HIGGS,SMP                    #Stage1 EG25, Eff32
+L1_SingleIsoEG34er                    36   1      EG TOP,HIGGS,EXO,SMP,SUSY,B2G        #Stage1 EG30, Eff39
+
+L1_DoubleEG_18_17                     101  1      EG      TOP,HIGGS,EXO,SMP,SUSY,B2G  #Stage1 EG15, Eff25 (13kHz, 5kHz pure, stop)
+L1_DoubleEG_24_17                     102  1      EG      TOP,HIGGS,EXO,SMP,SUSY,B2G   #Stage1 EG22, Eff30
+L1_TripleEG_18_17_8                   100  1      EG      HIGGS                        #Stage1 EG14(~15), Eff 24; EG10, Eff24
+
+#L1_DoubleTauJet40er                   11   1      Jet
+#L1_DoubleIsoTau28er                   116  1      Tau     HIGGS,EXO,SUSY
+L1_DoubleIsoTau32er                   24   1      Tau     HIGGS,EXO,SUSY               #(9.5kHz, 730Hz pure, mark)
+L1_DoubleIsoTau36er                   117  1      Tau     HIGGS,EXO,SUSY
+L1_DoubleIsoTau40er                   118  1      Tau     HIGGS,EXO,SUSY
+
+L1_Mu16er_TauJet20er                  13   1      MuTau   HIGGS
+L1_Mu16er_IsoTau28er                  96   1      MuTau
+L1_Mu16er_IsoTau32er                  25   1      MuTau
+
+#L1_SingleJet36                        23   1500   Jet                                 #Stage 1 Eff 52; Stage2 Eff 52
+#L1_SingleJet52                        17   800    Jet     EXO,SMP                     #Stage1 Jet52, Eff65; Stage2 Jet52, Eff66
+#L1_SingleJet65                        18   150    Jet     SMP                         #Stage1 Jet68 Eff80; Stage 2 Jet68 Eff 84; -> Lower to 65
+#L1_SingleJet92                        19   200    Jet     SMP                         #Stage1 Jet92 Eff110; Stage 2 Jet92 Eff103
+#L1_SingleJet128                       20   1      Jet     EXO,SMP,SUSY,B2G            #Stage1 Jet128, Eff~180; Stage2 Eff 154
+L1_SingleJet150                       20   1      Jet     EXO,SMP,SUSY,B2G            #Stage1 Jet128, Eff~180; Stage2 Eff 154
+L1_SingleJet176                       21   1      Jet     EXO,SMP,SUSY,B2G             #(3.7kHz, 66Hz pure, mark)
+L1_SingleJet200                       22   1      Jet     EXO,SMP,SUSY,B2G
+
+#L1_DoubleJetC52                       40   1000   Jet
+#L1_DoubleJetC84                       41   1      Jet     EXO,SUSY                    #(16kHz, 3.5kHz pure. stop)
+L1_DoubleJetC100                      110  1      Jet     EXO,SUSY
+L1_DoubleJetC112                      43   1      Jet     EXO,SUSY
+
+L1_TripleJet_84_68_48_VBF             120  1      Jet     HIGGS
+L1_TripleJet_92_76_64_VBF             119  1      Jet     HIGGS
+#L1_QuadJetC40                         46   1      Jet     EXO,SUSY,B2G                #(15kHz, 7kHz pure, stop)
+L1_QuadJetC60                         111  1      Jet     EXO,SUSY,B2G
+
+#L1_HTT194                             15   1      Sum     EXO,SUSY,B2G                #Stage1 HT100, Eff237
+#L1_HTT226                             70   1      Sum     EXO,SUSY,B2G                #Stage1 HT125, Eff270
+#L1_HTT258                             71   1      Sum     EXO,SUSY,B2G                #Stage1 HT150, Eff304  (15kHz, 3.5kHz pure;split rate to Mu16 & HTT280)
+L1_HTT280                             71   1      Sum     EXO,SUSY,B2G                 #New Stage2, higher than Stage1 HT150
+L1_HTT298                             72   1      Sum     EXO,SUSY,B2G                 #Stage1 HT175, Eff335
+L1_HTT314                             73   1      Sum     EXO,SUSY,B2G                 #Stage1 HT200, Eff360
+L1_HTT366                             80   1      Sum     EXO,SUSY,B2G                 #Stage1 HT250, Eff420
+
+#L1_Mu5_EG18                           10   1      MuEG    HIGGS                       #Stage1 EG15, Eff25  (4.9kHZ, mask)
+L1_Mu5_IsoEG23                        76   1      MuEG    TOP,HIGGS,EXO,SMP,SUSY,B2G   #Stage1 EG18(~20), Eff 29
+L1_Mu5_EG23                           75   1      MuEG    TOP,HIGGS,EXO,SMP,SUSY,B2G   #Stage1 EG20, Eff29
+#L1_Mu4_EG23                           88   1      MuEG    TOP,HIGGS,EXO,SMP,SUSY,B2G  #Stage1 EG18, assuming EG20,Eff29
+#L1_Mu12_EG17                          9    1      MuEG    HIGGS                       #Stage1 EG10, Eff24
+L1_Mu20_EG17                          74   1      MuEG    TOP,HIGGS,EXO,SMP,SUSY,B2G   #Stage1 EG10, Eff24
+
+L1_DoubleMu7_EG17                      85   1      MuEG    HIGGS                       #Stage1 EG7(~10), Eff 24
+#L1_DoubleMu6_EG16                      90   1      MuEG    HIGGS                      #Stage1 EG6(~10), Eff 24
+L1_Mu6_DoubleEG17                     77   1      MuEG    HIGGS                        #Stage1 EG10, Eff24
+
+#L1_Mu3_JetC16_WdEtaPhi2               29   500     MuJet
+#L1_Mu3_JetC52_WdEtaPhi2               30   1      MuJet   EXO                         #(5kHz, mask)
+
+L1_Mu6_HTT194                         87   1      MuSum   EXO                          #Stage1 HT100, Eff237
+L1_Mu8_HTT150                          63   1      MuSum   SUSY                        #Stage1 HT50, no mapping, rough 100 higher by extraplotaion
+L1_EG27er_HTT194                      31   1      EGSum   HIGGS                        #Stage1 EG25, Eff32; HT100, Eff237
+L1_DoubleEG6_HTT258                   92   1      EGSum   SUSY                         #Stage1 HT150, Eff304
+
+#L1_QuadJetC36_TauJet52                93   2      Jet     HIGGS
+L1_IsoEG23er_TauJet20er_NotWdEta0     12   1      EGTau   HIGGS                        #Stage1 EG20, Eff29 (6.2kHz, not mask yet)
+#L1_Jet32MuOpen_Mu10_dPhiMu_Mu1        107  1      MuJet   SUSY
+#L1_Jet32MuOpen_EG17_dPhiMu_EG1        108  10     EGJet   SUSY                        #Stage1 EG10, Eff24
+
+#============================================================================#
+#----------------------------     Fixed Rate     ----------------------------#
+#============================================================================#
+#### Bptx (counted constant rate )
+# L1_SingleMuOpen_NotBptxOR             89   1     Mu      EXO                         # WBM 538.21Hz
+# L1_SingleJetC32_NotBptxOR             78   1       Jet                               # WBM 1098.09Hz
+# L1_SingleJetC20_NotBptxOR             112  1   Jet                                   # WBM 237Hz
+# L1_SingleEG2_BptxAND                  2    -1      EG      HIGGS                     # masked
+# L1_ETT15_BptxAND                      5    1      Sum                                # masked
+### Masked in WBM
+# L1_SingleMuOpen                       55   -1     Mu      EXO                        #Masked in WBM
+# L1_HTT75                              8    1      Sum     EXO,SUSY,B2G               # Not blod in WBM (4kHz)
+# L1_Mu5_DoubleEG5                      91   1      MuEG    HIGGS                      # Not blod in WBM (3kHz)
+# L1_SingleEG5                          47   1      EG      HIGGS                      # Not blod in WBM (968kHz)
+# L1_DoubleMuOpen                       32   1      Mu                                 # Not blod in WBM (22kHz)
+### ETM + ETM with HF (estimated as 20% of total rate)
+#L1_DoubleJetC56_ETM60                 113  1      JetSum, HIGGS,SUSY
+#L1_ETT60                              7    1      Sum
+#L1_ETT40                              6    1      Sum
+#L1_ETM70                              68   1      Sum     HIGGS,EXO,SUSY,B2G
+#L1_ETM60                              109  1      Sum     HIGGS,EXO
+#L1_ETM50                              67   1      Sum     HIGGS,EXO,SUSY,B2G
+#L1_ETM40                              79   1000   Sum
+#L1_ETM30                              66   400    Sum     EXO
+#L1_ETM100                             69   1      Sum     HIGGS,EXO,SUSY,B2G
+#L1_Mu14er_ETM30                       84   1      MuSum   EXO
+#L1_Mu10er_ETM50                       83   1      MuSum   EXO
+#L1_Mu10er_ETM30                       82   1      MuSum   EXO
+#L1_Mu0er_ETM55                        104  1      MuSum   SUSY
+#L1_Mu0er_ETM40                        94   1      MuSum   SUSY
+
+# vim: ft=python:nolbr:cc=88
