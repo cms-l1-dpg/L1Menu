@@ -61,6 +61,7 @@ def setTDRStyle():
     # For the statistics box:
     tdrStyle.SetOptFile(0)
     tdrStyle.SetOptStat(0)  # To display the mean and RMS:   SetOptStat("mr")
+    tdrStyle.SetOptFit(0)  # To display the mean and RMS:   SetOptStat("mr")
     tdrStyle.SetStatColor(rt.kWhite)
     tdrStyle.SetStatFont(42)
     tdrStyle.SetStatFontSize(0.025)

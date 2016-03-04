@@ -21,12 +21,13 @@ from rootpy.interactive import wait
 from Config import DualMap, S1S2Map, S2S1Map
 
 freq = 11245.6
-nBunches = 1
-# nBunches = 2736
+# nBunches = 1
+nBunches = 2736
+unit = "kHz"
+# unit = "Hz"
 pubins = np.arange(0, 30, 0.2)
 pumap = collections.defaultdict(list)
-filedir = "./PU/*csv"
-# filedir = "../results/Menu_*_pre6_PU.csv"
+filedir = "./PUresult/PUresult/*PU.csv"
 s1csv = pd.read_csv("HLT_Fit_Run258425-260627_Tot10_fit.csv")
 
 def GetStage1Fun(l1seed):
@@ -73,11 +74,12 @@ def DrawPU(f, l1seed):
     for k, v in pumap.iteritems():
         if v[1] != 0:
             x.append(k)
-            # print float(v[0])/v[1] * freq * nBunches
-            y.append(float(v[0])/v[1] * freq * nBunches )
-            yerr.append( math.sqrt(float(v[0]))/v[1] * freq * nBunches )
-            # y.append(float(v[0])/v[1] * freq * nBunches / 1000)
-            # yerr.append( math.sqrt(float(v[0]))/v[1] * freq * nBunches / 1000)
+            if unit == "Hz":
+                y.append(float(v[0])/v[1] * freq * nBunches )
+                yerr.append( math.sqrt(float(v[0]))/v[1] * freq * nBunches )
+            if unit == "kHz":
+                y.append(float(v[0])/v[1] * freq * nBunches / 1000)
+                yerr.append( math.sqrt(float(v[0]))/v[1] * freq * nBunches / 1000)
 
     ## Draw the plot
     graph = ROOT.TGraphErrors(len(x))
@@ -95,10 +97,11 @@ def DrawPU(f, l1seed):
     graph.SetTitle(l1seed)
     graph.GetXaxis().SetTitle("PileUp")
     graph.GetXaxis().SetLimits(0, 35)
-    graph.GetYaxis().SetTitle("Rate (nBunches = %d) [Hz]" % nBunches)
-    # graph.GetYaxis().SetTitle("Rate (nBunches = %d) [kHz]" % nBunches)
-    # graph.Fit("pol2", minx, maxx)
-    
+    if unit == "Hz":
+        graph.GetYaxis().SetTitle("Rate (nBunches = %d) [Hz]" % nBunches)
+    if unit == "kHz":
+        graph.GetYaxis().SetTitle("Rate (nBunches = %d) [kHz]" % nBunches)
+ 
     ## Get Stage1
     s1fun = GetStage1Fun(l1seed)
     if s1fun is not None:
@@ -182,16 +185,7 @@ if __name__ == "__main__":
         flist.append(df_)
     df = pd.concat(flist)
 
-    # GetStage1Fun("L1APhysics")
-    # GetStage1Fun("L1_HTT100")
-    # DrawPU(df, "L1_HTT100")
-    # DrawPU(df, "L1_SingleMu16er")
-    # exit()
-    DrawPU(df, "L1_HTT200")
-    # DrawPU(df, "L1APhysics")
-    # DrawPU(df, "L1_SingleMu16er")
-    # DrawPU(df, "L1_HTT100")
-    # exit()
+    DrawPU(df, "L1APhysics")
     # for seed in pd.unique(df.L1Seed):
         # DrawPU(df, seed)
     exit()

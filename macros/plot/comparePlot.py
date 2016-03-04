@@ -9,20 +9,20 @@ import matplotlib.pyplot as plt
 
 NORM=False
 LOG=True
+# obj = "SingleJet"
+obj = "HTT"
+# obj = "HTM"
+dump =[]
 
 gStyle.SetOptStat(False)
-gROOT.SetBatch(True)
+# fileNames=["../results/r259721_tsgv2.root"]
+# # fileNames=["../results/r259721_tsgv2.root"]
+# gROOT.SetBatch(True)
 
-try: fileNames=argv[1:]
-except:
-    print "No files specified"
-    exit()
-
-if not os.path.exists("plots"): os.mkdir("plots")
-
-files=[]
-for fileName in fileNames:
-    files.append(TFile(fileName))
+class EFFFIT:
+   def __call__( self, x, par ):
+       value=par[0]/2.+par[0]/2.*ROOT.TMath.Erf((x[0]-par[1])/par[2]);
+       return value
 
 def getall(d, basepath=""):
     "Generator function to recurse into a ROOT file/dir and yield (path, obj) pairs"
@@ -43,6 +43,40 @@ def LineInterp(lowbin, highbin, y):
 
 
 def Get95Eff(g):
+
+    ########## Beginning of LA  ############################    
+    g.Draw();
+
+    gx = [g.GetX()[i] for i in range(g.GetN())]
+    gy = [g.GetY()[i] for i in range(g.GetN())]
+    # xminf=0.
+    # xminf=100.
+    for x,y in zip(gx, gy):
+        if y >= 0.1:
+            xminf = x
+            break
+    xmaxf= gx[-1]
+    width=20.
+    mean=200.
+
+    fitter = TF1("fitf",EFFFIT(),xminf,xmaxf,3);
+    fitter.SetParameters(1,mean,width);
+    fitter.FixParameter(0,1.0);
+
+    fitter.SetLineColor(ROOT.kRed)
+    fitter.SetLineStyle(1)
+    g.Fit(fitter,"0RQ");
+    dump.append(fitter)
+
+    # print "Turnon is at 95% for pT = ",fitter.GetX(0.95)
+
+    fitter.Draw("sames")
+
+    c.Update();
+    return fitter.GetX(0.95), fitter
+    # raw_input('\npress return to continue...')
+
+    ########## End of LA  ############################
     lowbin = None
     highbin = None
     per = 0.8
@@ -56,38 +90,53 @@ def Get95Eff(g):
             highbin = (x, y)
     return LineInterp(lowbin, highbin, per)
 
-c=TCanvas()
+if __name__ == "__main__":
+    try: fileNames=argv[1:]
+    except:
+        print "No files specified"
+        exit()
 
-# allhist = getall(files[0])
-mg = ROOT.TMultiGraph()
+    if not os.path.exists("plots"): 
+        os.mkdir("plots")
 
-l = 0
-x =[]
-y = []
-obj = "HTT"
-# obj = "HTM"
+    files=[]
+    for fileName in fileNames:
+        files.append(TFile(fileName))
 
-for k, o in getall(files[0]):
-    if "Eff" in k and obj in k and type(o)==type(TGraphAsymmErrors()):
-    # if "Eff" in k and "HTT" in k and type(o)==type(TGraphAsymmErrors()):
-        o.SetLineColor(l)
-        m = re.match("Eff/L1_%s(\d+)_Pt" % obj, k)
-        # m = re.match("Eff/L1_HTT(\d+)_Pt", k)
-        print k ,  Get95Eff(o)
-        if m is not None:
-            x.append(m.group(1))
-            y.append( Get95Eff(o))
-        # o.SetTitle
-        mg.Add(o)
-        l = l +1
 
-mg.Draw("APL")
-mg.GetXaxis().SetTitle("offline %s [GeV]" % obj)
-# mg.GetXaxis().SetTitle("offline HT [GeV]")
-mg.GetYaxis().SetTitle("Efficiency")
-# mg.Draw("a fb l3d")
-c.SaveAs("ff.png")
-plt.scatter(x, y, )
-plt.xlabel("Online %s" % obj)
-plt.ylabel("offline HT with 80\% eff")
-plt.show()
+    c=TCanvas()
+
+    l = 0
+    x =[]
+    y = []
+    mg = TMultiGraph()
+
+    for k, o in getall(files[0]):
+        if "Eff" in k and obj in k and type(o)==type(TGraphAsymmErrors()):
+            l = l +1
+            o.SetLineColor(l)
+            o.GetXaxis().SetTitle("offline %s [GeV]" % obj)
+            o.GetYaxis().SetTitle("Efficiency")
+            # mg.Add(o)
+            # continue
+            m = re.match("Eff/L1_%s(\d+)_Pt" % obj, k)
+            f95, fit = Get95Eff(o)
+            print l, k, f95
+            fit.SetLineColor(l)
+            if m is not None:
+                x.append(m.group(1))
+                y.append(f95)
+            # fit.Draw()
+
+    c.Update()
+    # mg.Draw("AP")
+    # mg.GetXaxis().SetTitle("offline %s [GeV]" % obj)
+    # mg.GetYaxis().SetTitle("Efficiency")
+    raw_input('\npress return to continue...')
+    c.SaveAs("turnon.png")
+
+    plt.scatter(x, y)
+    plt.xlabel("Online %s" % obj)
+    plt.ylabel("offline HT with 95\% eff")
+    plt.show()
+    plt.savefig("dia.png")

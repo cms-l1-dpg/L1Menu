@@ -20,17 +20,17 @@ import matplotlib.pyplot as plt
 filename = "./r259721_tsgv3_rate_test.root"
 # filename = "./r259721_tsgv3_rate.root"
 folder = "Rate"
-margin2D = 0.0005
+margin2D = 0.005
 fraction = [1, 0.55, 0.25, 0, -0.2, -0.35, -0.5, -0.6]
 objectStart = {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SingleEG ~~~~~
-    "nEGVsPt"      : 40,  # SingleEG
+    "nEGVsPt"      : 34,  # SingleEG
     #"nEGErVsPt"   : 100, # SingleEGer
-    "nIsoEGVsPt"   : 27,  # SingleIsoEG
-    # "nIsoEGerVsPt" : 22,  # SingleIsoEG
+    "nIsoEGVsPt"   : 24,  # SingleIsoEG
+    "nIsoEGerVsPt" : 22,  # SingleIsoEG
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SingleMu ~~~~~
-    "nMuVsPt"         : 20, # SingleMu
-    "nMuErVsPt"       : 16, # SingleMu         |#eta|<2.1
+    "nMuVsPt"         : 25, # SingleMu
+    "nMuErVsPt"       : 18, # SingleMu         |#eta|<2.1
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SingleJet ~~~~~
     # "nJetCenVsPt"     : 100, # SingleJetCentral
     "nJetVsPt"        : 150, # SingleJet
@@ -55,7 +55,7 @@ objectStart = {
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DoubleTrigger in 2D ~~~~~
     "nAsymDiCenJetVsPt" : (100, 100), # DiCenJet
     # "nAsymDiJetVsPt"    : (100, 100), # DiJet
-    "nEGPtVsPt"         : (24, 10), # DoubleEle
+    "nEGPtVsPt"         : (18, 17), # DoubleEle
     # "nIsoEGPtVsPt"      : (100, 100), # DoubleIsolEle
     "nMuPtVsPt"         : (12, 5), # DoubleMu
     # "nOniaMuPtVsPt"     : (100, 100), # DoubleMu_Er_HighQ_WdEta22 (Quarkonia)
@@ -103,7 +103,7 @@ def GetRate2D(h, rate):
     for i in range(1, h.GetNbinsX()):
         for j in range(1, h.GetNbinsY()):
             bincont = h.GetBinContent(i, j)
-            if fabs(float(bincont) / rate -1 ) <= margin2D:
+            if fabs(float(bincont) / rate - 1 ) <= margin2D:
                 matchbin.append([i, j])
     return matchbin
 
