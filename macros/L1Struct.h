@@ -55,9 +55,9 @@ struct StructL1Event
   float JetPt;
   float JetCenPt;
   float TauPt;
-  float TauCPt;
+  float TauerPt;
   float IsoTauPt;
-  float IsoTauCPt;
+  float IsoTauerPt;
   float EGPt;
   float EGerPt;
   float IsoEGPt;
@@ -91,9 +91,9 @@ struct StructL1Event
     JetPt       = -10;
     JetCenPt    = -10;
     TauPt       = -10;
-    TauCPt       = -10;
-    IsoTauPt       = -10;
-    IsoTauCPt       = -10;
+    TauerPt     = -10;
+    IsoTauPt    = -10;
+    IsoTauerPt  = -10;
     EGPt        = -10;
     EGerPt      = -10;
     IsoEGPt     = -10;

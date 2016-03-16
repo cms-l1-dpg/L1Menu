@@ -161,9 +161,9 @@ bool L1Plot::FillRateHistogram()
     if(L1Event->JetPt>=ptCut)	  hRate1F["nJetVsPt"]->Fill(ptCut);
     if(L1Event->JetCenPt>=ptCut) hRate1F["nJetCenVsPt"]->Fill(ptCut);
     if(L1Event->TauPt>=ptCut)	  hRate1F["nTauVsPt"]->Fill(ptCut);
-    if(L1Event->TauCPt>=ptCut)	  hRate1F["nTauErVsPt"]->Fill(ptCut);
+    if(L1Event->TauerPt>=ptCut)	  hRate1F["nTauErVsPt"]->Fill(ptCut);
     if(L1Event->IsoTauPt>=ptCut)	  hRate1F["nIsoTauVsPt"]->Fill(ptCut);
-    if(L1Event->IsoTauCPt>=ptCut)	  hRate1F["nIsoTauErVsPt"]->Fill(ptCut);
+    if(L1Event->IsoTauerPt>=ptCut)	  hRate1F["nIsoTauErVsPt"]->Fill(ptCut);
 
     if(L1Event->dijetPt2>=ptCut)
     {
@@ -523,7 +523,9 @@ bool L1Plot::GetRecoEvent()
   recoEvent["HTT"]     = GetRecoSum("HTT");
   recoEvent["ETM"]     = GetRecoSum("ETM");
   recoEvent["ETT"]     = GetRecoSum("ETT");
+  //recoEvent["ETM"]     = GetRecoHTMLocal();
   recoEvent["HTM"]     = GetRecoSum("HTM");
+  //recoEvent["HTM"]     = GetRecoHTMLocal();
   //recoEvent["HTM"]     = GetRecoSum("ETM");
   return true;
 }       // -----  end of function L1Plot::GetRecoEvent  -----

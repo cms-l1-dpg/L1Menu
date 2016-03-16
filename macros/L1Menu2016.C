@@ -103,16 +103,16 @@ bool L1Menu2016::InitConfig()
   L1Config["AveragePU"] = 0;
   L1Config["Energy"] = 0;
   L1Config["targetlumi"] = 0;
-  L1Config["doPlotRate"] = 1;
-  L1Config["doPlotEff"] = 1;
+  L1Config["doPlotRate"] = 0;
+  L1Config["doPlotEff"] = 0;
   L1Config["doPrintLS"] = 0;
-  L1Config["doPrintPU"] = 1;
+  L1Config["doPrintPU"] = 0;
   L1Config["maxEvent"] = -1;
   
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
   L1ObjectMap["Tau"] = &L1Event.TauPt;
-  L1ObjectMap["Tauer"] = &L1Event.TauCPt;
+  L1ObjectMap["Tauer"] = &L1Event.TauerPt;
   L1ObjectMap["IsoTau"] = &L1Event.IsoTauPt;
   L1ObjectMap["EG"] = &L1Event.EGPt;
   L1ObjectMap["EGer"] = &L1Event.EGerPt;
@@ -138,11 +138,13 @@ bool L1Menu2016::InitConfig()
   //L1SeedFun["L1_DoubleIsoTau36er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 36.,36.,true);
   //L1SeedFun["L1_DoubleIsoTau40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,true);
   L1SeedFun["L1_DoubleTauJet40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,false);
+  L1SeedFun["L1_DoubleTau40er"] = std::bind(&L1AlgoFactory::DoubleTauJetEta2p17, this, 40.,40.,false);
   //L1SeedFun["L1_TripleJet_92_76_64_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 92.,76.,64.,1);
   //L1SeedFun["L1_TripleJet_84_68_48_VBF"] = std::bind(&L1AlgoFactory::TripleJet_VBF, this, 84.,68.,48.,1);
   //L1SeedFun["L1_QuadJetC40"] = std::bind(&L1AlgoFactory::QuadJet, this, 40.,40.,40.,40.,true);
   //L1SeedFun["L1_QuadJetC60"] = std::bind(&L1AlgoFactory::QuadJet, this, 60.,60.,60.,60.,true);
   L1SeedFun["L1_QuadJetC36_TauJet52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
+  L1SeedFun["L1_QuadJetC36_Tau52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
 
   // MultiMuon
   L1SeedFun["L1_DoubleMu0_Eta1p6_WdEta18_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18);
@@ -154,6 +156,10 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu_10_0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 10.,0.,true, false);
   L1SeedFun["L1_DoubleMu_10_3p5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 10.,3.5,true, false);
   L1SeedFun["L1_DoubleMu_12_5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 12.,5.,true,false);
+  L1SeedFun["L1_DoubleMu_11_4"] = std::bind(&L1AlgoFactory::DoubleMu, this, 11.,4.,true,false);
+  L1SeedFun["L1_DoubleMu_12_8"] = std::bind(&L1AlgoFactory::DoubleMu, this, 12.,8.,true,false);
+  L1SeedFun["L1_DoubleMu_13_6"] = std::bind(&L1AlgoFactory::DoubleMu, this, 13.,6.,true,false);
+  L1SeedFun["L1_DoubleMu_15_5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 15.,5.,true,false);
   L1SeedFun["L1_TripleMu0"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,4);
   L1SeedFun["L1_TripleMu_5_5_3"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,5.,3.,4);
   L1SeedFun["L1_QuadMu0"] = std::bind(&L1AlgoFactory::QuadMu, this, 0.,0.,0.,0.,4);
@@ -169,10 +175,22 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu10er_ETM50"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 10.,50.);
   L1SeedFun["L1_Mu14er_ETM30"] = std::bind(&L1AlgoFactory::Muer_ETM, this, 14.,30.);
   L1SeedFun["L1_EG25er_HTT100"] = std::bind(&L1AlgoFactory::SingleEG_Eta2p1_HTT, this, 25., 100.,false);
+  L1SeedFun["L1_EG25er_HTT125"] = std::bind(&L1AlgoFactory::SingleEG_Eta2p1_HTT, this, 25., 125.,false);
   L1SeedFun["L1_EG27er_HTT194"] = std::bind(&L1AlgoFactory::SingleEG_Eta2p1_HTT, this, 27., 194.,false);  // l1t-tsg-v3:  L1_EG25er_HTT100
   L1SeedFun["L1_Mu16er_TauJet20er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,20.,false);
+  L1SeedFun["L1_Mu14er_Tau20er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 14.,20.,false);
+  L1SeedFun["L1_Mu14er_Tau24er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 14.,24.,false);
+  L1SeedFun["L1_Mu16er_Tau20er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,20.,false);
+  L1SeedFun["L1_Mu16er_Tau24er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,24.,false);
   L1SeedFun["L1_Mu16er_IsoTau28er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,28.,true);
   L1SeedFun["L1_Mu16er_IsoTau32er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 16.,32.,true);
+  L1SeedFun["L1_Mu18er_TauJet20er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 18.,20.,false);
+  L1SeedFun["L1_Mu18er_IsoTau26er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 18.,26.,true);
+  L1SeedFun["L1_Mu18er_IsoTau28er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 18.,28.,true);
+  L1SeedFun["L1_Mu18er_IsoTau30er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 18.,30.,true);
+  L1SeedFun["L1_Mu18er_IsoTau32er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 18.,32.,true);
+  L1SeedFun["L1_Mu18er_IsoTau36er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 18.,36.,true);
+  L1SeedFun["L1_Mu18er_IsoTau40er"] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, 18.,40.,true);
   L1SeedFun["L1_Mu12_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,10.,false, 4);
   L1SeedFun["L1_Mu12_EG17"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,17.,false, 4); // l1t-tsg-v3:  L1_Mu12_EG10
   L1SeedFun["L1_Mu20_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,10.,false, 4);
@@ -185,8 +203,13 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu5_EG23"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,23.,false, 4); // l1t-tsg-v3:  L1_Mu5_EG20
   L1SeedFun["L1_Mu5_IsoEG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,18.,true, 4);
   L1SeedFun["L1_Mu5_IsoEG23"] = std::bind(&L1AlgoFactory::Mu_EG, this, 5.,23.,true, 4); // l1t-tsg-v3:  L1_Mu5_IsoEG18
+  L1SeedFun["L1_Mu12_IsoEG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,10.,true, 4); 
+  L1SeedFun["L1_Mu23_IsoEG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 23.,10.,true, 4);
   L1SeedFun["L1_IsoEG20er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
   L1SeedFun["L1_IsoEG23er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 23.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
+  L1SeedFun["L1_IsoEG20er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
+  L1SeedFun["L1_IsoEG20er_Tau24er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,24.);
+  L1SeedFun["L1_IsoEG23er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 23.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
   L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,true);
   L1SeedFun["L1_DoubleMu6_EG16"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,16.,true); // l1t-tsg-v3:  L1_DoubleMu6_EG6
   L1SeedFun["L1_DoubleMu7_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,true);
@@ -529,6 +552,8 @@ bool L1Menu2016::GetL1Event()
 
   //Tau
   L1AlgoFactory::SingleTauPt(L1Event.TauPt, false, false);
+  L1AlgoFactory::SingleTauPt(L1Event.TauerPt, true, false);
+  L1AlgoFactory::SingleTauPt(L1Event.IsoTauPt, false, true);
 
   //Mu
   L1AlgoFactory::SingleMuPt(L1Event.MuPt, false);
@@ -536,11 +561,14 @@ bool L1Menu2016::GetL1Event()
 
   //Sum
   if (L1Config["SumJetET"] != 0)
+  {
     CalLocalHT(L1Event.HTT);
-  else
+    CalLocalHTM(L1Event.HTM);
+  } else {
     L1AlgoFactory::HTTVal(L1Event.HTT);
+    L1AlgoFactory::HTMVal(L1Event.HTM);
+  }
 
-  L1AlgoFactory::HTMVal(L1Event.HTM);
   L1AlgoFactory::ETMVal(L1Event.ETM);
   L1AlgoFactory::ETTVal(L1Event.ETT);
 
@@ -1543,7 +1571,7 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
       << std::endl;
 
 
-  bool bybit = false;
+  bool bybit = true;
 
   if (bybit)
   {
@@ -1626,3 +1654,28 @@ void L1Menu2016::CalLocalHT(float &HTTcut)
   return;
 
 }       // -----  end of function L1Menu2016::CalLocalHT  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CalLocalHTM
+//  Description:  
+// ===========================================================================
+void L1Menu2016::CalLocalHTM(float &HTMcut)
+{
+  
+  TLorentzVector temp(0, 0,0,0);
+  for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if (pt >= L1Config["SumJetET"])
+    {
+      TLorentzVector jet(0, 0,0,0);
+      jet.SetPtEtaPhiE(upgrade_->jetEt.at(ue),
+          upgrade_->jetEta.at(ue),
+          upgrade_->jetPhi.at(ue), 
+          0);
+      temp -= jet;
+    }
+  }
+  HTMcut = temp.Pt();
+}       // -----  end of function L1Menu2016::CalLocalHTM  -----

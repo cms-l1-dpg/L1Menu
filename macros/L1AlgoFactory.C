@@ -521,14 +521,13 @@ void L1AlgoFactory::TripleEGPt(Float_t& cut1, Float_t& cut2, Float_t& cut3 ) {
   return;
 }
 
-void L1AlgoFactory::SingleTauPt(Float_t& cut, Bool_t isCentral, Bool_t isIsolated) {
+void L1AlgoFactory::SingleTauPt(Float_t& cut, Bool_t isER, Bool_t isIsolated) {
 
   Float_t ptmax = -10.;
   for(UInt_t ue=0; ue < upgrade_->nTaus; ue++) {
     Int_t bx = upgrade_->tauBx.at(ue);        		
     if(bx != 0) continue;
-    Bool_t isFwdJet = fabs(upgrade_->tauEta.at(ue)) > jetCentFwd ? true : false;
-    if(isCentral && isFwdJet) continue;
+    if(isER && fabs(upgrade_->tauEta.at(ue)) > tauER) continue;
     if(isIsolated && !upgrade_->tauIso.at(ue)) continue;
 
     Float_t pt = upgrade_->tauEt.at(ue);

@@ -137,6 +137,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool RunMenu();
     bool FillDefHist1D();
     void CalLocalHT(float &HTTcut);
+    void CalLocalHTM(float &HTMcut);
 
     // ====================  DATA MEMBERS  ===============================
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Configurations ~~~~~
