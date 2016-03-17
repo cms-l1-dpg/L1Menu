@@ -18,7 +18,7 @@ enum EtSumType {
 class L1AlgoFactory: public L1Ntuple{
  public:
   L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.17),
-  MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(3.0), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0)
+  MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(0.4), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0)
   {};
   //L1AlgoFactory(TTree *tree);
 
@@ -110,7 +110,8 @@ class L1AlgoFactory: public L1Ntuple{
   Bool_t DoubleMuXOpen(Float_t mu1pt);
   void DoubleMuXOpenPt(Float_t& cut);
   Bool_t Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta);
-  void Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta);
+  Bool_t Onia2016(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta);
+  void Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta, float Onia2015Pt_= -1);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Cross ~~~~~
   Bool_t Mu_HTT(Float_t mucut, Float_t HTcut);
@@ -147,7 +148,7 @@ class L1AlgoFactory: public L1Ntuple{
  float Onia2015ER;
  int SelBx;
  
- bool PassMuonQual(int imu, bool isMuHighQual=true) const;
+ bool PassMuonQual(int imu, int MuQual=1) const;
 
 };
 

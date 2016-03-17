@@ -106,6 +106,7 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nQuadJetVsPt"]      = new TH1F("nQuadJetVsPt","QuadJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hRate1F["nQuadCenJetVsPt"]   = new TH1F("nQuadCenJetVsPt","QuadCenJet; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hRate1F["nDiTauVsPt"]        = new TH1F("nDiTauVsPt","DiTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
+  hRate1F["nDiIsoTauVsPt"]     = new TH1F("nDiIsoTauVsPt","DiIsoTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hRate1F["nDiEGVsPt"]         = new TH1F("nDiEGVsPt","DiEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nDiIsoEGVsPt"]      = new TH1F("nDiIsoEGVsPt","DiIsoEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate2F["nEGPtVsPt"]         = new TH2F("nEGPtVsPt","DoubleEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",65,-0.5,64.5,65,-0.5,64.5);
@@ -185,6 +186,7 @@ bool L1Plot::FillRateHistogram()
     }
 
     if(L1Event->ditauPt>=ptCut)    hRate1F["nDiTauVsPt"]->Fill(ptCut);
+    if(L1Event->diIsotauPt>=ptCut) hRate1F["nDiIsoTauVsPt"]->Fill(ptCut);
     if(L1Event->quadjetPt>=ptCut)  hRate1F["nQuadJetVsPt"]->Fill(ptCut);
     if(L1Event->quadjetCPt>=ptCut) hRate1F["nQuadCenJetVsPt"]->Fill(ptCut);
 
@@ -198,15 +200,14 @@ bool L1Plot::FillRateHistogram()
     if(L1Event->EGerPt>=ptCut)  hRate1F["nEGErVsPt"]->Fill(ptCut);
     if(L1Event->IsoEGPt>=ptCut) hRate1F["nIsoEGVsPt"]->Fill(ptCut);
     if(L1Event->IsoEGerPt>=ptCut) hRate1F["nIsoEGerVsPt"]->Fill(ptCut);
+    if(L1Event->diEG2>=ptCut)     hRate1F["nDiEGVsPt"]->Fill(ptCut);
+    if(L1Event->diIsolEG2>=ptCut) hRate1F["nDiIsoEGVsPt"]->Fill(ptCut);
      
-       if(L1Event->diEG2>=ptCut)     hRate1F["nDiEGVsPt"]->Fill(ptCut);
-       if(L1Event->diIsolEG2>=ptCut) hRate1F["nDiIsoEGVsPt"]->Fill(ptCut);
-     
-     
-       for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
-         if(L1Event->diEG1>=ptCut && L1Event->diEG2>=ptCut2 && ptCut2 <= ptCut) hRate2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
-         if(L1Event->diIsolEG1>=ptCut && L1Event->diIsolEG2>=ptCut2 && ptCut2<= ptCut) hRate2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
-       }
+
+    for(int ptCut2=0; ptCut2<=65; ++ptCut2) {
+      if(L1Event->diEG1>=ptCut && L1Event->diEG2>=ptCut2 && ptCut2 <= ptCut) hRate2F["nEGPtVsPt"]->Fill(ptCut,ptCut2);
+      if(L1Event->diIsolEG1>=ptCut && L1Event->diIsolEG2>=ptCut2 && ptCut2<= ptCut) hRate2F["nIsoEGPtVsPt"]->Fill(ptCut,ptCut2);
+    }
      
   }//loop on 65
     

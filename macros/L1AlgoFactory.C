@@ -39,6 +39,14 @@ Bool_t L1AlgoFactory::Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t
   return false;
 }
 
+Bool_t L1AlgoFactory::Onia2016(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta) {
+  Float_t tmp_cut1 = -10.;
+  Float_t tmp_cut2 = -10.;
+  Onia2015Pt(tmp_cut1,tmp_cut2,isER,isOS,delta, 1.25);
+  if(tmp_cut1 >= mu1pt && tmp_cut2 >= mu2pt) return true;
+  return false;
+}
+
 Bool_t L1AlgoFactory::TripleMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Int_t qualmin) {
   Float_t tmp_cut1 = -10.;
   Float_t tmp_cut2 = -10.;
@@ -653,7 +661,7 @@ void L1AlgoFactory::DoubleTauJetEta2p17Pt(Float_t& cut1, Float_t& cut2, Bool_t i
     if(isIsolated && !upgrade_->tauIso.at(ue)) continue;
     Float_t pt = upgrade_->tauEt.at(ue);
     Float_t eta = upgrade_->tauEta.at(ue);
-    if(fabs(eta) > 2.17) continue;  // eta = 5 - 16
+    if(fabs(eta) > tauER) continue;  // eta = 5 - 16
 
     if(pt >= maxpt1)
     {
@@ -828,7 +836,7 @@ void L1AlgoFactory::Mu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isIsolated, I
   for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {   
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, qualmin)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
     if(pt >= muptmax) muptmax = pt;
   }
@@ -838,7 +846,7 @@ void L1AlgoFactory::Mu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isIsolated, I
   for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);        		
     if(bx != 0) continue;
-    if(isIsolated && upgrade_->egIso.at(ue)) continue;
+    if(isIsolated && !upgrade_->egIso.at(ue)) continue;
     Float_t pt = upgrade_->egEt.at(ue);    // the rank of the electron
     if(pt >= eleptmax) eleptmax = pt;
   }
@@ -1012,7 +1020,7 @@ void L1AlgoFactory::Mu_JetCentral_deltaPt(Float_t& mucut, Float_t& jetcut) {
   for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     Int_t bx = upgrade_->muonBx.at(imu);		
     if(bx != 0) continue;
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, 1)) continue;
     Float_t pt = upgrade_->muonEt.at(imu);
     Float_t eta = upgrade_->muonEta.at(imu); 
     Float_t phi = upgrade_->muonPhi.at(imu); 
@@ -1319,11 +1327,16 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
 //         Name:  L1AlgoFactory::PassMuonQual
 //  Description:  
 // ===========================================================================
-bool L1AlgoFactory::PassMuonQual(int imu, bool isMuHighQual) const
+bool L1AlgoFactory::PassMuonQual(int imu, int MuQual) const
 {
-  (void)isMuHighQual; // Not used for now as the L1UpgradeTree only store 0 or 1
-  return upgrade_->muonQual.at(imu) > 0; // l1t-tsg-v3 quarlity bit as 0 and 12.
-  //return upgrade_->muonQual.at(imu) == 1;
+  if (MuQual == 0)
+    return upgrade_->muonQual.at(imu) >= 4; // l1t-tsg-v4 for SingleMuOpen
+  if (MuQual == 1)
+    return upgrade_->muonQual.at(imu) >= 8; // l1t-tsg-v4 for Double/TripleMu
+  if (MuQual == 2)
+    return upgrade_->muonQual.at(imu) == 12; // l1t-tsg-v4 for SingleMu
+
+  return false; //No good
 }       // -----  end of function L1AlgoFactory::PassMuonQual  -----
 
 Bool_t L1AlgoFactory::Mu_HTT(Float_t mucut, Float_t HTcut) {
@@ -1343,13 +1356,14 @@ void L1AlgoFactory::Mu_HTTPt(Float_t& mucut, Float_t& HTcut ) {
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);                       
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, 1)) continue;
     if(pt >= muptmax) muptmax = pt;
   }
 
   Float_t TheHTT = -10;
-  if(upgrade_->sumBx[EtSumType::HTT]==0) 
-    TheHTT =upgrade_->sumEt[EtSumType::HTT];
+  int idx= GetSumEtIdx(EtSumType::HTT);
+  if(upgrade_->sumBx.at(idx)==0) 
+    TheHTT =upgrade_->sumEt.at(idx);
 
   if(muptmax >= 0.){
     mucut = muptmax;
@@ -1376,15 +1390,16 @@ void L1AlgoFactory::Muer_ETMPt(Float_t& mucut, Float_t& ETMcut ) {
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);                       
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, 1)) continue;
     Float_t eta = upgrade_->muonEta.at(imu); 
     if(fabs(eta) > muonER) continue;
     if(pt >= muptmax) muptmax = pt;
   }
 
   Float_t TheETM = -10;
-  if(upgrade_->sumBx[EtSumType::ETM]==0) 
-    TheETM =upgrade_->sumEt[EtSumType::ETM];
+  int idx = GetSumEtIdx(EtSumType::ETM);
+  if(upgrade_->sumBx.at(idx)==0) 
+    TheETM =upgrade_->sumEt.at(idx);
 
   if(muptmax >= 0.){
     mucut = muptmax;
@@ -1418,8 +1433,9 @@ void L1AlgoFactory::SingleEG_Eta2p1_HTTPt(Float_t& egcut, Float_t& HTTcut, Bool_
   }
 
   Float_t TheHTT = -10;
-  if(upgrade_->sumBx[EtSumType::HTT]==0) 
-    TheHTT =upgrade_->sumEt[EtSumType::HTT];
+  int idx= GetSumEtIdx(EtSumType::HTT);
+  if(upgrade_->sumBx.at(idx)==0) 
+    TheHTT =upgrade_->sumEt.at(idx);
 
   if(eleptmax >= 0.){
     egcut = eleptmax;
@@ -1448,7 +1464,7 @@ void L1AlgoFactory::Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);                       
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, 1)) continue;
     Float_t eta = upgrade_->muonEta.at(imu);        
     if(fabs(eta) > muonER ) continue;
     if(pt >= maxptmu) maxptmu = pt;
@@ -1490,8 +1506,9 @@ void L1AlgoFactory::DoubleJetCentral_ETMPt(Float_t& jetcut1, Float_t& jetcut2, F
   Float_t jetptmax2 = -10.;
 
   Float_t TheETM = -10;
-  if(upgrade_->sumBx[EtSumType::ETM]==0) 
-    TheETM =upgrade_->sumEt[EtSumType::ETM];
+  int idx = GetSumEtIdx(EtSumType::ETM);
+  if(upgrade_->sumBx.at(idx)==0) 
+    TheETM =upgrade_->sumEt.at(idx);
 
   if(upgrade_->nJets < 2) return;
 
@@ -1554,8 +1571,9 @@ void L1AlgoFactory::DoubleEG_HTPt(Float_t& EGcut, Float_t& HTcut) {
   }
 
   Float_t TheHTT = -10;
-  if(upgrade_->sumBx[EtSumType::HTT]==0) 
-    TheHTT =upgrade_->sumEt[EtSumType::HTT];
+  int idx= GetSumEtIdx(EtSumType::HTT);
+  if(upgrade_->sumBx.at(idx)==0) 
+    TheHTT =upgrade_->sumEt.at(idx);
 
   if(eleptmax2 >= 0.){
     EGcut = eleptmax2;
@@ -1591,7 +1609,7 @@ void L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut) {
     for(Int_t imu=0; imu < Nmu; imu++){
       Int_t bx = upgrade_->muonBx.at(imu);
       if (bx != 0) continue;
-      if(!PassMuonQual(imu)) continue;
+      if(!PassMuonQual(imu, 0)) continue;
       Float_t muonpt = upgrade_->muonEt.at(imu);			
       if(muonpt < 0.) continue;
       Float_t muphi = upgrade_->muonPhi.at(imu);			
@@ -1611,7 +1629,7 @@ void L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut) {
     Int_t bx = upgrade_->muonBx.at(imu);
     if (bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, 1)) continue;
     Float_t phi1 = upgrade_->muonPhi.at(imu);			
 
     for (Int_t imu2=0; imu2 < Nmu; imu2++) {
@@ -1619,7 +1637,7 @@ void L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut) {
       Int_t bx2 = upgrade_->muonBx.at(imu2);
       if (bx2 != 0) continue;
       Float_t pt2 = upgrade_->muonEt.at(imu2);			
-      if(!PassMuonQual(imu)) continue;
+      if(!PassMuonQual(imu, 1)) continue;
       Float_t phi2 = upgrade_->muonPhi.at(imu2);			
 
       Float_t dphi = phi1 - phi2; //Should get the binning, but for GMT is quite fine
@@ -1671,7 +1689,7 @@ void L1AlgoFactory::DoubleMuXOpenPt(Float_t& cut) {
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, 0)) continue;
     if( pt >= ptmax ){
       ptmax = pt;
     }
@@ -1684,10 +1702,11 @@ void L1AlgoFactory::DoubleMuXOpenPt(Float_t& cut) {
   return;
 }
 
-void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta) {
+void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta, float Onia2015ER_) {
 
   Int_t Nmu = upgrade_->nMuons;
   if(Nmu < 2) return;
+  if (Onia2015ER_== -1) Onia2015ER_ = Onia2015ER;
 
   Float_t maxpt1 = -10.;
   Float_t maxpt2 = -10.;
@@ -1699,9 +1718,9 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
     Int_t bx = upgrade_->muonBx.at(imu);
     if (bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);			
-    if(!PassMuonQual(imu)) continue;
+    if(!PassMuonQual(imu, 1)) continue;
     Float_t eta = upgrade_->muonEta.at(imu);
-    if(isER && fabs(eta) > Onia2015ER) continue;
+    if(isER && fabs(eta) > Onia2015ER_) continue;
     Int_t charge1 = upgrade_->muonChg.at(imu);
 
     for (Int_t imu2=0; imu2 < Nmu; imu2++) {
@@ -1709,9 +1728,9 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
       Int_t bx2 = upgrade_->muonBx.at(imu2);
       if (bx2 != 0) continue;
       Float_t pt2 = upgrade_->muonEt.at(imu2);			
-      if(!PassMuonQual(imu2)) continue;
+      if(!PassMuonQual(imu2,1)) continue;
       Float_t eta2 = upgrade_->muonEta.at(imu2);
-      if(isER && fabs(eta2) > Onia2015ER) continue;
+      if(isER && fabs(eta2) > Onia2015ER_) continue;
       Int_t charge2 = upgrade_->muonChg.at(imu2);
 
       if(isOS && charge1*charge2 > 0) continue;
@@ -1778,7 +1797,7 @@ void L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut){
     for(Int_t imu=0; imu < Nmu; imu++){
       Int_t bx = upgrade_->muonBx.at(imu);
       if (bx != 0) continue;
-      if(!PassMuonQual(imu)) continue;
+      if(!PassMuonQual(imu, 1)) continue;
       Float_t muonpt = upgrade_->muonEt.at(imu);			
       if(muonpt < 0.) continue;
       Float_t muphi = upgrade_->muonPhi.at(imu);			
@@ -1803,12 +1822,12 @@ void L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut){
     for(Int_t imu=0; imu < Nmu; imu++) {
       Int_t bxmu = upgrade_->muonBx.at(imu);
       if(bxmu != 0) continue;
-      if(!PassMuonQual(imu)) continue;
+      if(!PassMuonQual(imu, 1)) continue;
       Float_t ptmu = upgrade_->muonEt.at(imu);			
       if(ptmu < 0.) continue;
       Float_t muphi = upgrade_->muonPhi.at(imu);			
 
-      if(fabs(muphi-EGphi) > MuOpenJetCordPhi) corr = true;
+      if(fabs(muphi-EGphi) > MuMudPhi) corr = true;
     }
 
     if(corr) maxptEG = pt;

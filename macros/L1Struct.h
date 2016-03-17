@@ -63,6 +63,7 @@ struct StructL1Event
   float IsoEGPt;
   float IsoEGerPt;
   float MuPt;
+  float MuOpenPt;
   float MuerPt;
   float HTT;
   float HTM;
@@ -79,6 +80,7 @@ struct StructL1Event
   float diCenjetPt1 = -10.;
   float diCenjetPt2 = -10.;
   float ditauPt    = -10.; 
+  float diIsotauPt   = -10.; 
   float quadjetPt  = -10.; 
   float quadjetCPt = -10.; 
   float diEG1     = -10.;
@@ -99,6 +101,7 @@ struct StructL1Event
     IsoEGPt     = -10;
     IsoEGerPt   = -10;
     MuPt        = -10;
+    MuOpenPt    = -10;
     MuerPt      = -10;
     HTT         = -10;
     HTM         = -10;
@@ -113,6 +116,7 @@ struct StructL1Event
     diCenjetPt1 = -10.;
     diCenjetPt2 = -10.;
     ditauPt     = -10.;
+    diIsotauPt  = -10.;
     quadjetPt   = -10.;
     quadjetCPt  = -10.;
     diEG1       = -10.;
