@@ -159,9 +159,9 @@ L1_QuadJetC60                         253  1      Jet     EXO,SUSY,B2G
 #L1_DoubleIsoTau28er                   282  1      Tau     HIGGS,EXO,SUSY               #,te
 #L1_DoubleIsoTau30er                   283  1      Tau     HIGGS,EXO,SUSY               #21kHz, 1.7kHz pure rate
 L1_DoubleIsoTau32er                   284  1      Tau     HIGGS,EXO,SUSY
-#L1_DoubleIsoTau36er                   285  1      Tau     HIGGS,EXO,SUSY
-#L1_DoubleIsoTau40er                   286  1      Tau     HIGGS,EXO,SUSY
-#L1_DoubleTau40er                      287  1      Tau     HIGGS,EXO,SUSY
+L1_DoubleIsoTau36er                   285  1      Tau     HIGGS,EXO,SUSY
+L1_DoubleIsoTau40er                   286  1      Tau     HIGGS,EXO,SUSY
+L1_DoubleTau40er                      287  1      Tau     HIGGS,EXO,SUSY
 
 ### HTT 301-320
 #L1_HTT120                             301   1      Sum     EXO,SUSY,B2G
