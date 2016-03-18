@@ -147,10 +147,10 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_QuadJetC36_Tau52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
 
   // MultiMuon
-  L1SeedFun["L1_DoubleMu0_Eta1p6_WdEta18_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18);
-  L1SeedFun["L1_DoubleMu0_Eta1p6_WdEta18"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18);
-  L1SeedFun["L1_DoubleMu0_Eta1p25_WdEta18_OS"] = std::bind(&L1AlgoFactory::Onia2016, this, 0.,0.,true,true,18);
-  L1SeedFun["L1_DoubleMu_10_0_WdEta18"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18);
+  L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18);
+  L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18);
+  L1SeedFun["L1_DoubleMu0er1p25_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2016, this, 0.,0.,true,true,18);
+  L1SeedFun["L1_DoubleMu_10_0_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18);
   L1SeedFun["L1_DoubleMu0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 0.,0.,true, false);
   L1SeedFun["L1_DoubleMuOpen"] = std::bind(&L1AlgoFactory::DoubleMuXOpen, this, 0.);
   L1SeedFun["L1_DoubleMu_10_Open"] = std::bind(&L1AlgoFactory::DoubleMuXOpen, this, 10.);
@@ -202,6 +202,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu12_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,10.,false, 1);
   L1SeedFun["L1_Mu12_EG17"] = std::bind(&L1AlgoFactory::Mu_EG, this, 12.,17.,false, 1); // l1t-tsg-v3:  L1_Mu12_EG10
   L1SeedFun["L1_Mu20_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,10.,false, 1);
+  L1SeedFun["L1_Mu20_EG15"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,15.,false, 1);
   L1SeedFun["L1_Mu20_EG17"] = std::bind(&L1AlgoFactory::Mu_EG, this, 20.,17.,false, 1); // l1t-tsg-v3:  L1_Mu20_EG10
   L1SeedFun["L1_Mu23_EG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 23.,10.,false, 1);
   L1SeedFun["L1_Mu4_EG18"] = std::bind(&L1AlgoFactory::Mu_EG, this, 4.,18.,false, 1);
@@ -217,7 +218,9 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu23_IsoEG10"] = std::bind(&L1AlgoFactory::Mu_EG, this, 23.,10.,true, 1);
   L1SeedFun["L1_IsoEG20er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
   L1SeedFun["L1_IsoEG23er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 23.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
+  L1SeedFun["L1_IsoEG22er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 22.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
   L1SeedFun["L1_IsoEG20er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
+  L1SeedFun["L1_IsoEG22er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 22.,20.);
   L1SeedFun["L1_IsoEG20er_Tau24er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,24.);
   L1SeedFun["L1_IsoEG23er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 23.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
   L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,true);
@@ -229,14 +232,14 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu6_DoubleEG17"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 6., 17.); // l1t-tsg-v3:  L1_Mu6_DoubleEG10
 
   //MultiCross
-  L1SeedFun["L1_Mu3_JetC16_WdEtaPhi2"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,16.);
-  L1SeedFun["L1_Mu3_JetC52_WdEtaPhi2"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,52.);
+  L1SeedFun["L1_Mu3_JetC16_dEta_Max0p4_dPhi_Max0p4"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,16.);
+  L1SeedFun["L1_Mu3_JetC52_dEta_Max0p4_dPhi_Max0p4"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,52.);
   L1SeedFun["L1_DoubleJetC56_ETM60"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 56.,56.,60.);
   L1SeedFun["L1_DoubleJetC60_ETM60"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,60.);
   L1SeedFun["L1_DoubleEG6_HTT150"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 150.);
   L1SeedFun["L1_DoubleEG6_HTT255"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 255.); // l1t-tsg-v3:  L1_DoubleEG6_HTT150
-  L1SeedFun["L1_Jet32MuOpen_Mu10_dPhiMu_Mu1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
-  L1SeedFun["L1_Jet32MuOpen_EG10_dPhiMu_EG1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
+  L1SeedFun["L1_Jet32_DoubleMuOpen_Mu10_dPhi_Jet_Mu0_Max1p05_dPhi_Mu_Mu_Min1p0"] = std::bind(&L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
+  L1SeedFun["L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max1p05_dPhi_Mu_EG_Min1p05"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
   L1SeedFun["L1_Jet32MuOpen_EG17_dPhiMu_EG1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,17.); // l1t-tsg-v3:  L1_Jet32MuOpen_EG10_dPhiMu_EG1
 
   //MultiEG
@@ -327,9 +330,14 @@ bool L1Menu2016::ReadMenu()
     return false;
   }
 
+  if (writefiles)
+    *outfile <<  "---------------------------- Input Menu -------------------------" << std::endl;
+
   while (std::getline(menufile, line))
   {
     if (line.empty()) continue;
+    if (writefiles)
+      *outfile << line <<std::endl;
     if (line.at(0) == '#')
       continue;
     if (line.at(0) == '%')
@@ -395,6 +403,9 @@ bool L1Menu2016::ReadMenu()
     mL1Seed[seed] = temp;
 
   }
+  
+  if (writefiles)
+    *outfile <<  "---------------------------- Input Menu -------------------------" <<std::endl << std::endl;
 
   return true;
 }       // -----  end of function L1Menu2016::ReadMenu  -----
@@ -1585,6 +1596,8 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
 
 
   bool bybit = true;
+  float totalrate = 0.;
+  float totalpurerate = 0.;
 
   if (bybit)
   {
@@ -1599,6 +1612,8 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
         << "," << seed.purerate      
         << ",\""<<seed.comment<<"\""
         << std::endl;
+      totalrate +=seed.firerate;
+      totalpurerate +=seed.purerate;
     }
   } else{
     for(auto seed : mL1Seed)
@@ -1611,9 +1626,18 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
           << "," << seed.second.purerate      
           << ",\""<<seed.second.comment<<"\""
           << std::endl;
+      totalrate +=seed.second.firerate;
+      totalpurerate +=seed.second.purerate;
     }
   }
 
+  out << std::endl;
+  out << std::endl << "Total rate  = " << nFireevents / 1000 * scale 
+    <<" +/- " << sqrt(nFireevents) * scale / 1000 << " (kHz)" << std::endl;
+  out << std::endl;
+  out << std::endl << "Total rate (with overlaps) = " << totalrate / 1000 << " (kHz)" << std::endl;
+  out << std::endl;
+  out << std::endl << "Total pure rate  = " << totalpurerate / 1000 <<" (kHz)" << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::PrintCSV  -----
 
