@@ -1464,7 +1464,7 @@ void L1AlgoFactory::Muer_TauJetEta2p17Pt(Float_t& mucut, Float_t& taucut, Bool_t
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != 0) continue;
     Float_t pt = upgrade_->muonEt.at(imu);                       
-    if(!PassMuonQual(imu, 1)) continue;
+    if(!PassMuonQual(imu, 2)) continue;
     Float_t eta = upgrade_->muonEta.at(imu);        
     if(fabs(eta) > muonER ) continue;
     if(pt >= maxptmu) maxptmu = pt;
