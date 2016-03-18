@@ -36,6 +36,7 @@ class L1Ntuple {
 public:
   TChain          *fChain;   //!pointer to the analyzed TTree or TChain
   TChain          *fEvent;
+  TChain          *ftreeUpgradeLayer1;
   TChain          *ftreeEvent;
   TChain          *ftreemuon;
   TChain          *ftreeExtra;
@@ -62,9 +63,11 @@ public:
   bool doRecoMuon;
   bool doRecoTau;
   bool doRecoFilter;
+  bool doBitWiseLayer1;
 
   L1Analysis::L1AnalysisEventDataFormat        *event_;
   L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade_;
+  L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade_lyr1_;  
   L1Analysis::L1AnalysisRecoJetDataFormat      *recoJet_;
   L1Analysis::L1AnalysisRecoMetDataFormat      *recoSum_;
   L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle_;
