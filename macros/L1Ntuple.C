@@ -13,6 +13,7 @@ L1Ntuple::L1Ntuple()
   dol1extra     = true;
   dol1emuextra  = true;
   dol1menu      = true;
+  doBitWiseLayer1   = true;    
   doRecoJet     = true;
   doRecoMet     = true;
   doRecoEle     = true;
@@ -34,9 +35,11 @@ L1Ntuple::L1Ntuple()
   ftreeRecoMuon   = nullptr;
   ftreeRecoTau    = nullptr;
   ftreeRecoFilter = nullptr;
-
+  ftreeUpgradeLayer1 = nullptr;
+  
   event_          = nullptr;
   upgrade_        = nullptr;
+  upgrade_lyr1_   = nullptr;  
   recoJet_        = nullptr;
   recoSum_        = nullptr;
   recoEle_        = nullptr;
@@ -128,7 +131,8 @@ bool L1Ntuple::CheckFirstFile()
   TTree * mytreeRecoMuon = (TTree*) rf->Get("l1MuonRecoTree/Muon2RecoTree");
   TTree * mytreeRecoTau  = (TTree*) rf->Get("l1TauRecoTree/TauRecoTree");
   TTree * mytreeRecoFilter  = (TTree*) rf->Get("l1MetFilterRecoTree/MetFilterRecoTree");
-
+  TTree * mytreeUpgradeLayer1 = (TTree*) rf->Get("l1UpgradeBitwiseTree/L1UpgradeTree");
+  
   if (!myChain) {
     std::cout<<"L1Tree not found .... "<<std::endl;
     return false;
@@ -136,6 +140,13 @@ bool L1Ntuple::CheckFirstFile()
     std::cout<<"Main tree is found .." <<std::endl;
   }
 
+  if (!mytreeUpgradeLayer1) {
+    std::cout<<"L1TreeUpgradeTree w BitwiseLayer1 not found .... "<<std::endl;
+    doBitWiseLayer1 = false;
+  } else {
+    std::cout<<"L1TreeUpgradeTree w BitwiseLayer1 is found .." <<std::endl;
+  }
+  
   if (!mytreeEvent) {
     std::cout<<"EventTree not found, it will be skipped..."<<std::endl;
     doEvent=false;
@@ -255,7 +266,7 @@ bool L1Ntuple::OpenWithoutInit()
   ftreeRecoMuon = new TChain("l1MuonRecoTree/Muon2RecoTree");
   ftreeRecoTau  = new TChain("l1TauRecoTree/TauRecoTree");
   ftreeRecoFilter  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
-
+  ftreeUpgradeLayer1 = new TChain("l1UpgradeBitwiseTree/L1UpgradeTree");
 
   for (unsigned int i=0;i<listNtuples.size();i++)
   {
@@ -274,7 +285,7 @@ bool L1Ntuple::OpenWithoutInit()
     if (doRecoMuon)   ftreeRecoMuon -> Add(listNtuples[i].c_str());
     if (doRecoTau)    ftreeRecoTau  -> Add(listNtuples[i].c_str());
     if (doRecoFilter)    ftreeRecoFilter  -> Add(listNtuples[i].c_str());
-
+    if (doBitWiseLayer1) ftreeUpgradeLayer1 -> Add(listNtuples[i].c_str());
   }
 
   if (doEvent)    fChain->AddFriend(ftreeEvent);
@@ -289,12 +300,13 @@ bool L1Ntuple::OpenWithoutInit()
   if (doRecoMuon)   fChain->AddFriend(ftreeRecoMuon);
   if (doRecoTau)    fChain->AddFriend(ftreeRecoTau);
   if (doRecoFilter)    fChain->AddFriend(ftreeRecoFilter);
-
+  if (doBitWiseLayer1) fChain->AddFriend(ftreeUpgradeLayer1);
   return true;
 }
 
 L1Ntuple::~L1Ntuple()
 {
+  if (ftreeUpgradeLayer1) delete ftreeUpgradeLayer1;
   if (ftreeRecoJet)  delete ftreeRecoJet;
   if (ftreeRecoMet)  delete ftreeRecoMet;
   if (ftreeRecoEle)  delete ftreeRecoEle;
@@ -350,6 +362,13 @@ void L1Ntuple::Init()
    std::cout<<"Setting branch addresses for L1Upgrade tree...  "<<std::endl;
    fChain->SetBranchAddress("L1Upgrade", &upgrade_ );
 
+   if (doBitWiseLayer1){
+     std::cout<<"Setting branch addresses for L1 Upgrade tree w/ Bitwise Emul...  "<<std::endl;
+     upgrade_lyr1_ = new L1Analysis::L1AnalysisL1UpgradeDataFormat();
+     ftreeUpgradeLayer1->SetBranchAddress("L1Upgrade", &upgrade_lyr1_ );
+     fChain-> AddFriend(ftreeUpgradeLayer1);     
+   }
+   
    if (doEvent){
      std::cout<<"Setting branch addresses for Event tree..."<<std::endl;
      event_        = new L1Analysis::L1AnalysisEventDataFormat();
