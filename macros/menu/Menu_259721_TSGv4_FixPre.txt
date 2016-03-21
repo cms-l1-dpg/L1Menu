@@ -115,7 +115,7 @@ L1_DoubleEG_24_17                     167  1      EG                            
 L1_DoubleEG_22_12                     168  1      EG                                    #from Simone's menu, extra pure rate to menu if we can live
 L1_DoubleEG_22_15                     169  1      EG                                    #created by ZW, as a fall-back of L1_DoubleEG_22_12
 ### TripleEG 181-190
-#L1_TripleEG_14_10_8                   181 1      EG      HIGGS
+L1_TripleEG_14_10_8                   181 1      EG      HIGGS
 L1_TripleEG_18_17_8                   182  1      EG      HIGGS                         #map to Stage1  L1_TripleEG_15_10_8
 ### QuadEG 191-200
 
@@ -221,8 +221,8 @@ L1_Mu18er_IsoTau30er                  417   1      MuTau                        
 L1_Mu18er_IsoTau32er                  418   1      MuTau                                # Use same quarlity as SingleMuer
 L1_Mu18er_IsoTau36er                  419   1      MuTau                                # Use same quarlity as SingleMuer
 L1_Mu18er_IsoTau40er                  420   1      MuTau                                # Use same quarlity as SingleMuer
-#L1_IsoEG20er_Tau20er_NotWdEta0        421   1      MuTau   HIGGS
-#L1_IsoEG20er_Tau24er_NotWdEta0        422   1      MuTau   HIGGS
+#L1_IsoEG20er_Tau20er_dEta_Min0p2        421   1      MuTau   HIGGS
+#L1_IsoEG20er_Tau24er_dEta_Min0p2        422   1      MuTau   HIGGS
 
 ## Rest
 L1_DoubleMu7_EG14                     431  1      MuEG    HIGGS                         #Like Stage1 L1_DoubleMu7_EG7
@@ -230,14 +230,14 @@ L1_DoubleMu7_EG7                      432  1      MuEG    HIGGS                 
 L1_Mu6_DoubleEG17                     433  1      MuEG    HIGGS
 L1_Mu6_DoubleEG10                     434  1      MuEG    HIGGS                        #215Hz pure rate
 L1_Mu3_JetC16_dEta_Max0p4_dPhi_Max0p4 435  -1     MuJet                                 #86776Hz pure rate
-L1_Mu3_JetC52_dEta_Max0p4_dPhi_Max0p4 436  1      MuJet   EXO                          #1.3kHz pure rate, masked for now
+L1_Mu3_JetC60_dEta_Max0p4_dPhi_Max0p4 436  3      MuJet   EXO
 L1_Mu6_HTT200                         437  1      MuSum   EXO
 #L1_Mu8_HTT150                         438  1      MuSum   SUSY
 L1_EG27er_HTT200                      439  1      EGSum   HIGGS                        #322Hz pure rate, masked for now
 L1_EG25er_HTT125                      440  -1     EGSum   HIGGS                         #3kHz pure rate
 L1_DoubleEG6_HTT255                   441  1      EGSum   SUSY
 L1_QuadJetC36_Tau52                   442  -1      Jet     HIGGS                         #1kHz pure rate
-L1_IsoEG22er_Tau20er_NotWdEta0        443  1      EGTau   HIGGS
+L1_IsoEG22er_Tau20er_dEta_Min0p2      443  1      EGTau   HIGGS
 L1_Jet32_DoubleMuOpen_Mu10_dPhi_Jet_Mu0_Max1p05_dPhi_Mu_Mu_Min1p0        444  1      MuJet   SUSY  #161Hz pure rate
 L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max1p05_dPhi_Mu_EG_Min1p05       445  -1      EGJet   SUSY                          #3.8kHz pure rate
 
@@ -258,6 +258,7 @@ L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max1p05_dPhi_Mu_EG_Min1p05       445  -1      E
 #L1_SingleJet12_BptxAND                460  1      Jet
 
 
+L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4 461  1      MuJet   BTV
 #============================================================================#
 #----------------------------     Fixed Rate     ----------------------------#
 #============================================================================#

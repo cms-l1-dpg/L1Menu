@@ -378,6 +378,8 @@ std::vector<TLorentzVector> L1Plot::GetRecoHTLocal() const
 std::vector<TLorentzVector> L1Plot::GetRecoSum(std::string type ) const
 {
   std::vector<TLorentzVector> reTLVs;
+  if (!recoSum_) return reTLVs;
+
   TLorentzVector temp(0, 0, 0, 0);
 
   if (type == "HTT")
@@ -661,6 +663,8 @@ void L1Plot::SetTodo (bool doPlotRate_, bool doPlotEff_)
 // ===========================================================================
 bool L1Plot::GetRecoFilter() const
 {
+  if (!recoFilter_) return true;
+
   bool pass = true && recoFilter_->goodVerticesFilter
                    && recoFilter_->cscTightHalo2015Filter
                    && recoFilter_->eeBadScFilter
