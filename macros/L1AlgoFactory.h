@@ -110,6 +110,8 @@ class L1AlgoFactory: public L1Ntuple{
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MultiMuon ~~~~~
   Bool_t DoubleMuXOpen(Float_t mu1pt);
   void DoubleMuXOpenPt(Float_t& cut);
+  Bool_t DoubleMuOpen(Float_t mu1pt);
+  void DoubleMuOpenPt(Float_t& cut);
   Bool_t Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta);
   Bool_t Onia2016(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta);
   void Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta, float Onia2015Pt_= -1);

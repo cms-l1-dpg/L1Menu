@@ -1696,6 +1696,39 @@ void L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut) {
   return;
 }
 
+Bool_t L1AlgoFactory::DoubleMuOpen(Float_t mu1pt) {
+  Float_t tmp_cut = -10.;
+  DoubleMuOpenPt(tmp_cut);
+  if(tmp_cut >= mu1pt) return true;
+  return false;
+}
+
+void L1AlgoFactory::DoubleMuOpenPt(Float_t& cut) {
+
+  Int_t n2=0;
+  Float_t ptmax = -10.;
+
+  for(Int_t imu=0; imu < upgrade_->nMuons; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if(bx != 0) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);			
+    if(!PassMuonQual(imu, 0)) continue;
+    if( pt >= ptmax ){
+      ptmax = pt;
+    }
+    if(pt >= 0.) n2++;
+  }
+
+  if(n2>=2) {
+    Float_t tmp_cut = -10.;
+    SingleMuPt(tmp_cut,false, 1);
+    cut = tmp_cut;
+  }
+  else cut = -10.;
+
+  return;
+}
+
 Bool_t L1AlgoFactory::DoubleMuXOpen(Float_t mu1pt) {
   Float_t tmp_cut = -10.;
   DoubleMuXOpenPt(tmp_cut);
