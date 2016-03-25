@@ -99,11 +99,14 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseQuadJet(const std::string& SeedName);
     bool ParseDoubleEG(const std::string& SeedName);
     bool ParseTripleEG(const std::string& SeedName);
+    bool ParseEGSum(const std::string& SeedName);
+
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);
     bool ParseMultiEGMass(const std::string& SeedName);
     bool ParseMuEG(const std::string& SeedName);
     bool ParseMuerTauer(const std::string& SeedName);
+    bool ParseMuSum(const std::string& SeedName);
     // ====================  OPERATORS     ===============================
 
     L1Menu2016& operator = ( const L1Menu2016 &other ); // assignment operator
