@@ -19,7 +19,7 @@ class L1AlgoFactory: public L1Ntuple{
  public:
   L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.17),
   MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(0.4), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0),
-  UseUpgradeLyr1(false)
+  UseUpgradeLyr1(false), UseL1CaloTower(false)
   {};
   //L1AlgoFactory(TTree *tree);
 
@@ -153,6 +153,7 @@ class L1AlgoFactory: public L1Ntuple{
  
  bool PassMuonQual(int imu, int MuQual=1) const;
  bool UseUpgradeLyr1;
+ bool UseL1CaloTower;
 
 };
 

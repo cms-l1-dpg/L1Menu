@@ -31,6 +31,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMuon2DataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMetFilterDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisL1CaloTowerDataFormat.h"
 
 class L1Ntuple {
 public:
@@ -49,6 +50,7 @@ public:
   TChain          *ftreeRecoMuon;
   TChain          *ftreeRecoTau;
   TChain          *ftreeRecoFilter;
+  TChain          *ftreeCaloTower;
   Int_t            fCurrent; //!current Tree number in a TChain
 
   bool doreco;
@@ -64,16 +66,18 @@ public:
   bool doRecoTau;
   bool doRecoFilter;
   bool doBitWiseLayer1;
+  bool dol1CaloTower;
 
-  L1Analysis::L1AnalysisEventDataFormat        *event_;
-  L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade_;
-  L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade_lyr1_;  
-  L1Analysis::L1AnalysisRecoJetDataFormat      *recoJet_;
-  L1Analysis::L1AnalysisRecoMetDataFormat      *recoSum_;
-  L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle_;
+  L1Analysis::L1AnalysisEventDataFormat         *event_;
+  L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade_;
+  L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade_lyr1_;
+  L1Analysis::L1AnalysisRecoJetDataFormat       *recoJet_;
+  L1Analysis::L1AnalysisRecoMetDataFormat       *recoSum_;
+  L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle_;
   L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
-  L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau_;
+  L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau_;
   L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
+  L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
 
   L1Ntuple();
   L1Ntuple(const std::string & fname);

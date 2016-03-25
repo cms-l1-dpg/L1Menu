@@ -14,6 +14,7 @@ L1Ntuple::L1Ntuple()
   dol1emuextra  = true;
   dol1menu      = true;
   doBitWiseLayer1   = true;    
+  dol1CaloTower   = true;    
   doRecoJet     = true;
   doRecoMet     = true;
   doRecoEle     = true;
@@ -27,6 +28,7 @@ L1Ntuple::L1Ntuple()
   ftreemuon       = nullptr;
   ftreereco       = nullptr;
   ftreeExtra      = nullptr;
+  ftreeCaloTower  = nullptr;
   ftreeMenu       = nullptr;
   ftreeEmuExtra   = nullptr;
   ftreeRecoJet    = nullptr;
@@ -39,6 +41,7 @@ L1Ntuple::L1Ntuple()
   
   event_          = nullptr;
   upgrade_        = nullptr;
+  l1CaloTower_    = nullptr;
   upgrade_lyr1_   = nullptr;  
   recoJet_        = nullptr;
   recoSum_        = nullptr;
@@ -132,6 +135,7 @@ bool L1Ntuple::CheckFirstFile()
   TTree * mytreeRecoTau  = (TTree*) rf->Get("l1TauRecoTree/TauRecoTree");
   TTree * mytreeRecoFilter  = (TTree*) rf->Get("l1MetFilterRecoTree/MetFilterRecoTree");
   TTree * mytreeUpgradeLayer1 = (TTree*) rf->Get("l1UpgradeBitwiseTree/L1UpgradeTree");
+  TTree * mytreel1CaloTower = (TTree*) rf->Get("l1CaloTowerEmuTree/L1CaloTowerTree");
   
   if (!myChain) {
     std::cout<<"L1Tree not found .... "<<std::endl;
@@ -145,6 +149,13 @@ bool L1Ntuple::CheckFirstFile()
     doBitWiseLayer1 = false;
   } else {
     std::cout<<"L1TreeUpgradeTree w BitwiseLayer1 is found .." <<std::endl;
+  }
+
+  if (!mytreel1CaloTower) {
+    std::cout<<"L1CaloTower tree not found .... "<<std::endl;
+    dol1CaloTower = false;
+  } else {
+    std::cout<<"L1CaloTower tree is found .." <<std::endl;
   }
   
   if (!mytreeEvent) {
@@ -262,6 +273,7 @@ bool L1Ntuple::OpenWithoutInit()
   ftreeMenu     = new TChain("l1MenuTreeProducer/L1MenuTree");
   ftreeRecoJet  = new TChain("l1JetRecoTree/JetRecoTree");
   //ftreeRecoMet  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
+  ftreeCaloTower = new TChain("l1CaloTowerEmuTree/L1CaloTowerTree");
   ftreeRecoEle  = new TChain("l1ElectronRecoTree/ElectronRecoTree");
   ftreeRecoMuon = new TChain("l1MuonRecoTree/Muon2RecoTree");
   ftreeRecoTau  = new TChain("l1TauRecoTree/TauRecoTree");
@@ -273,53 +285,56 @@ bool L1Ntuple::OpenWithoutInit()
     std::cout << " -- Adding " << listNtuples[i] << std::endl;
     fChain->Add(listNtuples[i].c_str());
 
-    if (doEvent)      ftreeEvent    -> Add(listNtuples[i].c_str());
-    if (doreco)       ftreereco     -> Add(listNtuples[i].c_str());
-    if (domuonreco)   ftreemuon     -> Add(listNtuples[i].c_str());
-    if (dol1extra)    ftreeExtra    -> Add(listNtuples[i].c_str());
-    if (dol1emuextra) ftreeEmuExtra -> Add(listNtuples[i].c_str());
-    if (dol1menu)     ftreeMenu     -> Add(listNtuples[i].c_str());
-    if (doRecoJet)    ftreeRecoJet  -> Add(listNtuples[i].c_str());
-    if (doRecoMet)    ftreeRecoMet  -> Add(listNtuples[i].c_str());
-    if (doRecoEle)    ftreeRecoEle  -> Add(listNtuples[i].c_str());
-    if (doRecoMuon)   ftreeRecoMuon -> Add(listNtuples[i].c_str());
-    if (doRecoTau)    ftreeRecoTau  -> Add(listNtuples[i].c_str());
-    if (doRecoFilter)    ftreeRecoFilter  -> Add(listNtuples[i].c_str());
+    if (doEvent)         ftreeEvent         -> Add(listNtuples[i].c_str());
+    if (doreco)          ftreereco          -> Add(listNtuples[i].c_str());
+    if (domuonreco)      ftreemuon          -> Add(listNtuples[i].c_str());
+    if (dol1extra)       ftreeExtra         -> Add(listNtuples[i].c_str());
+    if (dol1emuextra)    ftreeEmuExtra      -> Add(listNtuples[i].c_str());
+    if (dol1menu)        ftreeMenu          -> Add(listNtuples[i].c_str());
+    if (doRecoJet)       ftreeRecoJet       -> Add(listNtuples[i].c_str());
+    if (doRecoMet)       ftreeRecoMet       -> Add(listNtuples[i].c_str());
+    if (doRecoEle)       ftreeRecoEle       -> Add(listNtuples[i].c_str());
+    if (doRecoMuon)      ftreeRecoMuon      -> Add(listNtuples[i].c_str());
+    if (doRecoTau)       ftreeRecoTau       -> Add(listNtuples[i].c_str());
+    if (doRecoFilter)    ftreeRecoFilter    -> Add(listNtuples[i].c_str());
     if (doBitWiseLayer1) ftreeUpgradeLayer1 -> Add(listNtuples[i].c_str());
+    if (dol1CaloTower)   ftreeCaloTower     -> Add(listNtuples[i].c_str());
   }
 
-  if (doEvent)    fChain->AddFriend(ftreeEvent);
-  if (doreco)       fChain->AddFriend(ftreereco);
-  if (domuonreco)   fChain->AddFriend(ftreemuon);
-  if (dol1extra)    fChain->AddFriend(ftreeExtra);
-  if (dol1emuextra) fChain->AddFriend(ftreeEmuExtra);
-  if (dol1menu)     fChain->AddFriend(ftreeMenu);
-  if (doRecoJet)    fChain->AddFriend(ftreeRecoJet);
-  if (doRecoMet)    fChain->AddFriend(ftreeRecoMet);
-  if (doRecoEle)    fChain->AddFriend(ftreeRecoEle);
-  if (doRecoMuon)   fChain->AddFriend(ftreeRecoMuon);
-  if (doRecoTau)    fChain->AddFriend(ftreeRecoTau);
+  if (doEvent)         fChain->AddFriend(ftreeEvent);
+  if (doreco)          fChain->AddFriend(ftreereco);
+  if (domuonreco)      fChain->AddFriend(ftreemuon);
+  if (dol1extra)       fChain->AddFriend(ftreeExtra);
+  if (dol1emuextra)    fChain->AddFriend(ftreeEmuExtra);
+  if (dol1menu)        fChain->AddFriend(ftreeMenu);
+  if (doRecoJet)       fChain->AddFriend(ftreeRecoJet);
+  if (doRecoMet)       fChain->AddFriend(ftreeRecoMet);
+  if (doRecoEle)       fChain->AddFriend(ftreeRecoEle);
+  if (doRecoMuon)      fChain->AddFriend(ftreeRecoMuon);
+  if (doRecoTau)       fChain->AddFriend(ftreeRecoTau);
   if (doRecoFilter)    fChain->AddFriend(ftreeRecoFilter);
   if (doBitWiseLayer1) fChain->AddFriend(ftreeUpgradeLayer1);
+  if (dol1CaloTower)   fChain->AddFriend(ftreeCaloTower);
   return true;
 }
 
 L1Ntuple::~L1Ntuple()
 {
   if (ftreeUpgradeLayer1) delete ftreeUpgradeLayer1;
-  if (ftreeRecoJet)  delete ftreeRecoJet;
-  if (ftreeRecoMet)  delete ftreeRecoMet;
-  if (ftreeRecoEle)  delete ftreeRecoEle;
-  if (ftreeRecoMuon) delete ftreeRecoMuon;
-  if (ftreeRecoTau)  delete ftreeRecoTau;
-  if (ftreeRecoFilter)  delete ftreeRecoFilter;
-  if (ftreemuon)     delete ftreemuon;
-  if (ftreereco)     delete ftreereco;
-  if (ftreeExtra)    delete ftreeExtra;
-  if (ftreeEmuExtra) delete ftreeEmuExtra;
-  if (ftreeMenu)     delete ftreeMenu;
-  if (fChain)        delete fChain;
-  if (rf)            delete rf;
+  if (ftreeRecoJet)       delete ftreeRecoJet;
+  if (ftreeRecoMet)       delete ftreeRecoMet;
+  if (ftreeRecoEle)       delete ftreeRecoEle;
+  if (ftreeRecoMuon)      delete ftreeRecoMuon;
+  if (ftreeRecoTau)       delete ftreeRecoTau;
+  if (ftreeRecoFilter)    delete ftreeRecoFilter;
+  if (ftreemuon)          delete ftreemuon;
+  if (ftreereco)          delete ftreereco;
+  if (ftreeExtra)         delete ftreeExtra;
+  if (ftreeEmuExtra)      delete ftreeEmuExtra;
+  if (ftreeMenu)          delete ftreeMenu;
+  if (ftreeCaloTower)     delete ftreeCaloTower;
+  if (fChain)             delete fChain;
+  if (rf)                 delete rf;
 }
 
 
@@ -426,6 +441,14 @@ void L1Ntuple::Init()
      recoFilter_ = new L1Analysis::L1AnalysisRecoMetFilterDataFormat();
      ftreeRecoFilter->SetBranchAddress("MetFilters",&recoFilter_);
    }
+
+   if (dol1CaloTower)
+   {
+     std::cout<<"Setting branch addresses for L1CaloTower...   "<<std::endl;
+     l1CaloTower_ = new L1Analysis::L1AnalysisL1CaloTowerDataFormat();
+     ftreeCaloTower->SetBranchAddress("L1CaloTower",&l1CaloTower_);
+   }
+
    // if (fChain->GetBranch("Simulation"))
    //   fChain->SetBranchAddress("Simulation", &simulation_ );
    // else

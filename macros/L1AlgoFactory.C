@@ -1290,6 +1290,21 @@ void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
       if (upgrade_lyr1_->sumType.at(i) == EtSumType::ETM && upgrade_lyr1_->sumBx.at(i) == 0)
         TheETM = upgrade_lyr1_->sumEt.at(i);
     }
+  } else if (UseL1CaloTower && l1CaloTower_) {
+    Double_t metX = 0.0;
+    Double_t metY = 0.0;
+    for(unsigned int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+      Int_t ieta = l1CaloTower_->ieta[jTower];
+      Int_t iphi = l1CaloTower_->iphi[jTower];
+      Int_t iet = l1CaloTower_->iet[jTower];
+      if( abs(ieta) < 29){
+        Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
+        Double_t et = 0.5 * (Double_t)iet;
+        metX += et * TMath::Cos(phi);
+        metY += et * TMath::Sin(phi);
+      }
+    }
+    TheETM = TMath::Sqrt(metX*metX + metY*metY);
   } else{
     int idx = GetSumEtIdx(EtSumType::ETM);
     assert(upgrade_->sumType.at(idx) == EtSumType::ETM);
@@ -1332,6 +1347,17 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
       if (upgrade_lyr1_->sumType.at(i) == EtSumType::ETT && upgrade_lyr1_->sumBx.at(i) == 0)
         TheETT = upgrade_lyr1_->sumEt.at(i);
     }
+  } else if (UseL1CaloTower && l1CaloTower_) {
+    double temp = 0.0;
+    for(unsigned int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+      Int_t ieta = l1CaloTower_->ieta[jTower];
+      Int_t iet = l1CaloTower_->iet[jTower];
+      if( abs(ieta) < 29){
+        Double_t et = 0.5 * (Double_t)iet;
+        temp+= et;
+      }
+    }
+    TheETT= temp;
   } else{
     int idx= GetSumEtIdx(EtSumType::ETT);
     assert(upgrade_->sumType.at(idx) == EtSumType::ETT);
@@ -1795,9 +1821,11 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
       //Assuming ieta corresponds to 0.1 eta, which is true for barrel, but not for endcap
       if(fabs(deta) <= delta/10){  
         corr = true;
-        muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
+        if (pt >= pt2)
+          muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
+        else
+          muonPairs.push_back(std::pair<Float_t,Float_t>(pt2,pt));
       }
-
     }
   }
 
@@ -1807,14 +1835,13 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
     for(; muonPairIt != muonPairEnd; ++muonPairIt){
       Float_t pt1 = muonPairIt->first;
       Float_t pt2 = muonPairIt->second;
-      
-      if(pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
-	{
-	  maxpt1 = pt1;
-	  maxpt2 = pt2;
-	}
-    }
 
+      if(pt1 > maxpt1 || (fabs(maxpt1-pt1)<10E-2 && pt2>maxpt2) ) 
+      {
+        maxpt1 = pt1;
+        maxpt2 = pt2;
+      }
+    }
   }
 
   if(corr && maxpt2 >= 0.){

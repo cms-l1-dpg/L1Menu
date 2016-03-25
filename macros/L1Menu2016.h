@@ -102,6 +102,8 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);
     bool ParseMultiEGMass(const std::string& SeedName);
+    bool ParseMuEG(const std::string& SeedName);
+    bool ParseMuerTauer(const std::string& SeedName);
     // ====================  OPERATORS     ===============================
 
     L1Menu2016& operator = ( const L1Menu2016 &other ); // assignment operator
