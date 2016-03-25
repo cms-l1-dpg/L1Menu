@@ -1300,7 +1300,7 @@ bool L1Menu2016::ParseDoubleTau(const std::string& SeedName)
 // ===========================================================================
 bool L1Menu2016::ParseTripleJetVBF(const std::string& SeedName)
 {
-  const int jetclass = 1; 
+  const int jetclass = 0; 
   std::smatch base_match;
   std::regex integer("L1_TripleJet_([0-9]+)_([0-9]+)_([0-9]+)_VBF");
   if (std::regex_match(SeedName, base_match, integer))
