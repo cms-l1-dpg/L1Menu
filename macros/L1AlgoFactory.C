@@ -768,7 +768,7 @@ Bool_t L1AlgoFactory::TripleJet_VBF(Float_t jet1, Float_t jet2, Float_t jet3, In
 
   jetf1 = ( f1 >= 1 && n2 >= 1 && n3 >= 2 );
   jetf2 = ( n1 >= 1 && f2 >= 1 && n3 >= 2 );  
-  jetf3 = ( n1 >= 1 && n2 >= 1 && f3 >= 2 );  
+  jetf3 = ( n1 >= 1 && n2 >= 2 && f3 >= 1 );  
 
   if(jetclass == 1) return jet;
   else if(jetclass == 2) return jetf1;
