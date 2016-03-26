@@ -1745,11 +1745,7 @@ void L1AlgoFactory::DoubleMuOpenPt(Float_t& cut) {
     if(pt >= 0.) n2++;
   }
 
-  if(n2>=2) {
-    Float_t tmp_cut = -10.;
-    SingleMuPt(tmp_cut,false, 1);
-    cut = tmp_cut;
-  }
+  if(n2>=2) cut = ptmax;
   else cut = -10.;
 
   return;
@@ -1778,7 +1774,11 @@ void L1AlgoFactory::DoubleMuXOpenPt(Float_t& cut) {
     if(pt >= 0.) n2++;
   }
 
-  if(n2>=2) cut = ptmax;
+  if(n2>=2) {
+    Float_t tmp_cut = -10.;
+    SingleMuPt(tmp_cut,false, 1);
+    cut = tmp_cut;
+  }
   else cut = -10.;
 
   return;
