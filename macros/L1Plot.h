@@ -38,6 +38,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoElectronDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMuon2DataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisL1CaloTowerDataFormat.h"
 
 #include "L1Struct.h"
 
@@ -59,7 +60,8 @@ class L1Plot
         L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle__    = nullptr,
         L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon__   = nullptr,
         L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__    = nullptr,
-        L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__ = nullptr
+        L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__ = nullptr,
+        L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_ = nullptr
         );
 
     L1Plot ( const L1Plot &other );   // copy constructor
@@ -71,7 +73,7 @@ class L1Plot
     bool PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_);
     bool RunPlot();
     bool PostRun(double scale);
-    void SetTodo (bool doPlotRate_, bool doPlotEff_);
+    void SetTodo (bool doPlotRate_, bool doPlotEff_, bool doPlotTest_);
 
     bool GetRecoEvent();
     // ====================  OPERATORS     ===============================
@@ -89,12 +91,17 @@ class L1Plot
     bool BookEffHistogram();
     bool FillEffHistogram();
     bool WriteEffHistogram();
+
+
+    bool WriteHistogram() const;
+    bool BookHistogram();
+    bool TestMETActivity();
     // ====================  DATA MEMBERS  ===============================
 
   private:
     // ====================  METHODS       ===============================
     std::vector<TLorentzVector> GetRecoTau(bool isER=false, int Iso =0) const;
-    std::vector<TLorentzVector> GetRecoMuon(bool isER=false, float IsoCut=0, int qual=0) const;
+    std::vector<TLorentzVector> GetRecoMuon(float MuERcut=999, float IsoCut=0, int qual=0) const;
     std::vector<TLorentzVector> GetRecoEle(bool isER=false, float IsoCut=0, int qual=0) const;
     std::vector<TLorentzVector> GetRecoJet(bool isCent=false) const;
     std::vector<TLorentzVector> GetRecoSum(std::string type ) const;
@@ -115,8 +122,10 @@ class L1Plot
     L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
     L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau_;
     L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
+    L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
     bool doPlotRate;
     bool doPlotEff;
+    bool doPlotTest;
 
 
 
@@ -128,6 +137,8 @@ class L1Plot
     std::map<std::string,TH1F*> hRate1F;
     std::map<std::string,TH2F*> hRate2F;
     std::map<std::string,TEfficiency*> hEff;
+    std::map<std::string,TH1F*> h1F;
+    std::map<std::string,TH2F*> h2F;
 	std::map<std::string, std::function<double()> > hEffFun;
 }; // -----  end of class L1Plot  -----
 

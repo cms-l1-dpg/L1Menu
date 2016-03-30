@@ -30,7 +30,8 @@ L1Plot::L1Plot (
     L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle__,
     L1Analysis::L1AnalysisRecoMuon2DataFormat    *recoMuon__,
     L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau__,
-    L1Analysis::L1AnalysisRecoMetFilterDataFormat      *recoFilter__
+    L1Analysis::L1AnalysisRecoMetFilterDataFormat      *recoFilter__,
+    L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower__
     ):
   outfile(outrootfile_),
   event_(event__),
@@ -41,6 +42,7 @@ L1Plot::L1Plot (
   recoMuon_(recoMuon__),
   recoTau_(recoTau__),
   recoFilter_(recoFilter__),
+  l1CaloTower_(l1CaloTower__),
   doPlotRate(false),
   doPlotEff(false)
 {
@@ -122,6 +124,36 @@ bool L1Plot::BookRateHistogram()
 
   return true;
 }       // -----  end of function L1Plot::BookRateHistogram  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::BookHistogram
+//  Description:  
+// ===========================================================================
+bool L1Plot::BookHistogram()
+{
+  if (!doPlotTest) return false;
+
+  h2F["METResVsAct"] = new TH2F("METResVsAct","METResVsAct; HT activity; L1MET-RecoMET", 20, 0, 1, 100, -50, 50);
+  h2F["METXVsAct"] = new TH2F("METXVsAct","METXVsAct; HT activity; L1METx", 20, 0, 1, 100, -50, 50);
+  h2F["METYVsAct"] = new TH2F("METYVsAct","METYVsAct; HT activity; L1METy", 20, 0, 1, 100, -50, 50);
+  return true;
+}       // -----  end of function L1Plot::BookHistogram  -----
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::WriteHistogram()
+//  Description:  
+// ===========================================================================
+bool L1Plot::WriteHistogram() const
+{
+  if (!doPlotTest) return false;
+  outfile->mkdir("Hist");
+  outfile->cd("Hist");
+  for(auto f : h2F)
+  {
+    f.second->Write();
+  }
+  outfile->cd();
+  return true;
+}       // -----  end of function L1Plot::WriteHistogram()  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::WriteRateHistogram
@@ -252,8 +284,14 @@ bool L1Plot::RunPlot()
     FillEffHistogram();
   }
 
+  if (doPlotTest) 
+  {
+    TestMETActivity();
+  }
+
   return true;
 }       // -----  end of function L1Plot::RunPlot  -----
+
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::PreRun
 //  Description:  
@@ -264,6 +302,7 @@ bool L1Plot::PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1
   mL1Seed = mL1Seed_;
   BookRateHistogram();
   BookEffHistogram();
+  BookHistogram();
   return true;
 }       // -----  end of function L1Plot::PreRun  -----
 
@@ -275,7 +314,7 @@ bool L1Plot::PostRun(double scale)
 {
   WriteRateHistogram(scale);
   WriteEffHistogram();
-  
+  WriteHistogram();
   return true;
 }       // -----  end of function L1Plot::PostRun  -----
 
@@ -443,10 +482,9 @@ std::vector<TLorentzVector> L1Plot::GetRecoEle(bool isER, float IsoCut, int qual
 //         Name:  L1Plot::GetRecoMuon
 //  Description:  
 // ===========================================================================
-std::vector<TLorentzVector> L1Plot::GetRecoMuon(bool isER, float IsoCut, int qual) const
+std::vector<TLorentzVector> L1Plot::GetRecoMuon(float MuERcut, float IsoCut, int qual) const
 {
   std::vector<TLorentzVector> reTLVs;
-  const float MuERcut = 2.1;
   if (recoMuon_ == NULL) return reTLVs;
 
   for (int i = 0; i < recoMuon_->nMuons; ++i)
@@ -454,10 +492,10 @@ std::vector<TLorentzVector> L1Plot::GetRecoMuon(bool isER, float IsoCut, int qua
     if (qual == 1 && ! recoMuon_ -> isLooseMuon.at(i)) continue;
     if (qual == 2 && ! recoMuon_ -> isMediumMuon.at(i)) continue;
 
-    if (isER && fabs(recoMuon_->eta.at(i)) > MuERcut )
+    if (fabs(recoMuon_->eta.at(i)) > MuERcut )
       continue;
 
-    if (recoMuon_->iso.at(i) < IsoCut) continue;
+    if (recoMuon_->iso.at(i) >= IsoCut) continue;
 
     TLorentzVector temp(0, 0, 0, 0);
     temp.SetPtEtaPhiE( recoMuon_->pt.at(i),
@@ -520,9 +558,9 @@ bool L1Plot::GetRecoEvent()
   recoEvent["EGer"]    = GetRecoEle(true,   false, 0 );
   recoEvent["IsoEG"]   = GetRecoEle(false,  true,  0 );
   recoEvent["IsoEGer"] = GetRecoEle(true,   true,  0 );
-  recoEvent["Mu"]      = GetRecoMuon();
-  recoEvent["MuOpen"]  = GetRecoMuon();
-  recoEvent["Muer"]    = GetRecoMuon(true);
+  recoEvent["Mu"]      = GetRecoMuon(99, 0.15, 2);
+  recoEvent["MuOpen"]  = GetRecoMuon(99, 0.15, 1);
+  recoEvent["Muer"]    = GetRecoMuon(2.1);
   recoEvent["HTT"]     = GetRecoSum("HTT");
   recoEvent["ETM"]     = GetRecoSum("ETM");
   recoEvent["ETT"]     = GetRecoSum("ETT");
@@ -651,10 +689,11 @@ bool L1Plot::WriteEffHistogram()
 //         Name:  L1Plot::SetTodo
 //  Description:  
 // ===========================================================================
-void L1Plot::SetTodo (bool doPlotRate_, bool doPlotEff_)
+void L1Plot::SetTodo (bool doPlotRate_, bool doPlotEff_, bool doPlotTest_)
 {
   doPlotRate = doPlotRate_;
   doPlotEff = doPlotEff_;
+  doPlotTest = doPlotTest_;
 }       // -----  end of function L1Plot::SetTodo  -----
 
 // ===  FUNCTION  ============================================================
@@ -685,3 +724,41 @@ bool L1Plot::GetRecoFilter() const
 
   return pass;
 }       // -----  end of function L1Plot::GetRecoFilter  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::TestMETActivity
+//  Description:  
+// ===========================================================================
+bool L1Plot::TestMETActivity()
+{
+  const int ietacut = 20;
+  double fwdHT = 0.0;
+  double totHT = 0.0;
+  Double_t metX = 0.0;
+  Double_t metY = 0.0;
+
+  for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+    Int_t ieta = l1CaloTower_->ieta[jTower];
+    Int_t iphi = l1CaloTower_->iphi[jTower];
+    Int_t iet = l1CaloTower_->iet[jTower];
+    Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
+    Double_t et = 0.5 * (Double_t)iet;
+    if( abs(ieta) < 29){
+      metX += et * TMath::Cos(phi);
+      metY += et * TMath::Sin(phi);
+      totHT += et;
+      if (abs(ieta) > ietacut)
+      {
+        fwdHT += et;
+      }
+    }
+  }
+  double TheETM = TMath::Sqrt(metX*metX + metY*metY);
+
+  if (recoSum_)
+    h2F["METResVsAct"]->Fill(fwdHT/totHT, TheETM- recoSum_->met);
+  h2F["METXVsAct"]->Fill(fwdHT/totHT, metX);
+  h2F["METYVsAct"]->Fill(fwdHT/totHT, metY);
+
+  return true;
+}       // -----  end of function L1Plot::TestMETActivity  -----

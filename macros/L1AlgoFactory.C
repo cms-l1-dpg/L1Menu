@@ -1293,7 +1293,7 @@ void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
   } else if (UseL1CaloTower && l1CaloTower_) {
     Double_t metX = 0.0;
     Double_t metY = 0.0;
-    for(unsigned int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+    for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
       Int_t ieta = l1CaloTower_->ieta[jTower];
       Int_t iphi = l1CaloTower_->iphi[jTower];
       Int_t iet = l1CaloTower_->iet[jTower];
@@ -1349,7 +1349,7 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
     }
   } else if (UseL1CaloTower && l1CaloTower_) {
     double temp = 0.0;
-    for(unsigned int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+    for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
       Int_t ieta = l1CaloTower_->ieta[jTower];
       Int_t iet = l1CaloTower_->iet[jTower];
       if( abs(ieta) < 29){
@@ -2003,3 +2003,30 @@ bool L1AlgoFactory::MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bo
   }
   return false;
 }       // -----  end of function L1AlgoFactory::MultiEGMass  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::SetMuonER
+//  Description:  
+// ===========================================================================
+void L1AlgoFactory::SetMuonER(float newER)
+{
+  muonER  = newER;
+}       // -----  end of function L1AlgoFactory::SetMuonER  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::SetUserUpgradeLyr1
+//  Description:  /* cursor */
+// ===========================================================================
+void L1AlgoFactory::SetUseUpgradeLyr1(bool option)
+{
+  UseUpgradeLyr1 = option;
+}       // -----  end of function L1AlgoFactory::SetUserUpgradeLyr1  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::SetUseL1CaloTower
+//  Description:  /* cursor */
+// ===========================================================================
+void L1AlgoFactory::SetUseL1CaloTower(bool option) 
+{
+  UseL1CaloTower = option;
+}       // -----  end of function L1AlgoFactory::SetUseL1CaloTower  -----

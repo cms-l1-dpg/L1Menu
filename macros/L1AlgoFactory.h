@@ -138,6 +138,10 @@ class L1AlgoFactory: public L1Ntuple{
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass ~~~~~
   bool MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bool isIsolated, bool isER) const;
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Setting variables ~~~~~
+  void SetMuonER(float newER);
+  void SetUseUpgradeLyr1(bool option);
+  void SetUseL1CaloTower(bool option);
  private:
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Hard coded cut value ~~~~~
  float jetCentFwd;

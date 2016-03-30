@@ -105,9 +105,14 @@ bool L1Menu2016::InitConfig()
   L1Config["targetlumi"] = 0;
   L1Config["doPlotRate"] = 0;
   L1Config["doPlotEff"] = 0;
+  L1Config["doPlotTest"] = 0;
   L1Config["doPrintLS"] = 0;
   L1Config["doPrintPU"] = 0;
   L1Config["maxEvent"] = -1;
+  L1Config["SetMuonER"] = -1;
+  L1Config["UseUpgradeLyr1"] = -1;
+  L1Config["UseL1CaloTower"] = -1;
+  L1Config["SelectRun"] = -1;
   
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -477,8 +482,8 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
   if (writeplots)
   {
     l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
-        recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_);
-    l1Plot->SetTodo(L1Config["doPlotRate"], L1Config["doPlotEff"]);
+        recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_);
+    l1Plot->SetTodo(L1Config["doPlotRate"], L1Config["doPlotEff"], L1Config["doPlotTest"]);
     l1Plot->PreRun(&L1Event, &mL1Seed);
   }
 
@@ -487,6 +492,11 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
     ReadDataPU();
   }
     
+
+  if (L1Config["SetMuonER"] != -1) SetMuonER(L1Config["SetMuonER"]);
+  if (L1Config["UseUpgradeLyr1"] != -1) SetUseUpgradeLyr1(L1Config["UseUpgradeLyr1"]);
+  if (L1Config["UseL1CaloTower"] != -1) SetUseL1CaloTower(L1Config["UseL1CaloTower"]);
+
   return true;
 }       // -----  end of function L1Menu2016::PreLoop  -----
 
@@ -558,11 +568,12 @@ bool L1Menu2016::Loop()
   nZeroBiasevents = 0.;
   nFireevents = 0.;
   nLumi = 0;
-  int i = 0;
+  int i = -1;
 
   //for (Long64_t i=0; i<nevents; i++){     
   while(true)
   {
+    i++;
     Long64_t ientry = LoadTree(i); 
     if (ientry < 0) break;
     GetEntry(i);
@@ -570,6 +581,9 @@ bool L1Menu2016::Loop()
 
     if (event_ != NULL )
     {
+      if (L1Config["SelectRun"] != -1 && event_->run != L1Config["SelectRun"])
+        continue;
+
       if(event_ -> lumi != currentLumi){
         std::cout << "New Lumi section: " << event_->lumi << std::endl;      
         currentLumi=event_ -> lumi;
@@ -593,7 +607,6 @@ bool L1Menu2016::Loop()
 
     if (l1Plot != NULL)
       l1Plot->RunPlot();
-    i++;
   }
 
   return true;
