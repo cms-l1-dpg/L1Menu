@@ -1290,7 +1290,9 @@ void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
       if (upgrade_lyr1_->sumType.at(i) == EtSumType::ETM && upgrade_lyr1_->sumBx.at(i) == 0)
         TheETM = upgrade_lyr1_->sumEt.at(i);
     }
-  } else if (UseL1CaloTower && l1CaloTower_) {
+  } 
+
+  if (UseL1CaloTower && l1CaloTower_) {
     Double_t metX = 0.0;
     Double_t metY = 0.0;
     for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
@@ -1305,7 +1307,10 @@ void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
       }
     }
     TheETM = TMath::Sqrt(metX*metX + metY*metY);
-  } else{
+  } 
+
+  if (!UseL1CaloTower && !UseUpgradeLyr1)
+  {
     int idx = GetSumEtIdx(EtSumType::ETM);
     assert(upgrade_->sumType.at(idx) == EtSumType::ETM);
     if(upgrade_->sumBx.at(idx)==SelBx) TheETM =upgrade_->sumEt.at(idx);
@@ -1347,7 +1352,9 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
       if (upgrade_lyr1_->sumType.at(i) == EtSumType::ETT && upgrade_lyr1_->sumBx.at(i) == 0)
         TheETT = upgrade_lyr1_->sumEt.at(i);
     }
-  } else if (UseL1CaloTower && l1CaloTower_) {
+  }
+
+  if (UseL1CaloTower && l1CaloTower_) {
     double temp = 0.0;
     for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
       Int_t ieta = l1CaloTower_->ieta[jTower];
@@ -1358,7 +1365,10 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
       }
     }
     TheETT= temp;
-  } else{
+  } 
+
+  if (!UseL1CaloTower && !UseUpgradeLyr1)
+  {
     int idx= GetSumEtIdx(EtSumType::ETT);
     assert(upgrade_->sumType.at(idx) == EtSumType::ETT);
     if(upgrade_->sumBx.at(idx)==SelBx) TheETT =upgrade_->sumEt.at(idx);
