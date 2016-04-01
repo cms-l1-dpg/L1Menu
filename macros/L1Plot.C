@@ -126,34 +126,40 @@ bool L1Plot::BookRateHistogram()
 }       // -----  end of function L1Plot::BookRateHistogram  -----
 
 // ===  FUNCTION  ============================================================
-//         Name:  L1Plot::BookHistogram
+//         Name:  L1Plot::BookTestHistogram
 //  Description:  
 // ===========================================================================
-bool L1Plot::BookHistogram()
+bool L1Plot::BookTestHistogram()
 {
   if (!doPlotTest) return false;
 
-  h2F["METResVsAct"] = new TH2F("METResVsAct","METResVsAct; HT activity; L1MET-RecoMET", 20, 0, 1, 100, -50, 50);
-  h2F["METXVsAct"] = new TH2F("METXVsAct","METXVsAct; HT activity; L1METx", 20, 0, 1, 100, -50, 50);
-  h2F["METYVsAct"] = new TH2F("METYVsAct","METYVsAct; HT activity; L1METy", 20, 0, 1, 100, -50, 50);
+  hTest1F["L1METx"] = new TH1F("L1METx","L1METx", 100, -50, 50);
+  hTest1F["L1METy"] = new TH1F("L1METy","L1METy", 100, -50, 50);
+  hTest2F["METResVsAct"] = new TH2F("METResVsAct","METResVsAct; HT activity; L1MET-RecoMET", 20, 0, 1, 100, -50, 50);
+  hTest2F["METXVsAct"] = new TH2F("METXVsAct","METXVsAct; HT activity; L1METx", 20, 0, 1, 100, -50, 50);
+  hTest2F["METYVsAct"] = new TH2F("METYVsAct","METYVsAct; HT activity; L1METy", 20, 0, 1, 100, -50, 50);
   return true;
-}       // -----  end of function L1Plot::BookHistogram  -----
+}       // -----  end of function L1Plot::BookTestHistogram  -----
 // ===  FUNCTION  ============================================================
-//         Name:  L1Plot::WriteHistogram()
+//         Name:  L1Plot::WriteTestHistogram()
 //  Description:  
 // ===========================================================================
-bool L1Plot::WriteHistogram() const
+bool L1Plot::WriteTestHistogram() const
 {
   if (!doPlotTest) return false;
-  outfile->mkdir("Hist");
-  outfile->cd("Hist");
-  for(auto f : h2F)
+  outfile->mkdir("Test");
+  outfile->cd("Test");
+  for(auto f : hTest2F)
+  {
+    f.second->Write();
+  }
+  for(auto f : hTest1F)
   {
     f.second->Write();
   }
   outfile->cd();
   return true;
-}       // -----  end of function L1Plot::WriteHistogram()  -----
+}       // -----  end of function L1Plot::WriteTestHistogram()  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::WriteRateHistogram
@@ -302,7 +308,7 @@ bool L1Plot::PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1
   mL1Seed = mL1Seed_;
   BookRateHistogram();
   BookEffHistogram();
-  BookHistogram();
+  BookTestHistogram();
   return true;
 }       // -----  end of function L1Plot::PreRun  -----
 
@@ -314,7 +320,7 @@ bool L1Plot::PostRun(double scale)
 {
   WriteRateHistogram(scale);
   WriteEffHistogram();
-  WriteHistogram();
+  WriteTestHistogram();
   return true;
 }       // -----  end of function L1Plot::PostRun  -----
 
@@ -756,9 +762,11 @@ bool L1Plot::TestMETActivity()
   double TheETM = TMath::Sqrt(metX*metX + metY*metY);
 
   if (recoSum_)
-    h2F["METResVsAct"]->Fill(fwdHT/totHT, TheETM- recoSum_->met);
-  h2F["METXVsAct"]->Fill(fwdHT/totHT, metX);
-  h2F["METYVsAct"]->Fill(fwdHT/totHT, metY);
+    hTest2F["METResVsAct"]->Fill(fwdHT/totHT, TheETM- recoSum_->met);
+  hTest2F["METXVsAct"]->Fill(fwdHT/totHT, metX);
+  hTest2F["METYVsAct"]->Fill(fwdHT/totHT, metY);
 
+  hTest1F["L1METx"]->Fill(metX);
+  hTest1F["L1METy"]->Fill(metY);
   return true;
 }       // -----  end of function L1Plot::TestMETActivity  -----

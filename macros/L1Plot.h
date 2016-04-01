@@ -93,8 +93,8 @@ class L1Plot
     bool WriteEffHistogram();
 
 
-    bool WriteHistogram() const;
-    bool BookHistogram();
+    bool WriteTestHistogram() const;
+    bool BookTestHistogram();
     bool TestMETActivity();
     // ====================  DATA MEMBERS  ===============================
 
@@ -137,8 +137,8 @@ class L1Plot
     std::map<std::string,TH1F*> hRate1F;
     std::map<std::string,TH2F*> hRate2F;
     std::map<std::string,TEfficiency*> hEff;
-    std::map<std::string,TH1F*> h1F;
-    std::map<std::string,TH2F*> h2F;
+    std::map<std::string,TH1F*> hTest1F;
+    std::map<std::string,TH2F*> hTest2F;
 	std::map<std::string, std::function<double()> > hEffFun;
 }; // -----  end of class L1Plot  -----
 
