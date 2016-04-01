@@ -181,6 +181,7 @@ class L1Menu2016 : public L1AlgoFactory
     std::map<std::string, std::vector<int> > PAGMap;
     std::map<std::string, int > PhyCounts;
     std::map<std::string, int > PhyPureCounts;
+    std::set<std::string> FiredPhy;
 
 
 }; // -----  end of class L1Menu2016  -----

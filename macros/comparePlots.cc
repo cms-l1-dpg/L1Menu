@@ -24,6 +24,7 @@
 
 #include "tdrstyle.C"
 
+std::string BuildLeg(std::string filename);
 void getPlotList( const std::string & fileName,
 		  std::map<std::string, std::vector<std::string> > & plotList )
 {
@@ -98,7 +99,8 @@ void getRange( TH1* plot, float & minY, float & maxY )
 
 
 void plot( std::vector<TH1*> plots,
-	   std::string &baseDir, std::string outputDir ) 
+	   std::string &baseDir, std::string outputDir,
+       std::vector<std::string> legs) 
 {
   
   if (plots.at(0))
@@ -127,15 +129,21 @@ void plot( std::vector<TH1*> plots,
 	  std::cout << "min " << minY << std::endl;
 	  std::cout << "max " << maxY << std::endl;
 	  
-	  TPad *pPlot = ( plots.size()>1 ) ? new TPad("pPlot","",0.01,0.26,0.99,0.99) :
-	    new TPad("pPlot","",0.01,0.01,0.99,0.99) ;
+	  TPad *pPlot = ( plots.size()>1 ) ? new TPad("pPlot","",0.05,0.26,0.99,0.99) :
+	    new TPad("pPlot","",0.05,0.01,0.99,0.99) ;
 	  
 	  pPlot->Draw();
 	  pPlot->SetGrid();
+      TLegend *leg = new TLegend(0.4055405,0.7411604,0.9767243,0.896555,NULL,"brNDC");
+      leg->SetFillColor(0);
+      leg->SetBorderSize(0);
+      leg->SetBorderSize(0);
+      leg->SetFillStyle(0);
+      leg->SetTextFont(62);
 	  
 	  c->cd();
 	  
-	  TPad *pRatio = ( plots.size()>1 ) ? new TPad("pRatio","",0.01,0.01,0.99,0.25) : 0;
+	  TPad *pRatio = ( plots.size()>1 ) ? new TPad("pRatio","",0.05,0.01,0.99,0.25) : 0;
 	  if(pRatio)
 	    {
 	      pRatio->Draw();
@@ -150,10 +158,14 @@ void plot( std::vector<TH1*> plots,
 	      plots.at(iPlot)->SetMarkerColor( iPlot+1 );
 	      plots.at(iPlot)->SetMarkerStyle( 21 + iPlot );
 	       
-              getRange( plots.at(iPlot), minY, maxY );
+          getRange( plots.at(iPlot), minY, maxY );
 	      plots.at(iPlot)->GetYaxis()->SetRangeUser( minY, maxY );
+	      plots.at(iPlot)->GetYaxis()->SetTitleSize(0.06);
+	      plots.at(iPlot)->GetYaxis()->SetTitleOffset(0.7);
 	      plots.at(iPlot)->Draw( iPlot ? "samePE1" : "PE1" );
+          leg->AddEntry(plots.at(iPlot), BuildLeg(legs.at(iPlot)).c_str(), "P");
 	      
+
 	      if ( iPlot>0 ) 
 		{
 		  pRatio->cd();
@@ -167,6 +179,8 @@ void plot( std::vector<TH1*> plots,
 		  eff->SetFillColor( iPlot+1 );
 		  eff->SetMarkerColor( iPlot+1 );
 		  eff->SetMarkerStyle( 21 + iPlot );
+	      eff->GetYaxis()->SetTitleSize(0.14);
+          eff->GetYaxis()->SetTitleOffset(0.4);
 		  eff->GetYaxis()->SetRangeUser( .1, 5.);
 		  eff->GetYaxis()->SetLabelSize( .11);
 		  
@@ -174,7 +188,9 @@ void plot( std::vector<TH1*> plots,
 		}
 	    }
 	  
+      pPlot->cd();
 	  pPlot->SetLogy();
+      leg->Draw();
 	}
       else if(dynamic_cast<TH2F*>(plots.at(0)) && plots.size() == 2) 
 	{ 
@@ -196,6 +212,7 @@ void plot( std::vector<TH1*> plots,
       c->Update();
       std::string printname = path + "/" + plots.at(0)->GetName();
       c->Print ( ( printname + ".gif" ).c_str() ); 
+      c->Print ( ( printname + ".root" ).c_str() ); 
       //c->Print ( ( printname + ".C" ).c_str() ); 
     }
   
@@ -205,7 +222,6 @@ void plotAll(std::vector<std::string> &files,
 	     std::string &baseDir) 
 {
 
-  
   size_t nFiles = 0;
   std::vector<TFile*> filesRoot;
 
@@ -230,17 +246,41 @@ void plotAll(std::vector<std::string> &files,
     for(;plotIt!=plotEnd;++plotIt) {
 
       std::vector<TH1*> plots;
+      std::vector<std::string> legs;
 
       for (size_t iFile=0; iFile<filesRoot.size(); ++iFile) {
-	plots.push_back(static_cast<TH1*>( filesRoot.at(iFile)->Get( plotIt->c_str() )  ));
+        plots.push_back(static_cast<TH1*>( filesRoot.at(iFile)->Get( plotIt->c_str() )  )); 
+        legs.push_back(files.at(iFile));
       }
       
-      plot(plots,baseDir,plotDirIt->first);
+      plot(plots,baseDir,plotDirIt->first, legs);
       
     }
   }
   
 }
+
+// ===  FUNCTION  ============================================================
+//         Name:  BuildLeg
+//  Description:  
+// ===========================================================================
+std::string BuildLeg(std::string filename)
+{
+  std::string temp=filename;
+  size_t found = filename.find_last_of("/");
+  if (found != std::string::npos)
+  {
+    temp = filename.substr(found+1);
+  }
+
+  found = temp.find_last_of(".");
+  if (found != std::string::npos)
+  {
+    temp = temp.substr(0, found);
+  }
+
+  return temp;
+}       // -----  end of function BuildLeg  -----
 
 int main(int argc, char* argv[]) 
 {  

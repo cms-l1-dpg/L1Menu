@@ -993,30 +993,46 @@ bool L1Menu2016::CheckPureFire()
 // ===========================================================================
 bool L1Menu2016::CheckPhysFire()
 {
-  for(auto &phy : PhyCounts)
-  {
-    if (phy.first == "All") continue;
-    bool phyfire = false;
-    if (POGMap.find(phy.first) != POGMap.end())
-    {
-      for(auto &pogseed : POGMap[phy.first])
-      {
-        phyfire =  phyfire || mL1Seed[BitMap[pogseed]].eventfire;
-      }
-    }
-    if (PAGMap.find(phy.first) != PAGMap.end())
-    {
-      for(auto &pagseed : PAGMap[phy.first])
-        phyfire =  phyfire || mL1Seed[BitMap[pagseed]].eventfire;
-    }
+  //for(auto &phy : PhyCounts)
+  //{
+    //if (phy.first == "All") continue;
+    //bool phyfire = false;
+    //if (POGMap.find(phy.first) != POGMap.end())
+    //{
+      //for(auto &pogseed : POGMap[phy.first])
+      //{
+        //phyfire =  phyfire || mL1Seed[BitMap[pogseed]].eventfire;
+      //}
+    //}
+    //if (PAGMap.find(phy.first) != PAGMap.end())
+    //{
+      //for(auto &pagseed : PAGMap[phy.first])
+        //phyfire =  phyfire || mL1Seed[BitMap[pagseed]].eventfire;
+    //}
 
-    if (phyfire)
-    {
-      phy.second++;
-    }
-  }
+    //if (phyfire)
+    //{
+      //phy.second++;
+    //}
+  //}
 
   if (FireSeed.size() > 0) PhyCounts["All"]++;
+
+  FiredPhy.clear();
+
+  for(auto fired : FireSeed)
+  {
+    L1Seed &seed = mL1Seed[fired];
+    for(auto pog : seed.POG)
+    {
+      if (FiredPhy.insert(pog).second) PhyCounts[pog]++;
+    }
+    for(auto pag : seed.PAG)
+    {
+      if (FiredPhy.insert(pag).second) PhyCounts[pag]++;
+    }
+
+  }
 
   return true;
 }       // -----  end of function L1Menu2016::CheckPhysFire  -----
@@ -1635,6 +1651,10 @@ bool L1Menu2016::FillPileUpSec()
   if (eFired)
   {
     L1PUCount["L1APhysics"][pu]++;
+  }
+  for(auto i : FiredPhy)
+  {
+    L1PUCount["L1A"+i][pu]++;
   }
 
   return true;
