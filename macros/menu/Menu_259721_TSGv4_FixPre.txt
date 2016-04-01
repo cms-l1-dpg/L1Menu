@@ -61,7 +61,7 @@ L1_DoubleMu_12_8                      68  1      Mu
 L1_DoubleMu0er1p6_dEta_Max1p8           69  1      Mu      BPH
 L1_DoubleMu0er1p6_dEta_Max1p8_OS        70  1      Mu      BPH
 L1_DoubleMu0er1p25_dEta_Max1p8_OS       71  1      Mu      BPH
-L1_DoubleMu_10_0_dEta_Max1p8              72  -1      Mu      BPH                           #1kHz pure rate, might go back if we have more rate
+L1_DoubleMu_10_0_dEta_Max1p8              72  -1      Mu      BPH                       #1kHz pure rate, might go back if we have more rate
 ### TripleMu 81-90
 L1_TripleMu0                          81   1      Mu      HIGGS,BPH
 L1_TripleMu_5_5_3                     82   1      Mu      HIGGS
@@ -151,7 +151,7 @@ L1_QuadJetC60                         253  1      Jet     EXO,SUSY,B2G
 ### SingleTau 261-270
 #L1_SingleTau80er                      261  1      Tau
 #L1_SingleTau100er                     262  1      Tau
-#L1_SingleTau150er                     263  1      Tau
+L1_SingleTau128er                     263  1      Tau
 ### SingleIsoTau 271-280
 
 ### DoubleTau 281-290
