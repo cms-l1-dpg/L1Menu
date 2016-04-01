@@ -23,15 +23,16 @@
 //----------------------------------------------------------------------------
 L1Plot::L1Plot (
     TFile* outrootfile_,
-    L1Analysis::L1AnalysisEventDataFormat        *event__,
-    L1Analysis::L1AnalysisL1UpgradeDataFormat    *upgrade__,
-    L1Analysis::L1AnalysisRecoJetDataFormat      *recoJet__,
-    L1Analysis::L1AnalysisRecoMetDataFormat      *recoSum__,
-    L1Analysis::L1AnalysisRecoElectronDataFormat *recoEle__,
-    L1Analysis::L1AnalysisRecoMuon2DataFormat    *recoMuon__,
-    L1Analysis::L1AnalysisRecoTauDataFormat      *recoTau__,
-    L1Analysis::L1AnalysisRecoMetFilterDataFormat      *recoFilter__,
-    L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower__
+    L1Analysis::L1AnalysisEventDataFormat         *event__,
+    L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade__,
+    L1Analysis::L1AnalysisRecoJetDataFormat       *recoJet__,
+    L1Analysis::L1AnalysisRecoMetDataFormat       *recoSum__,
+    L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle__,
+    L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon__,
+    L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__,
+    L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__,
+    L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower__,
+    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx__
     ):
   outfile(outrootfile_),
   event_(event__),
@@ -43,6 +44,7 @@ L1Plot::L1Plot (
   recoTau_(recoTau__),
   recoFilter_(recoFilter__),
   l1CaloTower_(l1CaloTower__),
+  recoVtx_(recoVtx__),
   doPlotRate(false),
   doPlotEff(false)
 {
@@ -133,11 +135,29 @@ bool L1Plot::BookTestHistogram()
 {
   if (!doPlotTest) return false;
 
-  hTest1F["L1METx"] = new TH1F("L1METx","L1METx", 100, -50, 50);
-  hTest1F["L1METy"] = new TH1F("L1METy","L1METy", 100, -50, 50);
-  hTest2F["METResVsAct"] = new TH2F("METResVsAct","METResVsAct; HT activity; L1MET-RecoMET", 20, 0, 1, 100, -50, 50);
-  hTest2F["METXVsAct"] = new TH2F("METXVsAct","METXVsAct; HT activity; L1METx", 20, 0, 1, 100, -50, 50);
-  hTest2F["METYVsAct"] = new TH2F("METYVsAct","METYVsAct; HT activity; L1METy", 20, 0, 1, 100, -50, 50);
+//**************************************************************************//
+//                                MET Studies                               //
+//**************************************************************************//
+  hTest1F["L1MET"]          = new TH1F("L1MET","L1MET",                                          150, 0,    150);
+  hTest1F["PFMET"]          = new TH1F("PFMET","PFMET",                                          150, 0,    150);
+  hTest1F["L1METPFMET"]     = new TH1F("L1METPFMET","L1METPFMET;L1MET-PFMET;Events",             200, -100, 100);
+  hTest1F["L1METPFMETNoMu"] = new TH1F("L1METPFMETNoMu","L1METPFMETNoMu;L1MET-PFMETNoMu;Events", 200, -100, 100);
+  hTest1F["PFMETVNoMu"]     = new TH1F("PFMETVNoMu","PFMETVNoMu;PFMET-PFMETNoMu;Events",         200, -100, 100);
+  hTest1F["L1METx"]         = new TH1F("L1METx","L1METx",                                        100, -50,  50);
+  hTest1F["L1METy"]         = new TH1F("L1METy","L1METy",                                        100, -50,  50);
+  hTest1F["PFMETx"]         = new TH1F("PFMETx","PFMETx",                                        100, -50,  50);
+  hTest1F["PFMETy"]         = new TH1F("PFMETy","PFMETy",                                        100, -50,  50);
+  hTest2F["METResVsAct"]    = new TH2F("METResVsAct","METResVsAct; HT activity; L1MET-RecoMET",  20,  0,    1,    100, -50, 50);
+  hTest2F["METXVsAct"]      = new TH2F("METXVsAct","METXVsAct; HT activity; L1METx",             20,  0,    1,    100, -50, 50);
+  hTest2F["METYVsAct"]      = new TH2F("METYVsAct","METYVsAct; HT activity; L1METy",             20,  0,    1,    100, -50, 50);
+
+  hTestPro["ECalVsiEta"]     = new TProfile("ECalVsiEta","ECalVsiEta; iEta; ECalTower",           84, -42, 42);
+  hTestPro["HCalVsiEta"]     = new TProfile("HCalVsiEta","HCalVsiEta; iEta; HCalTower",           84, -42, 42);
+  hTestPro["PFMETxVsNvtx"]   = new TProfile("PFMETxVsNvtx","PFMETxVsNvtx; Nvtx; PFMETx",          30, 0,   30);
+  hTestPro["PFMETyVsNvtx"]   = new TProfile("PFMETyVsNvtx","PFMETyVsNvtx; Nvtx; PFMETy",          30, 0,   30);
+  hTestPro["L1METxVsNvtx"]   = new TProfile("L1METxVsNvtx","L1METxVsNvtx; Nvtx; L1METx",          30, 0,   30);
+  hTestPro["L1METyVsNvtx"]   = new TProfile("L1METyVsNvtx","L1METyVsNvtx; Nvtx; L1METy",          30, 0,   30);
+  hTestPro["L1METResVsNvtx"] = new TProfile("L1METResVsNvtx","L1METResVsNvtx; Nvtx; L1MET-PFMET", 30, 0,   30);
   return true;
 }       // -----  end of function L1Plot::BookTestHistogram  -----
 // ===  FUNCTION  ============================================================
@@ -154,6 +174,10 @@ bool L1Plot::WriteTestHistogram() const
     f.second->Write();
   }
   for(auto f : hTest1F)
+  {
+    f.second->Write();
+  }
+  for(auto f : hTestPro)
   {
     f.second->Write();
   }
@@ -738,6 +762,7 @@ bool L1Plot::GetRecoFilter() const
 bool L1Plot::TestMETActivity()
 {
   const int ietacut = 20;
+  const int ietamax = 29;
   double fwdHT = 0.0;
   double totHT = 0.0;
   Double_t metX = 0.0;
@@ -746,10 +771,14 @@ bool L1Plot::TestMETActivity()
   for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
     Int_t ieta = l1CaloTower_->ieta[jTower];
     Int_t iphi = l1CaloTower_->iphi[jTower];
-    Int_t iet = l1CaloTower_->iet[jTower];
+    Int_t iet  = l1CaloTower_->iet[jTower];
+    Int_t iem  = l1CaloTower_->iem[jTower];
+    Int_t ihad = l1CaloTower_->ihad[jTower];
+    hTestPro["ECalVsiEta"] -> Fill(ieta, (float)iem / 2.0);
+    hTestPro["HCalVsiEta"] -> Fill(ieta, (float)ihad / 2.0);
     Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
     Double_t et = 0.5 * (Double_t)iet;
-    if( abs(ieta) < 29){
+    if( abs(ieta) < ietamax){
       metX += et * TMath::Cos(phi);
       metY += et * TMath::Sin(phi);
       totHT += et;
@@ -762,11 +791,54 @@ bool L1Plot::TestMETActivity()
   double TheETM = TMath::Sqrt(metX*metX + metY*metY);
 
   if (recoSum_)
-    hTest2F["METResVsAct"]->Fill(fwdHT/totHT, TheETM- recoSum_->met);
+  {
+    double PFMET = recoSum_->met;
+    double PFMETphi = recoSum_->metPhi;
+    TVector2 PFMETnoMu = GetRecoMETNoMu();
+    hTest2F["METResVsAct"]->Fill(fwdHT/totHT, TheETM- PFMET);
+    hTest1F["PFMET"]->Fill(PFMET);
+    hTest1F["L1METPFMET"]->Fill(TheETM-PFMET);
+    hTest1F["PFMETVNoMu"]->Fill(PFMET-PFMETnoMu.Mod());
+    hTest1F["L1METPFMETNoMu"]->Fill(TheETM-PFMETnoMu.Mod());
+    hTest1F["PFMETx"]->Fill(PFMET * TMath::Cos(PFMETphi));
+    hTest1F["PFMETy"]->Fill(PFMET * TMath::Sin(PFMETphi));
+    if (recoVtx_)
+    {
+      hTestPro["PFMETxVsNvtx"] -> Fill(recoVtx_->nVtx, PFMET * TMath::Cos(PFMETphi));
+      hTestPro["PFMETyVsNvtx"] -> Fill(recoVtx_->nVtx, PFMET * TMath::Sin(PFMETphi));
+      hTestPro["L1METxVsNvtx"] -> Fill(recoVtx_->nVtx, metX);
+      hTestPro["L1METyVsNvtx"] -> Fill(recoVtx_->nVtx, metY);
+      hTestPro["L1METResVsNvtx"] -> Fill(recoVtx_->nVtx, TheETM - PFMET );
+    }
+  }
   hTest2F["METXVsAct"]->Fill(fwdHT/totHT, metX);
   hTest2F["METYVsAct"]->Fill(fwdHT/totHT, metY);
 
   hTest1F["L1METx"]->Fill(metX);
   hTest1F["L1METy"]->Fill(metY);
+  hTest1F["L1MET"]->Fill(TheETM);
   return true;
 }       // -----  end of function L1Plot::TestMETActivity  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::GetRecoMETNoMu
+//  Description:  
+// ===========================================================================
+TVector2 L1Plot::GetRecoMETNoMu() const
+{
+  TVector2 revec(0,0);
+  if (!recoSum_ || !recoMuon_) return revec;
+
+  double pfmetx =  recoSum_->met * TMath::Cos(recoSum_->metPhi);
+  double pfmety =  recoSum_->met * TMath::Sin(recoSum_->metPhi);
+  std::vector<TLorentzVector> muons = GetRecoMuon(999, 0.15, 2);
+  for(auto m : muons)
+  {
+    pfmetx += m.Px();
+    pfmety += m.Py();
+  }
+  revec.Set(pfmetx, pfmety);
+
+  return revec;
+}       // -----  end of function L1Plot::GetRecoMETNoMu  -----

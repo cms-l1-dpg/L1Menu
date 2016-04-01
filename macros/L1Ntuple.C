@@ -8,7 +8,6 @@ Long64_t L1Ntuple::GetEntries()
 L1Ntuple::L1Ntuple()
 {
   doEvent       = true;
-  doreco        = true;
   domuonreco    = true;
   dol1extra     = true;
   dol1emuextra  = true;
@@ -21,12 +20,12 @@ L1Ntuple::L1Ntuple()
   doRecoMuon    = true;
   doRecoTau     = true;
   doRecoFilter  = true;
+  doRecoVtx     = true;
 
   fChain          = nullptr;
   fEvent          = nullptr;
   ftreeEvent      = nullptr;
   ftreemuon       = nullptr;
-  ftreereco       = nullptr;
   ftreeExtra      = nullptr;
   ftreeCaloTower  = nullptr;
   ftreeMenu       = nullptr;
@@ -37,6 +36,7 @@ L1Ntuple::L1Ntuple()
   ftreeRecoMuon   = nullptr;
   ftreeRecoTau    = nullptr;
   ftreeRecoFilter = nullptr;
+  ftreeRecoVtx    = nullptr;
   ftreeUpgradeLayer1 = nullptr;
   
   event_          = nullptr;
@@ -49,6 +49,7 @@ L1Ntuple::L1Ntuple()
   recoMuon_       = nullptr;
   recoTau_        = nullptr;
   recoFilter_     = nullptr;
+  recoVtx_        = nullptr;
   MainTreePath = "l1UpgradeTree/L1UpgradeTree";
 }
 
@@ -123,7 +124,6 @@ bool L1Ntuple::CheckFirstFile()
 
   TTree * mytreeEvent    = (TTree*) rf->Get("l1EventTree/L1EventTree");
   TTree * mytreemuon     = (TTree*) rf->Get("l1MuonRecoTreeProducer/MuonRecoTree");
-  TTree * mytreejets     = (TTree*) rf->Get("l1RecoTreeProducer/RecoTree");
   TTree * mytreeExtra    = (TTree*) rf->Get("l1ExtraTreeProducer/L1ExtraTree");
   TTree * mytreeEmuExtra = (TTree*) rf->Get("l1EmulatorExtraTree/L1ExtraTree");
   TTree * mytreeMenu     = (TTree*) rf->Get("l1MenuTreeProducer/L1MenuTree");
@@ -134,6 +134,7 @@ bool L1Ntuple::CheckFirstFile()
   TTree * mytreeRecoMuon = (TTree*) rf->Get("l1MuonRecoTree/Muon2RecoTree");
   TTree * mytreeRecoTau  = (TTree*) rf->Get("l1TauRecoTree/TauRecoTree");
   TTree * mytreeRecoFilter  = (TTree*) rf->Get("l1MetFilterRecoTree/MetFilterRecoTree");
+  TTree * mytreeRecoVertex  = (TTree*) rf->Get("l1RecoTree/RecoTree");
   TTree * mytreeUpgradeLayer1 = (TTree*) rf->Get("l1UpgradeBitwiseTree/L1UpgradeTree");
   TTree * mytreel1CaloTower = (TTree*) rf->Get("l1CaloTowerEmuTree/L1CaloTowerTree");
   
@@ -215,14 +216,13 @@ bool L1Ntuple::CheckFirstFile()
     std::cout << "RecoTau is found ..."<<std::endl;
   }
 
-  if (!mytreejets) {
-    std::cout<<"RecoTree not found, it will be skipped..."<<std::endl;
-    doreco=false;
+  if (!mytreeRecoVertex) {
+    std::cout<<"recoVertex not found, it will be skipped..."<<std::endl;
+    doRecoVtx=false;
   } else
   {
-    std::cout << "RecoTree is found ..."<<std::endl;
+    std::cout << "RecoVertex is found ..."<<std::endl;
   }
-
 
   if (!mytreemuon) {
     std::cout<<"MuonRecoTree not found, it will be skipped..."<<std::endl;
@@ -267,7 +267,6 @@ bool L1Ntuple::OpenWithoutInit()
   fChain        = new TChain(MainTreePath.c_str());
   ftreeEvent    = new TChain("l1EventTree/L1EventTree");
   ftreemuon     = new TChain("l1MuonRecoTreeProducer/MuonRecoTree");
-  ftreereco     = new TChain("l1RecoTreeProducer/RecoTree");
   ftreeExtra    = new TChain("l1ExtraTreeProducer/L1ExtraTree");
   ftreeEmuExtra = new TChain("l1EmulatorExtraTree/L1ExtraTree");
   ftreeMenu     = new TChain("l1MenuTreeProducer/L1MenuTree");
@@ -278,6 +277,7 @@ bool L1Ntuple::OpenWithoutInit()
   ftreeRecoMuon = new TChain("l1MuonRecoTree/Muon2RecoTree");
   ftreeRecoTau  = new TChain("l1TauRecoTree/TauRecoTree");
   ftreeRecoFilter  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
+  ftreeRecoVtx     = new TChain("l1RecoTree/RecoTree");
   ftreeUpgradeLayer1 = new TChain("l1UpgradeBitwiseTree/L1UpgradeTree");
 
   for (unsigned int i=0;i<listNtuples.size();i++)
@@ -286,7 +286,6 @@ bool L1Ntuple::OpenWithoutInit()
     fChain->Add(listNtuples[i].c_str());
 
     if (doEvent)         ftreeEvent         -> Add(listNtuples[i].c_str());
-    if (doreco)          ftreereco          -> Add(listNtuples[i].c_str());
     if (domuonreco)      ftreemuon          -> Add(listNtuples[i].c_str());
     if (dol1extra)       ftreeExtra         -> Add(listNtuples[i].c_str());
     if (dol1emuextra)    ftreeEmuExtra      -> Add(listNtuples[i].c_str());
@@ -297,12 +296,12 @@ bool L1Ntuple::OpenWithoutInit()
     if (doRecoMuon)      ftreeRecoMuon      -> Add(listNtuples[i].c_str());
     if (doRecoTau)       ftreeRecoTau       -> Add(listNtuples[i].c_str());
     if (doRecoFilter)    ftreeRecoFilter    -> Add(listNtuples[i].c_str());
+    if (doRecoVtx)       ftreeRecoVtx       -> Add(listNtuples[i].c_str());
     if (doBitWiseLayer1) ftreeUpgradeLayer1 -> Add(listNtuples[i].c_str());
     if (dol1CaloTower)   ftreeCaloTower     -> Add(listNtuples[i].c_str());
   }
 
   if (doEvent)         fChain->AddFriend(ftreeEvent);
-  if (doreco)          fChain->AddFriend(ftreereco);
   if (domuonreco)      fChain->AddFriend(ftreemuon);
   if (dol1extra)       fChain->AddFriend(ftreeExtra);
   if (dol1emuextra)    fChain->AddFriend(ftreeEmuExtra);
@@ -313,6 +312,7 @@ bool L1Ntuple::OpenWithoutInit()
   if (doRecoMuon)      fChain->AddFriend(ftreeRecoMuon);
   if (doRecoTau)       fChain->AddFriend(ftreeRecoTau);
   if (doRecoFilter)    fChain->AddFriend(ftreeRecoFilter);
+  if (doRecoVtx)       fChain->AddFriend(ftreeRecoVtx);
   if (doBitWiseLayer1) fChain->AddFriend(ftreeUpgradeLayer1);
   if (dol1CaloTower)   fChain->AddFriend(ftreeCaloTower);
   return true;
@@ -327,8 +327,8 @@ L1Ntuple::~L1Ntuple()
   if (ftreeRecoMuon)      delete ftreeRecoMuon;
   if (ftreeRecoTau)       delete ftreeRecoTau;
   if (ftreeRecoFilter)    delete ftreeRecoFilter;
+  if (ftreeRecoVtx)       delete ftreeRecoVtx;
   if (ftreemuon)          delete ftreemuon;
-  if (ftreereco)          delete ftreereco;
   if (ftreeExtra)         delete ftreeExtra;
   if (ftreeEmuExtra)      delete ftreeEmuExtra;
   if (ftreeMenu)          delete ftreeMenu;
@@ -440,6 +440,13 @@ void L1Ntuple::Init()
      std::cout<<"Setting branch addresses for reco Filters...   "<<std::endl;
      recoFilter_ = new L1Analysis::L1AnalysisRecoMetFilterDataFormat();
      ftreeRecoFilter->SetBranchAddress("MetFilters",&recoFilter_);
+   }
+
+   if (doRecoVtx)
+   {
+     std::cout<<"Setting branch addresses for reco Vertexes...   "<<std::endl;
+     recoVtx_ = new L1Analysis::L1AnalysisRecoVertexDataFormat();
+     ftreeRecoVtx->SetBranchAddress("Vertex",&recoVtx_);
    }
 
    if (dol1CaloTower)

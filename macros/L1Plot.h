@@ -24,11 +24,13 @@
 
 #include "TH1F.h"
 #include "TH2F.h"
+#include "TVector2.h"
 #include "TFile.h"
 #include "TEfficiency.h"
 #include "TLorentzVector.h"
 #include "TCanvas.h"
 #include "TGraphAsymmErrors.h"
+#include "TProfile.h"
 
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisEventDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisL1UpgradeDataFormat.h"
@@ -39,6 +41,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoMuon2DataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisL1CaloTowerDataFormat.h"
+#include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoVertexDataFormat.h"
 
 #include "L1Struct.h"
 
@@ -61,7 +64,8 @@ class L1Plot
         L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon__   = nullptr,
         L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__    = nullptr,
         L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__ = nullptr,
-        L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_ = nullptr
+        L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_ = nullptr,
+        L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_ = nullptr
         );
 
     L1Plot ( const L1Plot &other );   // copy constructor
@@ -109,6 +113,7 @@ class L1Plot
     std::vector<TLorentzVector> GetRecoHTMLocal() const;
     bool GoodRecoJet(int ijet) const;
     bool GetRecoFilter() const;
+    TVector2 GetRecoMETNoMu() const;
     inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
     double FunLeadingPt(std::string obj);
 
@@ -123,6 +128,7 @@ class L1Plot
     L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau_;
     L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
     L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
+    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_;
     bool doPlotRate;
     bool doPlotEff;
     bool doPlotTest;
@@ -139,6 +145,7 @@ class L1Plot
     std::map<std::string,TEfficiency*> hEff;
     std::map<std::string,TH1F*> hTest1F;
     std::map<std::string,TH2F*> hTest2F;
+    std::map<std::string,TProfile*> hTestPro;
 	std::map<std::string, std::function<double()> > hEffFun;
 }; // -----  end of class L1Plot  -----
 
