@@ -795,8 +795,6 @@ bool L1Menu2016::BuildRelation()
     PhyCounts[pag.first] = 0;
     PhyPureCounts[pag.first] = 0;
   }
-  PhyCounts["All"] = 0;
-  
 
   return true;
 }       // -----  end of function L1Menu2016::BuildRelation  -----
@@ -953,6 +951,7 @@ bool L1Menu2016::CheckL1Seed(const std::string L1Seed)
 bool L1Menu2016::RunMenu()
 {
   FireSeed.clear();
+  FiredPhy.clear();
   for(auto& seed: mL1Seed)
   {
     //std::cout <<  seed.first <<" " << CheckL1Seed(seed.first) << std::endl;
@@ -993,33 +992,6 @@ bool L1Menu2016::CheckPureFire()
 // ===========================================================================
 bool L1Menu2016::CheckPhysFire()
 {
-  //for(auto &phy : PhyCounts)
-  //{
-    //if (phy.first == "All") continue;
-    //bool phyfire = false;
-    //if (POGMap.find(phy.first) != POGMap.end())
-    //{
-      //for(auto &pogseed : POGMap[phy.first])
-      //{
-        //phyfire =  phyfire || mL1Seed[BitMap[pogseed]].eventfire;
-      //}
-    //}
-    //if (PAGMap.find(phy.first) != PAGMap.end())
-    //{
-      //for(auto &pagseed : PAGMap[phy.first])
-        //phyfire =  phyfire || mL1Seed[BitMap[pagseed]].eventfire;
-    //}
-
-    //if (phyfire)
-    //{
-      //phy.second++;
-    //}
-  //}
-
-  if (FireSeed.size() > 0) PhyCounts["All"]++;
-
-  FiredPhy.clear();
-
   for(auto fired : FireSeed)
   {
     L1Seed &seed = mL1Seed[fired];
@@ -1031,7 +1003,6 @@ bool L1Menu2016::CheckPhysFire()
     {
       if (FiredPhy.insert(pag).second) PhyCounts[pag]++;
     }
-
   }
 
   return true;
@@ -1647,14 +1618,38 @@ bool L1Menu2016::FillPileUpSec()
     }
   }
 
+  for(auto& pog : POGMap)
+  {
+    std::string l1pog = "L1T_"+pog.first;
+    if(L1PUCount[l1pog].find(pu) == L1PUCount[l1pog].end())
+    {
+      L1PUCount[l1pog][pu] = 0;
+    }
+    if (FiredPhy.find(pog.first) != FiredPhy.end())
+    {
+      L1PUCount[l1pog][pu] ++;
+    }
+    
+  }
+  for(auto& pag : PAGMap)
+  {
+    std::string l1pag = "L1A_"+pag.first;
+    if(L1PUCount[l1pag].find(pu) == L1PUCount[l1pag].end())
+    {
+      L1PUCount[l1pag][pu] = 0;
+    }
+    if (FiredPhy.find(pag.first) != FiredPhy.end())
+    {
+      L1PUCount[l1pag][pu] ++;
+    }
+    
+  }
+
   L1PUCount["Count"][pu]++;
+
   if (eFired)
   {
     L1PUCount["L1APhysics"][pu]++;
-  }
-  for(auto i : FiredPhy)
-  {
-    L1PUCount["L1A"+i][pu]++;
   }
 
   return true;
