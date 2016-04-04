@@ -35,7 +35,7 @@ MKBIN = $(CXX) $(CXXFLAGS) `root-config  --libs --cflags` -lMinuit -lGenVector
 
 all : $(PROGRAM)
 
-comparePlots.exe : comparePlots.cc 
+comparePlots : comparePlots.cc 
 	$(MKBIN) $< -o $@ 
 
 RunL1Menu2016 : RunL1Menu2016.o $(OBJS)

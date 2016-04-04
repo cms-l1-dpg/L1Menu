@@ -235,10 +235,10 @@ L1_Mu8_HTT150                         438  10      MuSum   SUSY
 L1_EG27er_HTT200                      439  1      EGSum   HIGGS                         #322 pure rate, masked for now
 L1_EG25er_HTT125                      440  50    EGSum   HIGGS                         #3kHz pure rate
 L1_DoubleEG6_HTT255                   441  1      EGSum   SUSY
-L1_QuadJetC36_Tau52                   442  50     Jet     HIGGS
+L1_QuadJetC36_Tau52                   442  50     JetTau     HIGGS
 L1_IsoEG22er_Tau20er_dEta_Min0p2      443  1      EGTau   HIGGS
 L1_Jet32_DoubleMuOpen_Mu10_dPhi_Jet_Mu0_Max1p05_dPhi_Mu_Mu_Min1p0        444  1      MuJet   SUSY  #161Hz pure rate
-L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max1p05_dPhi_Mu_EG_Min1p05       445  20      EGJet   SUSY                          #Map to Stage1 L1_Jet32MuOpen_EG10_dPhiMu_EG1
+L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max1p05_dPhi_Mu_EG_Min1p05       445  20 MuJet   SUSY                          #Map to Stage1 L1_Jet32MuOpen_EG10_dPhiMu_EG1
 
 #L1_DoubleJetC60_ETM60                 446  1      EGSum   HIGGS
 #L1_Mu0er_ETM40                        447  1      MuSum   HIGGS
