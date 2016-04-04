@@ -971,16 +971,35 @@ bool L1Menu2016::RunMenu()
 // ===========================================================================
 bool L1Menu2016::CheckPureFire() 
 {
-  if (FireSeed.size() != 1) return false;
-  std::set<std::string>::const_iterator fireit = FireSeed.begin();
-  mL1Seed[*fireit].purecounts++;
-  for(auto &pog : mL1Seed[*fireit].POG)
+  // Trigger path pure rate
+  if (FireSeed.size() == 1) 
+    mL1Seed[*(FireSeed.begin())].purecounts++;
+
+  // POG pure rate
+  std::set<std::string> POGset;
+  for(auto fireit : FireSeed)
   {
-    PhyPureCounts[pog]++;
+    for(auto &pog : mL1Seed[fireit].POG)
+    {
+      POGset.insert(pog);
+    }
   }
-  for(auto &pag : mL1Seed[*fireit].PAG)
+  if (POGset.size() == 1)
   {
-    PhyPureCounts[pag]++;
+    PhyPureCounts[*(POGset.begin())]++;
+  }
+
+  std::set<std::string> PAGset;
+  for(auto fireit : FireSeed)
+  {
+    for(auto &pag : mL1Seed[fireit].PAG)
+    {
+      PAGset.insert(pag);
+    }
+  }
+  if (PAGset.size() == 1)
+  {
+    PhyPureCounts[*(PAGset.begin())]++;
   }
 
   return true;
@@ -1605,6 +1624,7 @@ bool L1Menu2016::FillPileUpSec()
     //pu = event_->event
   }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seed ~~~~~
   for(auto l1 : mL1Seed)
   {
     if(L1PUCount[l1.first].find(pu) == L1PUCount[l1.first].end())
@@ -1618,35 +1638,60 @@ bool L1Menu2016::FillPileUpSec()
     }
   }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ POG ~~~~~
+  std::set<std::string> POGset;
   for(auto& pog : POGMap)
   {
     std::string l1pog = "L1T_"+pog.first;
+    std::string l1pogpure = "L1T_Pure"+pog.first;
     if(L1PUCount[l1pog].find(pu) == L1PUCount[l1pog].end())
     {
       L1PUCount[l1pog][pu] = 0;
     }
+    if(L1PUCount[l1pogpure].find(pu) == L1PUCount[l1pogpure].end())
+    {
+      L1PUCount[l1pogpure][pu] = 0;
+    }
+
     if (FiredPhy.find(pog.first) != FiredPhy.end())
     {
       L1PUCount[l1pog][pu] ++;
+      POGset.insert(pog.first);
     }
-    
   }
+  if (POGset.size() == 1)
+  {
+    std::string l1pogpure = "L1T_Pure"+*(POGset.begin());
+    L1PUCount[l1pogpure][pu]++;
+  }
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PAG ~~~~~
+  std::set<std::string> PAGset;
   for(auto& pag : PAGMap)
   {
     std::string l1pag = "L1A_"+pag.first;
+    std::string l1pagpure = "L1A_Pure"+pag.first;
     if(L1PUCount[l1pag].find(pu) == L1PUCount[l1pag].end())
     {
       L1PUCount[l1pag][pu] = 0;
     }
+    if(L1PUCount[l1pagpure].find(pu) == L1PUCount[l1pagpure].end())
+    {
+      L1PUCount[l1pagpure][pu] = 0;
+    }
     if (FiredPhy.find(pag.first) != FiredPhy.end())
     {
       L1PUCount[l1pag][pu] ++;
+      PAGset.insert(pag.first);
     }
-    
+  }
+  if (PAGset.size() == 1)
+  {
+    std::string l1pagpure = "L1T_Pure"+*(PAGset.begin());
+    L1PUCount[l1pagpure][pu]++;
   }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Total ~~~~~
   L1PUCount["Count"][pu]++;
-
   if (eFired)
   {
     L1PUCount["L1APhysics"][pu]++;
