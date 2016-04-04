@@ -31,9 +31,12 @@ S1S2Map = {
     "L1_HTT200"           : "L1_HTT314"           , 
     "L1_HTT250"           : "L1_HTT366"           , 
     "L1_Mu8_HTT50"        : "L1_Mu8_HTT150"       , 
-    "L1_DoubleEG6_HTT150" : "L1_DoubleEG6_HTT258" , 
-    "L1_EG25er_HTT100"    : "L1_EG27er_HTT194"    , 
-    "L1_TripleEG_14_10_8" : "L1_TripleEG_18_17_8" ,
+    "L1_DoubleEG6_HTT150" : "L1_DoubleEG6_HTT255" , 
+    "L1_EG25er_HTT100"    : "L1_EG27er_HTT200"    , 
+    # "L1_TripleEG_14_10_8" : "L1_TripleEG_18_17_8" ,
+    # "L1_ETM50"            : "L1_HTM100" ,
+    # "L1_ETM50"            : "L1_HTM70" ,
+    # "L1_ETM70"            : "L1_HTM100" ,
 }
 
 S2S1Map = dict((v, k) for k, v in S1S2Map.iteritems())

@@ -131,7 +131,6 @@ class L1Menu2016 : public L1AlgoFactory
     bool FillLumiSection(int currentLumi);
     bool FillPileUpSec();
     bool PrintCSV(std::ostream &out);
-    Bool_t EGamma();
     bool CheckPureFire();
     bool CheckPhysFire();
     // ====================  DATA MEMBERS  ===============================
