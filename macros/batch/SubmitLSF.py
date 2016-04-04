@@ -9,48 +9,71 @@ import subprocess
 
 
 ###############################
-RunProxy  = True
 DelDir = None #Auto pick up by CMSSW_BASE
 DryRun = False
 DelExe    = 'testMenu2016'
-OutDir  = 'Output/TSGv4Study'
-Analysis  = 'METAct'
+# OutDir  = 'Output/ITGv19Study/'
+# OutDir  = 'Output/TSGv4Vsv3/'
+OutDir  = 'Output/TSGv4'
+Analysis  = 'MenuPU3'
+# Analysis  = 'PFMET'
 MenuFile = [
   #"menu/Menu_MuonStudy.txt",
-  "menu/Menu_None.txt"
+  #"menu/Menu_None.txt"
+  # "menu/Menu_259721_TSGv4_Prescales.txt",
+  # "menu/Menu_259721_TSGv3_FixPre_EG.txt",
+  "menu/Menu_259721_TSGv4_FixPre.txt",
+  # "menu/Menu_ETMStudy.txt",
 ]
 Ntuplelist = [
   #"ntuple/r259721_tsgv4Latest.list"
-  
+  # "ntuple/r259721_tsgv3.list",
+
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSG-v4 ~~~~~
-  #"ntuple/MC20PU_tsgv4.list",
-  #"ntuple/MC30PU_tsgv4.list",
-  #"ntuple/MC50PU_tsgv4.list",
-  #"ntuple/r258425_tsgv4.list",
-  #"ntuple/r258427_tsgv4.list",
-  #"ntuple/r258428_tsgv4.list",
-  #"ntuple/r258434_tsgv4.list",
-  #"ntuple/r258440_tsgv4.list",
-  #"ntuple/r258445_tsgv4.list",
-  #"ntuple/r258448_tsgv4.list",
-  #"ntuple/r259626_tsgv4.list",
-  #"ntuple/r259721_tsgv4.list",
-  #"ntuple/SingleMuZmu_tsgv4.list",
+    "ntuple/MC10PU_tsgv4.list",
+    "ntuple/MC20PU_tsgv4.list",
+    "ntuple/MC30PU_tsgv4.list",
+    "ntuple/MC40PU_tsgv4.list",
+    "ntuple/MC50PU_tsgv4.list",
+    "ntuple/r258425_tsgv4.list",
+    "ntuple/r258427_tsgv4.list",
+    "ntuple/r258428_tsgv4.list",
+    "ntuple/r258434_tsgv4.list",
+    "ntuple/r258440_tsgv4.list",
+    "ntuple/r258445_tsgv4.list",
+    "ntuple/r258448_tsgv4.list",
+    "ntuple/r259626_tsgv4.list",
+    "ntuple/r259721_tsgv4.list",
+    # "ntuple/SingleMuZmu_tsgv4.list",
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSGv4-METFix ~~~~~
-  "ntuple/r259721_tsgv4METfix.list",
-  "ntuple/r259721_tsgv4.list",
-  "ntuple/r259721_gomber.list",
+  #"ntuple/r259721_tsgv4METfix.list",
+  #"ntuple/r259721_tsgv4.list",
+  #"ntuple/r259721_gomber.list",
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Integration v19 ~~~~~
+  #"ntuple/r258440_itgv19Layer1.list",
+  #"ntuple/r258440_itgv19.list",
+  #"ntuple/r259626_itgv19Layer1.list",
+  #"ntuple/r259626_itgv19.list",
+  #"ntuple/r259721_itgv19Layer1.list",
+  # "ntuple/r259721_itgv19.list",
+  # "ntuple/SingleMuZmu_itgv19Layer1.list",
+  # "ntuple/SingleMuZmu_itgv19.list",
 ]
-#GlobalOpt = "--doPlotEff"
-#GlobalOpt = "--doPlotRate"
-GlobalOpt = "--doPlotTest"
-#GlobalOpt = "--doPlotRate --doPrintPU"
+# GlobalOpt = "--doPlotEff"
+# GlobalOpt = "--doPlotRate"
+# GlobalOpt += " --doPlotTest"
+GlobalOpt = "--doPlotRate --doPrintPU"
+# GlobalOpt = " --doPrintPU"
 Options = {
-  "":""
+  None:""
   #"test" : "-n 10"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Muon ER Study ~~~~~
   #"MuER0p8" : "--SetMuonER 0.8",
   #"MuER1p2" : "--SetMuonER 1.25",
+  #"MuER1p5" : "--SetMuonER 1.5",
+  #"MuER1p8" : "--SetMuonER 1.8",
+  #"MuER2p0" : "--SetMuonER 2.0",
   #"MuER2p1" : "--SetMuonER 2.1",
   #"MuER2p2" : "--SetMuonER 2.2",
   #"MuER2p3" : "--SetMuonER 2.3",
@@ -68,14 +91,14 @@ Options = {
   #"r259721" : "--SelectRun 259721",
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MET Cross Check ~~~~~
-  #"Ntuple"    : "",
-  #"Layer1"    : "--UseUpgradeLyr1",
+  #"Default"    : "",
+  #"Bitwise"    : "--UseUpgradeLyr1",
   #"CaloTower" : "--UseL1CaloTower",
 
 }
 #LSFque = '8nm'
 LSFque = '8nh'
-nBunches = 3963.7 
+nBunches = 3963.7
 
 def BSUB(Analysis, Menu_, Ntuple_, Option):
     global LSFque
@@ -83,13 +106,15 @@ def BSUB(Analysis, Menu_, Ntuple_, Option):
     # Open a pipe to the qsub command.
     #output, input = popen2('echo')
 
-    print DelDir, Menu_
     Menu = "%s/%s" % (DelDir, Menu_)
     Ntuple ="%s/%s" % (DelDir, Ntuple_)
     stripMenu = os.path.splitext(os.path.basename(Menu))[0]
     stripNtuple = os.path.splitext(os.path.basename(Ntuple))[0]
     job_name = "%s_%s_%s_%s" % (Analysis, stripMenu, stripNtuple, Option[0])
-    out_name = "%s_%s_%s" % (stripMenu, stripNtuple, Option[0])
+    if len(MenuFile) == 1:
+      out_name = "_".join(filter(None, (stripNtuple, Option[0])))
+    else:
+      out_name = "_".join(filter(None, (stripMenu, stripNtuple, Option[0])))
 
     cmd = "./%s %s -m %s -l %s -o %s -b %f %s" % (os.path.basename(DelExe), Option[1], Menu, Ntuple,out_name, nBunches, GlobalOpt)
     if DryRun:

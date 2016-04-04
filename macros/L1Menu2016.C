@@ -892,9 +892,7 @@ bool L1Menu2016::RunMenu()
   FiredPhy.clear();
   for(auto& seed: mL1Seed)
   {
-    //std::cout <<  seed.first <<" " << CheckL1Seed(seed.first) << std::endl;
     InsertInMenu(seed.first, CheckL1Seed(seed.first));
-    //std::cout <<  seed.first <<" " << ParseSingleObject(seed.first) << std::endl;
   }
 
   CheckPhysFire();
@@ -1017,12 +1015,6 @@ bool L1Menu2016::FillDefHist1D()
     }
     //assert(binidx == pog.second.size());
     CorrectScale(HistMap[pog.first], scale);
-
-    //for (int i = 0; i < HistMap[pog.first]->GetNbinsX(); ++i)
-    //{
-      //std::cout << HistMap[pog.first]->GetXaxis()->GetBinLabel(i) <<" " 
-        //<< HistMap[pog.first]->GetBinContent(i) << std::endl;
-    //}
   }
 
   return true;
