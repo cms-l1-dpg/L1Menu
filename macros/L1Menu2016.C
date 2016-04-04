@@ -861,68 +861,6 @@ bool L1Menu2016::InsertInMenu(std::string L1name, bool value) {
   return true;
 }
 
-Bool_t L1Menu2016::EGamma() {
-
-  //insert_ibin = 0;
-
-  //Float_t SingleEGPtCut = -10.;
-  //SingleEGPt(SingleEGPtCut,false, false);
-
-  //Float_t SingleIsoEGerPtCut = -10.;
-  //SingleEGPt(SingleIsoEGerPtCut,true,true);
-
-
-  //InsertInMenu("L1_SingleEG2_BptxAND",SingleEGPtCut >= 2.);
-  //InsertInMenu("L1_SingleEG5",SingleEGPtCut >= 5.);
-  //InsertInMenu("L1_SingleEG10",SingleEGPtCut >= 10.);
-  //InsertInMenu("L1_SingleEG15",SingleEGPtCut >= 15.);
-  //InsertInMenu("L1_SingleEG20",SingleEGPtCut >= 20.);
-  //InsertInMenu("L1_SingleEG25",SingleEGPtCut >= 25.);
-  //InsertInMenu("L1_SingleEG30",SingleEGPtCut >= 30.);
-  //InsertInMenu("L1_SingleEG35",SingleEGPtCut >= 35.);
-  //InsertInMenu("L1_SingleEG40",SingleEGPtCut >= 40.);
-  //InsertInMenu("L1_SingleIsoEG20", SingleEG(20.,true,false) );
-  //InsertInMenu("L1_SingleIsoEG25", SingleEG(25.,true,false) );
-  //InsertInMenu("L1_SingleIsoEG18er",SingleIsoEGerPtCut >= 18.);
-  //InsertInMenu("L1_SingleIsoEG20er",SingleIsoEGerPtCut >= 20.);
-  //InsertInMenu("L1_SingleIsoEG22er",SingleIsoEGerPtCut >= 22.);
-  //InsertInMenu("L1_SingleIsoEG25er",SingleIsoEGerPtCut >= 25.);
-  //InsertInMenu("L1_SingleIsoEG30er",SingleIsoEGerPtCut >= 30.);
-
-  //Int_t NN = insert_ibin;
-
-  //Int_t kOFFSET_old = kOFFSET;
-  //for (Int_t k=0; k < NN; k++) {
-    //TheTriggerBits[k + kOFFSET_old] = insert_val[k];
-  //}
-  //kOFFSET += insert_ibin;
-
-  //if (first) {
-
-    //NBITS_EGAMMA = NN;
-
-    //for (Int_t ibin=0; ibin < insert_ibin; ibin++) {
-      //TString l1name = (TString)insert_names[ibin];
-      //h_Egamma -> GetXaxis() -> SetBinLabel(ibin+1, l1name );
-    //}
-    //h_Egamma-> GetXaxis() -> SetBinLabel(NN+1,"EGAMMA");
-
-    //for (Int_t k=1; k <= kOFFSET -kOFFSET_old; k++) {
-      //h_All -> GetXaxis() -> SetBinLabel(k +kOFFSET_old , h_Egamma -> GetXaxis() -> GetBinLabel(k) );
-    //}
-  //}                      
-
-  //Bool_t res = false;      
-  //for (Int_t i=0; i < NN; i++) {
-    //res = res || insert_val[i] ;
-    //if (insert_val[i]) h_Egamma -> Fill(i);
-  //}      
-  //if (res) h_Egamma -> Fill(NN);
-
-  //return res;
-  return true;
-}       
-
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::BindAlgo
 //  Description:  
@@ -1045,7 +983,7 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_, bool print)
 {
   double scale = 0.0;
   int nEvents = nEvents_ == 0 ? nZeroBiasevents : nEvents_;
-  int nBunches = nBunches_ == 0 ?  L1Config["nBunches"] : nBunches_;
+  double nBunches = nBunches_ == 0 ?  L1Config["nBunches"] : nBunches_;
 
   if (L1Config["nBunches"] == -1)
   {
