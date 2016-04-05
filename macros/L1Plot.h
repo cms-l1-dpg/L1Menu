@@ -20,7 +20,7 @@
 #include <map>
 #include <iostream>
 #include <functional>
-
+#include <cassert>
 
 #include "TH1F.h"
 #include "TH2F.h"
@@ -100,6 +100,8 @@ class L1Plot
     bool WriteTestHistogram() const;
     bool BookTestHistogram();
     bool TestMETActivity();
+    float TestRecoAct(float eta) const;
+    bool TestMuon();
     // ====================  DATA MEMBERS  ===============================
 
   private:
