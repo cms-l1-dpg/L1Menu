@@ -77,7 +77,7 @@ class L1Plot
     bool PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_);
     bool RunPlot();
     bool PostRun(double scale);
-    void SetTodo (bool doPlotRate_, bool doPlotEff_, bool doPlotTest_);
+    void SetTodo ( std::map<std::string, float> &L1Config);
 
     bool GetRecoEvent();
     // ====================  OPERATORS     ===============================
@@ -135,6 +135,7 @@ class L1Plot
     bool doPlotRate;
     bool doPlotEff;
     bool doPlotTest;
+    bool UseL1CaloTower;
 
 
 

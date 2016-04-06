@@ -483,7 +483,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
   {
     l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
         recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_);
-    l1Plot->SetTodo(L1Config["doPlotRate"], L1Config["doPlotEff"], L1Config["doPlotTest"]);
+    l1Plot->SetTodo(L1Config);
     l1Plot->PreRun(&L1Event, &mL1Seed);
   }
 
@@ -657,6 +657,8 @@ bool L1Menu2016::PrintPUCSV()
   for(auto l1seed : L1PUCount)
   {
     if (l1seed.first == "Count") continue;
+    if (l1seed.first.find("L1A_") !=std::string::npos) continue;
+
     for(auto pu : l1seed.second)
     {
       pucsv << l1seed.first <<","<< pu.first <<","
@@ -1616,7 +1618,7 @@ bool L1Menu2016::FillPileUpSec()
   }
   if (PAGset.size() == 1)
   {
-    std::string l1pagpure = "L1T_Pure"+*(PAGset.begin());
+    std::string l1pagpure = "L1A_Pure"+*(PAGset.begin());
     L1PUCount[l1pagpure][pu]++;
   }
 

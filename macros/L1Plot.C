@@ -735,11 +735,12 @@ bool L1Plot::WriteEffHistogram()
 //         Name:  L1Plot::SetTodo
 //  Description:  
 // ===========================================================================
-void L1Plot::SetTodo (bool doPlotRate_, bool doPlotEff_, bool doPlotTest_)
+void L1Plot::SetTodo ( std::map<std::string, float> &L1Config)
 {
-  doPlotRate = doPlotRate_;
-  doPlotEff = doPlotEff_;
-  doPlotTest = doPlotTest_;
+  doPlotRate = static_cast<bool>(L1Config["doPlotRate"]);
+  doPlotEff =  static_cast<bool>(L1Config["doPlotEff"]);
+  doPlotTest =  static_cast<bool>(L1Config["doPlotTest"]);
+  UseL1CaloTower =  static_cast<bool>(L1Config["UseL1CaloTower"]);
 }       // -----  end of function L1Plot::SetTodo  -----
 
 // ===  FUNCTION  ============================================================
@@ -778,7 +779,11 @@ bool L1Plot::GetRecoFilter() const
 bool L1Plot::TestMETActivity()
 {
   TVector2 L1MET(0, 0);
-  L1MET = GetL1METCalo();
+  if (UseL1CaloTower && l1CaloTower_) {
+    L1MET = GetL1METCalo();
+  } else{
+    
+  }
   double TheETM=L1MET.Mod();
 
   if (recoSum_)
