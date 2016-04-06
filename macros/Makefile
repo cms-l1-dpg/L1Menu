@@ -13,8 +13,8 @@ LDFLAGS    =
 LIBS       = $(shell root-config --libs)   -lTable
 
 ifneq ($(shell echo $$CMSSW_BASE), )
-  CXXFLAGS  += -isystem $(CMSSW_RELEASE_BASE)/src
   CXXFLAGS  += -isystem $(CMSSW_BASE)/src/
+  CXXFLAGS  += -isystem $(CMSSW_RELEASE_BASE)/src
   CXXFLAGS  += -isystem $(shell scram tool info boost | awk -F"=" '/INCLUDE=(.*)/{print $$NF}')
   LIBS += -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)/ -lFWCoreFWLite
   LIBS += -L$(shell scram tool info boost | awk -F"=" '/LIBDIR=(.*)/{print $$NF}') \
