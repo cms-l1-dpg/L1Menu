@@ -56,6 +56,7 @@ int main ( int argc, char *argv[] )
     ("SetMuonER",      po::value<float>(),                                     "Set the ER in eta for Muon")
     ("UseUpgradeLyr1", po::bool_switch()->default_value(false),                "Use Upgrade Layer1 Tree")
     ("UseL1CaloTower", po::bool_switch()->default_value(false),                "Use Layer1 CaloTower Tree")
+    ("UsePFMETNoMuon", po::bool_switch()->default_value(false),                "Use PFMET no Muon in SingleMu sample")
     ("SelectRun",      po::value<int>()->default_value(-1),                    "Select specific run")
     ;
 

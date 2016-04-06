@@ -7,13 +7,8 @@
 #include <iostream>
 #include <cassert>
 #include "TLorentzVector.h"
+#include "L1Struct.h"
 
-enum EtSumType { 
-  ETT = l1t::EtSum::EtSumType::kTotalEt,
-  HTT = l1t::EtSum::EtSumType::kTotalHt,
-  ETM = l1t::EtSum::EtSumType::kMissingEt,
-  HTM = l1t::EtSum::EtSumType::kMissingHt,
-}; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
 
 class L1AlgoFactory: public L1Ntuple{
  public:

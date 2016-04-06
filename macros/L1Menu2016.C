@@ -113,6 +113,7 @@ bool L1Menu2016::InitConfig()
   L1Config["UseUpgradeLyr1"] = -1;
   L1Config["UseL1CaloTower"] = -1;
   L1Config["SelectRun"] = -1;
+  L1Config["UsePFMETNoMuon"] = 0;
   
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -952,6 +953,8 @@ bool L1Menu2016::CheckPhysFire()
   for(auto fired : FireSeed)
   {
     L1Seed &seed = mL1Seed[fired];
+    //if (writefiles)
+      //*outfile <<  event_->run <<","<<event_->lumi<<"," <<event_->event<<","<<seed.name << std::endl;
     for(auto pog : seed.POG)
     {
       if (FiredPhy.insert(pog).second) PhyCounts[pog]++;

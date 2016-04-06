@@ -16,6 +16,15 @@
 
 #ifndef  MY_L1STRUCT_INC
 #define  MY_L1STRUCT_INC
+ 
+#include "DataFormats/L1Trigger/interface/EtSum.h"
+
+enum EtSumType { 
+  ETT = l1t::EtSum::EtSumType::kTotalEt,
+  HTT = l1t::EtSum::EtSumType::kTotalHt,
+  ETM = l1t::EtSum::EtSumType::kMissingEt,
+  HTM = l1t::EtSum::EtSumType::kMissingHt,
+}; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
 
 struct L1Seed
 {

@@ -136,8 +136,7 @@ class L1Plot
     bool doPlotEff;
     bool doPlotTest;
     bool UseL1CaloTower;
-
-
+    bool UsePFMETNoMuon;
 
     StructL1Event *L1Event;
     std::map<std::string, L1Seed> *mL1Seed;

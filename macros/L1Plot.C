@@ -141,7 +141,6 @@ bool L1Plot::BookTestHistogram()
   hTest1F["L1MET"]          = new TH1F("L1MET","L1MET",                                          150, 0,    150);
   hTest1F["PFMET"]          = new TH1F("PFMET","PFMET",                                          150, 0,    150);
   hTest1F["L1METPFMET"]     = new TH1F("L1METPFMET","L1METPFMET;L1MET/PFMET;Events",             100, 0, 5);
-  hTest1F["L1METPFMETNoMu"] = new TH1F("L1METPFMETNoMu","L1METPFMETNoMu;L1MET/PFMETNoMu;Events", 100, 0, 5);
   hTest1F["PFMETVNoMu"]     = new TH1F("PFMETVNoMu","PFMETVNoMu;PFMET-PFMETNoMu;Events",         200, -100, 100);
   hTest1F["L1METx"]         = new TH1F("L1METx","L1METx",                                        100, -50,  50);
   hTest1F["L1METy"]         = new TH1F("L1METy","L1METy",                                        100, -50,  50);
@@ -737,10 +736,11 @@ bool L1Plot::WriteEffHistogram()
 // ===========================================================================
 void L1Plot::SetTodo ( std::map<std::string, float> &L1Config)
 {
-  doPlotRate = static_cast<bool>(L1Config["doPlotRate"]);
-  doPlotEff =  static_cast<bool>(L1Config["doPlotEff"]);
-  doPlotTest =  static_cast<bool>(L1Config["doPlotTest"]);
-  UseL1CaloTower =  static_cast<bool>(L1Config["UseL1CaloTower"]);
+  doPlotRate     = static_cast<bool>(L1Config["doPlotRate"]);
+  doPlotEff      = static_cast<bool>(L1Config["doPlotEff"]);
+  doPlotTest     = static_cast<bool>(L1Config["doPlotTest"]);
+  UseL1CaloTower = static_cast<bool>(L1Config["UseL1CaloTower"]);
+  UsePFMETNoMuon = static_cast<bool>(L1Config["UsePFMETNoMuon"]);
 }       // -----  end of function L1Plot::SetTodo  -----
 
 // ===  FUNCTION  ============================================================
@@ -779,45 +779,56 @@ bool L1Plot::GetRecoFilter() const
 bool L1Plot::TestMETActivity()
 {
   TVector2 L1MET(0, 0);
+  TVector2 PFMET(0, 0);
   if (UseL1CaloTower && l1CaloTower_) {
     L1MET = GetL1METCalo();
   } else{
-    
+    for (unsigned int i = 0; i < upgrade_->sumType.size(); ++i )
+    {
+      if (upgrade_->sumType.at(i) == EtSumType::ETM && upgrade_->sumBx.at(i) == 0)
+      {
+        L1MET.SetMagPhi(upgrade_->sumEt.at(i), upgrade_->sumPhi.at(i));
+        break;
+      }
+    }
+    assert(L1MET.Mod() == L1Event->ETM);
   }
-  double TheETM=L1MET.Mod();
 
   if (recoSum_)
   {
-    double PFMET = recoSum_->met;
-    double PFMETphi = recoSum_->metPhi;
-    TVector2 PFMETnoMu = GetRecoMETNoMu();
-    double RecoAct =TestRecoAct(1.6);
-    hTest2F["L1METResVsRecoAct"]->Fill(RecoAct, TheETM/PFMET);
-    hTest2F["PFMETxVsRecoAct"] -> Fill(RecoAct, PFMET * TMath::Cos(PFMETphi));
-    hTest2F["PFMETyVsRecoAct"] -> Fill(RecoAct, PFMET * TMath::Sin(PFMETphi));
-    hTest2F["L1METxVsRecoAct"] -> Fill(RecoAct, L1MET.Px());
-    hTest2F["L1METyVsRecoAct"] -> Fill(RecoAct, L1MET.Py());
-
-    hTest2F["L1METResVsPFMET"]->Fill(PFMET, TheETM/PFMET);
-    hTest1F["PFMET"]->Fill(PFMET);
-    hTest1F["L1METPFMET"]->Fill(TheETM/PFMET);
-    hTest1F["PFMETVNoMu"]->Fill(PFMET-PFMETnoMu.Mod());
-    hTest1F["L1METPFMETNoMu"]->Fill(TheETM/PFMETnoMu.Mod());
-    hTest1F["PFMETx"]->Fill(PFMET * TMath::Cos(PFMETphi));
-    hTest1F["PFMETy"]->Fill(PFMET * TMath::Sin(PFMETphi));
-    if (recoVtx_)
-    {
-      hTest2F["PFMETxVsNvtx"] -> Fill(recoVtx_->nVtx, PFMET * TMath::Cos(PFMETphi));
-      hTest2F["PFMETyVsNvtx"] -> Fill(recoVtx_->nVtx, PFMET * TMath::Sin(PFMETphi));
-      hTest2F["L1METxVsNvtx"] -> Fill(recoVtx_->nVtx, L1MET.Px());
-      hTest2F["L1METyVsNvtx"] -> Fill(recoVtx_->nVtx, L1MET.Py());
-      hTest2F["L1METResVsNvtx"] -> Fill(recoVtx_->nVtx, TheETM / PFMET );
-    }
+    PFMET.SetMagPhi(recoSum_->met, recoSum_->metPhi);
+    if (UsePFMETNoMuon)
+      PFMET = GetRecoMETNoMu();
   }
 
+  double L1Met=L1MET.Mod();
+  double PFMet=PFMET.Mod();
+  double RecoAct =TestRecoAct(1.6);
+
+  hTest2F["L1METResVsRecoAct"]->Fill(RecoAct, L1Met/PFMet);
+  hTest2F["PFMETxVsRecoAct"] -> Fill(RecoAct, PFMET.Px());
+  hTest2F["PFMETyVsRecoAct"] -> Fill(RecoAct, PFMET.Px());
+  hTest2F["L1METxVsRecoAct"] -> Fill(RecoAct, L1MET.Px());
+  hTest2F["L1METyVsRecoAct"] -> Fill(RecoAct, L1MET.Py());
+  hTest2F["L1METResVsPFMET"]->Fill(PFMet, L1Met/PFMet);
+
+  hTest1F["PFMET"]->Fill(PFMet);
+  hTest1F["PFMETx"]->Fill(PFMET.Px());
+  hTest1F["PFMETy"]->Fill(PFMET.Py());
+  hTest1F["L1MET"]->Fill(L1Met);
   hTest1F["L1METx"]->Fill(L1MET.Px());
   hTest1F["L1METy"]->Fill(L1MET.Py());
-  hTest1F["L1MET"]->Fill(TheETM);
+  hTest1F["L1METPFMET"]->Fill(L1Met/PFMet);
+  hTest1F["PFMETVNoMu"]->Fill(PFMet-GetRecoMETNoMu().Mod());
+  if (recoVtx_)
+  {
+    hTest2F["PFMETxVsNvtx"] -> Fill(recoVtx_->nVtx, PFMET.Px());
+    hTest2F["PFMETyVsNvtx"] -> Fill(recoVtx_->nVtx, PFMET.Py());
+    hTest2F["L1METxVsNvtx"] -> Fill(recoVtx_->nVtx, L1MET.Px());
+    hTest2F["L1METyVsNvtx"] -> Fill(recoVtx_->nVtx, L1MET.Py());
+    hTest2F["L1METResVsNvtx"] -> Fill(recoVtx_->nVtx, L1Met / PFMet );
+  }
+
   return true;
 }       // -----  end of function L1Plot::TestMETActivity  -----
 
