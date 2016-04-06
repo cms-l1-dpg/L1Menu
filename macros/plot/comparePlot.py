@@ -10,13 +10,15 @@ import matplotlib.pyplot as plt
 NORM=False
 LOG=True
 # obj = "SingleJet"
-obj = "HTT"
+# obj = "HTT"
+# obj = "ETM22"
+# obj = "ETM50"
 # obj = "HTM"
+obj = "SingleMu"
 dump =[]
 
 gStyle.SetOptStat(False)
-# fileNames=["../results/r259721_tsgv2.root"]
-# # fileNames=["../results/r259721_tsgv2.root"]
+fileNames=["../results/r259721_tsgv4plusLayer1_ETM.root"]
 # gROOT.SetBatch(True)
 
 class EFFFIT:
@@ -55,6 +57,7 @@ def Get95Eff(g):
         if y >= 0.1:
             xminf = x
             break
+    # xminf=40
     xmaxf= gx[-1]
     width=20.
     mean=200.
@@ -96,7 +99,7 @@ if __name__ == "__main__":
         print "No files specified"
         exit()
 
-    if not os.path.exists("plots"): 
+    if not os.path.exists("plots"):
         os.mkdir("plots")
 
     files=[]
@@ -134,9 +137,10 @@ if __name__ == "__main__":
     # mg.GetYaxis().SetTitle("Efficiency")
     raw_input('\npress return to continue...')
     c.SaveAs("turnon.png")
+    c.SaveAs("turnon.root")
 
     plt.scatter(x, y)
     plt.xlabel("Online %s" % obj)
-    plt.ylabel("offline HT with 95\% eff")
+    plt.ylabel("offline %s with 95%% eff" % "ETM")
     plt.show()
     plt.savefig("dia.png")
