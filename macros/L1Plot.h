@@ -116,6 +116,7 @@ class L1Plot
     bool GoodRecoJet(int ijet) const;
     bool GetRecoFilter() const;
     TVector2 GetRecoMETNoMu() const;
+    TVector2 GetL1METCalo();
     inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
     double FunLeadingPt(std::string obj);
 
