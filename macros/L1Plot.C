@@ -163,14 +163,12 @@ bool L1Plot::BookTestHistogram()
   hTestPro["HCalVsiEta"]     = new TProfile("HCalVsiEta","HCalVsiEta; iEta; HCalTower",           84, -42, 42);
   hTestPro["CaloVsiEta"]     = new TProfile("CaloVsiEta","CaloVsiEta; iEta; CaloTower",           84, -42, 42);
 
-
-
 //**************************************************************************//
 //                                Muon Study                                //
 //**************************************************************************//
-  hTest2F["Mu5BxEta"]  = new TH2F("Mu5BxEta","Mu5BxEta; muonEta (pT>5); muonBX",    50, -2.5, 2.5, 5, -2, 2);
-  hTest2F["Mu16BxEta"] = new TH2F("Mu16BxEta","Mu16BxEta; muonEta (pT>16); muonBX", 50, -2.5, 2.5, 5, -2, 2);
-  hTest2F["Mu25BxEta"] = new TH2F("Mu25BxEta","Mu25BxEta; muonEta (pT>25); muonBX", 50, -2.5, 2.5, 5, -2, 2);
+  hTest2F["Mu5BxEta"]  = new TH2F("Mu5BxEta","Mu5BxEta; muonEta (pT>5); muonBX",    60, -3, 3, 6, -3, 3);
+  hTest2F["Mu16BxEta"] = new TH2F("Mu16BxEta","Mu16BxEta; muonEta (pT>16); muonBX", 60, -3, 3, 6, -3, 3);
+  hTest2F["Mu25BxEta"] = new TH2F("Mu25BxEta","Mu25BxEta; muonEta (pT>25); muonBX", 60, -3, 3, 6, -3, 3);
   return true;
 }       // -----  end of function L1Plot::BookTestHistogram  -----
 
@@ -791,7 +789,6 @@ bool L1Plot::TestMETActivity()
         break;
       }
     }
-    assert(L1MET.Mod() == L1Event->ETM);
   }
 
   if (recoSum_)
