@@ -2,7 +2,7 @@
 ODIR     =  objs
 CXX      =  g++
 CXXFLAGS =  -std=c++11
-CXXFLAGS += -Wall-fPIC -O3
+CXXFLAGS += -Wall -fPIC -O3
 #CXXFLAGS  += -g -pg
 #CXXFLAGS  += -Wextra
 #CXXFLAGS += -Wextra -Weffc++ #Asking for troubles
