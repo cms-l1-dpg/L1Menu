@@ -18,10 +18,11 @@ class L1AlgoFactory: public L1Ntuple{
   {};
   //L1AlgoFactory(TTree *tree);
 
-  void SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin=4);
+  void SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin=2);
   void DoubleMuPt(Float_t& mu1pt, Float_t& mu2pt, Bool_t isHighQual = false, Bool_t isER = false);
   void TripleMuPt(Float_t& mu1pt, Float_t& mu2pt, Float_t& mu3pt, Int_t qualmin = 4);
   void QuadMuPt(Float_t& mu1pt, Float_t& mu2pt, Float_t& mu3pt, Float_t& mu4pt, Int_t qualmin = 4);
+  void ComplexSingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin, int muonType=0, int muonBX=0);
 
   void SingleEGPt(Float_t& ptcut, Bool_t isIsolated, Bool_t isER);
   void DoubleEGPt(Float_t& ele1pt, Float_t& ele2pt, Bool_t isIsolated = false, Bool_t isER = false);
@@ -58,7 +59,8 @@ class L1AlgoFactory: public L1Ntuple{
   void ETTVal(Float_t& ETTcut);
 
 
-  Bool_t SingleMu(Float_t ptcut, Bool_t isER, Int_t qualmin=4);
+  Bool_t SingleMu(Float_t ptcut, Bool_t isER, Int_t qualmin=2);
+  Bool_t ComplexSingleMu(Float_t& ptcut, Bool_t isER, Int_t qualmin=2, Int_t muonType=0, Int_t muonBX=0);
   Bool_t DoubleMu(Float_t mu1pt, Float_t mu2pt, Bool_t isHighQual = false, Bool_t isER = false);
   Bool_t TripleMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Int_t qualmin);
   Bool_t QuadMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Float_t mu4pt, Int_t qualmin);

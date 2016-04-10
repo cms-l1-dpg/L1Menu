@@ -26,7 +26,8 @@ L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
   menufilename(MenuName), 
   tuplefilename(filelist),
   scale(0),
-  l1Plot(nullptr)
+  l1Plot(nullptr),
+  l1TnP(nullptr)
 {
   InitConfig();
 }  // -----  end of method L1Menu2016::L1Menu2016  (constructor)  -----
@@ -98,7 +99,8 @@ bool L1Menu2016::InitConfig()
 {
   L1Config["isData"] = 0;
   L1Config["SumJetET"] = 0;
-  L1Config["nBunches"] = 2736;
+  L1Config["nBunches"] = 3965.4; //Scaling Run259721 to 1.15E34 Lumi
+  //L1Config["nBunches"] = 2736;
   //L1Config["nBunches"] = 0;
   L1Config["AveragePU"] = 0;
   L1Config["Energy"] = 0;
@@ -106,6 +108,7 @@ bool L1Menu2016::InitConfig()
   L1Config["doPlotRate"] = 0;
   L1Config["doPlotEff"] = 0;
   L1Config["doPlotTest"] = 0;
+  L1Config["doTnPMuon"] = 0;
   L1Config["doPrintLS"] = 0;
   L1Config["doPrintPU"] = 0;
   L1Config["maxEvent"] = -1;
@@ -493,6 +496,13 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
     ReadDataPU();
   }
     
+  if (false && L1Config["doTnPMuon"]) // Not ready yet
+  {
+    l1TnP = new L1TnP(outrootfile, event_, upgrade_, recoJet_,
+        recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_);
+    if (L1Config["doTnPMuon"])
+      l1TnP->DoMuonTnP();
+  }
 
   if (L1Config["SetMuonER"] != -1) SetMuonER(L1Config["SetMuonER"]);
   if (L1Config["UseUpgradeLyr1"] != -1) SetUseUpgradeLyr1(L1Config["UseUpgradeLyr1"]);
@@ -565,7 +575,7 @@ bool L1Menu2016::Loop()
 {
   ////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Initial ~~~~~
   //Int_t nevents = fChain->GetEntriesFast();//GetEntries();
-  int currentLumi(-1);
+  unsigned int currentLumi(-1);
   nZeroBiasevents = 0.;
   nFireevents = 0.;
   nLumi = 0;
@@ -608,6 +618,10 @@ bool L1Menu2016::Loop()
 
     if (l1Plot != NULL)
       l1Plot->RunPlot();
+
+    if (l1TnP != NULL)
+      l1TnP->RunTnP();
+
   }
 
   return true;
@@ -638,6 +652,9 @@ bool L1Menu2016::PostLoop()
 
   if (l1Plot != NULL)
     l1Plot->PostRun(scale);
+
+  if (l1TnP != NULL)
+    l1TnP->PostRun();
   
   if (L1Config["doPrintPU"])
   {
@@ -1071,6 +1088,7 @@ bool L1Menu2016::ParseL1Seed(const std::string SeedName)
   // EG_Sum
   if (ParseEGSum(SeedName)) return true;
 
+  if (ParseComplexSingleMu(SeedName)) return true;
   // EGMass
   //if (ParseMultiEGMass(SeedName)) return true;
 
@@ -1509,6 +1527,66 @@ bool L1Menu2016::ParseMuSum(const std::string& SeedName)
 
   return false;
 }       // -----  end of function L1Menu2016::ParseMuSum  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseComplexSingleMu
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseComplexSingleMu(const std::string& SeedName) 
+{
+  // This function overlap wiht ParseSingleObject. The code shouldn't come
+  // here for simple singleMu trigger. Check for safety
+  if (L1SeedFun.find(SeedName)!= L1SeedFun.end())
+    return false;
+
+  std::smatch base_match;
+  std::regex integer("L1_Single([^0-9_]+)([0-9]+)([^0-9_]*)(_(EMTF|OMTF|BMTF))*(_Bx([-+0-9]+))*(_(Open|LowQ|HighQ))*");
+  std::string L1object ="";
+  std::string postfix = "";
+  std::string muonType = "";
+  std::string muonQual = "";
+  int muonBx = 0;
+  int imuonQual = 2;
+  int imuonType = 0;
+  float muonpt = -10;
+
+  if (std::regex_match(SeedName, base_match, integer))
+  {
+    L1object = base_match[1];
+    muonpt = std::stoi(base_match[2], nullptr);
+    postfix =  base_match[3];
+    if (base_match[4] != "")
+    {
+      muonType = base_match[5];
+    }
+    if (base_match[6]!="")
+    {
+      muonBx = std::stoi(base_match[7], nullptr);
+    }
+    if (base_match[8] != "")
+    {
+      muonQual = base_match[9];
+    }
+  }
+
+  if (!muonQual.empty())
+  {
+    if (muonQual == "Open") imuonQual = 0;
+    if (muonQual == "LowQ") imuonQual = 1;
+    if (muonQual == "HighQ") imuonQual = 2;
+  }
+
+  if (!muonType.empty())
+  {
+    if (muonType == "BMTF") imuonType = 1;
+    if (muonType == "OMTF") imuonType = 2;
+    if (muonType == "EMTF") imuonType = 3;
+  }
+  assert(L1object == "Mu");
+  bool isER = postfix=="er";
+  L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::ComplexSingleMu, this, muonpt,  isER, imuonQual, imuonType, muonBx);
+  return true;
+}       // -----  end of function L1Menu2016::ParseComplexSingleMu  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::FillLumiSection

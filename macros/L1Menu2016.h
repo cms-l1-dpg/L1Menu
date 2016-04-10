@@ -38,6 +38,7 @@
 // Local
 #include "L1AlgoFactory.h"
 #include "L1Plot.h"
+#include "L1TnP.h"
 #include "L1Struct.h"
 
 #define INFTY 262139
@@ -100,6 +101,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseDoubleEG(const std::string& SeedName);
     bool ParseTripleEG(const std::string& SeedName);
     bool ParseEGSum(const std::string& SeedName);
+    bool ParseComplexSingleMu(const std::string& SeedName);
 
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);
@@ -159,6 +161,7 @@ class L1Menu2016 : public L1AlgoFactory
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;
     L1Plot *l1Plot;
+    L1TnP *l1TnP;
 
     std::map<std::string, float*> L1ObjectMap;
     std::map<std::string, float> L1Config;

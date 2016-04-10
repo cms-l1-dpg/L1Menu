@@ -21,7 +21,7 @@ ifneq ($(shell echo $$CMSSW_BASE), )
 		  -lboost_program_options -lboost_filesystem
 endif
 
-OBJS = L1Ntuple.o L1AlgoFactory.o L1Plot.o
+OBJS = L1Ntuple.o L1AlgoFactory.o L1Plot.o L1TnP.o
 
 PROGRAM = testMenu2016 RunL1Menu2016
 

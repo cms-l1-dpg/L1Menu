@@ -290,6 +290,51 @@ void L1AlgoFactory::SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin) {
   return;
 }
 
+Bool_t L1AlgoFactory::ComplexSingleMu(Float_t& ptcut, Bool_t isER, Int_t qualmin, int muonType, int muonBX) {
+  Float_t tmp_cut = -10.;
+  ComplexSingleMuPt(tmp_cut,isER, qualmin, muonType, muonBX);
+  if(tmp_cut >= ptcut) return true;
+  return false;
+}
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::ComplexSingleMuPt
+//  Description:  
+// ===========================================================================
+void L1AlgoFactory::ComplexSingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin, int muonType, int muonBX)
+{
+  if(upgrade_->nMuons < 1) return;
+
+  Float_t ptmax = -10.;
+
+  for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
+    // Select muonBX
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if(bx != muonBX) continue;
+
+    // Select muonType 
+    // 1:BMTF -> > 35 && < 72
+    // 2:OMTF -> ( >= 18 && <=35 ) || (>=72 && <=89 )
+    // 3:EMTF -> < 18 || > 89
+    Int_t TfIdx = upgrade_->muonTfMuonIdx.at(imu);
+    if (muonType == 1 && ! (TfIdx > 35 && TfIdx < 72))
+      continue;
+    if (muonType == 2 && ! ( ( TfIdx >= 18 && TfIdx <= 35) || (TfIdx>= 72 && TfIdx <= 89)))
+      continue;
+    if (muonType == 3 && ! (TfIdx< 18 || TfIdx < 89))
+      continue;
+
+    if(!PassMuonQual(imu, qualmin)) continue;
+    Float_t eta = upgrade_->muonEta.at(imu);        
+    if(fabs(eta) > muonER && isER) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);                       
+
+    if(pt >= ptmax) ptmax = pt;
+  }
+
+  ptcut = ptmax;
+}       // -----  end of function L1AlgoFactory::ComplexSingleMuPt  -----
+
 void L1AlgoFactory::DoubleMuPt(Float_t& cut1, Float_t& cut2, Bool_t isMuHighQual, Bool_t isER) {
 
   Float_t mu1ptmax = -10.;

@@ -62,6 +62,7 @@ class L1Plot
         L1Analysis::L1AnalysisRecoMetDataFormat       *recoSum__    = nullptr,
         L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle__    = nullptr,
         L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon__   = nullptr,
+
         L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__    = nullptr,
         L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__ = nullptr,
         L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_ = nullptr,
@@ -88,6 +89,36 @@ class L1Plot
 
   protected:
     // ====================  METHODS       ===============================
+    bool GetRecoFilter() const;
+    bool GoodRecoJet(int ijet) const;
+    std::vector<TLorentzVector> GetRecoTau(bool isER=false, int Iso =0) const;
+    std::vector<TLorentzVector> GetRecoMuon(float MuERcut=999, float IsoCut=0, int qual=0) const;
+    std::vector<TLorentzVector> GetRecoEle(bool isER=false, float IsoCut=0, int qual=0) const;
+    std::vector<TLorentzVector> GetRecoJet(bool isCent=false) const;
+
+    // ====================  DATA MEMBERS  ===============================
+    TFile        *outfile;
+    L1Analysis::L1AnalysisEventDataFormat         *event_;
+    L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade_;
+    L1Analysis::L1AnalysisRecoJetDataFormat       *recoJet_;
+    L1Analysis::L1AnalysisRecoMetDataFormat       *recoSum_;
+    L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle_;
+    L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
+    L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau_;
+    L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
+    L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
+    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_;
+
+  private:
+    // ====================  METHODS       ===============================
+    std::vector<TLorentzVector> GetRecoSum(std::string type ) const;
+    std::vector<TLorentzVector> GetRecoHTLocal() const;
+    std::vector<TLorentzVector> GetRecoHTMLocal() const;
+    TVector2 GetRecoMETNoMu() const;
+    TVector2 GetL1METCalo();
+    inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
+    double FunLeadingPt(std::string obj);
+
     bool BookRateHistogram();
     bool FillRateHistogram();
     bool WriteRateHistogram(double scale) const;
@@ -103,35 +134,6 @@ class L1Plot
     float TestRecoAct(float eta) const;
     bool TestMuon();
     // ====================  DATA MEMBERS  ===============================
-
-  private:
-    // ====================  METHODS       ===============================
-    std::vector<TLorentzVector> GetRecoTau(bool isER=false, int Iso =0) const;
-    std::vector<TLorentzVector> GetRecoMuon(float MuERcut=999, float IsoCut=0, int qual=0) const;
-    std::vector<TLorentzVector> GetRecoEle(bool isER=false, float IsoCut=0, int qual=0) const;
-    std::vector<TLorentzVector> GetRecoJet(bool isCent=false) const;
-    std::vector<TLorentzVector> GetRecoSum(std::string type ) const;
-    std::vector<TLorentzVector> GetRecoHTLocal() const;
-    std::vector<TLorentzVector> GetRecoHTMLocal() const;
-    bool GoodRecoJet(int ijet) const;
-    bool GetRecoFilter() const;
-    TVector2 GetRecoMETNoMu() const;
-    TVector2 GetL1METCalo();
-    inline bool SortVTLVs(std::vector<TLorentzVector> &reTLVs) const;
-    double FunLeadingPt(std::string obj);
-
-    // ====================  DATA MEMBERS  ===============================
-    TFile        *outfile;
-    L1Analysis::L1AnalysisEventDataFormat         *event_;
-    L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade_;
-    L1Analysis::L1AnalysisRecoJetDataFormat       *recoJet_;
-    L1Analysis::L1AnalysisRecoMetDataFormat       *recoSum_;
-    L1Analysis::L1AnalysisRecoElectronDataFormat  *recoEle_;
-    L1Analysis::L1AnalysisRecoMuon2DataFormat     *recoMuon_;
-    L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau_;
-    L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
-    L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
-    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_;
     bool doPlotRate;
     bool doPlotEff;
     bool doPlotTest;
