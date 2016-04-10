@@ -1,7 +1,8 @@
 ######### GENERAL STUFF: DON NOT CONSIDER
-CXX = g++
-CXXFLAGS  = -std=c++11
-CXXFLAGS  += -Wall -fPIC -O3
+ODIR     =  objs
+CXX      =  g++
+CXXFLAGS =  -std=c++11
+CXXFLAGS += -Wall-fPIC -O3
 #CXXFLAGS  += -g -pg
 #CXXFLAGS  += -Wextra
 #CXXFLAGS += -Wextra -Weffc++ #Asking for troubles
@@ -21,16 +22,17 @@ ifneq ($(shell echo $$CMSSW_BASE), )
 		  -lboost_program_options -lboost_filesystem
 endif
 
-OBJS = L1Ntuple.o L1AlgoFactory.o L1Plot.o L1TnP.o
+TestOBJS = L1Ntuple L1AlgoFactory L1Menu2016 L1Plot L1TnP 
+OBJS := $(TestOBJS:%=$(ODIR)/%.o)
 
 PROGRAM = testMenu2016 RunL1Menu2016
 
 MKBIN = $(CXX) $(CXXFLAGS) `root-config  --libs --cflags` -lMinuit -lGenVector
 
-%.o : %.C
+$(ODIR)/%.o : %.C
 	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -o $@ -c $<
 
-%.o : %.cc
+$(ODIR)/%.o : %.cc
 	$(CXX) $(CXXFLAGS) $(CXXDEPFLAGS) -o $@ -c $<
 
 all : $(PROGRAM)
@@ -38,17 +40,17 @@ all : $(PROGRAM)
 comparePlots : comparePlots.cc 
 	$(MKBIN) $< -o $@ 
 
-RunL1Menu2016 : RunL1Menu2016.o $(OBJS)
+RunL1Menu2016 : $(ODIR)/RunL1Menu2016.o $(OBJS)
 	@echo "Linking $(PROGRAM) ..."
 	$(LD) $^ $(LIBS)  -o $@
 	@echo "done"
 
-testMenu2016 : testMenu2016.o L1Menu2016.o  $(OBJS)
+testMenu2016 : $(ODIR)/testMenu2016.o $(OBJS)
 	@echo "Linking $(PROGRAM) ..."
 	$(LD) $^ $(LIBS)  -o $@
 	@echo "done"
 
 clean:
-	rm -f *exe *.o $(PROGRAM) $(OBJS)
+	rm -f *exe *.o $(PROGRAM) $(OBJS) $(ODIR)/*.o
 
 
