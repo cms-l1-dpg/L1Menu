@@ -312,6 +312,7 @@ void L1AlgoFactory::ComplexSingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin
     Int_t bx = upgrade_->muonBx.at(imu);
     if(bx != muonBX) continue;
 
+#ifndef  L1T_PRE_TSGV3 //muonTfMuonIdx doesn't exist at and before TSGv3
     // Select muonType 
     // 1:BMTF -> > 35 && < 72
     // 2:OMTF -> ( >= 18 && <=35 ) || (>=72 && <=89 )
@@ -323,6 +324,7 @@ void L1AlgoFactory::ComplexSingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin
       continue;
     if (muonType == 3 && ! (TfIdx< 18 || TfIdx < 89))
       continue;
+#endif     // -----  not L1T_POST_TSGV3  -----
 
     if(!PassMuonQual(imu, qualmin)) continue;
     Float_t eta = upgrade_->muonEta.at(imu);        

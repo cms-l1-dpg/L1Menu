@@ -17,6 +17,10 @@
 #ifndef  MY_L1STRUCT_INC
 #define  MY_L1STRUCT_INC
  
+// Some global config tag for dataformat changes
+//#define L1T_PRE_TSGV3
+
+
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 
 enum EtSumType { 
