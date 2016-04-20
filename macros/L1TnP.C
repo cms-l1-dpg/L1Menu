@@ -93,13 +93,43 @@ bool L1TnP::DoMuonTnP()
 // ===========================================================================
 bool L1TnP::BookMuonHistogram()
 {
+  hMuon1F["nRecoMuons"]  = new TH1F("nRecoMuons", "nRecoMuons;No. of Reco Muons;Events", 10, 0, 10);
   hMuon1F["RecoZMass"]  = new TH1F("RecoZMass", "RecoZMass;Reco Z mass;Events", 120, 60, 120);
   hMuon1F["RecoZPt"]  = new TH1F("RecoZPt", "RecoZPt;Reco Z Pt;Events", 120, 0, 120);
+  hMuon1F["AllZMass"]  = new TH1F("AllZMass", "AllZMass;All Z mass;Events", 120, 60, 120);
+  hMuon1F["AllZPt"]  = new TH1F("AllZPt", "AllZPt;All Z Pt;Events", 120, 0, 120);
 
   hMuon2F["RecL1dR"]  = new TH2F("RecL1dR", "RecL1dR;Reco Muon Pt; dR(L1Mu, recoMu)", 200, 0, 200, 10, 0, 0.1);
   hMuon2F["RecL1dPt"]  = new TH2F("RecL1dPt", "RecL1dPt;Reco Muon Pt; dPt(L1Mu, recoMu)", 200, 0, 200, 100, -100, 100);
   return true;
 }       // -----  end of function L1TnP::BookMuonHistogram  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1TnP::BookMuonEffHist
+//  Description:  
+// ===========================================================================
+bool L1TnP::BookMuonEffHist(const std::string prefix) 
+{
+  std::string name = prefix + "_EffPt";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 100, 0, 100 );
+  name = prefix + "_EffPt_BMTF";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 100, 0, 100 );
+  name = prefix + "_EffPt_OMTF";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 100, 0, 100 );
+  name = prefix + "_EffPt_EMTF";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 100, 0, 100 );
+  name = prefix + "_EffEta";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 50, -2.5, 2.5 );
+  name = prefix + "_EffEta_Pt16";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 50, -2.5, 2.5 );
+  name = prefix + "_EffEta_Pt20";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 50, -2.5, 2.5 );
+  name = prefix + "_EffEta_Pt30";
+  hMuonEff[name] = new TEfficiency(name.c_str(), name.c_str(), 50, -2.5, 2.5 );
+
+  return true;
+}       // -----  end of function L1TnP::BookMuonEffHist  -----
+
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1TnP::WriteMuonHistogram
@@ -134,17 +164,35 @@ bool L1TnP::WriteMuonHistogram() const
 // ===========================================================================
 bool L1TnP::RunMuonTnP()
 {
-  if (!GetRecoFilter()) return false;
-  std::vector<TLorentzVector> RecoMuons = GetRecoMuon(999, 0.15, 2); 
+  // Veto bad event
+  bool passFilter = true && recoFilter_->goodVerticesFilter
+                   && recoFilter_->cscTightHalo2015Filter
+                   && recoFilter_->eeBadScFilter
+                   && recoFilter_->ecalDeadCellTPFilter
+                   && recoFilter_->hbheNoiseIsoFilter
+                   && recoFilter_->hbheNoiseFilter
+                   && recoFilter_->chHadTrackResFilter
+                   && recoFilter_->muonBadTrackFilter;
+  if (!passFilter) return passFilter; // If event is skip aleady
+
+  // Get medium PFMuons
+  std::vector<TLorentzVector> RecoMuons = GetRecoMuon(2.4, 0.15, 2); 
+  hMuon1F["nRecoMuons"] -> Fill(RecoMuons.size());
+
+  // Check whether these are Z, now RecoMuons are the two muon from Z
   if (!Mu_PassRecoZ(RecoMuons)) return false;
 
+  // Mapping recoMuon to L1Muon by index
+  std::unordered_map<int, int> MuRecL1 = Mu_MapRecoL1(RecoMuons, 1, 0);
+  assert(MuRecL1.size() == 2);
 
   return true;
 }       // -----  end of function L1TnP::RunMuonTnP  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1TnP::Mu_PassRecoZ
-//  Description:  
+//  Description:  No charge in recoMuon stored. Form Z with 20GeV window for
+//  stat.
 // ===========================================================================
 bool L1TnP::Mu_PassRecoZ(std::vector<TLorentzVector> &rMuons )
 {
@@ -174,6 +222,8 @@ bool L1TnP::Mu_PassRecoZ(std::vector<TLorentzVector> &rMuons )
     }
   }
 
+  hMuon1F["AllZMass"] ->Fill(bestRecoZ.M());
+  hMuon1F["AllZPt"] ->Fill(bestRecoZ.Pt());
   if (bestRecoZ.Pt() != 0 && sumCharge == 0 && (bestRecoZ.M() > zMassMin) && (bestRecoZ.M() < zMassMax))
   {
     hMuon1F["RecoZMass"] ->Fill(bestRecoZ.M());
@@ -199,8 +249,12 @@ bool L1TnP::Mu_PassRecoZ(std::vector<TLorentzVector> &rMuons )
 // ===========================================================================
 std::unordered_map<int, int> L1TnP::Mu_MapRecoL1(std::vector<TLorentzVector> &rMuons, int l1qualmin, int l1muonBX)
 {
-  const float dRMax = 1.0;
+  const float dRMax = 0.5;
   std::unordered_map<int, int> RecL1Mu;
+  for(unsigned irMu = 0; irMu < rMuons.size(); irMu++)
+  {
+    RecL1Mu[irMu] = -1;
+  }
 
   for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     // Select muonBX
@@ -216,7 +270,7 @@ std::unordered_map<int, int> L1TnP::Mu_MapRecoL1(std::vector<TLorentzVector> &rM
       TLorentzVector rMu = rMuons.at(irMu);
       if (l1Mu.DeltaR(rMu) < dRMax) 
       {
-        if (RecL1Mu.find(irMu) == RecL1Mu.end())
+        if (RecL1Mu[irMu] == -1)
         {
           RecL1Mu[irMu] = imu;
         } else{ // Multiple L1Mu map to RecoMuon
@@ -266,3 +320,14 @@ unsigned int L1TnP::Mu_PickOverlapL1Mu(TLorentzVector &rMu, unsigned int imu1, u
 
   return -1;
 }       // -----  end of function L1TnP::Mu_PickOverlapL1Mu  -----
+
+
+//// ===  FUNCTION  ============================================================
+////         Name:  L1TnP::Mu_GetTagProbeLegs
+////  Description:  
+//// ===========================================================================
+  //std::vector<std::pair<TLorentzVector, int> > 
+//L1TnP::Mu_GetTagProbeLegs( std::vector<TLorentzVector> &rMuons, std::unordered_map<int, int> MuRecL1 )
+//{
+  //return true;
+//}       // -----  end of function L1TnP::Mu_GetTagProbeLegs  -----

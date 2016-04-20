@@ -80,6 +80,7 @@ class L1TnP : public L1Plot
     bool BookMuonHistogram();
     bool RunMuonTnP();
     bool WriteMuonHistogram() const;
+    bool BookMuonEffHist(const std::string prefix);
 
     unsigned int Mu_PickOverlapL1Mu(TLorentzVector &rMu, unsigned int imu1, unsigned int imu2, unsigned int opt);
     bool Mu_PassRecoZ(std::vector<TLorentzVector> &rMuons );
@@ -87,7 +88,6 @@ class L1TnP : public L1Plot
 
     // ====================  DATA MEMBERS  ===============================
     bool doMuonTnP;
-
 
 }; // -----  end of class L1TnP  -----
 

@@ -189,8 +189,18 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleEG6_HTT150"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 150.);
   L1SeedFun["L1_DoubleEG6_HTT255"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 255.); // l1t-tsg-v3:  L1_DoubleEG6_HTT150
   L1SeedFun["L1_Jet32_DoubleMuOpen_Mu10_dPhi_Jet_Mu0_Max1p05_dPhi_Mu_Mu_Min1p0"] = std::bind(&L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
+  L1SeedFun["L1_Jet32_DoubleMuOpen_Mu10_dPhi_Jet_Mu0_Max0p4_dPhi_Mu_Mu_Min1p0"] = std::bind(&L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10.);
   L1SeedFun["L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max1p05_dPhi_Mu_EG_Min1p05"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
+  L1SeedFun["L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max0p4_dPhi_Mu_EG_Min1p0"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.);
   L1SeedFun["L1_Jet32MuOpen_EG17_dPhiMu_EG1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,17.); // l1t-tsg-v3:  L1_Jet32MuOpen_EG10_dPhiMu_EG1
+
+  L1SeedFun["L1_DoubleJet8_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 8., 8.); 
+  L1SeedFun["L1_DoubleJet12_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 12., 12.); 
+  L1SeedFun["L1_DoubleJet16_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 16., 16.); 
+  L1SeedFun["L1_ETM60_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 60., 60., false); 
+  L1SeedFun["L1_HTM60_HTT260"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 60., 260.); 
+  L1SeedFun["L1_HTM80_HTT220"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 80., 220.); 
+  L1SeedFun["L1_Mu3_Jet35C"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 35., false, true); 
 
   L1SeedFun["L1_ZeroBias"] = [](){return true;};
   return true;
@@ -621,7 +631,6 @@ bool L1Menu2016::Loop()
 
     if (l1TnP != NULL)
       l1TnP->RunTnP();
-
   }
 
   return true;
@@ -1567,7 +1576,7 @@ bool L1Menu2016::ParseComplexSingleMu(const std::string& SeedName)
     {
       muonQual = base_match[9];
     }
-  }
+  } else return false;
 
   if (!muonQual.empty())
   {
@@ -1765,6 +1774,26 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
       totalpurerate +=seed.second.purerate;
     }
   }
+  
+  out << std::endl;
+
+  out << "L1Type"
+      << "," << "rate(kHz)"
+      << "," << "error_rate(kHz)"
+      << "," << "pure(kHz)"       
+      << "," << "error_rate(kHz)"
+      << std::endl;
+
+  for(auto pog : POGMap)
+  {
+    out << pog.first 
+      <<","<< PhyCounts[pog.first]           *scale / 1000.
+      <<","<< sqrt(PhyCounts[pog.first])     *scale / 1000.
+      <<","<< PhyPureCounts[pog.first]       *scale / 1000.
+      <<","<< sqrt(PhyPureCounts[pog.first]) *scale / 1000.
+      << std::endl;
+  }
+  out << std::endl;
 
   out << std::endl;
   out << std::endl << "Total rate  = " << nFireevents / 1000 * scale 

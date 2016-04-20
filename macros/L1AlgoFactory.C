@@ -695,6 +695,58 @@ void L1AlgoFactory::DoubleJet_Eta1p7_deltaEta4Pt(Float_t& cut1, Float_t& cut2 ) 
   return;
 }
 
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::DoubleJet_ForwardBackward
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::DoubleJet_ForwardBackward(Float_t ptcut1, Float_t ptcut2) 
+{
+  Float_t tmp_cut1 = -10.;
+  Float_t tmp_cut2 = -10.;
+  DoubleJet_ForwardBackwardPt(tmp_cut1,tmp_cut2);
+  if(tmp_cut1 >= ptcut1 && tmp_cut2 >= ptcut2) return true;
+
+  return false;
+}       // -----  end of function L1AlgoFactory::DoubleJet_ForwardBackward  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::DoubleJet_ForwardBackwardPt
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::DoubleJet_ForwardBackwardPt(Float_t& cut1, Float_t& cut2 )
+{
+  if(upgrade_->nJets < 2) return false;
+  Float_t Fwdpt = -10.;
+  Float_t Bwdpt = -10.;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Forward ~~~~~
+  for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+    if (!(upgrade_->jetEta.at(ue) > 3 &&  upgrade_->jetEta.at(ue) < 5))
+      continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if(pt >= Fwdpt) Fwdpt = pt;
+  }
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Backward ~~~~~
+  for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+    if (!(upgrade_->jetEta.at(ue) > -5 &&  upgrade_->jetEta.at(ue) < -3))
+      continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if(pt >= Bwdpt) Bwdpt = pt;
+  }
+
+  cut1 = Fwdpt;
+  cut2 = Bwdpt;
+
+  return true;
+}       // -----  end of function L1AlgoFactory::DoubleJet_ForwardBackwardPt  -----
+
 void L1AlgoFactory::DoubleTauJetEta2p17Pt(Float_t& cut1, Float_t& cut2, Bool_t isIsolated) {
 
   Float_t maxpt1 = -10.;
@@ -2087,3 +2139,134 @@ void L1AlgoFactory::SetUseL1CaloTower(bool option)
 {
   UseL1CaloTower = option;
 }       // -----  end of function L1AlgoFactory::SetUseL1CaloTower  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::ETM_Jet
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::ETM_Jet(float ETMcut, float jetcut, bool isCent)
+{
+  Float_t tmp_ETMcut = -10.;
+  Float_t tmp_jetcut = -10.;
+  ETM_JetPt(tmp_ETMcut,tmp_jetcut, isCent);
+
+  if(tmp_jetcut >= jetcut && tmp_ETMcut >= ETMcut) return true;
+
+  return false;
+}       // -----  end of function L1AlgoFactory::ETM_Jet  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::ETM_JetPt
+//  Description:  
+// ===========================================================================
+void L1AlgoFactory::ETM_JetPt(float& ETMcut, float& jetcut, const bool& isCent) 
+{
+  Float_t TheETM = -10;
+  Float_t ETMPhi = -10;
+  int idx = GetSumEtIdx(EtSumType::ETM);
+  if(upgrade_->sumBx.at(idx)==0) 
+  {
+    TheETM =upgrade_->sumEt.at(idx);
+    ETMPhi =upgrade_->sumPhi.at(idx);
+  }
+
+  Float_t ptmax = -10.;
+  for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+
+    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > jetCentFwd ? true : false;
+    if(isCent && isFwdJet) continue;
+
+    float phi  =upgrade_->jetPhi.at(ue);
+    if (fabs(phi - ETMPhi) < 0.4) continue;
+
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if(pt >= ptmax) ptmax = pt;
+  }
+
+  ETMcut = TheETM;
+  jetcut = ptmax;
+}       // -----  end of function L1AlgoFactory::ETM_JetPt  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::HTM_HTT
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::HTM_HTT(float HTMcut, float HTTcut)
+{
+  Float_t tmp_HTMcut = -10.;
+  Float_t tmp_HTTcut = -10.;
+  HTM_HTTPt(tmp_HTMcut,tmp_HTTcut);
+  if(tmp_HTMcut >= HTMcut && tmp_HTTcut >= HTTcut) return true;
+  return false;
+}       // -----  end of function L1AlgoFactory::HTM_HTT  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::HTM_HTTPt
+//  Description:  
+// ===========================================================================
+void L1AlgoFactory::HTM_HTTPt(float &HTMcut, float &HTTcut)
+{
+  Float_t TheHTT = -10;
+  int idx= GetSumEtIdx(EtSumType::HTT);
+  if(upgrade_->sumBx.at(idx)==SelBx) 
+    TheHTT =upgrade_->sumEt.at(idx);
+
+
+
+  Float_t TheHTM = -10;
+  idx= GetSumEtIdx(EtSumType::HTM);
+  if(upgrade_->sumBx.at(idx)==SelBx) 
+    TheHTM =upgrade_->sumEt.at(idx);
+
+  HTMcut = TheHTM;
+  HTTcut = TheHTT;
+
+}       // -----  end of function L1AlgoFactory::HTM_HTTPt  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::Mu_Jet
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::Mu_Jet(float mucut, float jetcut, bool isMuER, bool isJetCent)
+{
+  Float_t tmp_mucut = -10.;
+  Float_t tmp_jetcut = -10.;
+  Mu_JetPt(tmp_mucut,tmp_jetcut, isMuER, isJetCent);
+  if(tmp_mucut >= mucut && tmp_jetcut >= jetcut) return true;
+  return false;
+}       // -----  end of function L1AlgoFactory::Mu_Jet  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::Mu_JetPt
+//  Description:  
+// ===========================================================================
+void L1AlgoFactory::Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, const bool isJetCent)
+{
+  Float_t muptmax = -10.;
+  Float_t jetptmax = -10.;
+  for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);		
+    if(bx != 0) continue;
+    if(!PassMuonQual(imu, 2)) continue;
+    Float_t eta = upgrade_->muonEta.at(imu);        
+    if(fabs(eta) > muonER && isMuER) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);
+    if(pt >= muptmax) muptmax = pt;
+  }
+
+  for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > jetCentFwd ? true : false;
+    if(isJetCent && isFwdJet) continue;
+    Float_t pt = upgrade_->jetEt.at(ue);
+    if(pt >= jetptmax) jetptmax = pt;
+  }
+  mucut = muptmax;
+  jetcut = jetptmax;
+
+}       // -----  end of function L1AlgoFactory::Mu_JetPt  -----

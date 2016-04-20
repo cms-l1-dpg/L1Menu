@@ -12,7 +12,7 @@
 
 class L1AlgoFactory: public L1Ntuple{
  public:
-  L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.17),
+  L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.1),
   MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(0.4), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0),
   UseUpgradeLyr1(false), UseL1CaloTower(false)
   {};
@@ -36,6 +36,8 @@ class L1AlgoFactory: public L1Ntuple{
   Bool_t TripleJet_VBF(Float_t jet1, Float_t jet2, Float_t jet3, Int_t jetclass = 0);
   void QuadJetPt(Float_t& cut1, Float_t& cut2, Float_t& cut3, Float_t& cut4, Bool_t isCentral = false);
   void SingleTauPt(Float_t& cut, Bool_t isER, Bool_t isIsolated);
+  bool DoubleJet_ForwardBackwardPt(Float_t& cut1, Float_t& cut2 );
+  bool DoubleJet_ForwardBackward(Float_t ptcut1, Float_t ptcut2);
 
   void Mu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isIsolated = false, Int_t qualmin=4);
   void DoubleMu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isMuHighQual = false );
@@ -134,6 +136,14 @@ class L1AlgoFactory: public L1Ntuple{
   void Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass ~~~~~
   bool MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bool isIsolated, bool isER) const;
+
+
+  bool ETM_Jet(float ETMcut, float jetcut, bool isCent);
+  void ETM_JetPt(float& ETMcut, float& jetcut, const bool& isCent);
+  void HTM_HTTPt(float &HTMcut, float &HTTcut);
+  bool HTM_HTT(float HTMcut, float HTTcut);
+  bool Mu_Jet(float mucut, float jetcut, bool isMuER, bool isJetCent);
+  void Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, const bool isJetCent);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Setting variables ~~~~~
   void SetMuonER(float newER);
