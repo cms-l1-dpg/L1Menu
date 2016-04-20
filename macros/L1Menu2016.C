@@ -27,7 +27,8 @@ L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
   tuplefilename(filelist),
   scale(0),
   l1Plot(nullptr),
-  l1TnP(nullptr)
+  l1TnP(nullptr),
+  l1uGT(nullptr)
 {
   InitConfig();
 }  // -----  end of method L1Menu2016::L1Menu2016  (constructor)  -----
@@ -111,6 +112,7 @@ bool L1Menu2016::InitConfig()
   L1Config["doTnPMuon"] = 0;
   L1Config["doPrintLS"] = 0;
   L1Config["doPrintPU"] = 0;
+  L1Config["doCompuGT"] = 0;
   L1Config["maxEvent"] = -1;
   L1Config["SetMuonER"] = -1;
   L1Config["UseUpgradeLyr1"] = -1;
@@ -330,6 +332,9 @@ bool L1Menu2016::ReadMenu()
       temp.prescale = INFTY;
     else
       temp.prescale = prescale;
+
+    if (L1Config["doCompuGT"])
+      temp.prescale = 1;
       
     if (pog.length() != 0)
     {
@@ -352,8 +357,6 @@ bool L1Menu2016::ReadMenu()
       assert(outfile != nullptr);
       
     }
-    //std::cout << temp.name <<" " << temp.bit <<" "<< temp.prescale << " " 
-      //<< temp.POG.size() <<" " << temp.PAG.size() << std::endl;
 
     mL1Seed[seed] = temp;
 
@@ -483,14 +486,14 @@ bool L1Menu2016::PrintConfig() const
 // ===========================================================================
 bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
 {
+  GetRunConfig(config);
+
   ReadMenu();
   BuildRelation();
   L1SeedFunc();
 
   OpenWithList(tuplefilename);
   BookHistogram();
-
-  GetRunConfig(config);
   PrintConfig();
 
   if (writeplots)
@@ -512,6 +515,12 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
         recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_);
     if (L1Config["doTnPMuon"])
       l1TnP->DoMuonTnP();
+  }
+
+  if (L1Config["doCompuGT"])
+  {
+    l1uGT = new L1uGT( outrootfile, event_, l1uGT_, &L1Event, &mL1Seed);
+    l1uGT->GetTreeAlias(L1Ntuple::GetuGTAlias());
   }
 
   if (L1Config["SetMuonER"] != -1) SetMuonER(L1Config["SetMuonER"]);
@@ -631,6 +640,9 @@ bool L1Menu2016::Loop()
 
     if (l1TnP != NULL)
       l1TnP->RunTnP();
+
+    if (l1uGT != NULL)
+      l1uGT->CompEvents();
   }
 
   return true;
@@ -664,7 +676,7 @@ bool L1Menu2016::PostLoop()
 
   if (l1TnP != NULL)
     l1TnP->PostRun();
-  
+
   if (L1Config["doPrintPU"])
   {
     PrintPUCSV();

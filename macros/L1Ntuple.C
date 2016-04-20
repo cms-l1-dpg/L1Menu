@@ -7,38 +7,40 @@ Long64_t L1Ntuple::GetEntries()
 
 L1Ntuple::L1Ntuple()
 {
-  doEvent       = true;
-  domuonreco    = true;
-  dol1extra     = true;
-  dol1emuextra  = true;
-  dol1menu      = true;
-  doBitWiseLayer1   = true;    
-  dol1CaloTower   = true;    
-  doRecoJet     = true;
-  doRecoMet     = true;
-  doRecoEle     = true;
-  doRecoMuon    = true;
-  doRecoTau     = true;
-  doRecoFilter  = true;
-  doRecoVtx     = true;
+  doEvent         = true;
+  domuonreco      = true;
+  dol1extra       = true;
+  dol1emuextra    = true;
+  dol1menu        = true;
+  doBitWiseLayer1 = true;
+  dol1CaloTower   = true;
+  dol1uGT         = true;
+  doRecoJet       = true;
+  doRecoMet       = true;
+  doRecoEle       = true;
+  doRecoMuon      = true;
+  doRecoTau       = true;
+  doRecoFilter    = true;
+  doRecoVtx       = true;
 
-  fChain          = nullptr;
-  fEvent          = nullptr;
-  ftreeEvent      = nullptr;
-  ftreemuon       = nullptr;
-  ftreeExtra      = nullptr;
-  ftreeCaloTower  = nullptr;
-  ftreeMenu       = nullptr;
-  ftreeEmuExtra   = nullptr;
-  ftreeRecoJet    = nullptr;
-  ftreeRecoMet    = nullptr;
-  ftreeRecoEle    = nullptr;
-  ftreeRecoMuon   = nullptr;
-  ftreeRecoTau    = nullptr;
-  ftreeRecoFilter = nullptr;
-  ftreeRecoVtx    = nullptr;
+  fChain             = nullptr;
+  fEvent             = nullptr;
+  fl1uGT             = nullptr;
+  ftreeEvent         = nullptr;
+  ftreemuon          = nullptr;
+  ftreeExtra         = nullptr;
+  ftreeCaloTower     = nullptr;
+  ftreeMenu          = nullptr;
+  ftreeEmuExtra      = nullptr;
+  ftreeRecoJet       = nullptr;
+  ftreeRecoMet       = nullptr;
+  ftreeRecoEle       = nullptr;
+  ftreeRecoMuon      = nullptr;
+  ftreeRecoTau       = nullptr;
+  ftreeRecoFilter    = nullptr;
+  ftreeRecoVtx       = nullptr;
   ftreeUpgradeLayer1 = nullptr;
-  
+
   event_          = nullptr;
   upgrade_        = nullptr;
   l1CaloTower_    = nullptr;
@@ -50,6 +52,7 @@ L1Ntuple::L1Ntuple()
   recoTau_        = nullptr;
   recoFilter_     = nullptr;
   recoVtx_        = nullptr;
+  l1uGT_          = nullptr;
   MainTreePath = "l1UpgradeTree/L1UpgradeTree";
 }
 
@@ -137,6 +140,7 @@ bool L1Ntuple::CheckFirstFile()
   TTree * mytreeRecoVertex  = (TTree*) rf->Get("l1RecoTree/RecoTree");
   TTree * mytreeUpgradeLayer1 = (TTree*) rf->Get("l1UpgradeBitwiseTree/L1UpgradeTree");
   TTree * mytreel1CaloTower = (TTree*) rf->Get("l1CaloTowerEmuTree/L1CaloTowerTree");
+  TTree * mytreel1uGT = (TTree*) rf->Get("l1uGTTree/L1uGTTree");
   
   if (!myChain) {
     std::cout<<"L1Tree not found .... "<<std::endl;
@@ -157,6 +161,13 @@ bool L1Ntuple::CheckFirstFile()
     dol1CaloTower = false;
   } else {
     std::cout<<"L1CaloTower tree is found .." <<std::endl;
+  }
+
+  if (!mytreel1uGT) {
+    std::cout<<"L1uGTTree tree not found .... "<<std::endl;
+    dol1uGT = false;
+  } else {
+    std::cout<<"L1uGTTree tree is found .." <<std::endl;
   }
   
   if (!mytreeEvent) {
@@ -279,6 +290,7 @@ bool L1Ntuple::OpenWithoutInit()
   ftreeRecoFilter  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
   ftreeRecoVtx     = new TChain("l1RecoTree/RecoTree");
   ftreeUpgradeLayer1 = new TChain("l1UpgradeBitwiseTree/L1UpgradeTree");
+  fl1uGT = new TChain("l1uGTTree/L1uGTTree");
 
   for (unsigned int i=0;i<listNtuples.size();i++)
   {
@@ -299,6 +311,7 @@ bool L1Ntuple::OpenWithoutInit()
     if (doRecoVtx)       ftreeRecoVtx       -> Add(listNtuples[i].c_str());
     if (doBitWiseLayer1) ftreeUpgradeLayer1 -> Add(listNtuples[i].c_str());
     if (dol1CaloTower)   ftreeCaloTower     -> Add(listNtuples[i].c_str());
+    if (dol1uGT)         fl1uGT             -> Add(listNtuples[i].c_str());
   }
 
   if (doEvent)         fChain->AddFriend(ftreeEvent);
@@ -315,6 +328,7 @@ bool L1Ntuple::OpenWithoutInit()
   if (doRecoVtx)       fChain->AddFriend(ftreeRecoVtx);
   if (doBitWiseLayer1) fChain->AddFriend(ftreeUpgradeLayer1);
   if (dol1CaloTower)   fChain->AddFriend(ftreeCaloTower);
+  if (dol1uGT)         fChain->AddFriend(fl1uGT);
   return true;
 }
 
@@ -334,6 +348,7 @@ L1Ntuple::~L1Ntuple()
   if (ftreeMenu)          delete ftreeMenu;
   if (ftreeCaloTower)     delete ftreeCaloTower;
   if (fChain)             delete fChain;
+  if (fl1uGT)             delete fl1uGT;
   if (rf)                 delete rf;
 }
 
@@ -390,6 +405,14 @@ void L1Ntuple::Init()
      
      ftreeEvent->SetBranchAddress("Event", &event_ );
      fChain-> AddFriend(ftreeEvent);     
+   }
+
+   if (dol1uGT){
+     std::cout<<"Setting branch addresses for L1uGT tree..."<<std::endl;
+     l1uGT_        = new GlobalAlgBlk();
+     
+     fl1uGT->SetBranchAddress("L1uGT", &l1uGT_ );
+     fChain-> AddFriend(fl1uGT);     
    }
 
    if (doRecoJet)
@@ -573,3 +596,22 @@ bool L1Ntuple::PrintRecoTree() const
   }
   return true;
 }       // -----  end of function L1Ntuple::PrintRecoTree  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Ntuple::GetuGTAlias
+//  Description:  /* cursor */
+// ===========================================================================
+std::map<std::string, std::string> L1Ntuple::GetuGTAlias()
+{
+  fl1uGT->GetEntry(1);
+
+  std::map<std::string, std::string> SeedAlias;
+  std::vector<std::string> names;
+  TList * aliases = fl1uGT->GetTree()->GetListOfAliases();
+  TIter iter(aliases);
+  std::for_each(iter.Begin(), TIter::End(), [&](TObject* alias){ names.push_back(alias->GetName()); } );
+  for (auto const & name: names) {
+    SeedAlias[name] = fl1uGT->GetAlias(name.c_str());
+  }
+  return SeedAlias;
+}       // -----  end of function L1Ntuple::GetuGTAlias  -----

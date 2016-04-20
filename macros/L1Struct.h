@@ -84,22 +84,22 @@ struct StructL1Event
   float ETT;
 
 
-  float oniaMuPt1 = 0.;
-  float oniaMuPt2 = 0.;
-  float doubleMuPt1 = -10.; 
+  float oniaMuPt1   = 0.;
+  float oniaMuPt2   = 0.;
+  float doubleMuPt1 = -10.;
   float doubleMuPt2 = -10.;
   float dijetPt1    = -10.;
   float dijetPt2    = -10.;
   float diCenjetPt1 = -10.;
   float diCenjetPt2 = -10.;
-  float ditauPt    = -10.; 
-  float diIsotauPt   = -10.; 
-  float quadjetPt  = -10.; 
-  float quadjetCPt = -10.; 
-  float diEG1     = -10.;
-  float diEG2     = -10.;
-  float diIsolEG1 = -10.;
-  float diIsolEG2 = -10.;
+  float ditauPt     = -10.;
+  float diIsotauPt  = -10.;
+  float quadjetPt   = -10.;
+  float quadjetCPt  = -10.;
+  float diEG1       = -10.;
+  float diEG2       = -10.;
+  float diIsolEG1   = -10.;
+  float diIsolEG2   = -10.;
 
   StructL1Event()
   {

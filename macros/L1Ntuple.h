@@ -9,6 +9,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -33,6 +34,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoVertexDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisL1CaloTowerDataFormat.h"
+#include "DataFormats/L1TGlobal/interface/GlobalAlgBlk.h"
 
 class L1Ntuple {
 public:
@@ -52,6 +54,7 @@ public:
   TChain          *ftreeRecoFilter;
   TChain          *ftreeRecoVtx;
   TChain          *ftreeCaloTower;
+  TChain          *fl1uGT;
   Int_t            fCurrent; //!current Tree number in a TChain
 
   bool doEvent;
@@ -68,6 +71,7 @@ public:
   bool doRecoVtx;
   bool doBitWiseLayer1;
   bool dol1CaloTower;
+  bool dol1uGT;
 
   L1Analysis::L1AnalysisEventDataFormat         *event_;
   L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade_;
@@ -80,6 +84,8 @@ public:
   L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau_;
   L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
   L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
+  GlobalAlgBlk                                  *l1uGT_;
+  
 
   L1Ntuple();
   L1Ntuple(const std::string & fname);
@@ -96,6 +102,7 @@ public:
   void     Test2();
   bool PrintRecoTree() const;
   Long64_t GetEntries();
+  std::map<std::string, std::string> GetuGTAlias();
 
 protected:
   bool CheckFirstFile();

@@ -17,12 +17,13 @@ ifneq ($(shell echo $$CMSSW_BASE), )
   CXXFLAGS  += -isystem $(CMSSW_BASE)/src/
   CXXFLAGS  += -isystem $(CMSSW_RELEASE_BASE)/src
   CXXFLAGS  += -isystem $(shell scram tool info boost | awk -F"=" '/INCLUDE=(.*)/{print $$NF}')
-  LIBS += -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)/ -lFWCoreFWLite
+  LIBS += -L$(CMSSW_BASE)/lib/$(SCRAM_ARCH)/ -L$(CMSSW_RELEASE_BASE)/lib/$(SCRAM_ARCH)/ \
+		  -lFWCoreFWLite -lDataFormatsL1TGlobal
   LIBS += -L$(shell scram tool info boost | awk -F"=" '/LIBDIR=(.*)/{print $$NF}') \
 		  -lboost_program_options -lboost_filesystem
 endif
 
-TestOBJS = L1Ntuple L1AlgoFactory L1Menu2016 L1Plot L1TnP 
+TestOBJS = L1Ntuple L1AlgoFactory L1Menu2016 L1Plot L1TnP L1uGT
 OBJS := $(TestOBJS:%=$(ODIR)/%.o)
 
 PROGRAM = testMenu2016 RunL1Menu2016

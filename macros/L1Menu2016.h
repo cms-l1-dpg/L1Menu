@@ -39,6 +39,7 @@
 #include "L1AlgoFactory.h"
 #include "L1Plot.h"
 #include "L1TnP.h"
+#include "L1uGT.h"
 #include "L1Struct.h"
 
 #define INFTY 262139
@@ -162,6 +163,7 @@ class L1Menu2016 : public L1AlgoFactory
     StructL1Event L1Event;
     L1Plot *l1Plot;
     L1TnP *l1TnP;
+    L1uGT *l1uGT;
 
     std::map<std::string, float*> L1ObjectMap;
     std::map<std::string, float> L1Config;

@@ -51,6 +51,7 @@ int main ( int argc, char *argv[] )
     ("doTnPMuon",      po::bool_switch()->default_value(false),                "use tag & probe for muon efficiency")
     ("doPrintLS",      po::bool_switch()->default_value(false),                "print out rate per LS to file")
     ("doPrintPU",      po::bool_switch()->default_value(false),                "print out rate per PU to file")
+    ("doCompuGT",      po::bool_switch()->default_value(false),                "Compare with uGT tree")
     ("maxEvent,n",     po::value<int>()->default_value(-1),                    "run number of events; -1 for all")
     ("nBunches,b",     po::value<float>(),                                     "set number of bunches")
     ("SumJetET",       po::value<int>(),                                       "PT threshold of Jet for HT")
@@ -60,7 +61,6 @@ int main ( int argc, char *argv[] )
     ("UsePFMETNoMuon", po::bool_switch()->default_value(false),                "Use PFMET no Muon in SingleMu sample")
     ("SelectRun",      po::value<int>()->default_value(-1),                    "Select specific run")
     ;
-
 
   po::variables_map vm;
   po::store(po::parse_command_line(argc, argv, desc), vm);
