@@ -1134,10 +1134,9 @@ void L1AlgoFactory::Mu_JetCentral_deltaPt(Float_t& mucut, Float_t& jetcut) {
       Float_t phijet = upgrade_->jetPhi.at(ue);
       Float_t etajet = upgrade_->jetEta.at(ue);
 
-      if(pt < mucut || ptj < jetcut) continue;
 
       //MuJetCordPhi,  MuJetCordEta
-      if(fabs(phi-phijet) <= MuJetCordPhi && fabs(eta-etajet) <= MuJetCordEta){
+      if(Phi_mpi_pi(phi-phijet) <= MuJetCordPhi && fabs(eta-etajet) <= MuJetCordEta){
         correlate = true;
         if(pt >= muptmax) muptmax = pt;
         if(ptj >= jetptmax) jetptmax = ptj;
@@ -1928,7 +1927,7 @@ void L1AlgoFactory::Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bo
 
       Float_t deta = eta - eta2; 
       //Assuming ieta corresponds to 0.1 eta, which is true for barrel, but not for endcap
-      if(fabs(deta) <= delta/10){  
+      if(fabs(deta) <= static_cast<float>(delta)/10.){  
         corr = true;
         if (pt >= pt2)
           muonPairs.push_back(std::pair<Float_t,Float_t>(pt,pt2));
@@ -2180,7 +2179,7 @@ void L1AlgoFactory::ETM_JetPt(float& ETMcut, float& jetcut, const bool& isCent)
     if(isCent && isFwdJet) continue;
 
     float phi  =upgrade_->jetPhi.at(ue);
-    if (fabs(phi - ETMPhi) < 0.4) continue;
+    if (Phi_mpi_pi(phi - ETMPhi) < 0.4) continue;
 
     Float_t pt = upgrade_->jetEt.at(ue);
     if(pt >= ptmax) ptmax = pt;

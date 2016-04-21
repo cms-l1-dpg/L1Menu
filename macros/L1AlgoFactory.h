@@ -9,10 +9,18 @@
 #include "TLorentzVector.h"
 #include "L1Struct.h"
 
+// From  https://root.cern.ch/doc/master/TVector2_8cxx_source.html#l00102/
+// Returns phi angle in the interval [-PI,PI)
+inline float Phi_mpi_pi(double x)
+{
+  while(x >= 3.14) x -= 2 * 3.14;
+  while(x < -3.14) x += 2 * 3.14;
+  return fabs(x);
+}
 
 class L1AlgoFactory: public L1Ntuple{
  public:
-  L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.1),
+  L1AlgoFactory():jetCentFwd(3.0),muonER(2.1),eleER(2.1),tauER(2.1315),
   MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(0.4), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0),
   UseUpgradeLyr1(false), UseL1CaloTower(false)
   {};

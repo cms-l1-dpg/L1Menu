@@ -60,6 +60,7 @@ int main ( int argc, char *argv[] )
     ("UseL1CaloTower", po::bool_switch()->default_value(false),                "Use Layer1 CaloTower Tree")
     ("UsePFMETNoMuon", po::bool_switch()->default_value(false),                "Use PFMET no Muon in SingleMu sample")
     ("SelectRun",      po::value<int>()->default_value(-1),                    "Select specific run")
+    ("SelectEvent",    po::value<int>()->default_value(-1),                    "Select specific event")
     ;
 
   po::variables_map vm;

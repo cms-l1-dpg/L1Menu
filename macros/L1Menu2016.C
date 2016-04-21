@@ -118,6 +118,7 @@ bool L1Menu2016::InitConfig()
   L1Config["UseUpgradeLyr1"] = -1;
   L1Config["UseL1CaloTower"] = -1;
   L1Config["SelectRun"] = -1;
+  L1Config["SelectEvent"] = -1;
   L1Config["UsePFMETNoMuon"] = 0;
   
   L1ObjectMap["Jet"] = &L1Event.JetPt;
@@ -612,6 +613,9 @@ bool L1Menu2016::Loop()
     if (event_ != NULL )
     {
       if (L1Config["SelectRun"] != -1 && event_->run != L1Config["SelectRun"])
+        continue;
+
+      if (L1Config["SelectEvent"] != -1 && event_->event != L1Config["SelectEvent"])
         continue;
 
       if(event_ -> lumi != currentLumi){

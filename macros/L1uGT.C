@@ -36,7 +36,7 @@ L1uGT::L1uGT (
   L1Event(L1Event_),
   mL1Seed(mL1Seed_)
 {
-  XMLConv["L1_MU20_EG10"] = "L1_Mu20_EG10";
+  XMLConv["L1_MU20_EG15"] = "L1_Mu20_EG15";
 }  // -----  end of method L1uGT::L1uGT  (constructor)  -----
 
 //----------------------------------------------------------------------------
@@ -112,7 +112,17 @@ bool L1uGT::CompEvents()
 {
   std::vector<std::string> IgnoreSeeds;
   IgnoreSeeds.push_back("L1_ZeroBias");
+  // No in the XML yet
   IgnoreSeeds.push_back("L1_Mu3_Jet35C");
+  // OMTF has 0 charge muon
+  IgnoreSeeds.push_back("L1_DoubleMu0er1p6_dEta_Max1p8_OS");
+  // Random fireing 
+  IgnoreSeeds.push_back("L1_Mu3_JetC16_dEta_Max0p4_dPhi_Max0p4");
+  IgnoreSeeds.push_back("L1_Mu3_JetC60_dEta_Max0p4_dPhi_Max0p4");
+  IgnoreSeeds.push_back("L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4");
+  // Not checking for now
+  IgnoreSeeds.push_back("L1_Jet32_DoubleMuOpen_Mu10_dPhi_Jet_Mu0_Max0p4_dPhi_Mu_Mu_Min1p0");
+  IgnoreSeeds.push_back("L1_Jet32_MuOpen_EG10_dPhi_Jet_Mu_Max0p4_dPhi_Mu_EG_Min1p0");
 
   for(const auto &seed : *mL1Seed)
   {
