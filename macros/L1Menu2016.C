@@ -115,6 +115,7 @@ bool L1Menu2016::InitConfig()
   L1Config["doCompuGT"] = 0;
   L1Config["maxEvent"] = -1;
   L1Config["SetMuonER"] = -1;
+  L1Config["SetNoPrescale"] = 0;
   L1Config["UseUpgradeLyr1"] = -1;
   L1Config["UseL1CaloTower"] = -1;
   L1Config["SelectRun"] = -1;
@@ -334,7 +335,7 @@ bool L1Menu2016::ReadMenu()
     else
       temp.prescale = prescale;
 
-    if (L1Config["doCompuGT"])
+    if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
       temp.prescale = 1;
       
     if (pog.length() != 0)
