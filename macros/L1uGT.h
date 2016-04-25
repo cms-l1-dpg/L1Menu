@@ -46,6 +46,7 @@ class L1uGT
     // ====================  ACCESSORS     ===============================
     bool CompEvents();
     bool GetTreeAlias(std::map<std::string, std::string> SeedAlias);
+    bool GetuGTDecision(const std::string &seed);
 
     // ====================  MUTATORS      ===============================
 

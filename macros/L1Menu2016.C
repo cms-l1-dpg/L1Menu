@@ -121,6 +121,7 @@ bool L1Menu2016::InitConfig()
   L1Config["SelectRun"] = -1;
   L1Config["SelectEvent"] = -1;
   L1Config["UsePFMETNoMuon"] = 0;
+  L1Config["UseuGTDecision"] = 0;
   
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -519,7 +520,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
       l1TnP->DoMuonTnP();
   }
 
-  if (L1Config["doCompuGT"])
+  if (L1Config["doCompuGT"] || L1Config["UseuGTDecision"])
   {
     l1uGT = new L1uGT( outrootfile, event_, l1uGT_, &L1Event, &mL1Seed);
     l1uGT->GetTreeAlias(L1Ntuple::GetuGTAlias());
@@ -646,7 +647,7 @@ bool L1Menu2016::Loop()
     if (l1TnP != NULL)
       l1TnP->RunTnP();
 
-    if (l1uGT != NULL)
+    if (L1Config["doCompuGT"])
       l1uGT->CompEvents();
   }
 
@@ -938,7 +939,13 @@ bool L1Menu2016::RunMenu()
   FiredPhy.clear();
   for(auto& seed: mL1Seed)
   {
-    InsertInMenu(seed.first, CheckL1Seed(seed.first));
+    if (L1Config["UseuGTDecision"])
+    {
+      assert(l1uGT != NULL);
+      InsertInMenu(seed.first, l1uGT->GetuGTDecision(seed.first));
+    }
+    else
+      InsertInMenu(seed.first, CheckL1Seed(seed.first));
   }
 
   CheckPhysFire();

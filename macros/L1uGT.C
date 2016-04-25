@@ -143,3 +143,12 @@ bool L1uGT::CompEvents()
   return true;
 }       // -----  end of function L1uGT::CompEvents  -----
 
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1uGT::GetuGTDecision
+//  Description:  
+// ===========================================================================
+bool L1uGT::GetuGTDecision(const std::string &seed)
+{
+  return l1uGT_->getAlgoDecisionInitial(SeedBit[seed]);
+}       // -----  end of function L1uGT::GetuGTDecision  -----
