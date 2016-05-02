@@ -150,5 +150,8 @@ bool L1uGT::CompEvents()
 // ===========================================================================
 bool L1uGT::GetuGTDecision(const std::string &seed)
 {
-  return l1uGT_->getAlgoDecisionInitial(SeedBit[seed]);
+  if (SeedBit.find(seed) == SeedBit.end())
+    return false;
+  else
+    return l1uGT_->getAlgoDecisionInitial(SeedBit[seed]);
 }       // -----  end of function L1uGT::GetuGTDecision  -----

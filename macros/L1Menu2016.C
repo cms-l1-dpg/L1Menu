@@ -205,7 +205,10 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_ETM60_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 60., 60., false); 
   L1SeedFun["L1_HTM60_HTT260"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 60., 260.); 
   L1SeedFun["L1_HTM80_HTT220"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 80., 220.); 
-  L1SeedFun["L1_Mu3_Jet35C"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 35., false, true); 
+  L1SeedFun["L1_Mu3_JetC35"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 35., false, true); 
+  L1SeedFun["L1_Mu3_JetC16"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 16., false, true); 
+  L1SeedFun["L1_Mu3_JetC60"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 60., false, true); 
+  L1SeedFun["L1_Mu3_JetC120"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 120., false, true); 
 
   L1SeedFun["L1_ZeroBias"] = [](){return true;};
   return true;
@@ -497,6 +500,9 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
 
   OpenWithList(tuplefilename);
   BookHistogram();
+
+  // Set the Run Config as highest priority
+  GetRunConfig(config);
   PrintConfig();
 
   if (writeplots)
