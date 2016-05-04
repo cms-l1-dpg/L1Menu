@@ -127,7 +127,6 @@ bool L1uGT::CompEvents()
   for(const auto &seed : *mL1Seed)
   {
     bool uGT  = l1uGT_->getAlgoDecisionInitial(SeedBit[seed.first]);
-    bool uGTPre   = l1uGT_->getAlgoDecisionPreScaled(SeedBit[seed.first]);
     bool uGTFinal = l1uGT_->getAlgoDecisionFinal(SeedBit[seed.first]);
     assert(uGT == uGTFinal);
     if (seed.second.eventfire != uGT)
@@ -136,7 +135,7 @@ bool L1uGT::CompEvents()
         continue;
       std::cout << event_->run << ":"  << event_->event <<" " << seed.first 
         <<" from Menu " << seed.second.eventfire <<"; from uGT "<< uGT 
-        <<" GTpre " << uGTPre <<" GTFinal " << uGTFinal  << std::endl;
+        <<" GTFinal " << uGTFinal  << std::endl;
     }
 
   }

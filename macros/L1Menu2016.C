@@ -289,7 +289,7 @@ bool L1Menu2016::ReadMenu()
   std::string line;
   if (!menufile)
   {
-    std::cout << "MenuFile "<<menufile<<" is not found !"<<std::endl;
+    std::cout << "MenuFile "<<menufilename<<" is not found !"<<std::endl;
     return false;
   }
 
