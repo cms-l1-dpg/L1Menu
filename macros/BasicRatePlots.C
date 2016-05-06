@@ -284,7 +284,8 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
 
   Double_t nZeroBias = 0.;
 
-  int nLumi(0),currentLumi(-1);
+  int nLumi(0);
+  unsigned int currentLumi(-1);
 
   if (nEvents <= 0){
     nEvents=fChain->GetEntriesFast();
@@ -495,13 +496,13 @@ void BasicRatePlots::run(bool runOnData, std::string resultTag, float crossSec, 
 
 void goRatePlots(std::string fileType, int isCrossSec = false, int nEvents = 0) 
 {
-  int nBunches50ns = 1368;
+  //int nBunches50ns = 1368;
   int nBunches25ns = 2508; //2508 is what agreed with TSG for # bunches
-  int nBunches25ns_run256843 = 1021;
+  //int nBunches25ns_run256843 = 1021;
   int nBunches = -1;
 
   float xSec13TeV = isCrossSec ? 78.26 : 80.; // Using McM for cross section comparison and 80 (agreed with TSG) for rates
-  float xSec8TeV  = 72.7; 
+  //float xSec8TeV  = 72.7; 
 
   std::string filename;
   bool isData(true);

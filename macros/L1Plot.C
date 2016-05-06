@@ -163,6 +163,16 @@ bool L1Plot::BookTestHistogram()
   hTestPro["HCalVsiEta"]     = new TProfile("HCalVsiEta","HCalVsiEta; iEta; HCalTower",           84, -42, 42);
   hTestPro["CaloVsiEta"]     = new TProfile("CaloVsiEta","CaloVsiEta; iEta; CaloTower",           84, -42, 42);
 
+  hTest2F["Calo2D"]          = new TH2F("Calo2D","Calo2D; iEta; iPhi",           84,  -42, 42,   75, 0,  75);
+  hTest2F["ECal2D"]          = new TH2F("ECal2D","ECal2D; iEta; iPhi",           84,  -42, 42,   75, 0,  75);
+  hTest2F["HCal2D"]          = new TH2F("HCal2D","HCal2D; iEta; iPhi",           84,  -42, 42,   75, 0,  75);
+  hTest2F["L1Jet2D"]         = new TH2F("L1Jet2D","L1Jet2D; Eta; Phi",           50,  -5,  5,    40, -4, 4);
+  hTest2F["L1Jet302D"]       = new TH2F("L1Jet302D","L1Jet2D Pt>30; Eta; Phi",   50,  -5,  5,    40, -4, 4);
+  hTest2F["L1Jet1002D"]      = new TH2F("L1Jet1002D","L1Jet2D Pt>100; Eta; Phi", 50,  -5,  5,    40, -4, 4);
+  hTest2F["L1Jet2002D"]      = new TH2F("L1Jet2002D","L1Jet2D Pt>200; Eta; Phi", 50,  -5,  5,    40, -4, 4);
+  hTest1F["L1JetHOT"]        = new TH1F("L1JetHOT","L1JetHOT",                   500, 0,   500);
+  hTest1F["L1JetHOTPhi"]     = new TH1F("L1JetHOTPhi","L1JetHOTPhi",             80,  -4., 4);
+  hTest1F["CaloTowerHOTPhi"] = new TH1F("CaloTowerHOTPhi","CaloTowerHOTPhi",     80,  -4., 4);
 //**************************************************************************//
 //                                Muon Study                                //
 //**************************************************************************//
@@ -328,6 +338,7 @@ bool L1Plot::RunPlot()
 
   if (doPlotTest) 
   {
+    TestCaloTower();
     TestMETActivity();
     TestMuon();
   }
@@ -870,11 +881,6 @@ TVector2 L1Plot::GetL1METCalo()
     Int_t ieta = l1CaloTower_->ieta[jTower];
     Int_t iphi = l1CaloTower_->iphi[jTower];
     Int_t iet  = l1CaloTower_->iet[jTower];
-    Int_t iem  = l1CaloTower_->iem[jTower];
-    Int_t ihad = l1CaloTower_->ihad[jTower];
-    hTestPro["ECalVsiEta"] -> Fill(ieta, (float)iem / 2.0);
-    hTestPro["HCalVsiEta"] -> Fill(ieta, (float)ihad / 2.0);
-    hTestPro["CaloVsiEta"] -> Fill(ieta, (float)iet / 2.0);
     Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
     Double_t et = 0.5 * (Double_t)iet;
     if( abs(ieta) < ietamax){
@@ -928,3 +934,54 @@ bool L1Plot::TestMuon()
 
   return true;
 }       // -----  end of function L1Plot::TestMuon  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::TestCaloTower
+//  Description:  
+// ===========================================================================
+bool L1Plot::TestCaloTower()
+{
+  
+  if (!l1CaloTower_) return false;
+
+  for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+    Int_t ieta = l1CaloTower_->ieta[jTower];
+    Int_t iphi = l1CaloTower_->iphi[jTower];
+    Int_t iet  = l1CaloTower_->iet[jTower];
+    Int_t iem  = l1CaloTower_->iem[jTower];
+    Int_t ihad = l1CaloTower_->ihad[jTower];
+    hTestPro["ECalVsiEta"] -> Fill(ieta, (float)iem / 2.0);
+    hTestPro["HCalVsiEta"] -> Fill(ieta, (float)ihad / 2.0);
+    hTestPro["CaloVsiEta"] -> Fill(ieta, (float)iet / 2.0);
+    hTest2F["Calo2D"] -> Fill(ieta, iphi, (float)iet / 2.0);
+    hTest2F["ECal2D"] -> Fill(ieta, iphi, (float)iem / 2.0);
+    hTest2F["HCal2D"] -> Fill(ieta, iphi, (float)ihad / 2.0);
+    if (fabs(ieta) < 7)
+    {
+      hTest1F["CaloTowerHOTPhi"]->Fill((iphi-36)*0.087, (float)iet / 2.0);
+    }
+  }
+
+  for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+
+    Float_t pt = upgrade_->jetEt.at(ue);
+    Float_t eta = upgrade_->jetEta.at(ue);
+    Float_t phi = upgrade_->jetPhi.at(ue);
+    hTest2F["L1Jet2D"] -> Fill(eta, phi, pt);
+    if (pt >= 30)
+      hTest2F["L1Jet302D"] -> Fill(eta, phi, pt);
+    if (pt >= 100)
+      hTest2F["L1Jet1002D"] -> Fill(eta, phi, pt);
+    if (pt >= 200)
+      hTest2F["L1Jet2002D"] -> Fill(eta, phi, pt);
+    if (fabs(eta) < 0.5)
+    {
+      hTest1F["L1JetHOT"]->Fill(pt);
+      hTest1F["L1JetHOTPhi"]->Fill(phi, pt);
+    }
+  }
+
+  return true;
+}       // -----  end of function L1Plot::TestCaloTower  -----

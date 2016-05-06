@@ -132,6 +132,7 @@ class L1Plot
     bool BookTestHistogram();
     bool TestMETActivity();
     float TestRecoAct(float eta) const;
+    bool TestCaloTower();
     bool TestMuon();
     // ====================  DATA MEMBERS  ===============================
     bool doPlotRate;

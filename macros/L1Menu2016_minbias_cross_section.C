@@ -1334,7 +1334,8 @@ void L1Menu2015::Loop() {
   Int_t nPAG      = 0;
   Int_t nTRIGPHYS = 0;
 	
-  int nLumi(0),currentLumi(-1);
+  int nLumi(0);
+  unsigned int currentLumi(-1);
 
   first = true;
 

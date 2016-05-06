@@ -114,6 +114,7 @@ private :
   Long64_t nentries_;
   TFile* rf;
   std::string MainTreePath;
+  std::string CaloTreePath;
 };
 
 #endif

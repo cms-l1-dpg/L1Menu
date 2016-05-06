@@ -54,6 +54,7 @@ L1Ntuple::L1Ntuple()
   recoVtx_        = nullptr;
   l1uGT_          = nullptr;
   MainTreePath = "l1UpgradeTree/L1UpgradeTree";
+  CaloTreePath = "l1CaloTowerTree/L1CaloTowerTree";
 }
 
 L1Ntuple::L1Ntuple(const std::string & fname)
@@ -125,6 +126,13 @@ bool L1Ntuple::CheckFirstFile()
     myChain = (TTree*) rf->Get(MainTreePath.c_str());
   }
 
+  TTree * mytreel1CaloTower = (TTree*) rf->Get(CaloTreePath.c_str());
+  if (mytreel1CaloTower == NULL)
+  {
+    CaloTreePath = "l1CaloTowerEmuTree/L1CaloTowerTree";
+    mytreel1CaloTower = (TTree*) rf->Get(CaloTreePath.c_str());
+  }
+
   TTree * mytreeEvent    = (TTree*) rf->Get("l1EventTree/L1EventTree");
   TTree * mytreemuon     = (TTree*) rf->Get("l1MuonRecoTreeProducer/MuonRecoTree");
   TTree * mytreeExtra    = (TTree*) rf->Get("l1ExtraTreeProducer/L1ExtraTree");
@@ -139,7 +147,6 @@ bool L1Ntuple::CheckFirstFile()
   TTree * mytreeRecoFilter  = (TTree*) rf->Get("l1MetFilterRecoTree/MetFilterRecoTree");
   TTree * mytreeRecoVertex  = (TTree*) rf->Get("l1RecoTree/RecoTree");
   TTree * mytreeUpgradeLayer1 = (TTree*) rf->Get("l1UpgradeBitwiseTree/L1UpgradeTree");
-  TTree * mytreel1CaloTower = (TTree*) rf->Get("l1CaloTowerEmuTree/L1CaloTowerTree");
   TTree * mytreel1uGT = (TTree*) rf->Get("l1uGTTree/L1uGTTree");
   
   if (!myChain) {
@@ -283,7 +290,7 @@ bool L1Ntuple::OpenWithoutInit()
   ftreeMenu     = new TChain("l1MenuTreeProducer/L1MenuTree");
   ftreeRecoJet  = new TChain("l1JetRecoTree/JetRecoTree");
   //ftreeRecoMet  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
-  ftreeCaloTower = new TChain("l1CaloTowerEmuTree/L1CaloTowerTree");
+  ftreeCaloTower = new TChain(CaloTreePath.c_str());
   ftreeRecoEle  = new TChain("l1ElectronRecoTree/ElectronRecoTree");
   ftreeRecoMuon = new TChain("l1MuonRecoTree/Muon2RecoTree");
   ftreeRecoTau  = new TChain("l1TauRecoTree/TauRecoTree");
