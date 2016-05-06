@@ -91,12 +91,10 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nIsoEGerVsPt"]  = new TH1F("nIsoEGerVsPt","SingleIsoEGer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nMuVsPt"]     = new TH1F("nMuVsPt","SingleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hRate1F["nMuErVsPt"]   = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
-  hRate1F["nMuVsEta"]    = new TH1F("nMuVsEta","nMuVsEta",24,-2.4,2.4);
-  hRate1F["nEGVsEta"]    = new TH1F("nEGVsEta","nEGVsEta",50,-3.,3.);
-  hRate1F["nIsoEGVsEta"] = new TH1F("nIsoEGVsEta","nIsoEGVsEta",50,-3.,3.);
-  hRate1F["nJetVsEta"]   = new TH1F("nJetVsEta","nJetVsEta",50,-5.,5.);
-  hRate1F["nJetVsEta_Central"] = new TH1F("nJetVsEta_Central","nJetVsEta_Central",50,-5.,5.);
-  hRate1F["nJetVsEta_Fwd"]     = new TH1F("nJetVsEta_Fwd","nJetVsEta_Fwd",50,-5.,5.);
+  hRate1F["nMuVsEta"]    = new TH1F("nMuVsEta","nMuVsEta; #eta (p_{T} > 16); rate [Hz]",24,-2.4,2.4);
+  hRate1F["nEGVsEta"]    = new TH1F("nEGVsEta","nEGVsEta; #eta (p_{T} > 20); rate [Hz]",50,-3.,3.);
+  hRate1F["nIsoEGVsEta"] = new TH1F("nIsoEGVsEta","nIsoEGVsEta; #eta (p_{T} > 20); rate [Hz]",50,-3.,3.);
+  hRate1F["nJetVsEta"]   = new TH1F("nJetVsEta","nJetVsEta; #eta (p_{T} > 36); rate [Hz]",50,-5.,5.);
   hRate1F["nTauVsPt"]     = new TH1F("nTauVsPt","SingleTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nTauErVsPt"]   = new TH1F("nTauErVsPt","SingleTauer; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nIsoTauVsPt"]  = new TH1F("nIsoTauVsPt","SingleIsoTau; E_{T} cut; rate [Hz]",65,-0.5,64.5);
@@ -243,12 +241,12 @@ bool L1Plot::FillRateHistogram()
 {
   if (!doPlotRate) return false;
   for(int ptCut=0; ptCut<256; ++ptCut) {
-    if(L1Event->JetPt>=ptCut)	  hRate1F["nJetVsPt"]->Fill(ptCut);
-    if(L1Event->JetCenPt>=ptCut) hRate1F["nJetCenVsPt"]->Fill(ptCut);
-    if(L1Event->TauPt>=ptCut)	  hRate1F["nTauVsPt"]->Fill(ptCut);
-    if(L1Event->TauerPt>=ptCut)	  hRate1F["nTauErVsPt"]->Fill(ptCut);
-    if(L1Event->IsoTauPt>=ptCut)	  hRate1F["nIsoTauVsPt"]->Fill(ptCut);
-    if(L1Event->IsoTauerPt>=ptCut)	  hRate1F["nIsoTauErVsPt"]->Fill(ptCut);
+    if(L1Event->JetPt>=ptCut)      hRate1F["nJetVsPt"]->Fill(ptCut);
+    if(L1Event->JetCenPt>=ptCut)   hRate1F["nJetCenVsPt"]->Fill(ptCut);
+    if(L1Event->TauPt>=ptCut)      hRate1F["nTauVsPt"]->Fill(ptCut);
+    if(L1Event->TauerPt>=ptCut)    hRate1F["nTauErVsPt"]->Fill(ptCut);
+    if(L1Event->IsoTauPt>=ptCut)   hRate1F["nIsoTauVsPt"]->Fill(ptCut);
+    if(L1Event->IsoTauerPt>=ptCut) hRate1F["nIsoTauErVsPt"]->Fill(ptCut);
 
     if(L1Event->dijetPt2>=ptCut)
     {
@@ -280,9 +278,9 @@ bool L1Plot::FillRateHistogram()
 
 
   for(int ptCut=0; ptCut<65; ++ptCut) {
-    if(L1Event->EGPt>=ptCut)    hRate1F["nEGVsPt"]->Fill(ptCut);
-    if(L1Event->EGerPt>=ptCut)  hRate1F["nEGErVsPt"]->Fill(ptCut);
-    if(L1Event->IsoEGPt>=ptCut) hRate1F["nIsoEGVsPt"]->Fill(ptCut);
+    if(L1Event->EGPt>=ptCut)      hRate1F["nEGVsPt"]->Fill(ptCut);
+    if(L1Event->EGerPt>=ptCut)    hRate1F["nEGErVsPt"]->Fill(ptCut);
+    if(L1Event->IsoEGPt>=ptCut)   hRate1F["nIsoEGVsPt"]->Fill(ptCut);
     if(L1Event->IsoEGerPt>=ptCut) hRate1F["nIsoEGerVsPt"]->Fill(ptCut);
     if(L1Event->diEG2>=ptCut)     hRate1F["nDiEGVsPt"]->Fill(ptCut);
     if(L1Event->diIsolEG2>=ptCut) hRate1F["nDiIsoEGVsPt"]->Fill(ptCut);
@@ -295,19 +293,19 @@ bool L1Plot::FillRateHistogram()
      
   }//loop on 65
     
-   for(int ptCut=0; ptCut<131; ++ptCut) {
-     if (L1Event->MuPt>=ptCut)    hRate1F["nMuVsPt"]->Fill(ptCut);
-    if (L1Event->MuerPt>=ptCut)  hRate1F["nMuErVsPt"]->Fill(ptCut);
-   }
+  for(int ptCut=0; ptCut<131; ++ptCut) {
+    if (L1Event->MuPt>=ptCut)   hRate1F["nMuVsPt"]->Fill(ptCut);
+    if (L1Event->MuerPt>=ptCut) hRate1F["nMuErVsPt"]->Fill(ptCut);
+  }
      
-   for(int iCut=0; iCut<41; ++iCut) {
-     for(int iCut2=0; iCut2<=iCut; ++iCut2) {
-       float ptCut = iCut*0.5;
-       float ptCut2 = iCut2*0.5;
-       if (L1Event->doubleMuPt1>=ptCut && L1Event->doubleMuPt2>=ptCut2) hRate2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
-       if (L1Event->oniaMuPt1>=ptCut && L1Event->oniaMuPt2>=ptCut2)     hRate2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
-     }
-   }
+  for(int iCut=0; iCut<41; ++iCut) {
+    for(int iCut2=0; iCut2<=iCut; ++iCut2) {
+      float ptCut = iCut*0.5;
+      float ptCut2 = iCut2*0.5;
+      if (L1Event->doubleMuPt1>=ptCut && L1Event->doubleMuPt2>=ptCut2) hRate2F["nMuPtVsPt"]->Fill(ptCut,ptCut2);
+      if (L1Event->oniaMuPt1>=ptCut && L1Event->oniaMuPt2>=ptCut2)     hRate2F["nOniaMuPtVsPt"]->Fill(ptCut,ptCut2);
+    }
+  }
    
   for(int httCut=0; httCut<512; ++httCut) {
     if(L1Event->HTT>httCut) hRate1F["nHTTVsHTT"]->Fill(httCut);
@@ -316,7 +314,12 @@ bool L1Plot::FillRateHistogram()
     if(L1Event->ETM>httCut) hRate1F["nETMVsETM"]->Fill(httCut);
   }
 
-  //std::cout <<  "sumJetHt " << sumJetHt <<" HTT " << L1Event->HTT << std::endl;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Eta ~~~~~
+  hRate1F["nMuVsEta"]->Fill(SingleMuEta(16., 2));
+  hRate1F["nEGVsEta"]->Fill(SingleEGEta(20.,false));
+  hRate1F["nIsoEGVsEta"]->Fill(SingleEGEta(20.,true));
+  hRate1F["nJetVsEta"]->Fill(SingleJetEta(36.));
   return true;
 }       // -----  end of function L1Plot::FillRateHistogram  -----
 
@@ -985,3 +988,78 @@ bool L1Plot::TestCaloTower()
 
   return true;
 }       // -----  end of function L1Plot::TestCaloTower  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::SingleMuEta
+//  Description:  
+// ===========================================================================
+float L1Plot::SingleMuEta(float ptCut, unsigned int qualmin) const
+{
+  float maxPt = -10;
+  float iMuMaxPt = -10;
+
+  UInt_t nMuons = upgrade_ -> nMuons;
+  for (UInt_t imu=0; imu < nMuons; imu++) 
+  {
+    Int_t bx = upgrade_ -> muonBx.at(imu);
+    if(bx != 0) continue;
+    if(!PassMuonQual(imu, qualmin)) continue;
+    Float_t pt = upgrade_ -> muonEt.at(imu);                       
+    if ( pt > maxPt) 
+    {
+      maxPt = pt;
+      iMuMaxPt = imu;
+    }
+  }
+  
+  return maxPt>ptCut ? upgrade_ -> muonEta.at(iMuMaxPt) : -10.; 
+}       // -----  end of function L1Plot::SingleMuEta  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::SingleEGEta
+//  Description:  
+// ===========================================================================
+float L1Plot::SingleEGEta(float ptCut, bool doIso) const
+{
+  float maxPt = -10;
+  float iEGMaxPt = -10;
+
+  for (UInt_t ue=0; ue < upgrade_ -> nEGs; ue++) {
+    Int_t bx = upgrade_ -> egBx.at(ue);        		
+    if (bx != 0) continue;
+    Bool_t iso = upgrade_ -> egIso.at(ue);
+    if (!iso && doIso) continue;
+    Float_t pt = upgrade_ -> egEt.at(ue);
+    if ( pt >= maxPt) 
+    {
+      maxPt = pt;
+      iEGMaxPt = ue;
+    }
+  }
+
+  return iEGMaxPt>=0 && maxPt>ptCut ? upgrade_ -> egEta.at(iEGMaxPt) : -10.; 
+
+}       // -----  end of function L1Plot::SingleEGEta  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::SingleJetEta
+//  Description:  
+// ===========================================================================
+float L1Plot::SingleJetEta(float ptCut) const
+{
+  float maxPt = -10;
+  UInt_t iJetMaxPt = -10;
+  
+  for(UInt_t ue=0; ue < upgrade_ -> nJets; ue++) {
+    Int_t bx = upgrade_ -> jetBx.at(ue);        		
+    if(bx != 0) continue;
+
+    Float_t pt = upgrade_ -> jetEt.at(ue);
+    if(pt >= maxPt){
+      maxPt = pt;
+      iJetMaxPt = ue;
+    }
+  }
+
+  return iJetMaxPt>=0 && maxPt>ptCut ? upgrade_ -> jetEta.at(iJetMaxPt) : -10.;
+}       // -----  end of function L1Plot::SingleJetEta  -----

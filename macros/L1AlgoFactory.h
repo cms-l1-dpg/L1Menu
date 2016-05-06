@@ -157,6 +157,10 @@ class L1AlgoFactory: public L1Ntuple{
   void SetMuonER(float newER);
   void SetUseUpgradeLyr1(bool option);
   void SetUseL1CaloTower(bool option);
+
+ protected:
+  bool PassMuonQual(int imu, int MuQual=1) const;
+
  private:
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Hard coded cut value ~~~~~
  float jetCentFwd;
@@ -170,10 +174,8 @@ class L1AlgoFactory: public L1Ntuple{
  float Onia2015ER;
  int SelBx;
  
- bool PassMuonQual(int imu, int MuQual=1) const;
  bool UseUpgradeLyr1;
  bool UseL1CaloTower;
-
 };
 
 #endif   // ----- #ifndef __L1ALGOFACTORY_INC__  -----

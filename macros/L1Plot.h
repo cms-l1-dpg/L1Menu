@@ -44,12 +44,13 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoVertexDataFormat.h"
 
 #include "L1Struct.h"
+#include "L1AlgoFactory.h"
 
 // ===========================================================================
 //        Class:  L1Plot
 //  Description:  
 // ===========================================================================
-class L1Plot
+class L1Plot : public L1AlgoFactory
 {
   public:
 
@@ -122,6 +123,9 @@ class L1Plot
     bool BookRateHistogram();
     bool FillRateHistogram();
     bool WriteRateHistogram(double scale) const;
+    float SingleMuEta(float ptCut, unsigned int qualmin=2) const;
+    float SingleJetEta(float ptCut) const;
+    float SingleEGEta(float ptCut, bool doIso=false) const;
 
     bool BookEffHistogram();
     bool FillEffHistogram();
