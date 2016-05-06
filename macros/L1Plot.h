@@ -44,13 +44,12 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoVertexDataFormat.h"
 
 #include "L1Struct.h"
-#include "L1AlgoFactory.h"
 
 // ===========================================================================
 //        Class:  L1Plot
 //  Description:  
 // ===========================================================================
-class L1Plot : public L1AlgoFactory
+class L1Plot
 {
   public:
 

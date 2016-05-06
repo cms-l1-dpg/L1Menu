@@ -1003,7 +1003,10 @@ float L1Plot::SingleMuEta(float ptCut, unsigned int qualmin) const
   {
     Int_t bx = upgrade_ -> muonBx.at(imu);
     if(bx != 0) continue;
-    if(!PassMuonQual(imu, qualmin)) continue;
+    if (qualmin == 0 && ! (upgrade_->muonQual.at(imu) >= 4)) continue;
+    if (qualmin == 1 && ! (upgrade_->muonQual.at(imu) >= 8)) continue;
+    if (qualmin == 2 && ! (upgrade_->muonQual.at(imu) >= 12)) continue;
+
     Float_t pt = upgrade_ -> muonEt.at(imu);                       
     if ( pt > maxPt) 
     {
