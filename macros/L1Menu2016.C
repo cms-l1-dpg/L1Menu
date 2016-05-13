@@ -518,7 +518,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
     ReadDataPU();
   }
     
-  if (false && L1Config["doTnPMuon"]) // Not ready yet
+  if (L1Config["doTnPMuon"])
   {
     l1TnP = new L1TnP(outrootfile, event_, upgrade_, recoJet_,
         recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_);

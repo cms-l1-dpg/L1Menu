@@ -101,6 +101,9 @@ bool L1TnP::BookMuonHistogram()
 
   hMuon2F["RecL1dR"]  = new TH2F("RecL1dR", "RecL1dR;Reco Muon Pt; dR(L1Mu, recoMu)", 200, 0, 200, 10, 0, 0.1);
   hMuon2F["RecL1dPt"]  = new TH2F("RecL1dPt", "RecL1dPt;Reco Muon Pt; dPt(L1Mu, recoMu)", 200, 0, 200, 100, -100, 100);
+  hMuon2F["RecL1Eta"]  = new TH2F("RecL1Eta", "RecL1Eta;Reco Muon Eta; L1 Muon Eta", 50, -2.5, 2.5, 50, -2.5, 2.5);
+  hMuon2F["RecL1Pt"]  = new TH2F("RecL1Pt", "RecL1Pt;Reco Muon Pt; L1 Muon Pt", 100, 0, 200, 100, 0, 200);
+  BookMuonEffHist("Reco");
   return true;
 }       // -----  end of function L1TnP::BookMuonHistogram  -----
 
@@ -140,6 +143,7 @@ bool L1TnP::WriteMuonHistogram() const
   if (!doMuonTnP) return false;
   outfile->mkdir("TnPMuon");
   outfile->cd("TnPMuon");
+  TCanvas c1("Eff", "Eff", 600, 500);
   for(auto f : hMuon2F)
   {
     f.second->Write();
@@ -150,7 +154,11 @@ bool L1TnP::WriteMuonHistogram() const
   }
   for(auto f : hMuonEff)
   {
-    f.second->Write();
+    f.second->GetPassedHistogram()->Write();
+    f.second->GetTotalHistogram()->Write();
+    c1.cd();
+    f.second->Paint("AP");
+    f.second->GetPaintedGraph()->Write( f.first.c_str());
   }
   outfile->cd();
   return true;
@@ -176,16 +184,33 @@ bool L1TnP::RunMuonTnP()
   if (!passFilter) return passFilter; // If event is skip aleady
 
   // Get medium PFMuons
-  std::vector<TLorentzVector> RecoMuons = GetRecoMuon(2.4, 0.15, 2); 
+  std::vector<TLorentzVector> RecoMuons = GetRecoMuon(2.5, 0.15, 2); 
   hMuon1F["nRecoMuons"] -> Fill(RecoMuons.size());
 
   // Check whether these are Z, now RecoMuons are the two muon from Z
-  if (!Mu_PassRecoZ(RecoMuons)) return false;
+  //if (!Mu_PassRecoZ(RecoMuons)) return false;
 
   // Mapping recoMuon to L1Muon by index
-  std::unordered_map<int, int> MuRecL1 = Mu_MapRecoL1(RecoMuons, 1, 0);
-  assert(MuRecL1.size() == 2);
+  std::unordered_map<int, int> MuRecL1 = Mu_MapRecoL1(RecoMuons, 2, 0);
 
+
+  for(unsigned int i=0; i < RecoMuons.size(); ++i)
+  {
+    TLorentzVector rMu = RecoMuons.at(i);
+    if (MuRecL1[i]!=-1)
+    {
+      hMuon2F["RecL1Eta"] ->Fill(rMu.Eta(), upgrade_->muonEta.at(MuRecL1[i]) );
+      hMuon2F["RecL1Pt"] ->Fill(rMu.Pt(), upgrade_->muonEt.at(MuRecL1[i]) );
+    }
+
+    hMuonEff["Reco_EffEta"]->Fill(MuRecL1[i]!=-1, rMu.Eta());
+    if (rMu.Pt() > 16)
+      hMuonEff["Reco_EffEta_Pt16"]->Fill(MuRecL1[i]!=-1, rMu.Eta());
+    if (rMu.Pt() > 20)
+      hMuonEff["Reco_EffEta_Pt20"]->Fill(MuRecL1[i]!=-1, rMu.Eta());
+    if (rMu.Pt() > 30)
+      hMuonEff["Reco_EffEta_Pt30"]->Fill(MuRecL1[i]!=-1, rMu.Eta());
+  }
   return true;
 }       // -----  end of function L1TnP::RunMuonTnP  -----
 
@@ -249,7 +274,7 @@ bool L1TnP::Mu_PassRecoZ(std::vector<TLorentzVector> &rMuons )
 // ===========================================================================
 std::unordered_map<int, int> L1TnP::Mu_MapRecoL1(std::vector<TLorentzVector> &rMuons, int l1qualmin, int l1muonBX)
 {
-  const float dRMax = 0.5;
+  const float dRMax = 0.3;
   std::unordered_map<int, int> RecL1Mu;
   for(unsigned irMu = 0; irMu < rMuons.size(); irMu++)
   {
