@@ -107,6 +107,7 @@ public:
 protected:
   bool CheckFirstFile();
   bool OpenWithoutInit();
+  bool SelectTree(bool UseUnpack);
   bool OpenNtupleList(const std::string & fname);
 
   std::vector<std::string> listNtuples;
@@ -115,6 +116,7 @@ private :
   TFile* rf;
   std::string MainTreePath;
   std::string CaloTreePath;
+  std::string uGTTreePath;
 };
 
 #endif

@@ -122,6 +122,7 @@ bool L1Menu2016::InitConfig()
   L1Config["SelectEvent"] = -1;
   L1Config["UsePFMETNoMuon"] = 0;
   L1Config["UseuGTDecision"] = 0;
+  L1Config["UseUnpackTree"] = 0;
   
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -249,6 +250,15 @@ bool L1Menu2016::BookHistogram()
   HistMap["All"]             = new TH1F("h_All","h_All",N128,-0.5,N128-0.5);
   HistMap["Pure"]           = new TH1F("h_Pure","h_Pure",N128,-0.5,N128-0.5);
 
+  unsigned fbit = BitMap.begin()->first;
+  unsigned lbit = BitMap.rbegin()->first;
+  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds",lbit-fbit+1, fbit, lbit, lbit-fbit+1, fbit, lbit);
+  for(auto i : BitMap)
+  {
+    int bin = Hist2D["cor_Seeds"]->GetXaxis()->FindBin(i.first);
+    Hist2D["cor_Seeds"]->GetXaxis()->SetBinLabel(bin, i.second.c_str());
+    Hist2D["cor_Seeds"]->GetYaxis()->SetBinLabel(bin, i.second.c_str());
+  }
   Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block",10,-0.5,9.5,19,-0.5,9.5);
   Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS",NPAGS,-0.5,(float)NPAGS-0.5,NPAGS,-0.5,(float)NPAGS-0.5);
   Hist2D["cor_TRIGPHYS"]    = new TH2F("cor_TRIGPHYS","cor_TRIGPHYS",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5,NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
@@ -380,6 +390,7 @@ bool L1Menu2016::ReadMenu()
 // ===========================================================================
 bool L1Menu2016::OpenWithList(std::string filelist)
 {
+  L1Ntuple::SelectTree(L1Config["UseUnpackTree"]);
   if (filelist.find(".root") != std::string::npos)
   {
     L1Ntuple::Open(filelist);
@@ -443,6 +454,10 @@ bool L1Menu2016::ParseConfig(const std::string line)
   double value;
 
   iss >> sign >> key >> sign >> value;
+  if (iss.fail())
+  {
+    std::cout<<"\033[0;31mCan't parse config:\033[0m "<<line<< std::endl; 
+  }
   
   if (L1Config.find(key) != L1Config.end())
   {
@@ -678,6 +693,7 @@ bool L1Menu2016::PostLoop()
   }
   
   FillDefHist1D();
+  FillDefHist2D();
   PrintRates(std::cout);
   if (writefiles)
     PrintRates(*outfile);
@@ -873,7 +889,7 @@ bool L1Menu2016::L1SeedFunc()
 }       // -----  end of function L1Menu2016::L1SeedFunc  -----
 
 
-void L1Menu2016::CorrectScale(TH1F* h, Float_t scal) {
+void L1Menu2016::CorrectScale(TH1* h, Float_t scal) {
 
   Int_t nbins = h -> GetNbinsX();
 
@@ -1081,6 +1097,18 @@ bool L1Menu2016::FillDefHist1D()
   return true;
 }       // -----  end of function L1Menu2016::FillDefHist1D  -----
 
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::FillDefHist2D
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::FillDefHist2D()
+{
+  for(auto h2d : Hist2D)
+  {
+    CorrectScale(h2d.second, scale);
+  }
+  return true;
+}       // -----  end of function L1Menu2016::FillDefHist2D  -----
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::SetOutputName
 //  Description:  

@@ -53,8 +53,9 @@ L1Ntuple::L1Ntuple()
   recoFilter_     = nullptr;
   recoVtx_        = nullptr;
   l1uGT_          = nullptr;
-  MainTreePath = "l1UpgradeTree/L1UpgradeTree";
-  CaloTreePath = "l1CaloTowerTree/L1CaloTowerTree";
+  MainTreePath = "l1UpgradeEmuTree/L1UpgradeTree";
+  CaloTreePath = "l1CaloTowerEmuTree/L1CaloTowerTree";
+  uGTTreePath  = "l1uGTEmuTree/L1uGTTree";
 }
 
 L1Ntuple::L1Ntuple(const std::string & fname)
@@ -119,20 +120,9 @@ bool L1Ntuple::CheckFirstFile()
   if (rf==0) return false;
   if (rf->IsOpen()==0) return false;
 
-  TTree * myChain        = (TTree*) rf->Get(MainTreePath.c_str());
-  if (myChain == NULL) // in case other name
-  {
-    MainTreePath = "l1UpgradeEmuTree/L1UpgradeTree";
-    myChain = (TTree*) rf->Get(MainTreePath.c_str());
-  }
-
+  TTree * myChain           = (TTree*) rf->Get(MainTreePath.c_str());
   TTree * mytreel1CaloTower = (TTree*) rf->Get(CaloTreePath.c_str());
-  if (mytreel1CaloTower == NULL)
-  {
-    CaloTreePath = "l1CaloTowerEmuTree/L1CaloTowerTree";
-    mytreel1CaloTower = (TTree*) rf->Get(CaloTreePath.c_str());
-  }
-
+  TTree * mytreel1uGT       = (TTree*) rf->Get(uGTTreePath.c_str());
   TTree * mytreeEvent    = (TTree*) rf->Get("l1EventTree/L1EventTree");
   TTree * mytreemuon     = (TTree*) rf->Get("l1MuonRecoTreeProducer/MuonRecoTree");
   TTree * mytreeExtra    = (TTree*) rf->Get("l1ExtraTreeProducer/L1ExtraTree");
@@ -147,13 +137,12 @@ bool L1Ntuple::CheckFirstFile()
   TTree * mytreeRecoFilter  = (TTree*) rf->Get("l1MetFilterRecoTree/MetFilterRecoTree");
   TTree * mytreeRecoVertex  = (TTree*) rf->Get("l1RecoTree/RecoTree");
   TTree * mytreeUpgradeLayer1 = (TTree*) rf->Get("l1UpgradeBitwiseTree/L1UpgradeTree");
-  TTree * mytreel1uGT = (TTree*) rf->Get("l1uGTTree/L1uGTTree");
   
   if (!myChain) {
     std::cout<<"L1Tree not found .... "<<std::endl;
     return false;
   } else {
-    std::cout<<"Main tree is found .." <<std::endl;
+    std::cout<<"Main tree is found at " << MainTreePath <<std::endl;
   }
 
   if (!mytreeUpgradeLayer1) {
@@ -167,14 +156,14 @@ bool L1Ntuple::CheckFirstFile()
     std::cout<<"L1CaloTower tree not found .... "<<std::endl;
     dol1CaloTower = false;
   } else {
-    std::cout<<"L1CaloTower tree is found .." <<std::endl;
+    std::cout<<"L1CaloTower tree is found at " << CaloTreePath <<std::endl;
   }
 
   if (!mytreel1uGT) {
     std::cout<<"L1uGTTree tree not found .... "<<std::endl;
     dol1uGT = false;
   } else {
-    std::cout<<"L1uGTTree tree is found .." <<std::endl;
+    std::cout<<"L1uGTTree tree is found at " << uGTTreePath <<std::endl;
   }
   
   if (!mytreeEvent) {
@@ -622,3 +611,16 @@ std::map<std::string, std::string> L1Ntuple::GetuGTAlias()
   }
   return SeedAlias;
 }       // -----  end of function L1Ntuple::GetuGTAlias  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Ntuple::SelectTree
+//  Description:  
+// ===========================================================================
+bool L1Ntuple::SelectTree(bool UseUnpack)
+{
+  if (!UseUnpack) return false;
+  MainTreePath = "l1UpgradeTree/L1UpgradeTree";
+  CaloTreePath = "l1CaloTowerTree/L1CaloTowerTree";
+  uGTTreePath  = "l1uGTTree/L1uGTTree";
+  return true;
+}       // -----  end of function L1Ntuple::SelectTree  -----

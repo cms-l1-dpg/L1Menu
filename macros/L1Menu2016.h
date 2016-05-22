@@ -129,7 +129,7 @@ class L1Menu2016 : public L1AlgoFactory
     // ====================  METHODS       ===============================
 
     bool GetL1Event();
-    void CorrectScale(TH1F* h, Float_t scal);
+    void CorrectScale(TH1* h, Float_t scal);
     bool InsertInMenu(std::string L1name, bool value);
     bool FillLumiSection(int currentLumi);
     bool FillPileUpSec();
@@ -143,6 +143,7 @@ class L1Menu2016 : public L1AlgoFactory
     double CalScale(int nEvents_ = 0, int nBunches_ = 0, bool print=false);
     bool RunMenu();
     bool FillDefHist1D();
+    bool FillDefHist2D();
     void CalLocalHT(float &HTTcut);
     void CalLocalHTM(float &HTMcut);
 
