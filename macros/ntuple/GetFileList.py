@@ -48,8 +48,39 @@ ntupleMap = {
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Itg-v37 ~~~~~
     # "r*_itgv37p2":"/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v37p2/ZB/crab_l1t-integration-v37p2__*_ZB/",
-    "r259721_itgv37p2_Opt5":"/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v37p2_Opt5Tau/ZeroBias1/crab_l1t-integration-v37p2_Opt5Tau__259721_ZeroBias1/160418_132646/0000/",
+    # "SingleMuZmu_itgv37p2":"/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v37p2_Opt5Tau/SingleMuon/crab_l1t-integration-v37p2_Opt5Tau__SingleMuon_ZMu/160418_171958/0000/",
+    # "r259721_itgv37p2_Opt5":"/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v37p2_Opt5Tau/ZeroBias1/crab_l1t-integration-v37p2_Opt5Tau__259721_ZeroBias1/160418_132646/0000/",
+    # "r*_itgv37p2_Opt21":"/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v37p2/ZB/crab_l1t-integration-v37p2__*_ZB/",
+
+    # "r271306_unpack" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-unpacked-l1t-tsg-v5p1/ZeroBias1/crab_Collision2016-unpacked-l1t-tsg-v5p1__271306_ZeroBias1/160425_123351/0000/",
+    # "r271306_TSGv5p1" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-tsg-v5p1/ZeroBias1/crab_l1t-tsg-v5p1__271306_ZeroBias1/160425_124157/0000/",
+    # "r*_itgv42p1": "/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v42p1/ZB/crab_l1t-integration-v42p1__*_ZB/",
     # "r*_itgv36":"/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v36p0_Opt5Tau/ZB/crab_l1t-integration-v36p0_Opt5Tau__*_ZB/",
+    # "r271084_unpack" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collisions2016_RAW/ZeroBias1/crab_Collisions2016_RAW__271084_ZeroBias1/160424_051059/0000/",
+    # "r271084_v5p1" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-tsg-v5p1/ZeroBias1/crab_l1t-tsg-v5p1__271084_ZeroBias1/160424_101909/0000"
+    # "r*_itgv42p1": "/afs/cern.ch/user/b/benwu/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v42p1/
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Itg-v42p1 ~~~~~
+    # "r271336_unpack" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-unpacked-l1t-integration-v42p1/ZeroBias1/crab_Collision2016-unpacked-l1t-integration-v42p1__271336_ZeroBias1/160426_213203/0000/",
+    # "r271336_itgv42p1" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v42p1/ZeroBias1/crab_l1t-integration-v42p1__271336_ZeroBias1/160426_220107/0000/",
+    # "r272011_unpack" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-unpacked-l1t-integration-v42p1/ZeroBias1/crab_Collision2016-unpacked-l1t-integration-v42p1__272011_ZeroBias1/160429_113505/0000/",
+    # "r272011_itgv42p1" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v42p1/ZeroBias1/crab_l1t-integration-v42p1__272011_ZeroBias1/160429_155018/0000/",
+    # "r272022_unpack" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-unpacked-l1t-integration-v42p1/ZeroBias1/crab_Collision2016-unpacked-l1t-integration-v42p1__272022_ZeroBias1/160502_212726/0000/",
+    # "r*_itgv46p0": "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v46p0-CMSSW-807/ZeroBias/crab_l1t-integration-v46p0-CMSSW-807__*_ZeroBias/",
+    # "r*_unpack": "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-unpacked-l1t-integration-v48p0-CMSSW-807/ZeroBias/crab_Collision2016-unpacked-l1t-integration-v48p0-CMSSW-807__*_ZeroBias/",
+    # "r*_itgv48": "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v48p0-CMSSW-807/ZeroBias/crab_l1t-integration-v48p0-CMSSW-807__*_ZeroBias/",
+    # "r*_tsgv5p1": "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-tsg-v5p1/ZeroBias/crab_l1t-tsg-v5p1__*_ZeroBias/",
+    # "r*_itgv46p0_opt5": "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v46p0-tauOpt5-CMSSW-807/ZeroBias/crab_l1t-integration-v46p0-tauOpt5-CMSSW-807__*_ZeroBias/",
+    # "r*_itgv48p2": "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/l1t-integration-v48p2-CMSSW-807/ZeroBias/crab_l1t-integration-v48p2-CMSSW-807__*_ZeroBias/",
+    # "SingleMu16_Reco":
+    # "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-RECOreEmu-l1t-integration-v48p4-CMSSW-807/SingleMuon/crab_Collision2016-RECOreEmu-l1t-integration-v48p4-CMSSW-807__SingleMuon_ZMu/160512_214025/0000/",
+    # "SingleMu16_itgv48p0" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-RECO-l1t-integration-v48p0-CMSSW-807/SingleMuon/crab_Collision2016-RECO-l1t-integration-v48p0-CMSSW-807__SingleMuon_ZMu/160512_210708/0000/",
+    # "SingleMu16_itgv48p4" : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-RECO-l1t-integration-v48p4-CMSSW-807/SingleMuon/crab_Collision2016-RECO-l1t-integration-v48p4-CMSSW-807__SingleMuon_ZMu/160512_220237/0000/",
+    # "SingleMu16_reEmu"    : "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-RECOreEmu-l1t-integration-v48p4-CMSSW-807/SingleMuon/crab_Collision2016-RECOreEmu-l1t-integration-v48p4-CMSSW-807__SingleMuon_ZMu/160512_214025/0000/",
+    # "r*_unpack":"~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-unpacked-l1t-integration-v58p0-CMSSW-807/ZeroBias/crab_Collision2016-unpacked-l1t-integration-v58p0-CMSSW-807__*_ZeroBias/",
+    # "Len_1": "~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-RECOreEmu-l1t-integration-v53p1-CMSSW-807/SingleMuon/crab_Collision2016-RECOreEmu-l1t-integration-v53p1-CMSSW-807__273301_SingleMuon/160518_191802/0000/",
+    # "Len_2":"~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-RECO-l1t-integration-v53p1-CMSSW-807/SingleMuon/crab_Collision2016-RECO-l1t-integration-v53p1-CMSSW-807__273301_SingleMuon/160518_032024/0000/"
+    # "r*_itgv58":"~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-noRECO-l1t-integration-v58p1-CMSSW-808/ZeroBias/crab_Collision2016-noRECO-l1t-integration-v58p1-CMSSW-808__*_ZeroBias/",
+    "r*_itgv59":"~/eos/cms/store/group/dpg_trigger/comm_trigger/L1Trigger/L1Menu2016/Stage2/Collision2016-noRECO-l1t-integration-v59p0/ZeroBias/crab_Collision2016-noRECO-l1t-integration-v59p0__*_ZeroBias/",
 }
 
 def GetEOSdir(v):
@@ -96,8 +127,10 @@ def GetZBlist(k, v):
             for i in range(len(jdate)):
                 print "(%d) %s" % (i, jdate[i]),
             print ""
-            job = input("Which one?")
-            tempv += "/"+jdate[job]
+            # job = input("Which one?")
+            # tempv += "/"+jdate[job]
+            print max(jdate)
+            tempv += "/"+max(jdate)
         jbatch = EOSls(tempv)
         for j in jbatch:
             tempvlist.append(tempv+"/"+j)
@@ -108,13 +141,13 @@ def GetZBlist(k, v):
             GetList(k, tempvlist[i], 'a')
 
 def GetZBLists(k, v):
-    zbhomedir = GetEOSdir(v[:v.find("/ZB/")])
+    zbhomedir = GetEOSdir(v[:v.find("/ZeroBias/")])
     lsdir = EOSls(zbhomedir)
     runmap = defaultdict(list)
     for zbdir in lsdir:
         if "ZeroBias" not in zbdir:
             continue
-        dirpattern = GetEOSdir(v).replace("ZB", zbdir).replace("*", "(\d+)")
+        dirpattern = GetEOSdir(v).replace("ZeroBias", zbdir).replace("*", "(\d+)")
         if dirpattern[-1] == "/":
             dirpattern = dirpattern[:-1] + "/*"
         else:
@@ -130,13 +163,6 @@ def GetZBLists(k, v):
                 runmap[k.replace("*", run)].append(thisdir)
     for k, v in runmap.items():
         GetZBlist(k, v)
-        # if len(v) == 1:
-            # GetList(k, v[0])
-            # continue
-
-
-
-
 
 if __name__ == "__main__":
     GetNtuleList()

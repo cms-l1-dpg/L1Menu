@@ -3,7 +3,7 @@
 
 import sys,string,math,os,subprocess,socket
 
-EOS = "/afs/cern.ch/project/eos/installation/0.3.142-aquamarine/bin/eos.select"
+EOS = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
 
 Debug=False
 # Debug=True

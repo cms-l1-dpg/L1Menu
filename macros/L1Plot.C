@@ -111,6 +111,7 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nDiIsoTauVsPt"]     = new TH1F("nDiIsoTauVsPt","DiIsoTau; E_{T} cut; rate [Hz]",256,-0.5,255.5);
   hRate1F["nDiEGVsPt"]         = new TH1F("nDiEGVsPt","DiEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
   hRate1F["nDiIsoEGVsPt"]      = new TH1F("nDiIsoEGVsPt","DiIsoEG; E_{T} cut; rate [Hz]",65,-0.5,64.5);
+  hRate1F["nDiMuVsPt"]         = new TH1F("nDiMuVsPt","DoubleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hRate2F["nEGPtVsPt"]         = new TH2F("nEGPtVsPt","DoubleEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",65,-0.5,64.5,65,-0.5,64.5);
   hRate2F["nIsoEGPtVsPt"]      = new TH2F("nIsoEGPtVsPt","DoubleIsolEle; p_{T} cut EG_{1}; p_{T} cut EG_{2}",65,-0.5,64.5,65,-0.5,64.5);
   hRate2F["nMuPtVsPt"]         = new TH2F("nMuPtVsPt","DoubleMu; p_{T} cut mu_{1}; p_{T} cut mu_{2}",41,-0.25,20.25,41,-0.25,20.25);
@@ -296,6 +297,7 @@ bool L1Plot::FillRateHistogram()
   for(int ptCut=0; ptCut<131; ++ptCut) {
     if (L1Event->MuPt>=ptCut)   hRate1F["nMuVsPt"]->Fill(ptCut);
     if (L1Event->MuerPt>=ptCut) hRate1F["nMuErVsPt"]->Fill(ptCut);
+    if (L1Event->doubleMuPt2>=ptCut)   hRate1F["nDiMuVsPt"]->Fill(ptCut);
   }
      
   for(int iCut=0; iCut<41; ++iCut) {
