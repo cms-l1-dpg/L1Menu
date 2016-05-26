@@ -898,7 +898,12 @@ bool L1Menu2016::InsertInMenu(std::string L1name, bool value) {
   }
 
   mL1Seed[L1name].eventfire = false;
-  mL1Seed[L1name].ncounts++;
+  if (value)
+    mL1Seed[L1name].ncounts++;
+
+  if (mL1Seed[L1name].prescale == 0)
+    return true;
+
   if ( mL1Seed[L1name].ncounts % mL1Seed[L1name].prescale == 0) 
     post_prescale = value; 
 
