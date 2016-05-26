@@ -12,17 +12,22 @@ import subprocess
 DelDir = None #Auto pick up by CMSSW_BASE
 DryRun = False
 DelExe    = 'testMenu2016'
+# OutDir = 'Output/ITGv27/'
 # OutDir  = 'Output/ITGv19Study/'
 # OutDir  = 'Output/TSGv4Vsv3/'
-OutDir  = 'Output/TSGv4'
-Analysis  = 'MenuPU3'
+OutDir  = 'Output/ITGv59'
+# Analysis  = 'MuonPU2'
+# Analysis  = 'MenuPU3'
 # Analysis  = 'PFMET'
+Analysis  = 'doubleMu2'
 MenuFile = [
-  #"menu/Menu_MuonStudy.txt",
-  #"menu/Menu_None.txt"
+  # "menu/Menu_MuonStudy.txt",
+  # "menu/Menu_MuonStudy.txt",
+  # "menu/Menu_None.txt"
   # "menu/Menu_259721_TSGv4_Prescales.txt",
   # "menu/Menu_259721_TSGv3_FixPre_EG.txt",
-  "menu/Menu_259721_TSGv4_FixPre.txt",
+  "menu/Lumi5E33_TSGv5_Prescales.txt",
+  # "menu/Menu_259721_TSGv5_Prescales.txt",
   # "menu/Menu_ETMStudy.txt",
 ]
 Ntuplelist = [
@@ -30,43 +35,128 @@ Ntuplelist = [
   # "ntuple/r259721_tsgv3.list",
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSG-v4 ~~~~~
-    "ntuple/MC10PU_tsgv4.list",
-    "ntuple/MC20PU_tsgv4.list",
-    "ntuple/MC30PU_tsgv4.list",
-    "ntuple/MC40PU_tsgv4.list",
-    "ntuple/MC50PU_tsgv4.list",
-    "ntuple/r258425_tsgv4.list",
-    "ntuple/r258427_tsgv4.list",
-    "ntuple/r258428_tsgv4.list",
-    "ntuple/r258434_tsgv4.list",
-    "ntuple/r258440_tsgv4.list",
-    "ntuple/r258445_tsgv4.list",
-    "ntuple/r258448_tsgv4.list",
-    "ntuple/r259626_tsgv4.list",
-    "ntuple/r259721_tsgv4.list",
+    # "ntuple/MC10PU_tsgv4.list",
+    # "ntuple/MC20PU_tsgv4.list",
+    # "ntuple/MC30PU_tsgv4.list",
+    # "ntuple/MC40PU_tsgv4.list",
+    # "ntuple/MC50PU_tsgv4.list",
+    # "ntuple/r258425_tsgv4.list",
+    # "ntuple/r258427_tsgv4.list",
+    # "ntuple/r258428_tsgv4.list",
+    # "ntuple/r258434_tsgv4.list",
+    # "ntuple/r258440_tsgv4.list",
+    # "ntuple/r258445_tsgv4.list",
+    # "ntuple/r258448_tsgv4.list",
+    # "ntuple/r259626_tsgv4.list",
+    # "ntuple/r259721_tsgv4.list",
     # "ntuple/SingleMuZmu_tsgv4.list",
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSGv4-METFix ~~~~~
-  #"ntuple/r259721_tsgv4METfix.list",
-  #"ntuple/r259721_tsgv4.list",
-  #"ntuple/r259721_gomber.list",
+    #"ntuple/r259721_tsgv4METfix.list",
+    #"ntuple/r259721_tsgv4.list",
+    #"ntuple/r259721_gomber.list",
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Integration v19 ~~~~~
-  #"ntuple/r258440_itgv19Layer1.list",
-  #"ntuple/r258440_itgv19.list",
-  #"ntuple/r259626_itgv19Layer1.list",
-  #"ntuple/r259626_itgv19.list",
-  #"ntuple/r259721_itgv19Layer1.list",
-  # "ntuple/r259721_itgv19.list",
-  # "ntuple/SingleMuZmu_itgv19Layer1.list",
-  # "ntuple/SingleMuZmu_itgv19.list",
+    # "ntuple/r258440_itgv19Layer1.list",
+    # "ntuple/r258440_itgv19.list",
+    # "ntuple/r259626_itgv19Layer1.list",
+    # "ntuple/r259626_itgv19.list",
+    # "ntuple/r259721_itgv19Layer1.list",
+    # "ntuple/r259721_itgv19.list",
+    # "ntuple/SingleMuZmu_itgv19Layer1.list",
+    # "ntuple/SingleMuZmu_itgv19.list",
+    # "ntuple/r259721_itgv19Layer1_Reco.list",
+    # "ntuple/r259721_itgv19_Reco.list",
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSGv4p1 ~~~~~
+    # "ntuple/MC20PU_tsgv4p1.list",
+    # "ntuple/MC30PU_tsgv4p1.list",
+    # "ntuple/r258440_tsgv4p1.list",
+    # "ntuple/r259626_tsgv4p1.list",
+    # "ntuple/r259721_tsgv4p1.list",
+    # "ntuple/SingleMuZmu_tsgv4p1.list",
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Integration v27 ~~~~~
+    # "ntuple/MC20PU_itgv27.list",
+    # "ntuple/MC30PU_itgv27.list",
+    # "ntuple/MC40PU_itgv27.list",
+    # "ntuple/r258440_itgv27.list",
+    # "ntuple/r259626_itgv27.list",
+    # "ntuple/r259721_itgv27.list",
+    # "ntuple/SingleMuZmu_itgv27.list",
+    # "ntuple/r259721_itgv35.list"
+    # "ntuple/r259721_itgv37p2_Opt5.list"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Com ~~~~~
+    # "ntuple/r271306_unpack.list",
+    # "ntuple/r271306_TSGv5p1.list"
+    # "ntuple/r258440_itgv42p1.list",
+    # "ntuple/r259626_itgv42p1.list",
+    # "ntuple/r259721_itgv42p1.list",
+
+    # "ntuple/r271071_itgv42p1.list",
+    # "ntuple/r271074_itgv42p1.list",
+    # "ntuple/r271075_itgv42p1.list",
+    # "ntuple/r271084_itgv42p1.list",
+    # "ntuple/r271306_itgv42p1.list",
+    # "ntuple/r271336_itgv42p1.list",
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Itg-v42.1 ~~~~~
+    # "ntuple/r271336_itgv42p1.list",
+    # "ntuple/r271336_unpack.list",
+
+    # "ntuple/r272011_itgv42p1.list",
+    # "ntuple/r272011_unpack.list",
+    # "ntuple/r272022_itgv42p1.list",
+    # "ntuple/r272022_unpack.list",
+
+    # "ntuple/r258440_itgv46p0.list",
+    # "ntuple/r259626_itgv46p0.list",
+    # "ntuple/r259721_itgv46p0.list",
+    # "ntuple/r272011_itgv46p0.list",
+    # "ntuple/r272022_itgv46p0.list",
+
+
+    # "ntuple/r272011_itgv48p2.list",
+    # "ntuple/r272022_itgv48p2.list",
+    # "ntuple/r272784_itgv48p2.list",
+    # "ntuple/r272798_itgv48p2.list",
+    # "ntuple/r272812_itgv48p2.list",
+    # "ntuple/r272818_itgv48p2.list",
+    # "ntuple/r272828_itgv48p2.list",
+    # "ntuple/r272011_itgv48.list",
+    # "ntuple/r272022_itgv48.list",
+    # "ntuple/r272784_itgv48.list",
+    # "ntuple/r272798_itgv48.list",
+    # "ntuple/r272812_itgv48.list",
+    # "ntuple/r272818_itgv48.list",
+    # "ntuple/r272011_unpack.list",
+    # "ntuple/r272022_unpack.list",
+    # "ntuple/r272784_unpack.list",
+    # "ntuple/r272798_unpack.list",
+    # "ntuple/r272812_unpack.list",
+    # "ntuple/r272818_unpack.list",
+
+    "ntuple/r273725_itgv59.list",
+    "ntuple/r273728_itgv59.list",
+    "ntuple/r273730_itgv59.list",
+    # "ntuple/r273725_itgv58.list",
+    # "ntuple/r273728_itgv58.list",
+    # "ntuple/r272828_unpack.list",
+    # "ntuple/r272022_unpack.list",
+    # "ntuple/r272011_unpack.list",
+    # "ntuple/r272784_unpack.list",
+    # "ntuple/r272812_unpack.list",
+    # "ntuple/r272818_unpack.list",
+    # "ntuple/r272798_unpack.list",
 ]
-# GlobalOpt = "--doPlotEff"
-# GlobalOpt = "--doPlotRate"
+GlobalOpt = ""
+# GlobalOpt += " --doPlotEff"
+GlobalOpt += " --doPlotRate"
 # GlobalOpt += " --doPlotTest"
-GlobalOpt = "--doPlotRate --doPrintPU"
-# GlobalOpt = " --doPrintPU"
+GlobalOpt += " --SetNoPrescale"
+GlobalOpt += " --doPrintPU"
+# GlobalOpt += " --UsePFMETNoMuon"
+# GlobalOpt += " --doPlotRate --doPrintPU"
 Options = {
-  None:""
+  # None:"",
   #"test" : "-n 10"
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Muon ER Study ~~~~~
   #"MuER0p8" : "--SetMuonER 0.8",
@@ -88,17 +178,24 @@ Options = {
   #"r258445" : "--SelectRun 258445",
   #"r258448" : "--SelectRun 258448",
   #"r259626" : "--SelectRun 259626",
-  #"r259721" : "--SelectRun 259721",
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MET Cross Check ~~~~~
-  #"Default"    : "",
-  #"Bitwise"    : "--UseUpgradeLyr1",
-  #"CaloTower" : "--UseL1CaloTower",
+  #"r259721" : "--SelectRun 259721",
+  "EmuC++"    : "",
+  "EmuGT"    : "--UseuGTDecision",
+  # #"Bitwise"    : "--UseUpgradeLyr1",
+  # "Float" : " --SumJetET  30 --UseL1CaloTower",
+  "UnpackuGT"    : " --UseuGTDecision --UseUnpackTree",
+  "UnpackC++"    : " --UseUnpackTree",
 
 }
-#LSFque = '8nm'
+# LSFque = '8nm'
 LSFque = '8nh'
-nBunches = 3963.7
+# LSFque = '1nd'
+# nBunches = 6840 ## From 12PU scaled to 30PU
+nBunches = 1165
+# nBunches = 8
+# nBunches = 3963.7
 
 def BSUB(Analysis, Menu_, Ntuple_, Option):
     global LSFque

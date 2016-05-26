@@ -61,6 +61,7 @@ int main ( int argc, char *argv[] )
     ("UseL1CaloTower", po::bool_switch()->default_value(false),                "Use Layer1 CaloTower Tree")
     ("UsePFMETNoMuon", po::bool_switch()->default_value(false),                "Use PFMET no Muon in SingleMu sample")
     ("UseuGTDecision", po::bool_switch()->default_value(false),                "Trigger seeds fired by uGT")
+    ("UseUnpackTree",  po::bool_switch()->default_value(false),                "Use unpacked tree in Ntuple")
     ("SelectRun",      po::value<int>()->default_value(-1),                    "Select specific run")
     ("SelectEvent",    po::value<int>()->default_value(-1),                    "Select specific event")
     ;
