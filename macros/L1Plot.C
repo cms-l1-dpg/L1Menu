@@ -92,6 +92,8 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nMuVsPt"]     = new TH1F("nMuVsPt","SingleMu; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hRate1F["nMuErVsPt"]   = new TH1F("nMuErVsPt","SingleMu |#eta|<2.1; p_{T} cut; rate [Hz]",131,-0.5,130.5);
   hRate1F["nMuVsEta"]    = new TH1F("nMuVsEta","nMuVsEta; #eta (p_{T} > 16); rate [Hz]",24,-2.4,2.4);
+  hRate1F["nDiMu0VsEta"]    = new TH1F("nDiMu0VsEta","nDiMu0VsEta; DiMu #eta (p_{T} > 0); rate [Hz]",24,-2.4,2.4);
+  hRate1F["nDiMu3VsEta"]    = new TH1F("nDiMu3VsEta","nDiMu3VsEta; DiMu #eta (p_{T} > 3); rate [Hz]",24,-2.4,2.4);
   hRate1F["nEGVsEta"]    = new TH1F("nEGVsEta","nEGVsEta; #eta (p_{T} > 20); rate [Hz]",50,-3.,3.);
   hRate1F["nIsoEGVsEta"] = new TH1F("nIsoEGVsEta","nIsoEGVsEta; #eta (p_{T} > 20); rate [Hz]",50,-3.,3.);
   hRate1F["nJetVsEta"]   = new TH1F("nJetVsEta","nJetVsEta; #eta (p_{T} > 36); rate [Hz]",50,-5.,5.);
@@ -319,6 +321,8 @@ bool L1Plot::FillRateHistogram()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Eta ~~~~~
   hRate1F["nMuVsEta"]->Fill(SingleMuEta(16., 2));
+  hRate1F["nDiMu0VsEta"]->Fill(DoubleMuEta(0));
+  hRate1F["nDiMu3VsEta"]->Fill(DoubleMuEta(3));
   hRate1F["nEGVsEta"]->Fill(SingleEGEta(20.,false));
   hRate1F["nIsoEGVsEta"]->Fill(SingleEGEta(20.,true));
   hRate1F["nJetVsEta"]->Fill(SingleJetEta(36.));
@@ -1019,6 +1023,43 @@ float L1Plot::SingleMuEta(float ptCut, unsigned int qualmin) const
   
   return maxPt>ptCut ? upgrade_ -> muonEta.at(iMuMaxPt) : -10.; 
 }       // -----  end of function L1Plot::SingleMuEta  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::DoubleMuEta
+//  Description:  
+// ===========================================================================
+float L1Plot::DoubleMuEta(float pt2Cut, unsigned int qualmin, float pt1Cut) 
+{
+  Float_t mu1ptmax = -10.;
+  Float_t mu2ptmax = -10.;
+  int mu2idx = -1;
+
+  if(upgrade_->nMuons < 2) return -999;
+
+  for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);
+    if(bx != 0) continue;
+    if (qualmin == 0 && ! (upgrade_->muonQual.at(imu) >= 4)) continue;
+    if (qualmin == 1 && ! (upgrade_->muonQual.at(imu) >= 8)) continue;
+    if (qualmin == 2 && ! (upgrade_->muonQual.at(imu) >= 12)) continue;
+
+    Float_t pt = upgrade_->muonEt.at(imu);			
+    if(pt >= mu1ptmax)
+    {
+      mu2ptmax = mu1ptmax;
+      mu1ptmax = pt;
+    } else if(pt >= mu2ptmax) {
+      mu2ptmax = pt;
+      mu2idx = imu;
+    }
+  }
+
+  if (mu2idx != -1 && mu1ptmax >= pt1Cut && mu2ptmax >= pt2Cut)
+    return upgrade_->muonEta.at(mu2idx);
+  else
+    return -999;
+}       // -----  end of function L1Plot::DoubleMuEta  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::SingleEGEta

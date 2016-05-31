@@ -123,6 +123,7 @@ class L1Plot
     bool FillRateHistogram();
     bool WriteRateHistogram(double scale) const;
     float SingleMuEta(float ptCut, unsigned int qualmin=2) const;
+    float DoubleMuEta(float pt2Cut, unsigned int qualmin=1, float pt1Cut=0);
     float SingleJetEta(float ptCut) const;
     float SingleEGEta(float ptCut, bool doIso=false) const;
 
