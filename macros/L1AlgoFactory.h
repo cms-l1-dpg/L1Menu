@@ -28,6 +28,7 @@ class L1AlgoFactory: public L1Ntuple{
 
   void SingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin=2);
   void DoubleMuPt(Float_t& mu1pt, Float_t& mu2pt, Bool_t isHighQual = false, Bool_t isER = false);
+  void DoubleMu_ETMPt(Float_t &cut1, Float_t &cut2, Float_t& ETMcut, Bool_t isER=false);
   void TripleMuPt(Float_t& mu1pt, Float_t& mu2pt, Float_t& mu3pt, Int_t qualmin = 4);
   void QuadMuPt(Float_t& mu1pt, Float_t& mu2pt, Float_t& mu3pt, Float_t& mu4pt, Int_t qualmin = 4);
   void ComplexSingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin, int muonType=0, int muonBX=0);
@@ -72,6 +73,7 @@ class L1AlgoFactory: public L1Ntuple{
   Bool_t SingleMu(Float_t ptcut, Bool_t isER, Int_t qualmin=2);
   Bool_t ComplexSingleMu(Float_t& ptcut, Bool_t isER, Int_t qualmin=2, Int_t muonType=0, Int_t muonBX=0);
   Bool_t DoubleMu(Float_t mu1pt, Float_t mu2pt, Bool_t isHighQual = false, Bool_t isER = false);
+  Bool_t DoubleMu_ETM(Float_t mu1pt, Float_t mu2pt, Float_t ETMcut, Bool_t isER=false);
   Bool_t TripleMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Int_t qualmin);
   Bool_t QuadMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Float_t mu4pt, Int_t qualmin);
 
@@ -138,10 +140,10 @@ class L1AlgoFactory: public L1Ntuple{
   void DoubleJetCentral_ETMPt(Float_t& jetcut1, Float_t& jetcut2, Float_t& ETMcut);
   Bool_t DoubleEG_HT(Float_t EGcut, Float_t HTcut);
   void DoubleEG_HTPt(Float_t& EGcut, Float_t& HTcut);
-  Bool_t Jet_MuOpen_Mu_dPhiMuMu1(Float_t jetcut, Float_t mucut);
-  void Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut);
-  Bool_t Jet_MuOpen_EG_dPhiMuEG1(Float_t jetcut, Float_t egcut);
-  void Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut);
+  Bool_t Jet_MuOpen_EG_dPhiMuEG1(Float_t jetcut, Float_t egcut, int MuQual=0);
+  Bool_t Jet_MuOpen_Mu_dPhiMuMu1(Float_t jetcut, Float_t mucut, int MuQual=0);
+  void Jet_MuOpen_Mu_dPhiMuMu1Pt(Float_t& jetcut, Float_t& mucut, int MuQual=0);
+  void Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut, int MuQual=0);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass ~~~~~
   bool MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bool isIsolated, bool isER) const;
 
