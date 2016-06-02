@@ -125,6 +125,10 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nETTVsETT"] = new TH1F("nETTVsETT","ETT; ETT cut; rate [Hz]",512,-.5,511.5);
   hRate1F["nETMVsETM"] = new TH1F("nETMVsETM","ETM; ETM cut; rate [Hz]",512,-.5,511.5);
 
+  // EG Rate study
+  hRate2F["nEGvsIsoEG_0"]    = new TH2F("nEGvsIsoEG_0","nEGvsIsoEG_0IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
+  hRate2F["nEGvsIsoEG_1"]    = new TH2F("nEGvsIsoEG_1","nEGvsIsoEG_1IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
+  hRate2F["nEGvsIsoEG_2"]    = new TH2F("nEGvsIsoEG_2","nEGvsIsoEG_2IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
   return true;
 }       // -----  end of function L1Plot::BookRateHistogram  -----
 
@@ -326,6 +330,24 @@ bool L1Plot::FillRateHistogram()
   hRate1F["nEGVsEta"]->Fill(SingleEGEta(20.,false));
   hRate1F["nIsoEGVsEta"]->Fill(SingleEGEta(20.,true));
   hRate1F["nJetVsEta"]->Fill(SingleJetEta(36.));
+
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EG Rate ~~~~~
+  for (int EGpt = 20; EGpt < 41; ++EGpt)
+  {
+    for (int IsoEGpt = 20; IsoEGpt < 41; ++IsoEGpt)
+    {
+      if (L1Event->EGPt >=EGpt && L1Event->IsoEGPt >=IsoEGpt)
+      {
+        if (L1Event->IsoEGerPt >= IsoEGpt)
+          hRate2F["nEGvsIsoEG_0"] ->Fill(EGpt, IsoEGpt);
+        if (L1Event->IsoEGerPt >= (IsoEGpt-1))
+          hRate2F["nEGvsIsoEG_1"] ->Fill(EGpt, IsoEGpt);
+        if (L1Event->IsoEGerPt >= (IsoEGpt-2))
+          hRate2F["nEGvsIsoEG_2"] ->Fill(EGpt, IsoEGpt);
+      }
+    }
+  }
   return true;
 }       // -----  end of function L1Plot::FillRateHistogram  -----
 
