@@ -81,6 +81,7 @@ class L1Plot
     void SetTodo ( std::map<std::string, float> &L1Config);
 
     bool GetRecoEvent();
+    bool PlotRatePerLS( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches);
     // ====================  OPERATORS     ===============================
 
     L1Plot& operator = ( const L1Plot &other ); // assignment operator
@@ -123,7 +124,7 @@ class L1Plot
     bool FillRateHistogram();
     bool WriteRateHistogram(double scale) const;
     float SingleMuEta(float ptCut, unsigned int qualmin=2) const;
-    float DoubleMuEta(float pt2Cut, unsigned int qualmin=1, float pt1Cut=0);
+    float FillRateDoubleMu(float pt2Cut, unsigned int qualmin=1, float pt1Cut=0);
     float SingleJetEta(float ptCut) const;
     float SingleEGEta(float ptCut, bool doIso=false) const;
 
@@ -131,6 +132,9 @@ class L1Plot
     bool FillEffHistogram();
     bool WriteEffHistogram();
 
+    bool BookLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches);
+    bool ScaleLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches);
+    bool WriteLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount);
 
     bool WriteTestHistogram() const;
     bool BookTestHistogram();

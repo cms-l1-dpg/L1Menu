@@ -110,7 +110,7 @@ bool L1Menu2016::InitConfig()
   L1Config["doPlotEff"] = 0;
   L1Config["doPlotTest"] = 0;
   L1Config["doTnPMuon"] = 0;
-  L1Config["doPrintLS"] = 0;
+  L1Config["doPlotLS"] = 0;
   L1Config["doPrintPU"] = 0;
   L1Config["doCompuGT"] = 0;
   L1Config["maxEvent"] = -1;
@@ -661,7 +661,7 @@ bool L1Menu2016::Loop()
     if (RunMenu())
       nFireevents++;
 
-    if (L1Config["doPrintLS"])
+    if (L1Config["doPlotLS"])
       FillLumiSection(currentLumi);
 
     if (L1Config["doPrintPU"] && event_ != NULL)
@@ -705,7 +705,11 @@ bool L1Menu2016::PostLoop()
   PrintCSV(*outcsv);
 
   if (l1Plot != NULL)
+  {
     l1Plot->PostRun(scale);
+    if (L1Config["doPlotLS"])
+      l1Plot->PlotRatePerLS(L1LSCount, L1Config["nBunches"]);
+  }
 
   if (l1TnP != NULL)
     l1TnP->PostRun();

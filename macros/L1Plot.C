@@ -129,6 +129,8 @@ bool L1Plot::BookRateHistogram()
   hRate2F["nEGvsIsoEG_0"]    = new TH2F("nEGvsIsoEG_0","nEGvsIsoEG_0IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
   hRate2F["nEGvsIsoEG_1"]    = new TH2F("nEGvsIsoEG_1","nEGvsIsoEG_1IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
   hRate2F["nEGvsIsoEG_2"]    = new TH2F("nEGvsIsoEG_2","nEGvsIsoEG_2IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
+  hRate2F["nDiMuIdx1VsIdx2"] = new TH2F("nDiMuIdx1VsIdx2","nDiMuIdx1VsIdx2; TfIdx Mu1; TfIdx Mu2",90, 0, 90, 90, 0, 90);
+  hRate2F["nDiMuEta1VsEta2"] = new TH2F("nDiMuEta1VsEta2","nDiMuEta1VsEta2; Eta Mu1; Eta Mu2", 24, -2.4, 2.4, 24, -2.4, 2.4);
   return true;
 }       // -----  end of function L1Plot::BookRateHistogram  -----
 
@@ -325,8 +327,7 @@ bool L1Plot::FillRateHistogram()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Eta ~~~~~
   hRate1F["nMuVsEta"]->Fill(SingleMuEta(16., 2));
-  hRate1F["nDiMu0VsEta"]->Fill(DoubleMuEta(0));
-  hRate1F["nDiMu3VsEta"]->Fill(DoubleMuEta(3));
+
   hRate1F["nEGVsEta"]->Fill(SingleEGEta(20.,false));
   hRate1F["nIsoEGVsEta"]->Fill(SingleEGEta(20.,true));
   hRate1F["nJetVsEta"]->Fill(SingleJetEta(36.));
@@ -348,6 +349,9 @@ bool L1Plot::FillRateHistogram()
       }
     }
   }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DoubleMu Rate Study ~~~~~
+  FillRateDoubleMu(0, 1, 0);
   return true;
 }       // -----  end of function L1Plot::FillRateHistogram  -----
 
@@ -1048,13 +1052,14 @@ float L1Plot::SingleMuEta(float ptCut, unsigned int qualmin) const
 
 
 // ===  FUNCTION  ============================================================
-//         Name:  L1Plot::DoubleMuEta
+//         Name:  L1Plot::FillRateDoubleMu
 //  Description:  
 // ===========================================================================
-float L1Plot::DoubleMuEta(float pt2Cut, unsigned int qualmin, float pt1Cut) 
+float L1Plot::FillRateDoubleMu(float pt2Cut, unsigned int qualmin, float pt1Cut) 
 {
   Float_t mu1ptmax = -10.;
   Float_t mu2ptmax = -10.;
+  int mu1idx = -1;
   int mu2idx = -1;
 
   if(upgrade_->nMuons < 2) return -999;
@@ -1071,17 +1076,27 @@ float L1Plot::DoubleMuEta(float pt2Cut, unsigned int qualmin, float pt1Cut)
     {
       mu2ptmax = mu1ptmax;
       mu1ptmax = pt;
+      mu1idx = imu;
     } else if(pt >= mu2ptmax) {
       mu2ptmax = pt;
       mu2idx = imu;
     }
   }
 
-  if (mu2idx != -1 && mu1ptmax >= pt1Cut && mu2ptmax >= pt2Cut)
-    return upgrade_->muonEta.at(mu2idx);
-  else
-    return -999;
-}       // -----  end of function L1Plot::DoubleMuEta  -----
+  if (mu2idx == -1 || mu1ptmax < pt1Cut || mu2ptmax < pt2Cut)
+    return false;
+
+  if (mu2ptmax >= 0)
+    hRate1F["nDiMu0VsEta"]->Fill(upgrade_->muonEta.at(mu2idx));
+  if (mu2ptmax >= 3)
+    hRate1F["nDiMu0VsEta"]->Fill(upgrade_->muonEta.at(mu2idx));
+
+  hRate1F["nDiMuIdx1VsIdx2"]->Fill(upgrade_->muonTfMuonIdx.at(mu1idx), upgrade_->muonTfMuonIdx.at(mu2idx));
+  hRate1F["nDiMuEta1VsEta2"]->Fill(upgrade_->muonEta.at(mu1idx), upgrade_->muonEta.at(mu2idx));
+  return true;
+
+}       // -----  end of function L1Plot::FillRateDoubleMu  -----
+
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::SingleEGEta
@@ -1131,3 +1146,86 @@ float L1Plot::SingleJetEta(float ptCut) const
 
   return iJetMaxPt>=0 && maxPt>ptCut ? upgrade_ -> jetEta.at(iJetMaxPt) : -10.;
 }       // -----  end of function L1Plot::SingleJetEta  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::PlotRatePerLS
+//  Description:  
+// ===========================================================================
+bool L1Plot::PlotRatePerLS( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches)
+{
+  BookLSHistogram(L1LSCount, nBunches);
+  ScaleLSHistogram(L1LSCount, nBunches);
+  WriteLSHistogram(L1LSCount);
+  return true;
+}       // -----  end of function L1Plot::PlotRatePerLS  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::BookLSHistogram
+//  Description:  
+// ===========================================================================
+bool L1Plot::BookLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches) 
+{
+  int firstLS = L1LSCount.begin()->second.begin()->first;
+  int lastLS = L1LSCount.begin()->second.rbegin()->first;
+  
+  std::cout << " fisrt " << firstLS <<" end " << lastLS << std::endl;
+  std::stringstream ss;
+  for(auto l1seed : L1LSCount)
+  {
+    ss.str("");
+    ss << l1seed.first <<"_LS";
+    std::string histname = ss.str();
+    ss <<";"<<"Lumi Section;"<<"Rate (nb = " << nBunches <<") Hz";
+    hRate1F[histname]  = new TH1F(histname.c_str(),ss.str().c_str(),lastLS-firstLS+1, firstLS, lastLS);
+  }
+
+  return true;
+}       // -----  end of function L1Plot::BookLSHistogram  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::WriteLSHistogram
+//  Description:  
+// ===========================================================================
+bool L1Plot::WriteLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount)
+{
+  outfile->mkdir("RateLS");
+  outfile->cd("RateLS");
+
+  std::stringstream ss;
+  for(auto l1seed : L1LSCount)
+  {
+    ss.str("");
+    ss << l1seed.first <<"_LS";
+    hRate1F[ss.str()]->Write();
+  }
+  outfile->cd();
+  return true;
+}       // -----  end of function L1Plot::WriteLSHistogram  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::ScaleLSHistogram
+//  Description:  
+// ===========================================================================
+bool L1Plot::ScaleLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches)
+{
+  std::stringstream ss;
+  for(auto l1seed : L1LSCount)
+  {
+    ss.str("");
+    ss << l1seed.first <<"_LS";
+    for(auto rls : l1seed.second)
+    {
+      int ls = rls.first;
+      int cnt = rls.second;
+      float rate = static_cast<float>(cnt) / L1LSCount.at("Count").at(ls) * 11246 * nBunches;
+      float raterr = sqrt(static_cast<float>(cnt)) / L1LSCount.at("Count").at(ls) * 11246 * nBunches;
+      int binidx = hRate1F[ss.str()]->FindBin(ls);
+      hRate1F[ss.str()]->SetBinContent(binidx, rate);
+      hRate1F[ss.str()]->SetBinError(binidx, raterr);
+    }
+
+  }
+
+  return true;
+}       // -----  end of function L1Plot::ScaleLSHistogram  -----
+
