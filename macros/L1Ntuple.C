@@ -271,22 +271,22 @@ bool L1Ntuple::CheckFirstFile()
 
 bool L1Ntuple::OpenWithoutInit()
 {
-  fChain        = new TChain(MainTreePath.c_str());
-  ftreeEvent    = new TChain("l1EventTree/L1EventTree");
-  ftreemuon     = new TChain("l1MuonRecoTreeProducer/MuonRecoTree");
-  ftreeExtra    = new TChain("l1ExtraTreeProducer/L1ExtraTree");
-  ftreeEmuExtra = new TChain("l1EmulatorExtraTree/L1ExtraTree");
-  ftreeMenu     = new TChain("l1MenuTreeProducer/L1MenuTree");
-  ftreeRecoJet  = new TChain("l1JetRecoTree/JetRecoTree");
-  //ftreeRecoMet  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
-  ftreeCaloTower = new TChain(CaloTreePath.c_str());
-  ftreeRecoEle  = new TChain("l1ElectronRecoTree/ElectronRecoTree");
-  ftreeRecoMuon = new TChain("l1MuonRecoTree/Muon2RecoTree");
-  ftreeRecoTau  = new TChain("l1TauRecoTree/TauRecoTree");
-  ftreeRecoFilter  = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
-  ftreeRecoVtx     = new TChain("l1RecoTree/RecoTree");
+  fChain             = new TChain(MainTreePath.c_str());
+  ftreeEvent         = new TChain("l1EventTree/L1EventTree");
+  ftreemuon          = new TChain("l1MuonRecoTreeProducer/MuonRecoTree");
+  ftreeExtra         = new TChain("l1ExtraTreeProducer/L1ExtraTree");
+  ftreeEmuExtra      = new TChain("l1EmulatorExtraTree/L1ExtraTree");
+  ftreeMenu          = new TChain("l1MenuTreeProducer/L1MenuTree");
+  ftreeRecoJet       = new TChain("l1JetRecoTree/JetRecoTree");
+  //ftreeRecoMet     = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
+  ftreeCaloTower     = new TChain(CaloTreePath.c_str());
+  ftreeRecoEle       = new TChain("l1ElectronRecoTree/ElectronRecoTree");
+  ftreeRecoMuon      = new TChain("l1MuonRecoTree/Muon2RecoTree");
+  ftreeRecoTau       = new TChain("l1TauRecoTree/TauRecoTree");
+  ftreeRecoFilter    = new TChain("l1MetFilterRecoTree/MetFilterRecoTree");
+  ftreeRecoVtx       = new TChain("l1RecoTree/RecoTree");
   ftreeUpgradeLayer1 = new TChain("l1UpgradeBitwiseTree/L1UpgradeTree");
-  fl1uGT = new TChain("l1uGTTree/L1uGTTree");
+  fl1uGT             = new TChain(uGTTreePath.c_str());
 
   for (unsigned int i=0;i<listNtuples.size();i++)
   {

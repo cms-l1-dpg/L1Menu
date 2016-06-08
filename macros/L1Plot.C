@@ -1080,7 +1080,7 @@ float L1Plot::FillRateDoubleMu(float pt2Cut, unsigned int qualmin, float pt1Cut)
     }
   }
 
-  if (mu2idx == -1 || mu1ptmax < pt1Cut || mu2ptmax < pt2Cut)
+  if (mu1idx == mu2idx || mu1idx == -1 || mu2idx == -1 || mu1ptmax < pt1Cut || mu2ptmax < pt2Cut)
     return false;
 
   if (mu2ptmax >= 0)
@@ -1088,8 +1088,8 @@ float L1Plot::FillRateDoubleMu(float pt2Cut, unsigned int qualmin, float pt1Cut)
   if (mu2ptmax >= 3)
     hRate1F["nDiMu0VsEta"]->Fill(upgrade_->muonEta.at(mu2idx));
 
-  hRate1F["nDiMuIdx1VsIdx2"]->Fill(upgrade_->muonTfMuonIdx.at(mu1idx), upgrade_->muonTfMuonIdx.at(mu2idx));
-  hRate1F["nDiMuEta1VsEta2"]->Fill(upgrade_->muonEta.at(mu1idx), upgrade_->muonEta.at(mu2idx));
+  hRate2F["nDiMuIdx1VsIdx2"]->Fill(upgrade_->muonTfMuonIdx.at(mu1idx), upgrade_->muonTfMuonIdx.at(mu2idx));
+  hRate2F["nDiMuEta1VsEta2"]->Fill(upgrade_->muonEta.at(mu1idx), upgrade_->muonEta.at(mu2idx));
   return true;
 
 }       // -----  end of function L1Plot::FillRateDoubleMu  -----
