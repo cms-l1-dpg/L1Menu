@@ -126,9 +126,9 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nETMVsETM"] = new TH1F("nETMVsETM","ETM; ETM cut; rate [Hz]",512,-.5,511.5);
 
   // EG Rate study
-  hRate2F["nEGvsIsoEG_0"]    = new TH2F("nEGvsIsoEG_0","nEGvsIsoEG_0IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
-  hRate2F["nEGvsIsoEG_1"]    = new TH2F("nEGvsIsoEG_1","nEGvsIsoEG_1IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
-  hRate2F["nEGvsIsoEG_2"]    = new TH2F("nEGvsIsoEG_2","nEGvsIsoEG_2IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 20, 20, 40, 20, 20, 40);
+  hRate2F["nEGvsIsoEG_0"]    = new TH2F("nEGvsIsoEG_0","nEGvsIsoEG_0IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 21, 20, 41, 21, 20, 41);
+  hRate2F["nEGvsIsoEG_2"]    = new TH2F("nEGvsIsoEG_2","nEGvsIsoEG_2IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 21, 20, 41, 21, 20, 41);
+  hRate2F["nEGvsIsoEG_4"]    = new TH2F("nEGvsIsoEG_4","nEGvsIsoEG_4IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 21, 20, 41, 21, 20, 41);
   hRate2F["nDiMuIdx1VsIdx2"] = new TH2F("nDiMuIdx1VsIdx2","nDiMuIdx1VsIdx2; TfIdx Mu1; TfIdx Mu2",90, 0, 90, 90, 0, 90);
   hRate2F["nDiMuEta1VsEta2"] = new TH2F("nDiMuEta1VsEta2","nDiMuEta1VsEta2; Eta Mu1; Eta Mu2", 24, -2.4, 2.4, 24, -2.4, 2.4);
   return true;
@@ -336,17 +336,14 @@ bool L1Plot::FillRateHistogram()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EG Rate ~~~~~
   for (int EGpt = 20; EGpt < 41; ++EGpt)
   {
-    for (int IsoEGpt = 20; IsoEGpt < 41; ++IsoEGpt)
+    for (int IsoEGpt = 20; IsoEGpt < EGpt; ++IsoEGpt)
     {
-      if (L1Event->EGPt >=EGpt && L1Event->IsoEGPt >=IsoEGpt)
-      {
-        if (L1Event->IsoEGerPt >= IsoEGpt)
+      if (L1Event->EGPt >=EGpt || L1Event->IsoEGPt >=IsoEGpt || L1Event->IsoEGerPt >= IsoEGpt)
           hRate2F["nEGvsIsoEG_0"] ->Fill(EGpt, IsoEGpt);
-        if (L1Event->IsoEGerPt >= (IsoEGpt-1))
-          hRate2F["nEGvsIsoEG_1"] ->Fill(EGpt, IsoEGpt);
-        if (L1Event->IsoEGerPt >= (IsoEGpt-2))
+      if (L1Event->EGPt >=EGpt || L1Event->IsoEGPt >=IsoEGpt || L1Event->IsoEGerPt >= (IsoEGpt-2))
           hRate2F["nEGvsIsoEG_2"] ->Fill(EGpt, IsoEGpt);
-      }
+      if (L1Event->EGPt >=EGpt || L1Event->IsoEGPt >=IsoEGpt || L1Event->IsoEGerPt >= (IsoEGpt-4))
+          hRate2F["nEGvsIsoEG_4"] ->Fill(EGpt, IsoEGpt);
     }
   }
 
