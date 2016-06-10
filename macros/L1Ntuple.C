@@ -15,6 +15,7 @@ L1Ntuple::L1Ntuple()
   doBitWiseLayer1 = true;
   dol1CaloTower   = true;
   dol1uGT         = true;
+  dol1unpackuGT   = true;
   doRecoJet       = true;
   doRecoMet       = true;
   doRecoEle       = true;
@@ -26,6 +27,7 @@ L1Ntuple::L1Ntuple()
   fChain             = nullptr;
   fEvent             = nullptr;
   fl1uGT             = nullptr;
+  fl1unpackuGT       = nullptr;
   ftreeEvent         = nullptr;
   ftreemuon          = nullptr;
   ftreeExtra         = nullptr;
@@ -53,6 +55,7 @@ L1Ntuple::L1Ntuple()
   recoFilter_     = nullptr;
   recoVtx_        = nullptr;
   l1uGT_          = nullptr;
+  l1unpackuGT_    = nullptr;
   MainTreePath = "l1UpgradeEmuTree/L1UpgradeTree";
   CaloTreePath = "l1CaloTowerEmuTree/L1CaloTowerTree";
   uGTTreePath  = "l1uGTEmuTree/L1uGTTree";
@@ -123,6 +126,7 @@ bool L1Ntuple::CheckFirstFile()
   TTree * myChain           = (TTree*) rf->Get(MainTreePath.c_str());
   TTree * mytreel1CaloTower = (TTree*) rf->Get(CaloTreePath.c_str());
   TTree * mytreel1uGT       = (TTree*) rf->Get(uGTTreePath.c_str());
+  TTree * mytreel1unpackuGT = (TTree*) rf->Get("l1uGTTree/L1uGTTree");
   TTree * mytreeEvent    = (TTree*) rf->Get("l1EventTree/L1EventTree");
   TTree * mytreemuon     = (TTree*) rf->Get("l1MuonRecoTreeProducer/MuonRecoTree");
   TTree * mytreeExtra    = (TTree*) rf->Get("l1ExtraTreeProducer/L1ExtraTree");
@@ -165,6 +169,9 @@ bool L1Ntuple::CheckFirstFile()
   } else {
     std::cout<<"L1uGTTree tree is found at " << uGTTreePath <<std::endl;
   }
+
+  if (!mytreel1unpackuGT) 
+    dol1unpackuGT = false;
   
   if (!mytreeEvent) {
     std::cout<<"EventTree not found, it will be skipped..."<<std::endl;
@@ -287,6 +294,7 @@ bool L1Ntuple::OpenWithoutInit()
   ftreeRecoVtx       = new TChain("l1RecoTree/RecoTree");
   ftreeUpgradeLayer1 = new TChain("l1UpgradeBitwiseTree/L1UpgradeTree");
   fl1uGT             = new TChain(uGTTreePath.c_str());
+  fl1unpackuGT       = new TChain("l1uGTTree/L1uGTTree");
 
   for (unsigned int i=0;i<listNtuples.size();i++)
   {
@@ -308,6 +316,7 @@ bool L1Ntuple::OpenWithoutInit()
     if (doBitWiseLayer1) ftreeUpgradeLayer1 -> Add(listNtuples[i].c_str());
     if (dol1CaloTower)   ftreeCaloTower     -> Add(listNtuples[i].c_str());
     if (dol1uGT)         fl1uGT             -> Add(listNtuples[i].c_str());
+    if (dol1unpackuGT)   fl1unpackuGT       -> Add(listNtuples[i].c_str());
   }
 
   if (doEvent)         fChain->AddFriend(ftreeEvent);
@@ -325,6 +334,7 @@ bool L1Ntuple::OpenWithoutInit()
   if (doBitWiseLayer1) fChain->AddFriend(ftreeUpgradeLayer1);
   if (dol1CaloTower)   fChain->AddFriend(ftreeCaloTower);
   if (dol1uGT)         fChain->AddFriend(fl1uGT);
+  if (dol1unpackuGT)   fChain->AddFriend(fl1unpackuGT, "UnpackuGT_ZB");
   return true;
 }
 
@@ -345,6 +355,7 @@ L1Ntuple::~L1Ntuple()
   if (ftreeCaloTower)     delete ftreeCaloTower;
   if (fChain)             delete fChain;
   if (fl1uGT)             delete fl1uGT;
+  if (fl1unpackuGT)       delete fl1unpackuGT;
   if (rf)                 delete rf;
 }
 
@@ -409,6 +420,13 @@ void L1Ntuple::Init()
      
      fl1uGT->SetBranchAddress("L1uGT", &l1uGT_ );
      fChain-> AddFriend(fl1uGT);     
+   }
+
+   if (dol1unpackuGT){
+     l1unpackuGT_        = new GlobalAlgBlk();
+     
+     fl1unpackuGT->SetBranchAddress("L1uGT", &l1unpackuGT_ );
+     fChain-> AddFriend(fl1unpackuGT, "UnpackuGT_ZB");     
    }
 
    if (doRecoJet)
@@ -597,7 +615,7 @@ bool L1Ntuple::PrintRecoTree() const
 //         Name:  L1Ntuple::GetuGTAlias
 //  Description:  /* cursor */
 // ===========================================================================
-std::map<std::string, std::string> L1Ntuple::GetuGTAlias()
+std::map<std::string, std::string> L1Ntuple::GetuGTAlias(TChain* fl1uGT)
 {
   fl1uGT->GetEntry(1);
 

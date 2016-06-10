@@ -165,6 +165,7 @@ class L1Menu2016 : public L1AlgoFactory
     L1Plot *l1Plot;
     L1TnP *l1TnP;
     L1uGT *l1uGT;
+    L1uGT *l1unpackuGT;
 
     std::map<std::string, float*> L1ObjectMap;
     std::map<std::string, float> L1Config;
@@ -173,6 +174,7 @@ class L1Menu2016 : public L1AlgoFactory
     std::map<std::string, TH2F*> Hist2D;
 	std::map<std::string, std::function<bool()>> L1SeedFun;
     std::map<int, std::string> BitMap;
+    std::vector<std::string> vL1Seed;
 
     //Relationship
     std::set<std::string> FireSeed;

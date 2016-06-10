@@ -55,6 +55,7 @@ public:
   TChain          *ftreeRecoVtx;
   TChain          *ftreeCaloTower;
   TChain          *fl1uGT;
+  TChain          *fl1unpackuGT;
   Int_t            fCurrent; //!current Tree number in a TChain
 
   bool doEvent;
@@ -72,6 +73,7 @@ public:
   bool doBitWiseLayer1;
   bool dol1CaloTower;
   bool dol1uGT;
+  bool dol1unpackuGT;
 
   L1Analysis::L1AnalysisEventDataFormat         *event_;
   L1Analysis::L1AnalysisL1UpgradeDataFormat     *upgrade_;
@@ -85,6 +87,7 @@ public:
   L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
   L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
   GlobalAlgBlk                                  *l1uGT_;
+  GlobalAlgBlk                                  *l1unpackuGT_;
   
 
   L1Ntuple();
@@ -102,7 +105,7 @@ public:
   void     Test2();
   bool PrintRecoTree() const;
   Long64_t GetEntries();
-  std::map<std::string, std::string> GetuGTAlias();
+  std::map<std::string, std::string> GetuGTAlias(TChain* fl1uGT);
 
 protected:
   bool CheckFirstFile();

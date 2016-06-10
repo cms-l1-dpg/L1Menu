@@ -28,7 +28,8 @@ L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
   scale(0),
   l1Plot(nullptr),
   l1TnP(nullptr),
-  l1uGT(nullptr)
+  l1uGT(nullptr),
+  l1unpackuGT(nullptr)
 {
   InitConfig();
 }  // -----  end of method L1Menu2016::L1Menu2016  (constructor)  -----
@@ -254,14 +255,12 @@ bool L1Menu2016::BookHistogram()
   HistMap["All"]             = new TH1F("h_All","h_All",N128,-0.5,N128-0.5);
   HistMap["Pure"]           = new TH1F("h_Pure","h_Pure",N128,-0.5,N128-0.5);
 
-  unsigned fbit = BitMap.begin()->first;
-  unsigned lbit = BitMap.rbegin()->first;
-  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds",lbit-fbit+1, fbit, lbit, lbit-fbit+1, fbit, lbit);
-  for(auto i : BitMap)
+  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds", vL1Seed.size()+1, 0, vL1Seed.size(), vL1Seed.size()+1, 0, vL1Seed.size());
+  for (unsigned int i = 0; i < vL1Seed.size(); ++i)
   {
-    int bin = Hist2D["cor_Seeds"]->GetXaxis()->FindBin(i.first);
-    Hist2D["cor_Seeds"]->GetXaxis()->SetBinLabel(bin, i.second.c_str());
-    Hist2D["cor_Seeds"]->GetYaxis()->SetBinLabel(bin, i.second.c_str());
+    int bin = Hist2D["cor_Seeds"]->GetXaxis()->FindBin(i);
+    Hist2D["cor_Seeds"]->GetXaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
+    Hist2D["cor_Seeds"]->GetYaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
   }
   Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block",10,-0.5,9.5,19,-0.5,9.5);
   Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS",NPAGS,-0.5,(float)NPAGS-0.5,NPAGS,-0.5,(float)NPAGS-0.5);
@@ -545,10 +544,17 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
       l1TnP->DoMuonTnP();
   }
 
+  if (l1unpackuGT_ != NULL)
+  {
+    l1unpackuGT = new L1uGT( outrootfile, event_, l1unpackuGT_, &L1Event, &mL1Seed);
+    l1unpackuGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1unpackuGT));
+  }
+
+
   if (L1Config["doCompuGT"] || L1Config["UseuGTDecision"])
   {
     l1uGT = new L1uGT( outrootfile, event_, l1uGT_, &L1Event, &mL1Seed);
-    l1uGT->GetTreeAlias(L1Ntuple::GetuGTAlias());
+    l1uGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1uGT));
   }
 
   if (L1Config["SetMuonER"] != -1) SetMuonER(L1Config["SetMuonER"]);
@@ -654,6 +660,9 @@ bool L1Menu2016::Loop()
     if (i % 200000 == 0)
       std::cout << "Processed " << i << " events." << std::endl;
 
+    if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias"))
+      continue;
+
     nZeroBiasevents++;
 
     GetL1Event();
@@ -677,6 +686,7 @@ bool L1Menu2016::Loop()
       l1uGT->CompEvents();
   }
 
+  std::cout << " Total Event: " << i <<" ZeroBias Event: " << nZeroBiasevents << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::Loop  -----
 
@@ -860,6 +870,11 @@ bool L1Menu2016::BuildRelation()
         assert(PAGMap[pag].size() == 0);
       } else PAGMap[pag].push_back(l1.second.bit);
     }
+  }
+
+  for(auto bitm : BitMap)
+  {
+    vL1Seed.push_back(bitm.second);
   }
 
   // Total
