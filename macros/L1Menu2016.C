@@ -553,6 +553,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
 
   if (L1Config["doCompuGT"] || L1Config["UseuGTDecision"])
   {
+    assert(l1uGT_ != NULL);
     l1uGT = new L1uGT( outrootfile, event_, l1uGT_, &L1Event, &mL1Seed);
     l1uGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1uGT));
   }
