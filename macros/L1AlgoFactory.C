@@ -1458,6 +1458,7 @@ void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
   if (!UseL1CaloTower && !UseUpgradeLyr1)
   {
     int idx = GetSumEtIdx(EtSumType::ETM);
+    if (idx == -1) return;
     assert(upgrade_->sumType.at(idx) == EtSumType::ETM);
     if(upgrade_->sumBx.at(idx)==SelBx) TheETM =upgrade_->sumEt.at(idx);
   }
@@ -1472,6 +1473,7 @@ void L1AlgoFactory::HTTVal(Float_t& HTTcut) {
 
   Float_t TheHTT = -10;
   int idx= GetSumEtIdx(EtSumType::HTT);
+  if (idx == -1) return;
   assert(upgrade_->sumType.at(idx) == EtSumType::HTT);
   if(upgrade_->sumBx.at(idx)==SelBx) TheHTT =upgrade_->sumEt.at(idx);
   HTTcut = TheHTT;
@@ -1482,6 +1484,7 @@ void L1AlgoFactory::HTMVal(Float_t& HTMcut) {
 
   Float_t TheHTM = -10;
   int idx= GetSumEtIdx(EtSumType::HTM);
+  if (idx == -1) return;
   assert(upgrade_->sumType.at(idx) == EtSumType::HTM);
   if(upgrade_->sumBx.at(idx)==SelBx) TheHTM =upgrade_->sumEt.at(idx);
   HTMcut = TheHTM;
@@ -1516,6 +1519,7 @@ void L1AlgoFactory::ETTVal(Float_t& ETTcut) {
   if (!UseL1CaloTower && !UseUpgradeLyr1)
   {
     int idx= GetSumEtIdx(EtSumType::ETT);
+    if (idx == -1) return;
     assert(upgrade_->sumType.at(idx) == EtSumType::ETT);
     if(upgrade_->sumBx.at(idx)==SelBx) TheETT =upgrade_->sumEt.at(idx);
   }
@@ -1567,6 +1571,7 @@ void L1AlgoFactory::Mu_HTTPt(Float_t& mucut, Float_t& HTcut ) {
 
   Float_t TheHTT = -10;
   int idx= GetSumEtIdx(EtSumType::HTT);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==0) 
     TheHTT =upgrade_->sumEt.at(idx);
 
@@ -1603,6 +1608,7 @@ void L1AlgoFactory::Muer_ETMPt(Float_t& mucut, Float_t& ETMcut ) {
 
   Float_t TheETM = -10;
   int idx = GetSumEtIdx(EtSumType::ETM);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==0) 
     TheETM =upgrade_->sumEt.at(idx);
 
@@ -1639,6 +1645,7 @@ void L1AlgoFactory::SingleEG_Eta2p1_HTTPt(Float_t& egcut, Float_t& HTTcut, Bool_
 
   Float_t TheHTT = -10;
   int idx= GetSumEtIdx(EtSumType::HTT);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==0) 
     TheHTT =upgrade_->sumEt.at(idx);
 
@@ -1712,6 +1719,7 @@ void L1AlgoFactory::DoubleJetCentral_ETMPt(Float_t& jetcut1, Float_t& jetcut2, F
 
   Float_t TheETM = -10;
   int idx = GetSumEtIdx(EtSumType::ETM);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==0) 
     TheETM =upgrade_->sumEt.at(idx);
 
@@ -1777,6 +1785,7 @@ void L1AlgoFactory::DoubleEG_HTPt(Float_t& EGcut, Float_t& HTcut) {
 
   Float_t TheHTT = -10;
   int idx= GetSumEtIdx(EtSumType::HTT);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==0) 
     TheHTT =upgrade_->sumEt.at(idx);
 
@@ -2212,6 +2221,7 @@ void L1AlgoFactory::ETM_JetPt(float& ETMcut, float& jetcut, const bool& isCent)
   Float_t TheETM = -10;
   Float_t ETMPhi = -10;
   int idx = GetSumEtIdx(EtSumType::ETM);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==0) 
   {
     TheETM =upgrade_->sumEt.at(idx);
@@ -2258,6 +2268,7 @@ void L1AlgoFactory::HTM_HTTPt(float &HTMcut, float &HTTcut)
 {
   Float_t TheHTT = -10;
   int idx= GetSumEtIdx(EtSumType::HTT);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==SelBx) 
     TheHTT =upgrade_->sumEt.at(idx);
 
@@ -2265,6 +2276,7 @@ void L1AlgoFactory::HTM_HTTPt(float &HTMcut, float &HTTcut)
 
   Float_t TheHTM = -10;
   idx= GetSumEtIdx(EtSumType::HTM);
+  if (idx == -1) return;
   if(upgrade_->sumBx.at(idx)==SelBx) 
     TheHTM =upgrade_->sumEt.at(idx);
 

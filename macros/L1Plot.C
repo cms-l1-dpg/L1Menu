@@ -1214,8 +1214,10 @@ bool L1Plot::ScaleLSHistogram( const std::map<std::string, std::map<int, int> > 
     {
       int ls = rls.first;
       int cnt = rls.second;
-      float rate = static_cast<float>(cnt) / L1LSCount.at("Count").at(ls) * 11246 * nBunches;
-      float raterr = sqrt(static_cast<float>(cnt)) / L1LSCount.at("Count").at(ls) * 11246 * nBunches;
+      float rate = static_cast<float>(cnt) ;
+      float raterr = sqrt(static_cast<float>(cnt));
+      //float rate = static_cast<float>(cnt) / L1LSCount.at("Count").at(ls) * 11246 * nBunches;
+      //float raterr = sqrt(static_cast<float>(cnt)) / L1LSCount.at("Count").at(ls) * 11246 * nBunches;
       int binidx = hRate1F[ss.str()]->FindBin(ls);
       hRate1F[ss.str()]->SetBinContent(binidx, rate);
       hRate1F[ss.str()]->SetBinError(binidx, raterr);
