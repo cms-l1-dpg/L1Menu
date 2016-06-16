@@ -158,7 +158,7 @@ class L1Menu2016 : public L1AlgoFactory
     double scale;
     double nFireevents;
     unsigned int nZeroBiasevents;
-    unsigned int nLumi;
+    std::set<unsigned int> nLumi;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;

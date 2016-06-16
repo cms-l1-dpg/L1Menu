@@ -632,8 +632,8 @@ bool L1Menu2016::Loop()
   unsigned int currentLumi(-1);
   nZeroBiasevents = 0.;
   nFireevents = 0.;
-  nLumi = 0;
   int i = -1;
+  nLumi.clear();
 
   //for (Long64_t i=0; i<nevents; i++){     
   while(true)
@@ -654,14 +654,14 @@ bool L1Menu2016::Loop()
 
       if(event_ -> lumi != currentLumi){
         currentLumi=event_ -> lumi;
-        nLumi++;
+        nLumi.insert(currentLumi);
       } 
     }
 
     if (i % 200000 == 0)
       std::cout << "Processed " << i << " events." << std::endl;
 
-    if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias"))
+    if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", false)) //Use Final decision
       continue;
 
     nZeroBiasevents++;
@@ -1080,12 +1080,11 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_, bool print)
   int nEvents = nEvents_ == 0 ? nZeroBiasevents : nEvents_;
   double nBunches = nBunches_ == 0 ?  L1Config["nBunches"] : nBunches_;
 
-  if (L1Config["nBunches"] == -1)
+  if (L1Config["nBunches"] < 0)
   {
-    //scal = (80.*631.)/(1326*23.3);      
-    scale = (80.*631.)/(nLumi*23.3);      
+    scale = (-1.*L1Config["nBunches"])/(nLumi.size()*23.31);      
     if (print)
-      std::cout << "Scale by "   << "(80.*631.)/(nLumi*23.3) with nLumi = " << nLumi      << std::endl;
+      std::cout << "Scale by "   << "("<< -1. * L1Config["nBunches"] <<")/(nLumi*23.31) with nLumi = " << nLumi.size()      << std::endl;
   } else {
     scale = 11246.; // ZB per bunch in Hz
     //scale /= nZeroBiasevents*1000.; // in kHz
