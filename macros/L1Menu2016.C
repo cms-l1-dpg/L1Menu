@@ -110,6 +110,7 @@ bool L1Menu2016::InitConfig()
   L1Config["doPlotRate"] = 0;
   L1Config["doPlotEff"] = 0;
   L1Config["doPlotTest"] = 0;
+  L1Config["doPlotuGt"] = 0;  
   L1Config["doTnPMuon"] = 0;
   L1Config["doPlotLS"] = 0;
   L1Config["doPrintPU"] = 0;
@@ -522,13 +523,21 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
   // Set the Run Config as highest priority
   GetRunConfig(config);
   PrintConfig();
-
+  
   if (writeplots)
   {
+    GlobalAlgBlk *l1uGTsel_ = l1uGT_;
+    TChain       *fl1uGTsel = fl1uGT;
+    
+    if (L1Config["UseUnpackTree"]){
+      l1uGTsel_ = l1unpackuGT_;
+      fl1uGTsel = fl1unpackuGT;      
+    }
+    
     l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
-        recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_);
+			recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_, l1uGTsel_);
     l1Plot->SetTodo(L1Config);
-    l1Plot->PreRun(&L1Event, &mL1Seed);
+    l1Plot->PreRun(&L1Event, &mL1Seed, L1Ntuple::GetuGTAlias(fl1uGTsel));
   }
 
   if (L1Config["doPrintPU"])
@@ -539,7 +548,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
   if (L1Config["doTnPMuon"])
   {
     l1TnP = new L1TnP(outrootfile, event_, upgrade_, recoJet_,
-        recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_);
+		      recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_, l1uGT_);
     if (L1Config["doTnPMuon"])
       l1TnP->DoMuonTnP();
   }
@@ -550,13 +559,13 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
     l1unpackuGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1unpackuGT));
   }
 
-
-  if (L1Config["doCompuGT"] || L1Config["UseuGTDecision"])
+  if (L1Config["doCompuGT"] || L1Config["UseuGTDecision"] || L1Config["doPlotuGt"])
   {
     assert(l1uGT_ != NULL);
     l1uGT = new L1uGT( outrootfile, event_, l1uGT_, &L1Event, &mL1Seed);
     l1uGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1uGT));
   }
+
 
   if (L1Config["SetMuonER"] != -1) SetMuonER(L1Config["SetMuonER"]);
   if (L1Config["UseUpgradeLyr1"] != -1) SetUseUpgradeLyr1(L1Config["UseUpgradeLyr1"]);

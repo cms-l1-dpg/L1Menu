@@ -17,6 +17,7 @@
 #ifndef  MY_L1PLOT_INC
 #define  MY_L1PLOT_INC
 
+#include <regex>
 #include <map>
 #include <iostream>
 #include <functional>
@@ -42,6 +43,7 @@
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoTauDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisL1CaloTowerDataFormat.h"
 #include "L1Trigger/L1TNtuples/interface/L1AnalysisRecoVertexDataFormat.h"
+#include "DataFormats/L1TGlobal/interface/GlobalAlgBlk.h"
 
 #include "L1Struct.h"
 
@@ -66,7 +68,8 @@ class L1Plot
         L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__    = nullptr,
         L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__ = nullptr,
         L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_ = nullptr,
-        L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_ = nullptr
+        L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_ = nullptr,
+	GlobalAlgBlk                                  *l1uGT_       = nullptr	
         );
 
     L1Plot ( const L1Plot &other );   // copy constructor
@@ -75,7 +78,7 @@ class L1Plot
     // ====================  ACCESSORS     ===============================
 
     // ====================  MUTATORS      ===============================
-    bool PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_);
+    bool PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_, std::map<std::string, std::string> muGtAlias_);
     bool RunPlot();
     bool PostRun(double scale);
     void SetTodo ( std::map<std::string, float> &L1Config);
@@ -109,6 +112,7 @@ class L1Plot
     L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter_;
     L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_;
     L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_;
+    GlobalAlgBlk                                  *l1uGT_;        
 
   private:
     // ====================  METHODS       ===============================
@@ -132,6 +136,10 @@ class L1Plot
     bool FillEffHistogram();
     bool WriteEffHistogram();
 
+    bool BookuGtHistogram();
+    bool FilluGtHistogram();
+    bool WriteuGtHistogram();
+    
     bool BookLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches);
     bool ScaleLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount, const float &nBunches);
     bool WriteLSHistogram( const std::map<std::string, std::map<int, int> > &L1LSCount);
@@ -146,16 +154,21 @@ class L1Plot
     bool doPlotRate;
     bool doPlotEff;
     bool doPlotTest;
+    bool doPlotuGt;
     bool UseL1CaloTower;
     bool UsePFMETNoMuon;
 
     StructL1Event *L1Event;
     std::map<std::string, L1Seed> *mL1Seed;
+    std::map<std::string, std::string> muGtAlias;
+    std::map<std::string, int> muGtAlgoMap;    
     std::map<std::string, std::vector<TLorentzVector> > recoEvent;
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Plots ~~~~~
     std::map<std::string,TH1F*> hRate1F;
     std::map<std::string,TH2F*> hRate2F;
+    std::map<std::string,TH1F*> huGt1F;
+    std::map<std::string,TH2F*> huGt2F;        
     std::map<std::string,TEfficiency*> hEff;
     std::map<std::string,TH1F*> hTest1F;
     std::map<std::string,TH2F*> hTest2F;

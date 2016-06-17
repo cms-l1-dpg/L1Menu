@@ -32,7 +32,8 @@ L1Plot::L1Plot (
     L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__,
     L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__,
     L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower__,
-    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx__
+    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx__,
+    GlobalAlgBlk *l1uGT__    
     ):
   outfile(outrootfile_),
   event_(event__),
@@ -45,8 +46,10 @@ L1Plot::L1Plot (
   recoFilter_(recoFilter__),
   l1CaloTower_(l1CaloTower__),
   recoVtx_(recoVtx__),
+  l1uGT_(l1uGT__),    
   doPlotRate(false),
-  doPlotEff(false)
+  doPlotEff(false),
+  doPlotuGt(false)  
 {
 
 }  // -----  end of method L1Plot::L1Plot  (constructor)  -----
@@ -72,6 +75,60 @@ L1Plot::operator = ( const L1Plot &other )
   }
   return *this;
 }  // -----  end of method L1Plot::operator =  (assignment operator)  ---
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::BookuGtHistogram
+//  Description:  
+// ===========================================================================
+bool L1Plot::BookuGtHistogram()
+{
+  if (!doPlotuGt) return false;
+  
+  // std::cout << " Booking uGT histograms" << std::endl;
+
+  unsigned int maxBit=0;
+  for (auto const & name: muGtAlias) {
+
+    std::string const & l1algo  = name.first;
+    std::string const & alias  = name.second;
+
+    
+    std::smatch base_match;
+    std::regex integer("L1uGT\\.m_algoDecisionInitial\\[([0-9]+)\\]");
+    unsigned int nbit = 1001;
+    if (std::regex_match(alias, base_match, integer))
+      {
+	nbit = std::stoi(base_match[1].str(), nullptr);
+      }
+    // std::cout << "Triggers: " << name.first << "\t" << name.second << "\t" << nbit<< std::endl;    
+    
+    if (nbit < 1001)
+      {
+	muGtAlgoMap[l1algo]=nbit;
+	if (nbit>maxBit) maxBit=nbit;
+      }
+  }
+  
+
+  huGt1F["AlgoBitsI"]       = new TH1F("AlgoBitsI","Algorithm Bits -- Initial",maxBit+1,-0.5,float(maxBit)+0.5);
+  huGt1F["AlgoBitsF"]       = new TH1F("AlgoBitsF","Algorithm Bits -- Final",maxBit+1,-0.5,float(maxBit)+0.5);
+  //huGt1F["BxNumber"]       = new TH1F("BxNumber","Number of Triggers vs Absolute BX Number",3700, -0.5,float(3700)-0.5);
+  //huGt1F["LumiNumber"]     = new TH1F("LumiNumber","Triggers vs LumiNumber",3565, -0.5,float(3565)-0.5);
+  //huGt2F["AlgoBitsVsBx"]   = new TH2F("AlgoBitsVsBx","Algorithm Bits vs BX",maxBit, -0.5,float(maxBit)-0.5,5,-2.5,2.5);
+  
+  for (auto const & name: muGtAlias) {
+
+    std::string const & l1algo  = name.first;
+    unsigned int nbit= muGtAlgoMap[l1algo];
+    
+    huGt1F["AlgoBitsI"]->GetXaxis()->SetBinLabel(nbit+1,l1algo.c_str());
+    huGt1F["AlgoBitsF"]->GetXaxis()->SetBinLabel(nbit+1,l1algo.c_str());
+    //hUGt2F["AlgoBitsVsBx"]->GetXaxis()->SetBinLabel(nbit+1,l1algo.c_str());
+    
+  }
+  
+  return true;
+}   // -----  end of function L1Plot::BookuGtHistogram  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::BookRateHistogram
@@ -213,6 +270,60 @@ bool L1Plot::WriteTestHistogram() const
   outfile->cd();
   return true;
 }       // -----  end of function L1Plot::WriteTestHistogram()  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::FilluGtHistogram
+//  Description:  
+// ===========================================================================
+bool L1Plot::FilluGtHistogram()
+{
+  if (!doPlotuGt) return false;
+
+
+  for (auto const & name: muGtAlgoMap) {
+
+    // std::string const & l1algo  = name.first;
+    int const & bit  = name.second;
+
+    // std::cout << "Filling: " << l1algo << "\t" << name.second << std::endl;
+    bool uGTI  = l1uGT_->getAlgoDecisionInitial(bit);
+    bool uGTF  = l1uGT_->getAlgoDecisionFinal(bit);
+    if (uGTI){
+      // int nbin=huGt1F["AlgoBits"]->GetNbinsX();      
+      // int ibin=huGt1F["AlgoBits"]->GetXaxis()->FindBin(l1algo.c_str());      
+      // std::cout << "Filling: " << l1algo << "\t" << bit << "\t" << ibin << "\t" << nbin << std::endl;
+      huGt1F["AlgoBitsI"]->Fill(float(bit));
+      // huGt1F["AlgoBits"]->Fill(1.);
+      // huGt2F["AlgoBitsVsBx"]->Fill(bit);
+    }
+    if (uGTF){
+      huGt1F["AlgoBitsF"]->Fill(float(bit));      
+    }
+  }
+  
+  return true;
+}       // -----  end of function L1Plot::FilluGtHistogram  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Plot::WriteuGtHistogram()
+//  Description:  
+// ===========================================================================
+bool L1Plot::WriteuGtHistogram()
+{
+  if (!doPlotuGt) return false;
+  outfile->mkdir("uGT");
+  outfile->cd("uGT");
+  for(auto f : huGt2F)
+  {
+    f.second->Write();
+  }
+  for(auto f : huGt1F)
+  {
+    f.second->Write();
+  }
+  outfile->cd();
+  return true;
+}       // -----  end of function L1Plot::WriteGtHistogram()  ----- 
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Plot::WriteRateHistogram
@@ -375,6 +486,11 @@ bool L1Plot::RunPlot()
     TestMuon();
   }
 
+  if (doPlotuGt) 
+  {
+    FilluGtHistogram();
+  }
+  
   return true;
 }       // -----  end of function L1Plot::RunPlot  -----
 
@@ -382,13 +498,17 @@ bool L1Plot::RunPlot()
 //         Name:  L1Plot::PreRun
 //  Description:  
 // ===========================================================================
-bool L1Plot::PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_)
+bool L1Plot::PreRun( StructL1Event *L1Event_, std::map<std::string, L1Seed> *mL1Seed_, std::map<std::string, std::string> muGtAlias_)
 {
   L1Event  = L1Event_;
   mL1Seed = mL1Seed_;
+  muGtAlias = muGtAlias_;
+  
   BookRateHistogram();
   BookEffHistogram();
   BookTestHistogram();
+  BookuGtHistogram();
+  
   return true;
 }       // -----  end of function L1Plot::PreRun  -----
 
@@ -401,6 +521,7 @@ bool L1Plot::PostRun(double scale)
   WriteRateHistogram(scale);
   WriteEffHistogram();
   WriteTestHistogram();
+  WriteuGtHistogram();  
   return true;
 }       // -----  end of function L1Plot::PostRun  -----
 
@@ -780,6 +901,7 @@ void L1Plot::SetTodo ( std::map<std::string, float> &L1Config)
   doPlotRate     = static_cast<bool>(L1Config["doPlotRate"]);
   doPlotEff      = static_cast<bool>(L1Config["doPlotEff"]);
   doPlotTest     = static_cast<bool>(L1Config["doPlotTest"]);
+  doPlotuGt      = static_cast<bool>(L1Config["doPlotuGt"]);  
   UseL1CaloTower = static_cast<bool>(L1Config["UseL1CaloTower"]);
   UsePFMETNoMuon = static_cast<bool>(L1Config["UsePFMETNoMuon"]);
 }       // -----  end of function L1Plot::SetTodo  -----

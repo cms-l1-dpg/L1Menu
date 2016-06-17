@@ -50,7 +50,8 @@ class L1TnP : public L1Plot
         L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__    = nullptr,
         L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__ = nullptr,
         L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower_ = nullptr,
-        L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_ = nullptr
+        L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx_     = nullptr,
+	GlobalAlgBlk                                  *l1uGT_       = nullptr		
         );
 
     ~L1TnP ();                            // destructor

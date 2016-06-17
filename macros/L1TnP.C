@@ -36,10 +36,11 @@ L1TnP::L1TnP (
     L1Analysis::L1AnalysisRecoTauDataFormat       *recoTau__,
     L1Analysis::L1AnalysisRecoMetFilterDataFormat *recoFilter__,
     L1Analysis::L1AnalysisL1CaloTowerDataFormat   *l1CaloTower__,
-    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx__
+    L1Analysis::L1AnalysisRecoVertexDataFormat    *recoVtx__,
+    GlobalAlgBlk *l1uGT__        
     ):
   L1Plot( outrootfile_, event__,  upgrade__, recoJet__, recoSum__, recoEle__, 
-      recoMuon__, recoTau__,recoFilter__, l1CaloTower__, recoVtx__ ),
+	  recoMuon__, recoTau__,recoFilter__, l1CaloTower__, recoVtx__,l1uGT__ ),
   doMuonTnP(false)
 {
 }  // -----  end of method L1TnP::L1TnP  (constructor)  -----
