@@ -72,19 +72,20 @@ class L1Menu2016 : public L1AlgoFactory
     bool PrintRates(std::ostream &out);
     bool OpenWithList(std::string filelist);
     bool ParseConfig(const std::string line);
+    bool ParseLSRanges();
     bool PrintConfig() const;
     bool PostLoop();
     bool Loop();
     bool CheckL1Seed(const std::string L1Seed);
     bool L1SeedFunc();
-    bool PreLoop(std::map<std::string, float> &config);
+    bool PreLoop(std::map<std::string, float> &config, std::map<std::string, std::string> &configstr);
     bool BookHistogram();
     bool ReadMenu();
     bool ReadDataPU();
     bool BuildRelation();
     bool PrintPUCSV();
     bool WriteHistogram();
-    bool GetRunConfig(std::map<std::string, float> &config);
+    bool GetRunConfig(std::map<std::string, float> &config, std::map<std::string, std::string> &configstr);
     bool InitOutput();
 
 
@@ -159,6 +160,7 @@ class L1Menu2016 : public L1AlgoFactory
     double nFireevents;
     unsigned int nZeroBiasevents;
     std::set<unsigned int> nLumi;
+    std::unordered_set<unsigned int> sLS;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;
@@ -169,6 +171,7 @@ class L1Menu2016 : public L1AlgoFactory
 
     std::map<std::string, float*> L1ObjectMap;
     std::map<std::string, float> L1Config;
+    std::map<std::string, std::string> L1ConfigStr;
     std::map<std::string, L1Seed> mL1Seed;
     std::map<std::string, TH1F*> HistMap;
     std::map<std::string, TH2F*> Hist2D;
