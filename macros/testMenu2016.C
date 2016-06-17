@@ -65,6 +65,7 @@ int main ( int argc, char *argv[] )
     ("UseUnpackTree",  po::bool_switch()->default_value(false),                "Use unpacked tree in Ntuple")
     ("SelectRun",      po::value<int>()->default_value(-1),                    "Select specific run")
     ("SelectEvent",    po::value<int>()->default_value(-1),                    "Select specific event")
+    ("SelectLS",       po::value<std::string>()->default_value(""),            "Select specific LS ranges")
     ;
 
   po::variables_map vm;
@@ -93,6 +94,7 @@ int main ( int argc, char *argv[] )
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Get the running time config ~~~~~
   std::map<std::string, float> L1Config;
+  std::map<std::string, std::string> L1ConfigStr;
   for (const auto& it : vm) {
     if (!vm.count(it.first)) continue;
     auto& value = it.second.value();
@@ -102,8 +104,10 @@ int main ( int argc, char *argv[] )
       L1Config[it.first] = *v;
     else if (auto v = boost::any_cast<float>(&value))
       L1Config[it.first] = *v;
+    else if (auto v = boost::any_cast<std::string>(&value))
+      L1ConfigStr[it.first] = *v;
   }
-  men.PreLoop(L1Config);
+  men.PreLoop(L1Config, L1ConfigStr);
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Start to Run ~~~~~
   men.Loop();

@@ -126,6 +126,8 @@ bool L1Menu2016::InitConfig()
   L1Config["UseuGTDecision"] = 0;
   L1Config["UseUnpackTree"] = 0;
   
+  L1ConfigStr["SelectLS"] = "";
+
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
   L1ObjectMap["Tau"] = &L1Event.TauPt;
@@ -458,27 +460,47 @@ bool L1Menu2016::ParseConfig(const std::string line)
   double value;
 
   iss >> sign >> key >> sign >> value;
-  if (iss.fail())
-  {
-    std::cout<<"\033[0;31mCan't parse config:\033[0m "<<line<< std::endl; 
-  }
-  
-  if (L1Config.find(key) != L1Config.end())
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Parse for double inputs ~~~~~
+  bool parDouble = iss.fail();
+  if (!parDouble && L1Config.find(key) != L1Config.end())
   {
     L1Config[key] = value;
+    return true;
   }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Parse for string inputs ~~~~~
+  bool parString = true;
+  iss.str("");
+  key=sign="";
+  std::string valstr="";
+
+  if (parDouble)
+  {
+    iss >> sign >> key >> sign >> valstr;
+    parString = iss.fail();
+  }
+
+  if (!parString && L1ConfigStr.find(key) != L1ConfigStr.end())
+  {
+    L1ConfigStr[key] = valstr;
+    return true;
+  }
+
+  if (parDouble && parString)
+    std::cout<<"\033[0;31mCan't parse config:\033[0m "<<line<< std::endl; 
   else
     std::cout << "Not reconfiguzed config key " << key<< std::endl;
   
-
-  return true;
+  return false;
 }       // -----  end of function L1Menu2016::ParseConfig  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::GetRunConfig
 //  Description:  Get the running time config from command line
 // ===========================================================================
-bool L1Menu2016::GetRunConfig(std::map<std::string, float> &config)
+bool L1Menu2016::GetRunConfig(std::map<std::string, float> &config, 
+    std::map<std::string, std::string> &configstr)
 {
 
   for(auto c : config)
@@ -489,6 +511,13 @@ bool L1Menu2016::GetRunConfig(std::map<std::string, float> &config)
     }
   }
 
+  for(auto c : configstr)
+  {
+    if (L1ConfigStr.find(c.first) != L1ConfigStr.end())
+    {
+      L1ConfigStr[c.first] = c.second;
+    }
+  }
   return true;
 }       // -----  end of function L1Menu2016::GetRunConfig  -----
 
@@ -501,6 +530,8 @@ bool L1Menu2016::PrintConfig() const
   std::cout << "Printing configuration ___________________________ " << std::endl;
   for(auto &x: L1Config)
     std::cout << std::setw(20) <<x.first <<" : " << x.second << std::endl;
+  for(auto &x: L1ConfigStr)
+    std::cout << std::setw(20) <<x.first <<" : " << x.second << std::endl;
   std::cout << "Printed configuration ============================ " << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::PrintConfig  -----
@@ -509,9 +540,9 @@ bool L1Menu2016::PrintConfig() const
 //         Name:  L1Menu2016::PreLoop
 //  Description:  
 // ===========================================================================
-bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
+bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::string, std::string> &configstr)
 {
-  GetRunConfig(config);
+  GetRunConfig(config, configstr);
 
   ReadMenu();
   BuildRelation();
@@ -521,7 +552,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
   BookHistogram();
 
   // Set the Run Config as highest priority
-  GetRunConfig(config);
+  GetRunConfig(config, configstr);
   PrintConfig();
   
   if (writeplots)
@@ -571,6 +602,8 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config)
   if (L1Config["UseUpgradeLyr1"] != -1) SetUseUpgradeLyr1(L1Config["UseUpgradeLyr1"]);
   if (L1Config["UseL1CaloTower"] != -1) SetUseL1CaloTower(L1Config["UseL1CaloTower"]);
 
+  if (L1ConfigStr["SelectLS"] != "") 
+    ParseLSRanges();
   return true;
 }       // -----  end of function L1Menu2016::PreLoop  -----
 
@@ -643,8 +676,8 @@ bool L1Menu2016::Loop()
   nFireevents = 0.;
   int i = -1;
   nLumi.clear();
+  bool skipLS = false;
 
-  //for (Long64_t i=0; i<nevents; i++){     
   while(true)
   {
     i++;
@@ -662,9 +695,14 @@ bool L1Menu2016::Loop()
         continue;
 
       if(event_ -> lumi != currentLumi){
-        currentLumi=event_ -> lumi;
-        nLumi.insert(currentLumi);
+        currentLumi = event_ -> lumi;
+        skipLS      = CheckLS(currentLumi);
+        if (!skipLS)
+          nLumi.insert(currentLumi);
       } 
+
+      if (L1ConfigStr["SelectLS"] != "" && skipLS)
+        continue;
     }
 
     if (i % 200000 == 0)
@@ -696,7 +734,7 @@ bool L1Menu2016::Loop()
       l1uGT->CompEvents();
   }
 
-  std::cout << " Total Event: " << i <<" ZeroBias Event: " << nZeroBiasevents << std::endl;
+  std::cout << "Total Event: " << i <<" ZeroBias Event: " << nZeroBiasevents << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::Loop  -----
 
@@ -1976,3 +2014,47 @@ void L1Menu2016::CalLocalHTM(float &HTMcut)
   }
   HTMcut = temp.Pt();
 }       // -----  end of function L1Menu2016::CalLocalHTM  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseLSRanges
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseLSRanges()
+{
+  if (L1ConfigStr["SelectLS"] == "") return false;
+  
+  std::regex pattern("\\[\\s*([0-9]+,\\s*[0-9]+)\\s*\\]");
+  std::regex bounds("([0-9]+),\\s*([0-9]+)");
+  std::smatch base_match;
+
+  for (std::sregex_token_iterator i(L1ConfigStr["SelectLS"].begin(), L1ConfigStr["SelectLS"].end(), pattern, 1); 
+      i != std::sregex_token_iterator(); ++i) 
+  {
+	std::string match_str = i->str(); 
+    if (std::regex_match(match_str, base_match, bounds))
+    {
+      unsigned lead =  std::stoi(base_match[1], nullptr);
+      unsigned sec =  std::stoi(base_match[2], nullptr);
+      assert( sec >= lead );
+      pLS.push_back(std::make_pair(lead, sec));
+    }
+  }
+
+  return true;
+}       // -----  end of function L1Menu2016::ParseLSRanges  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CheckLS
+//  Description:  Return whether to skip this LS
+// ===========================================================================
+bool L1Menu2016::CheckLS(unsigned int currentLumi) const
+{
+  for(auto p : pLS)
+  {
+    if (currentLumi >= p.first && currentLumi <= p.second)
+    {
+      return false;
+    }
+  }
+  return true;
+}       // -----  end of function L1Menu2016::CheckLS  -----
