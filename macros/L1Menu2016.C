@@ -667,6 +667,7 @@ bool L1Menu2016::Loop()
   nFireevents = 0.;
   int i = -1;
   nLumi.clear();
+  bool skipLS = false;
 
   while(true)
   {
@@ -684,13 +685,15 @@ bool L1Menu2016::Loop()
       if (L1Config["SelectEvent"] != -1 && event_->event != L1Config["SelectEvent"])
         continue;
 
-      if (sLS.size() != 0 && sLS.find(event_-> lumi) != sLS.end())
-        continue;
-
       if(event_ -> lumi != currentLumi){
-        currentLumi=event_ -> lumi;
-        nLumi.insert(currentLumi);
+        currentLumi = event_ -> lumi;
+        skipLS      = CheckLS(currentLumi);
+        if (!skipLS)
+          nLumi.insert(currentLumi);
       } 
+
+      if (L1ConfigStr["SelectLS"] != "" && skipLS)
+        continue;
     }
 
     if (i % 200000 == 0)
@@ -722,7 +725,7 @@ bool L1Menu2016::Loop()
       l1uGT->CompEvents();
   }
 
-  std::cout << " Total Event: " << i <<" ZeroBias Event: " << nZeroBiasevents << std::endl;
+  std::cout << "Total Event: " << i <<" ZeroBias Event: " << nZeroBiasevents << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::Loop  -----
 
@@ -2024,15 +2027,25 @@ bool L1Menu2016::ParseLSRanges()
       unsigned lead =  std::stoi(base_match[1], nullptr);
       unsigned sec =  std::stoi(base_match[2], nullptr);
       assert( sec >= lead );
-      for (unsigned i = lead; i <= sec; ++i)
-      {
-        sLS.insert(i);
-      }
+      pLS.push_back(std::make_pair(lead, sec));
     }
   }
 
-  //for(auto i : sLS)
-    //std::cout << " " <<i;
-  //std::cout << "." << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::ParseLSRanges  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CheckLS
+//  Description:  Return whether to skip this LS
+// ===========================================================================
+bool L1Menu2016::CheckLS(unsigned int currentLumi) const
+{
+  for(auto p : pLS)
+  {
+    if (currentLumi >= p.first && currentLumi <= p.second)
+    {
+      return false;
+    }
+  }
+  return true;
+}       // -----  end of function L1Menu2016::CheckLS  -----

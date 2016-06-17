@@ -87,6 +87,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool WriteHistogram();
     bool GetRunConfig(std::map<std::string, float> &config, std::map<std::string, std::string> &configstr);
     bool InitOutput();
+    bool CheckLS(unsigned int currentLumi) const;
 
 
     bool ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_, 
@@ -160,7 +161,7 @@ class L1Menu2016 : public L1AlgoFactory
     double nFireevents;
     unsigned int nZeroBiasevents;
     std::set<unsigned int> nLumi;
-    std::unordered_set<unsigned int> sLS;
+    std::vector<std::pair<unsigned int, unsigned int> > pLS;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;

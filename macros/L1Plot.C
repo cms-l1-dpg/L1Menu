@@ -1165,7 +1165,6 @@ bool L1Plot::BookLSHistogram( const std::map<std::string, std::map<int, int> > &
   int firstLS = L1LSCount.begin()->second.begin()->first;
   int lastLS = L1LSCount.begin()->second.rbegin()->first;
   
-  std::cout << " fisrt " << firstLS <<" end " << lastLS << std::endl;
   std::stringstream ss;
   for(auto l1seed : L1LSCount)
   {
