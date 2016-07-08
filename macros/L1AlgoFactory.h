@@ -59,7 +59,7 @@ class L1AlgoFactory: public L1Ntuple{
   void EG_FwdJetPt(Float_t& EGcut, Float_t& FWcut);
   void EG_DoubleJetCentralPt(Float_t& EGcut, Float_t& jetcut);
   void EGer_TripleJetCentralPt(Float_t& EGcut, Float_t& jetcut);
-  void IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut);
+  void IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut, bool& IsIsoTau);
 
   void QuadJetCentral_TauJetPt(Float_t& jetcut, Float_t& taucut);
 
@@ -99,7 +99,7 @@ class L1AlgoFactory: public L1Ntuple{
   Bool_t EG_FwdJet(Float_t EGcut, Float_t FWcut);
   Bool_t EG_DoubleJetCentral(Float_t EGcut, Float_t jetcut);
   Bool_t EGer_TripleJetCentral(Float_t EGcut, Float_t jetcut);
-  Bool_t IsoEGer_TauJetEta2p17(Float_t egcut, Float_t taucut);
+  Bool_t IsoEGer_TauJetEta2p17(Float_t egcut, Float_t taucut, bool IsIsoTau=false);
 
   Bool_t QuadJetCentral_TauJet(Float_t jetcut, Float_t taucut);
 
@@ -121,8 +121,7 @@ class L1AlgoFactory: public L1Ntuple{
   void DoubleMuXOpenPt(Float_t& cut);
   Bool_t DoubleMuOpen(Float_t mu1pt);
   void DoubleMuOpenPt(Float_t& cut);
-  Bool_t Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta);
-  Bool_t Onia2016(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta);
+  Bool_t Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta, Float_t MuEta=1.6);
   void Onia2015Pt(Float_t& ptcut1, Float_t& ptcut2, Bool_t isER, Bool_t isOS, Int_t delta, float Onia2015Pt_= -1);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Cross ~~~~~

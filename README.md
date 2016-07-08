@@ -65,3 +65,12 @@ Allowed options:
 * `--nBunches float`: Positive number will be treated as number of colliding bunches for pre-deadtime rate estimation;
                    negative number will be treated as L1 and HLT ZB prescales for post-deadtime rate estimation.
 * `--SelectLS string`: SelectLS allows JSON-like format, like "[1, 30], [34, 40]"
+
+
+
+### Tuning for Post-ICHEP
+Use plot/PUDep.py for PU scaling 
+
+```
+./testMenu2016 -d NewLumi --UseUnpackTree --nBunches 4143.995262 --SelectLS '[1, 96]' -m menu/Lumi1p5E34.txt  -l ntuple/r275066_parkV62.list -o r275066_1p5E34_0 >&! r275066_1p5E34_0.log &
+```

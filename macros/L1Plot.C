@@ -1293,7 +1293,7 @@ bool L1Plot::BookLSHistogram( const std::map<std::string, std::map<int, int> > &
     ss.str("");
     ss << l1seed.first <<"_LS";
     std::string histname = ss.str();
-    ss <<";"<<"Lumi Section;"<<"Rate (nb = " << nBunches <<") Hz";
+    ss <<";"<<"Lumi Section;"<<"Counts";
     hRate1F[histname]  = new TH1F(histname.c_str(),ss.str().c_str(),lastLS-firstLS+1, firstLS, lastLS);
   }
 

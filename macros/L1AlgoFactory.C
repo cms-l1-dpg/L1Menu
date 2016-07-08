@@ -40,18 +40,10 @@ Bool_t L1AlgoFactory::DoubleMu_ETM(Float_t mu1pt, Float_t mu2pt, Float_t ETMcut,
   return false;
 }
 
-Bool_t L1AlgoFactory::Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta) {
+Bool_t L1AlgoFactory::Onia2015(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta, Float_t MuEta) {
   Float_t tmp_cut1 = -10.;
   Float_t tmp_cut2 = -10.;
-  Onia2015Pt(tmp_cut1,tmp_cut2,isER,isOS,delta);
-  if(tmp_cut1 >= mu1pt && tmp_cut2 >= mu2pt) return true;
-  return false;
-}
-
-Bool_t L1AlgoFactory::Onia2016(Float_t mu1pt, Float_t mu2pt, Bool_t isER, Bool_t isOS, Int_t delta) {
-  Float_t tmp_cut1 = -10.;
-  Float_t tmp_cut2 = -10.;
-  Onia2015Pt(tmp_cut1,tmp_cut2,isER,isOS,delta, 1.25);
+  Onia2015Pt(tmp_cut1,tmp_cut2,isER,isOS,delta, MuEta);
   if(tmp_cut1 >= mu1pt && tmp_cut2 >= mu2pt) return true;
   return false;
 }
@@ -221,10 +213,10 @@ Bool_t L1AlgoFactory::EGer_TripleJetCentral(Float_t egcut, Float_t jetcut) {
   return false;
 }
 
-Bool_t L1AlgoFactory::IsoEGer_TauJetEta2p17(Float_t egcut, Float_t taucut){
+Bool_t L1AlgoFactory::IsoEGer_TauJetEta2p17(Float_t egcut, Float_t taucut, bool IsIsoTau){
   Float_t tmp_egcut  = -10.;
   Float_t tmp_taucut = -10.;
-  IsoEGer_TauJetEta2p17Pt(tmp_egcut, tmp_taucut);
+  IsoEGer_TauJetEta2p17Pt(tmp_egcut, tmp_taucut, IsIsoTau);
   if(tmp_egcut >= egcut && tmp_taucut >= taucut) return true;
   return false;
 }
@@ -1319,7 +1311,7 @@ void L1AlgoFactory::EGer_TripleJetCentralPt(Float_t& EGcut, Float_t& jetcut) {
   return;
 }
 
-void L1AlgoFactory::IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut) {
+void L1AlgoFactory::IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut, bool& IsIsoTau) {
 
   Float_t eleptmax  = -10.;
   Float_t eleetamax = -999.;
@@ -1344,6 +1336,8 @@ void L1AlgoFactory::IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut) {
     if(bx != 0) continue; 
     Float_t pt = upgrade_->tauEt.at(ue);
     Float_t eta = upgrade_->tauEta.at(ue);
+    if(IsIsoTau && !upgrade_->tauIso.at(ue)) continue;
+
     if(fabs(eta) > tauER) continue;  // eta = 5 - 16
 
     if(fabs(eta-eleetamax) < 0.2) continue;

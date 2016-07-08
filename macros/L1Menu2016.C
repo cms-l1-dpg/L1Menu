@@ -152,10 +152,11 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_QuadJetC36_Tau52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
 
   // MultiMuon
-  L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18);
-  L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18);
-  L1SeedFun["L1_DoubleMu0er1p25_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2016, this, 0.,0.,true,true,18);
-  L1SeedFun["L1_DoubleMu_10_0_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18);
+  L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.6);
+  L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18, 1.6);
+  L1SeedFun["L1_DoubleMu0er1p25_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.25);
+  L1SeedFun["L1_DoubleMu0er1p4_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.4);
+  L1SeedFun["L1_DoubleMu_10_0_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18, 1.6);
   L1SeedFun["L1_DoubleMu0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 0.,0.,true, false);
   L1SeedFun["L1_DoubleMuOpen"] = std::bind(&L1AlgoFactory::DoubleMuOpen, this, 0.);
   L1SeedFun["L1_DoubleMu_10_Open"] = std::bind(&L1AlgoFactory::DoubleMuXOpen, this, 10.);
@@ -169,18 +170,19 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_TripleMu0"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,1);
   L1SeedFun["L1_TripleMuOpen"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,0);
   L1SeedFun["L1_TripleMu_5_5_3"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,5.,3.,1);
+  L1SeedFun["L1_TripleMu_5_0_0"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,0.,0.,1);
+  L1SeedFun["L1_TripleMu_3_0_0"] = std::bind(&L1AlgoFactory::TripleMu, this, 3.,0.,0.,1);
   L1SeedFun["L1_QuadMu0"] = std::bind(&L1AlgoFactory::QuadMu, this, 0.,0.,0.,0.,1);
 
   //Cross
-  L1SeedFun["L1_IsoEG20er_Tau20er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
-  L1SeedFun["L1_IsoEG22er_Tau20er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 22.,20.);
-  L1SeedFun["L1_IsoEG20er_Tau24er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,24.);
-  L1SeedFun["L1_IsoEG23er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 23.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
-  L1SeedFun["L1_IsoEG22er_TauJet20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 22.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
-  L1SeedFun["L1_IsoEG20er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.);
-  L1SeedFun["L1_IsoEG22er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 22.,20.);
-  L1SeedFun["L1_IsoEG20er_Tau24er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,24.);
-  L1SeedFun["L1_IsoEG23er_Tau20er_NotWdEta0"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 23.,20.); // l1t-tsg-v3:  L1_IsoEG20er_TauJet20er_NotWdEta0
+  L1SeedFun["L1_IsoEG20er_Tau20er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,20.,false);
+  L1SeedFun["L1_IsoEG22er_Tau20er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 22.,20.,false);
+  L1SeedFun["L1_IsoEG20er_Tau24er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,24.,false);
+  L1SeedFun["L1_IsoEG22er_IsoTau26er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 22.,26.,true);
+  L1SeedFun["L1_IsoEG20er_IsoTau25er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 20.,25.,true);
+  L1SeedFun["L1_IsoEG18er_IsoTau23er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 18.,23.,true);
+  L1SeedFun["L1_IsoEG18er_IsoTau25er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 18.,25.,true);
+  L1SeedFun["L1_IsoEG18er_IsoTau24er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 18.,24.,true);
   L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,true);
   L1SeedFun["L1_DoubleMu6_EG16"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,16.,true); // l1t-tsg-v3:  L1_DoubleMu6_EG6
   L1SeedFun["L1_DoubleMu7_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,true);
@@ -212,6 +214,8 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleJet12_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 12., 12.); 
   L1SeedFun["L1_DoubleJet16_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 16., 16.); 
   L1SeedFun["L1_ETM60_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 60., 60., false); 
+  L1SeedFun["L1_ETM70_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 70., 60., false); 
+  L1SeedFun["L1_ETM75_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 75., 60., false); 
   L1SeedFun["L1_HTM60_HTT260"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 60., 260.); 
   L1SeedFun["L1_HTM80_HTT220"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 80., 220.); 
   L1SeedFun["L1_Mu3_JetC35"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 35., false, true); 
@@ -708,7 +712,8 @@ bool L1Menu2016::Loop()
     if (i % 200000 == 0)
       std::cout << "Processed " << i << " events." << std::endl;
 
-    if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", false)) //Use Final decision
+    //Use Final decision by default, unless for PlotLS
+    if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
       continue;
 
     nZeroBiasevents++;
@@ -876,7 +881,6 @@ bool L1Menu2016::PrintRates(std::ostream &out)
     <<" +/- " << sqrt(nFireevents) * scale / 1000 << " (kHz)" << std::endl;
   out << std::endl << "Total rate (with overlaps) = " << totalrate / 1000 << " (kHz)" << std::endl;
   out << std::endl << "Total pure rate  = " << totalpurerate / 1000 <<" (kHz)" << std::endl;
-
   return true;
 }       // -----  end of function L1Menu2016::PrintRates  -----
 
