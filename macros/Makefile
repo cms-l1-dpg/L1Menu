@@ -54,4 +54,3 @@ testMenu2016 : $(ODIR)/testMenu2016.o $(OBJS)
 clean:
 	rm -f *exe *.o $(PROGRAM) $(OBJS) $(ODIR)/*.o
 
-
