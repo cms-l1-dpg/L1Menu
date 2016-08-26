@@ -2,8 +2,13 @@
 #
 
 import sys,string,math,os,subprocess,socket
+import socket
 
-EOS = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
+hostname = socket.gethostname()
+if "cern.ch" in hostname:
+    EOS = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
+if "fnal.gov" in hostname:
+    EOS = "eos root://cmseos.fnal.gov"
 
 Debug=False
 # Debug=True
@@ -24,7 +29,8 @@ def listFiles(inDir):
     return dirs
 
 def runPopen(command,subcommand,inDir):
-    p1 = subprocess.Popen([command, subcommand, inDir], shell=False, stdout=subprocess.PIPE)
+    cmd = " ".join( [command, subcommand, inDir])
+    p1 = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
     (stdout, stderr)=p1.communicate()
     if stderr is not None:
         print "Trouble executing the srmls command"
@@ -59,6 +65,8 @@ def getFileType(eos,command,inDir):
 
     (stdout, stderr)=runPopen(eos,command,inDir)
     output=stdout.split(' ')
+    if output == ['']:
+        return  inDir.find(".root") >-1
     # if Debug: print len(output),output
 
     if output[3].find(".root")>-1:
@@ -79,6 +87,9 @@ if __name__ == '__main__':
 
     rootfiles=listFiles(inDir)
     for rootfile in rootfiles:
-        theFile="root://eoscms.cern.ch/" + rootfile
+        if "cern.ch" in hostname:
+            theFile="root://eoscms.cern.ch/" + rootfile
+        if "fnal.gov" in hostname:
+            theFile="root://cmseos.fnal.gov/" + rootfile
         print theFile
 
