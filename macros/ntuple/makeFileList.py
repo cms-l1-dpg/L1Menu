@@ -3,9 +3,10 @@
 
 import sys,string,math,os,subprocess,socket
 import socket
+EOS = None
 
 hostname = socket.gethostname()
-if "cern.ch" in hostname:
+if "lxplus" in hostname:
     EOS = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
 if "fnal.gov" in hostname:
     EOS = "eos root://cmseos.fnal.gov"
@@ -87,7 +88,7 @@ if __name__ == '__main__':
 
     rootfiles=listFiles(inDir)
     for rootfile in rootfiles:
-        if "cern.ch" in hostname:
+        if "lxplus" in hostname:
             theFile="root://eoscms.cern.ch/" + rootfile
         if "fnal.gov" in hostname:
             theFile="root://cmseos.fnal.gov/" + rootfile
