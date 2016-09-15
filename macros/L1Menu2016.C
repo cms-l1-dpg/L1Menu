@@ -198,6 +198,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4"] = std::bind(&L1AlgoFactory::Mu_JetCentral_delta, this, 3.,120.);
   L1SeedFun["L1_DoubleJetC56_ETM60"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 56.,56.,60.);
   L1SeedFun["L1_DoubleJetC60_ETM60"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,60.);
+  L1SeedFun["L1_DoubleJetC60_ETM70"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,70.);
   L1SeedFun["L1_DoubleEG6_HTT150"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 150.);
   L1SeedFun["L1_DoubleEG6_HTT255"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 255.); // l1t-tsg-v3:  L1_DoubleEG6_HTT150
   L1SeedFun["L1_Jet32_DoubleMuOpen_Mu10_dPhi_Jet_Mu0_Max1p05_dPhi_Mu_Mu_Min1p0"] = std::bind(&L1AlgoFactory::Jet_MuOpen_Mu_dPhiMuMu1, this, 32.,10., 0);
@@ -208,7 +209,10 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Jet32_Mu0_EG10_dPhi_Jet_Mu_Max0p4_dPhi_Mu_EG_Min1p0"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,10.,1);
   L1SeedFun["L1_Jet32MuOpen_EG17_dPhiMu_EG1"] = std::bind(&L1AlgoFactory::Jet_MuOpen_EG_dPhiMuEG1, this, 32.,17., 0); // l1t-tsg-v3:  L1_Jet32MuOpen_EG10_dPhiMu_EG1
   L1SeedFun["L1_DoubleMu0_ETM40"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 40, false); 
+  L1SeedFun["L1_DoubleMu0_ETM50"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 50, false); 
   L1SeedFun["L1_DoubleMu0_ETM55"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 55, false); 
+  L1SeedFun["L1_DoubleMu0_ETM65"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 65, false); 
+  L1SeedFun["L1_DoubleMu0_ETM75"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 75, false); 
 
   L1SeedFun["L1_DoubleJet8_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 8., 8.); 
   L1SeedFun["L1_DoubleJet12_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 12., 12.); 
@@ -216,12 +220,14 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_ETM60_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 60., 60., false); 
   L1SeedFun["L1_ETM70_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 70., 60., false); 
   L1SeedFun["L1_ETM75_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 75., 60., false); 
+  L1SeedFun["L1_ETM85_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 85., 60., false); 
   L1SeedFun["L1_HTM60_HTT260"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 60., 260.); 
   L1SeedFun["L1_HTM80_HTT220"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 80., 220.); 
   L1SeedFun["L1_Mu3_JetC35"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 35., false, true); 
   L1SeedFun["L1_Mu3_JetC16"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 16., false, true); 
   L1SeedFun["L1_Mu3_JetC60"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 60., false, true); 
   L1SeedFun["L1_Mu3_JetC120"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 120., false, true); 
+  L1SeedFun["L1_MU20_EG15"] = std::bind(&L1AlgoFactory::Mu_EG, this,20, 15, false, 2);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass Trigger ~~~~~
   L1SeedFun["L1_DoubleJet_90_30_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 580); 
@@ -2077,6 +2083,7 @@ bool L1Menu2016::CheckLS(unsigned int currentLumi) const
   {
     if (currentLumi >= p.first && currentLumi <= p.second)
     {
+      //std::cout << fChain->GetCurrentFile()->GetName()  << std::endl;
       return false;
     }
   }
