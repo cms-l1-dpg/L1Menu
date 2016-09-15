@@ -223,6 +223,26 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu3_JetC60"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 60., false, true); 
   L1SeedFun["L1_Mu3_JetC120"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 120., false, true); 
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass Trigger ~~~~~
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 580); 
+  L1SeedFun["L1_DoubleJet_90_50_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 50., false, 30, 30, false, 580); 
+  L1SeedFun["L1_DoubleJet_90_60_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 60., false, 30, 30, false, 580); 
+  L1SeedFun["L1_DoubleJet_90_70_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 70., false, 30, 30, false, 580); 
+  L1SeedFun["L1_DoubleJet_90_80_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 80., false, 30, 30, false, 580); 
+  L1SeedFun["L1_DoubleJet_90_90_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 90., false, 30, 30, false, 580); 
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_580"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 580); 
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_610"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 610); 
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_640"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 640); 
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_670"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 670); 
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_700"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 700); 
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_730"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 730); 
+  L1SeedFun["L1_DoubleJet_90_30_Mj30j30_760"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 760); 
+
+
+  L1SeedFun["L1_DoubleJet30_Mj30j30_360_Mu6"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 360, 6, false, 2); 
+  L1SeedFun["L1_DoubleJet30_Mj30j30_360_Mu10"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 360, 10, false, 2); 
+  L1SeedFun["L1_DoubleJet_40_30_Mj40j30_540_IsoEG12"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 40, 30., false, 40, 30, false, 540, 12, true, false); 
+
   L1SeedFun["L1_ZeroBias"] = [](){return true;};
   return true;
 
