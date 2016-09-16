@@ -24,10 +24,15 @@
 #include "DataFormats/L1Trigger/interface/EtSum.h"
 
 enum EtSumType { 
-  ETT = l1t::EtSum::EtSumType::kTotalEt,
-  HTT = l1t::EtSum::EtSumType::kTotalHt,
-  ETM = l1t::EtSum::EtSumType::kMissingEt,
-  HTM = l1t::EtSum::EtSumType::kMissingHt,
+  ETT   = l1t::EtSum::EtSumType::kTotalEt,
+  HTT   = l1t::EtSum::EtSumType::kTotalHt,
+  ETM   = l1t::EtSum::EtSumType::kMissingEt,
+  HTM   = l1t::EtSum::EtSumType::kMissingHt,
+  ETMHF = l1t::EtSum::EtSumType::kMissingEtHF,
+  ETTHF = l1t::EtSum::EtSumType::kTotalEtHF,
+  ETTEM = l1t::EtSum::EtSumType::kTotalEtEm,
+  HTTHF = l1t::EtSum::EtSumType::kTotalHtHF,
+  HTMHF = l1t::EtSum::EtSumType::kMissingHtHF,
 }; // Base on "DataFormats/L1Trigger/interface/EtSum.h"
 
 struct L1Seed

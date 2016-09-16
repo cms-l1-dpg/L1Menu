@@ -240,7 +240,6 @@ inline Double_t L1AlgoFactory::degree(Double_t radian) {
     return radian/acos(-1.)*180.;
 }
 
-
 Bool_t L1AlgoFactory::ETM(Float_t ETMcut) {
   Float_t tmp_cut = -10.;
   ETMVal(tmp_cut);
@@ -1419,7 +1418,6 @@ int L1AlgoFactory::GetSumEtIdx(EtSumType type)
   return -1;
 }       // -----  end of function L1AlgoFactory::GetSumEtIdx  -----
 
-
 void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
 
   Float_t TheETM = -10;
@@ -2323,3 +2321,122 @@ void L1AlgoFactory::Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, con
   jetcut = jetptmax;
 
 }       // -----  end of function L1AlgoFactory::Mu_JetPt  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::DiJetMass
+//  Description:  
+// ===========================================================================
+Float_t L1AlgoFactory::DiJetMass(Float_t Mj1, Float_t Mj2, Bool_t isCentral) const
+{
+  TLorentzVector jet1(0,0,0,0);
+  TLorentzVector jet2(0,0,0,0);
+  float maxMass = 0;
+
+  if(upgrade_->nJets < 2) return maxMass;
+
+
+  for(UInt_t ue1=0; ue1 < upgrade_->nJets; ue1++) {
+    Int_t bx1 = upgrade_->jetBx.at(ue1);        		
+    if(bx1 != 0) continue;
+    Bool_t isFwdJet1 = fabs(upgrade_->jetEta.at(ue1)) > jetCentFwd ? true : false;
+    if(isCentral && isFwdJet1) continue;
+    Float_t pt1 = upgrade_->jetEt.at(ue1);
+    if (pt1 < Mj1) continue;
+    jet1.SetPtEtaPhiM(pt1,upgrade_->jetEta.at(ue1), upgrade_->jetPhi.at(ue1), 0);
+
+    for(UInt_t ue2=ue1+1; ue2 < upgrade_->nJets; ue2++) {
+      Int_t bx2 = upgrade_->jetBx.at(ue2);        		
+      if(bx2 != 0) continue;
+      Bool_t isFwdJet2 = fabs(upgrade_->jetEta.at(ue2)) > jetCentFwd ? true : false;
+      if(isCentral && isFwdJet2) continue;
+      Float_t pt2 = upgrade_->jetEt.at(ue2);
+      if (pt2 < Mj2) continue;
+      jet2.SetPtEtaPhiM(pt2,upgrade_->jetEta.at(ue2), upgrade_->jetPhi.at(ue2), 0);
+
+      TLorentzVector dijMass = jet1 + jet2;
+      if (dijMass.M() > maxMass)
+      {
+        maxMass = dijMass.M();
+      }
+    }
+  }
+
+  return maxMass;
+}       // -----  end of function L1AlgoFactory::DiJetMass  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::DoubleJetMass
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::DoubleJetMass(Float_t cut1, Float_t cut2, Bool_t iscutCentral, 
+    Float_t Mj1, Float_t Mj2, Bool_t isMjCentral, Float_t Masscut)
+{
+  bool passDiJetCut = false;
+  bool passDiJetMass = false;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting DoubleJetPt ~~~~~
+  Float_t tmp_cut1 = -10.;
+  Float_t tmp_cut2 = -10.;
+  DoubleJetPt(tmp_cut1,tmp_cut2,iscutCentral);
+
+  if(tmp_cut1 >= cut1 && tmp_cut2 >= cut2) 
+    passDiJetCut = true;
+  else
+    return false;
+  
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting DiJetMass ~~~~~
+  float diJetMass = DiJetMass(Mj1, Mj2, isMjCentral);
+
+  if (diJetMass >= Masscut)
+    passDiJetMass = true;
+  else
+    return false;
+
+  return passDiJetCut && passDiJetMass;
+}       // -----  end of function L1AlgoFactory::DoubleJetMass  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::DoubleJetMass_Mu
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::DoubleJetMass_Mu( Float_t cut1, Float_t cut2, Bool_t iscutCentral, 
+    Float_t Mj1, Float_t Mj2, Bool_t isMjCentral, Float_t Masscut, 
+    Float_t Muptcut, Bool_t isMuER, Int_t Muqualmin)
+{
+
+  bool passDiJet =  false;
+  bool passSingleMu = false;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting DiJet ~~~~~
+  passDiJet = DoubleJetMass(cut1, cut2, iscutCentral, Mj1, Mj2, isMjCentral, Masscut);
+    
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting SingleMu ~~~~~
+  Float_t tmp_cut = -10.;
+  SingleMuPt(tmp_cut,isMuER, Muqualmin);
+  if(tmp_cut >= Muptcut) passSingleMu = true;
+
+  return passDiJet && passSingleMu;
+}       // -----  end of function L1AlgoFactory::DoubleJetMass_Mu  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::DoubleJetMass_EG
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::DoubleJetMass_EG( Float_t cut1, Float_t cut2, Bool_t iscutCentral, 
+    Float_t Mj1, Float_t Mj2, Bool_t isMjCentral, Float_t Masscut, 
+    Float_t EGptcut, Bool_t isEGIsolated, Bool_t isEGER)
+{
+  
+  bool passDiJet =  false;
+  bool passSingleEG = false;
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting DiJet ~~~~~
+  passDiJet = DoubleJetMass(cut1, cut2, iscutCentral, Mj1, Mj2, isMjCentral, Masscut);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting SingleEG ~~~~~
+  Float_t tmp_cut1 = -10.;
+  SingleEGPt(tmp_cut1,isEGIsolated,isEGER);
+  if(tmp_cut1 >= EGptcut) passSingleEG = true;
+
+  return passDiJet && passSingleEG;
+}       // -----  end of function L1AlgoFactory::DoubleJetMass_EG  -----

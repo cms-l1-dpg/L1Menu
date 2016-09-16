@@ -145,7 +145,15 @@ class L1AlgoFactory: public L1Ntuple{
   void Jet_MuOpen_EG_dPhiMuEG1Pt(Float_t& jetcut, Float_t& egcut, int MuQual=0);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass ~~~~~
   bool MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bool isIsolated, bool isER) const;
-
+  Float_t DiJetMass(Float_t Mj1, Float_t Mj2, Bool_t isCentral) const;
+  bool DoubleJetMass(Float_t cut1, Float_t cut2, Bool_t iscutCentral, 
+      Float_t Mj1, Float_t Mj2, Bool_t isMjCentral, Float_t Masscut);
+  bool DoubleJetMass_Mu( Float_t cut1, Float_t cut2, Bool_t iscutCentral, 
+      Float_t Mj1, Float_t Mj2, Bool_t isMjCentral, Float_t Masscut, 
+      Float_t Muptcut, Bool_t isMuER, Int_t Muqualmin);
+  bool DoubleJetMass_EG( Float_t cut1, Float_t cut2, Bool_t iscutCentral, 
+      Float_t Mj1, Float_t Mj2, Bool_t isMjCentral, Float_t Masscut, 
+      Float_t EGptcut, Bool_t isEGIsolated, Bool_t isEGER);
 
   bool ETM_Jet(float ETMcut, float jetcut, bool isCent);
   void ETM_JetPt(float& ETMcut, float& jetcut, const bool& isCent);
