@@ -125,6 +125,7 @@ bool L1Menu2016::InitConfig()
   L1Config["UsePFMETNoMuon"] = 0;
   L1Config["UseuGTDecision"] = 0;
   L1Config["UseUnpackTree"] = 0;
+  L1Config["doScanLS"] = 0;
   
   L1ConfigStr["SelectLS"] = "";
 
@@ -212,6 +213,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu0_ETM50"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 50, false); 
   L1SeedFun["L1_DoubleMu0_ETM55"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 55, false); 
   L1SeedFun["L1_DoubleMu0_ETM65"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 65, false); 
+  L1SeedFun["L1_DoubleMu0_ETM70"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 70, false); 
   L1SeedFun["L1_DoubleMu0_ETM75"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 75, false); 
 
   L1SeedFun["L1_DoubleJet8_ForwardBackward"] = std::bind(&L1AlgoFactory::DoubleJet_ForwardBackward, this, 8., 8.); 
@@ -732,6 +734,9 @@ bool L1Menu2016::Loop()
       } 
 
       if (L1ConfigStr["SelectLS"] != "" && skipLS)
+        continue;
+
+      if (L1Config["doScanLS"])
         continue;
     }
 
@@ -2083,7 +2088,8 @@ bool L1Menu2016::CheckLS(unsigned int currentLumi) const
   {
     if (currentLumi >= p.first && currentLumi <= p.second)
     {
-      //std::cout << fChain->GetCurrentFile()->GetName()  << std::endl;
+      if (L1Config.at("doScanLS"))
+        std::cout << "LS"<<currentLumi <<" % "<< fChain->GetCurrentFile()->GetName()  << std::endl;
       return false;
     }
   }
