@@ -67,6 +67,7 @@ int main ( int argc, char *argv[] )
     ("SelectRun",      po::value<int>()->default_value(-1),                    "Select specific run")
     ("SelectEvent",    po::value<int>()->default_value(-1),                    "Select specific event")
     ("SelectLS",       po::value<std::string>()->default_value(""),            "Select specific LS ranges")
+    ("SelectBX",       po::value<std::string>()->default_value(""),            "Select specific BX ranges")
     ;
 
   po::variables_map vm;

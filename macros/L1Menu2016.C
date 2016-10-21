@@ -128,6 +128,7 @@ bool L1Menu2016::InitConfig()
   L1Config["doScanLS"] = 0;
   
   L1ConfigStr["SelectLS"] = "";
+  L1ConfigStr["SelectBX"] = "";
 
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -212,6 +213,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu0_ETM40"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 40, false); 
   L1SeedFun["L1_DoubleMu0_ETM50"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 50, false); 
   L1SeedFun["L1_DoubleMu0_ETM55"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 55, false); 
+  L1SeedFun["L1_DoubleMu0_ETM60"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 60, false); 
   L1SeedFun["L1_DoubleMu0_ETM65"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 65, false); 
   L1SeedFun["L1_DoubleMu0_ETM70"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 70, false); 
   L1SeedFun["L1_DoubleMu0_ETM75"] = std::bind(&L1AlgoFactory::DoubleMu_ETM, this, 0, 0, 75, false); 
@@ -635,7 +637,10 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
   if (L1Config["UseL1CaloTower"] != -1) SetUseL1CaloTower(L1Config["UseL1CaloTower"]);
 
   if (L1ConfigStr["SelectLS"] != "") 
-    ParseLSRanges();
+    ParseRanges("SelectLS", pLS);
+
+  if (L1ConfigStr["SelectBX"] != "") 
+    ParseRanges("SelectBX", pBX);
   return true;
 }       // -----  end of function L1Menu2016::PreLoop  -----
 
@@ -734,6 +739,9 @@ bool L1Menu2016::Loop()
       } 
 
       if (L1ConfigStr["SelectLS"] != "" && skipLS)
+        continue;
+
+      if (L1ConfigStr["SelectBX"] != "" && CheckBX(event_->bx) )
         continue;
 
       if (L1Config["doScanLS"])
@@ -1266,6 +1274,8 @@ bool L1Menu2016::ParseL1Seed(const std::string SeedName)
   // EG_Sum
   if (ParseEGSum(SeedName)) return true;
 
+  if (ParseEGStrategy(SeedName)) return true;
+
   if (ParseComplexSingleMu(SeedName)) return true;
   // EGMass
   //if (ParseMultiEGMass(SeedName)) return true;
@@ -1534,6 +1544,29 @@ bool L1Menu2016::ParseEGSum(const std::string& SeedName)
 
   return false;
 }       // -----  end of function L1Menu2016::ParseEGSum  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseEGStrategy
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseEGStrategy(const std::string & SeedName)
+{
+  int pt = -10;
+
+  std::smatch base_match;
+  std::regex EGStrategy("L1_StrategyEG([0-9]+)");
+  if (std::regex_match(SeedName, base_match, EGStrategy))
+  {
+    pt =  std::stoi(base_match[1].str(), nullptr);
+    L1SeedFun[SeedName] = 
+      boost::bind(&SingleObjPt, L1ObjectMap["EG"], pt) ||
+      boost::bind(&SingleObjPt, L1ObjectMap["IsoEG"], pt-2) ||
+      boost::bind(&SingleObjPt, L1ObjectMap["IsoEGer"], pt-4);
+    return true;
+  }
+
+  return false;
+}       // -----  end of function L1Menu2016::ParseEGStrategy  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::ParseMultiEGMass
@@ -2051,18 +2084,18 @@ void L1Menu2016::CalLocalHTM(float &HTMcut)
 }       // -----  end of function L1Menu2016::CalLocalHTM  -----
 
 // ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::ParseLSRanges
+//         Name:  L1Menu2016::ParseRanges
 //  Description:  
 // ===========================================================================
-bool L1Menu2016::ParseLSRanges()
+bool L1Menu2016::ParseRanges(const std::string Config,  std::vector<std::pair<unsigned int, unsigned int> >& Container)
 {
-  if (L1ConfigStr["SelectLS"] == "") return false;
+  if (L1ConfigStr[Config] == "") return false;
   
   std::regex pattern("\\[\\s*([0-9]+,\\s*[0-9]+)\\s*\\]");
   std::regex bounds("([0-9]+),\\s*([0-9]+)");
   std::smatch base_match;
 
-  for (std::sregex_token_iterator i(L1ConfigStr["SelectLS"].begin(), L1ConfigStr["SelectLS"].end(), pattern, 1); 
+  for (std::sregex_token_iterator i(L1ConfigStr[Config].begin(), L1ConfigStr[Config].end(), pattern, 1); 
       i != std::sregex_token_iterator(); ++i) 
   {
 	std::string match_str = i->str(); 
@@ -2071,12 +2104,12 @@ bool L1Menu2016::ParseLSRanges()
       unsigned lead =  std::stoi(base_match[1], nullptr);
       unsigned sec =  std::stoi(base_match[2], nullptr);
       assert( sec >= lead );
-      pLS.push_back(std::make_pair(lead, sec));
+      Container.push_back(std::make_pair(lead, sec));
     }
   }
 
   return true;
-}       // -----  end of function L1Menu2016::ParseLSRanges  -----
+}       // -----  end of function L1Menu2016::ParseRanges  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::CheckLS
@@ -2095,3 +2128,19 @@ bool L1Menu2016::CheckLS(unsigned int currentLumi) const
   }
   return true;
 }       // -----  end of function L1Menu2016::CheckLS  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CheckBX
+//  Description:  Return whether to skip this BX
+// ===========================================================================
+bool L1Menu2016::CheckBX(unsigned int currentBX) const
+{
+  for(auto p : pBX)
+  {
+    if (currentBX >= p.first && currentBX <= p.second)
+    {
+      return false;
+    }
+  }
+  return true;
+}       // -----  end of function L1Menu2016::CheckBX  -----

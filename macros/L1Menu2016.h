@@ -32,6 +32,7 @@
 #include "TH2F.h"
 
 // boost
+#include "boost/bind.hpp"
 #include "boost/tokenizer.hpp"
 #include "boost/filesystem.hpp"
 
@@ -72,7 +73,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool PrintRates(std::ostream &out);
     bool OpenWithList(std::string filelist);
     bool ParseConfig(const std::string line);
-    bool ParseLSRanges();
+    bool ParseRanges(const std::string Config, std::vector<std::pair<unsigned int, unsigned int> >& Container);
     bool PrintConfig() const;
     bool PostLoop();
     bool Loop();
@@ -88,6 +89,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool GetRunConfig(std::map<std::string, float> &config, std::map<std::string, std::string> &configstr);
     bool InitOutput();
     bool CheckLS(unsigned int currentLumi) const;
+    bool CheckBX(unsigned int currentBX) const;
 
 
     bool ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_, 
@@ -105,6 +107,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseTripleEG(const std::string& SeedName);
     bool ParseEGSum(const std::string& SeedName);
     bool ParseComplexSingleMu(const std::string& SeedName);
+    bool ParseEGStrategy(const std::string & SeedName);
 
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);
@@ -162,6 +165,7 @@ class L1Menu2016 : public L1AlgoFactory
     unsigned int nZeroBiasevents;
     std::set<unsigned int> nLumi;
     std::vector<std::pair<unsigned int, unsigned int> > pLS;
+    std::vector<std::pair<unsigned int, unsigned int> > pBX;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seeds ~~~~~
     StructL1Event L1Event;
