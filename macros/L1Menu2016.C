@@ -129,6 +129,7 @@ bool L1Menu2016::InitConfig()
   
   L1ConfigStr["SelectLS"] = "";
   L1ConfigStr["SelectBX"] = "";
+  L1ConfigStr["Lumilist"] = "";
 
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -2014,7 +2015,7 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
 // ===========================================================================
 bool L1Menu2016::ReadDataPU() 
 {
-  const std::string pucsv = "menu/run_lumi.csv";
+  const std::string pucsv = L1ConfigStr["Lumilist"];
   std::ifstream csvfile(pucsv);
   if (!csvfile)
   {

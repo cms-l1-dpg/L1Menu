@@ -35,11 +35,13 @@ int main ( int argc, char *argv[] )
   boost::program_options::options_description desc("Allowed options");
   const std::string defaultMenu = "menu/Menu_259721_TSGv3_FixPre_Mu18.txt";
   const std::string defaultntuple = "ntuple/r259721_tsgv3.list";
+  const std::string defaultLumi = "menu/run_lumi.csv";
 
   desc.add_options()
     ("help,h", "produce help message")
     ("menufile,m",     po::value<std::string>()->default_value(defaultMenu),   "set the input menu")
     ("filelist,l",     po::value<std::string>()->default_value(defaultntuple), "set the input ntuple list")
+    ("Lumilist,u",     po::value<std::string>()->default_value(defaultLumi),   "set the input lumi list")
     ("outfilename,o",  po::value<std::string>()->default_value("Auto"),        "set output file name")
     ("outputdir,d",    po::value<std::string>()->default_value("results"),     "set output directory")
     ("writetext,t",    po::value<bool>()->default_value(true),                 "write rate to output")
