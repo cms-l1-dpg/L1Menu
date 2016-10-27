@@ -101,9 +101,7 @@ bool L1Menu2016::InitConfig()
 {
   L1Config["isData"] = 0;
   L1Config["SumJetET"] = 0;
-  L1Config["nBunches"] = 3965.4; //Scaling Run259721 to 1.15E34 Lumi
-  //L1Config["nBunches"] = 2736;
-  //L1Config["nBunches"] = 0;
+  L1Config["nBunches"] = 2592;  //default for 2017 nBunches
   L1Config["AveragePU"] = 0;
   L1Config["Energy"] = 0;
   L1Config["targetlumi"] = 0;
@@ -292,16 +290,38 @@ bool L1Menu2016::BookHistogram()
   HistMap["All"]             = new TH1F("h_All","h_All",N128,-0.5,N128-0.5);
   HistMap["Pure"]           = new TH1F("h_Pure","h_Pure",N128,-0.5,N128-0.5);
 
-  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds", vL1Seed.size()+1, 0, vL1Seed.size(), vL1Seed.size()+1, 0, vL1Seed.size());
+  // Correlation among L1Seeds
+  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds", vL1Seed.size(), 0, vL1Seed.size(), vL1Seed.size(), 0, vL1Seed.size());
   for (unsigned int i = 0; i < vL1Seed.size(); ++i)
   {
     int bin = Hist2D["cor_Seeds"]->GetXaxis()->FindBin(i);
     Hist2D["cor_Seeds"]->GetXaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
     Hist2D["cor_Seeds"]->GetYaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
   }
-  Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block",10,-0.5,9.5,19,-0.5,9.5);
-  Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS",NPAGS,-0.5,(float)NPAGS-0.5,NPAGS,-0.5,(float)NPAGS-0.5);
-  Hist2D["cor_TRIGPHYS"]    = new TH2F("cor_TRIGPHYS","cor_TRIGPHYS",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5,NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
+
+  // Correlation among L1Seed type/Block/POG
+  Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block", POGMap.size(), 0, POGMap.size(), POGMap.size(), 0, POGMap.size());
+  for (unsigned int i = 0; i < POGMap.size(); ++i)
+  {
+    std::map<std::string, std::vector<int> >::iterator mapit = POGMap.begin();
+    std::advance(mapit, i);
+    std::string key = mapit-> first;
+    int bin = Hist2D["cor_Block"]->GetXaxis()->FindBin(i);
+    Hist2D["cor_Block"]->GetXaxis()->SetBinLabel(bin, key.c_str());
+    Hist2D["cor_Block"]->GetYaxis()->SetBinLabel(bin, key.c_str());
+  }
+
+  // Correlation among L1Seeds PAGs
+  Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS", PAGMap.size(), 0, PAGMap.size(), PAGMap.size(), 0, PAGMap.size());
+  for (unsigned int i = 0; i < PAGMap.size(); ++i)
+  {
+    std::map<std::string, std::vector<int> >::iterator mapit = PAGMap.begin();
+    std::advance(mapit, i);
+    std::string key = mapit-> first;
+    int bin = Hist2D["cor_PAGS"]->GetXaxis()->FindBin(i);
+    Hist2D["cor_PAGS"]->GetXaxis()->SetBinLabel(bin, key.c_str());
+    Hist2D["cor_PAGS"]->GetYaxis()->SetBinLabel(bin, key.c_str());
+  }
   return true;
 }       // -----  end of function L1Menu2016::BookHistogram  -----
 
@@ -1142,6 +1162,9 @@ bool L1Menu2016::CheckPureFire()
 // ===========================================================================
 bool L1Menu2016::CheckPhysFire()
 {
+  std::set<std::string> eventPOG;
+  std::set<std::string> eventPAG;
+
   for(auto fired : FireSeed)
   {
     L1Seed &seed = mL1Seed[fired];
@@ -1149,14 +1172,25 @@ bool L1Menu2016::CheckPhysFire()
       //*outfile <<  event_->run <<","<<event_->lumi<<"," <<event_->event<<","<<seed.name << std::endl;
     for(auto pog : seed.POG)
     {
-      if (FiredPhy.insert(pog).second) PhyCounts[pog]++;
+      if (FiredPhy.insert(pog).second) 
+      {
+        eventPOG.insert(pog);
+        PhyCounts[pog]++;
+      }
     }
     for(auto pag : seed.PAG)
     {
-      if (FiredPhy.insert(pag).second) PhyCounts[pag]++;
+      if (FiredPhy.insert(pag).second) 
+      {
+        eventPAG.insert(pag);
+        PhyCounts[pag]++;
+      }
     }
   }
 
+  Fill2DCorrelations("cor_Seeds", FireSeed);
+  Fill2DCorrelations("cor_Block", eventPOG);
+  Fill2DCorrelations("cor_PAGS", eventPAG);
   return true;
 }       // -----  end of function L1Menu2016::CheckPhysFire  -----
 
@@ -1228,6 +1262,25 @@ bool L1Menu2016::FillDefHist2D()
   }
   return true;
 }       // -----  end of function L1Menu2016::FillDefHist2D  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::Fill2DCorrelations
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::Fill2DCorrelations(const std::string &histname, std::set<std::string> &event) const
+{
+
+  for(auto fire1 : event)
+  {
+    for(auto fire2 : event)
+    {
+      Hist2D.at(histname)->Fill(fire1.c_str(), fire2.c_str(), 1);
+    }
+
+  }
+  return true;
+}       // -----  end of function L1Menu2016::Fill2DCorrelations  -----
+
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::SetOutputName
 //  Description:  
