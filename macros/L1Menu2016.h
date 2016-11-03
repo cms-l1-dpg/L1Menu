@@ -108,6 +108,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseEGSum(const std::string& SeedName);
     bool ParseComplexSingleMu(const std::string& SeedName);
     bool ParseEGStrategy(const std::string & SeedName);
+    bool ParseETMJetdPhi(const std::string & SeedName);
 
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);

@@ -156,6 +156,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.6);
   L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18, 1.6);
   L1SeedFun["L1_DoubleMu0er1p25_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.25);
+  L1SeedFun["L1_DoubleMu0er1p0_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1);
   L1SeedFun["L1_DoubleMu0er1p4_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.4);
   L1SeedFun["L1_DoubleMu_10_0_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18, 1.6);
   L1SeedFun["L1_DoubleMu0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 0.,0.,true, false);
@@ -1330,6 +1331,8 @@ bool L1Menu2016::ParseL1Seed(const std::string SeedName)
 
   if (ParseEGStrategy(SeedName)) return true;
 
+  if (ParseETMJetdPhi(SeedName)) return true;
+
   if (ParseComplexSingleMu(SeedName)) return true;
   // EGMass
   //if (ParseMultiEGMass(SeedName)) return true;
@@ -1621,6 +1624,30 @@ bool L1Menu2016::ParseEGStrategy(const std::string & SeedName)
 
   return false;
 }       // -----  end of function L1Menu2016::ParseEGStrategy  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseETMJetdPhi
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseETMJetdPhi(const std::string & SeedName)
+{
+  int ETMpt = -10;
+  int Jetpt = -10;
+  bool isCentral = false;
+
+  std::smatch base_match;
+  std::regex ETMJetdPhi("L1_ETM([0-9]+)_Jet([C]*)([0-9]+)_dPhi_Min0p4");
+  if (std::regex_match(SeedName, base_match, ETMJetdPhi))
+  {
+    ETMpt =  std::stoi(base_match[1].str(), nullptr);
+    isCentral = base_match.length(2) == 1;
+    Jetpt =  std::stoi(base_match[3].str(), nullptr);
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::ETM_Jet, this, ETMpt, Jetpt, isCentral);
+    return true;
+  }
+
+  return false;
+}       // -----  end of function L1Menu2016::ParseETMJetdPhi  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::ParseMultiEGMass
