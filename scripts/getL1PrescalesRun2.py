@@ -22,6 +22,8 @@ if __name__ == '__main__':
   parser.add_argument("--db", dest="database", default=database, type=str, action="store", help="database connection")
   parser.add_argument("--user", dest="user", default=user, type=str, action="store", required=True, help="database account user name")
   parser.add_argument("--passwd", dest="passwd", default=passwd, type=str, action="store", help="password")
+  parser.add_argument("--apply-mask", dest="apply_mask", action="store_true", help="apply mask")
+  parser.set_defaults(apply_mask = False)
 
   options = parser.parse_args()
 
@@ -34,11 +36,13 @@ if __name__ == '__main__':
 
 
   menu = {}
-  query = """select algo_index, algo_name from cms_ugt_mon.view_ugt_run_algo_setting where run_number = %s order by algo_index""" % options.run
+  mask = {}
+  query = """select algo_index, algo_name, algo_mask from cms_ugt_mon.view_ugt_run_algo_setting where run_number = %s order by algo_index""" % options.run
   cur.execute(query)
   rc = cur.fetchall()
   for x in rc:
     menu[x[0]] = x[1]
+    mask[x[0]] = x[2]
 
   prescales = {}
   for idx in menu.keys():
@@ -49,6 +53,8 @@ if __name__ == '__main__':
     prescales = {}
     for x in rc:
       prescales[x[0]] = x[1]
+      if options.apply_mask:
+        prescales[x[0]] = x[1] * mask[idx]
 
     for k, v in prescales.iteritems():
       print "%6d" % v,
