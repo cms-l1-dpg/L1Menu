@@ -101,6 +101,7 @@ bool L1Menu2016::InitConfig()
 {
   L1Config["isData"] = 0;
   L1Config["SumJetET"] = 0;
+  L1Config["SumJetEta"] = 999;
   L1Config["nBunches"] = 2592;  //default for 2017 nBunches
   L1Config["AveragePU"] = 0;
   L1Config["Energy"] = 0;
@@ -156,7 +157,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.6);
   L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18, 1.6);
   L1SeedFun["L1_DoubleMu0er1p25_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.25);
-  L1SeedFun["L1_DoubleMu0er1p0_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1);
+  L1SeedFun["L1_DoubleMu0er1p0_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.25);
   L1SeedFun["L1_DoubleMu0er1p4_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.4);
   L1SeedFun["L1_DoubleMu_10_0_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18, 1.6);
   L1SeedFun["L1_DoubleMu0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 0.,0.,true, false);
@@ -695,7 +696,7 @@ bool L1Menu2016::GetL1Event()
   L1AlgoFactory::SingleMuPt(L1Event.MuerPt, true, 2);
 
   //Sum
-  if (L1Config["SumJetET"] != 0)
+  if (L1Config["SumJetET"] != 0 || L1Config["SumJetEta"] != -1)
   {
     CalLocalHT(L1Event.HTT);
     CalLocalHTM(L1Event.HTM);
@@ -704,7 +705,11 @@ bool L1Menu2016::GetL1Event()
     L1AlgoFactory::HTMVal(L1Event.HTM);
   }
 
-  L1AlgoFactory::ETMVal(L1Event.ETM);
+  if (L1Config["UseL1CaloTower"])
+    CalLocalETM(L1Event.ETM);
+  else
+    L1AlgoFactory::ETMVal(L1Event.ETM);
+
   L1AlgoFactory::ETTVal(L1Event.ETT);
 
   // Mulit
@@ -2131,7 +2136,8 @@ void L1Menu2016::CalLocalHT(float &HTTcut)
     Int_t bx = upgrade_->jetBx.at(ue);        		
     if(bx != 0) continue;
     Float_t pt = upgrade_->jetEt.at(ue);
-    if (pt >= L1Config["SumJetET"])
+    Float_t eta = upgrade_->jetEta.at(ue);
+    if (pt >= L1Config["SumJetET"] && fabs(eta) <= L1Config["SumJetEta"] )
       sumJetHt += pt;
   }
   HTTcut = sumJetHt;
@@ -2151,7 +2157,8 @@ void L1Menu2016::CalLocalHTM(float &HTMcut)
     Int_t bx = upgrade_->jetBx.at(ue);        		
     if(bx != 0) continue;
     Float_t pt = upgrade_->jetEt.at(ue);
-    if (pt >= L1Config["SumJetET"])
+    Float_t eta = upgrade_->jetEta.at(ue);
+    if (pt >= L1Config["SumJetET"] && fabs(eta) <= L1Config["SumJetEta"] )
     {
       TLorentzVector jet(0, 0,0,0);
       jet.SetPtEtaPhiE(upgrade_->jetEt.at(ue),
@@ -2225,3 +2232,37 @@ bool L1Menu2016::CheckBX(unsigned int currentBX) const
   }
   return true;
 }       // -----  end of function L1Menu2016::CheckBX  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CalLocalETM
+//  Description:  
+// ===========================================================================
+void L1Menu2016::CalLocalETM(float &ETMcut)
+{
+
+  if (!l1CaloTower_) return;
+
+  TVector2 revec(0,0);
+  
+  // Ignore Tower 28
+  const int ietamax = 28;
+  float metX =0;
+  float metY =0;
+
+
+  for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+    Int_t ieta = l1CaloTower_->ieta[jTower];
+    Int_t iphi = l1CaloTower_->iphi[jTower];
+    Int_t iet  = l1CaloTower_->iet[jTower];
+    Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
+    Double_t et = 0.5 * (Double_t)iet;
+    if( abs(ieta) < ietamax){
+      metX -= et * TMath::Cos(phi);
+      metY -= et * TMath::Sin(phi);
+    }
+  }
+
+  revec.Set(metX, metY);
+  ETMcut = revec.Mod();
+}       // -----  end of function L1Menu2016::CalLocalETM  -----
