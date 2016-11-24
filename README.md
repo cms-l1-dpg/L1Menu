@@ -7,8 +7,8 @@ Package to put together code and configuration file to prepare first version of 
 #### The Stage2 emulator and L1Ntuples package
 
 <pre><code>
-cmsrel CMSSW_8_0_11
-cd CMSSW_8_0_11/src
+cmsrel CMSSW_8_0_24
+cd CMSSW_8_0_24/src
 cmsenv
 git cms-init
 </code></pre>
@@ -26,13 +26,15 @@ make -j 9
 Beside the old code inherited from 2015 L1Menu, a new executable *testMenu2016* is rewritten for easier tunning process.
 
 <pre><code>
-$ ./testMenu2016 --help
+$ ./testMenu2016 -h
 Allowed options:
   -h [ --help ]                         produce help message
   -m [ --menufile ] arg (=menu/Menu_259721_TSGv3_FixPre_Mu18.txt)
                                         set the input menu
   -l [ --filelist ] arg (=ntuple/r259721_tsgv3.list)
                                         set the input ntuple list
+  -u [ --Lumilist ] arg (=menu/run_lumi.csv)
+                                        set the input lumi list
   -o [ --outfilename ] arg (=Auto)      set output file name
   -d [ --outputdir ] arg (=results)     set output directory
   -t [ --writetext ] arg (=1)           write rate to output
@@ -46,9 +48,11 @@ Allowed options:
   --doTnPMuon                           use tag & probe for muon efficiency
   --doPrintPU                           print out rate per PU to file
   --doCompuGT                           Compare emulation with uGT tree
+  --doScanLS                            Quickly scan files for selected LS
   -n [ --maxEvent ] arg (=-1)           run number of events; -1 for all
   -b [ --nBunches ] arg                 set number of bunches
   --SumJetET arg                        PT threshold of Jet for HT
+  --SumJetEta arg                       Eta threshold of Jet for HT
   --SetMuonER arg                       Set the ER in eta for Muon
   --SetNoPrescale                       Set all prescales to 1
   --UseUpgradeLyr1                      Use Upgrade Layer1 Tree
@@ -59,12 +63,14 @@ Allowed options:
   --SelectRun arg (=-1)                 Select specific run
   --SelectEvent arg (=-1)               Select specific event
   --SelectLS arg                        Select specific LS ranges
+  --SelectBX arg                        Select specific BX ranges
 </code></pre>
 
 #### Tips
 * `--nBunches float`: Positive number will be treated as number of colliding bunches for pre-deadtime rate estimation;
                    negative number will be treated as L1 and HLT ZB prescales for post-deadtime rate estimation.
 * `--SelectLS string`: SelectLS allows JSON-like format, like "[1, 30], [34, 40]"
+* `--SelectBX string`: SelectBX allows JSON-like format, like "[1, 30], [34, 40]"
 
 
 
