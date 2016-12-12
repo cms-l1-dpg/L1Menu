@@ -696,7 +696,7 @@ bool L1Menu2016::GetL1Event()
   L1AlgoFactory::SingleMuPt(L1Event.MuerPt, true, 2);
 
   //Sum
-  if (L1Config["SumJetET"] != 0 || L1Config["SumJetEta"] != -1)
+  if (L1Config["SumJetET"] != 0 || L1Config["SumJetEta"] != 999)
   {
     CalLocalHT(L1Event.HTT);
     CalLocalHTM(L1Event.HTM);
