@@ -35,11 +35,13 @@ int main ( int argc, char *argv[] )
   boost::program_options::options_description desc("Allowed options");
   const std::string defaultMenu = "menu/Menu_259721_TSGv3_FixPre_Mu18.txt";
   const std::string defaultntuple = "ntuple/r259721_tsgv3.list";
+  const std::string defaultLumi = "menu/run_lumi.csv";
 
   desc.add_options()
     ("help,h", "produce help message")
     ("menufile,m",     po::value<std::string>()->default_value(defaultMenu),   "set the input menu")
     ("filelist,l",     po::value<std::string>()->default_value(defaultntuple), "set the input ntuple list")
+    ("Lumilist,u",     po::value<std::string>()->default_value(defaultLumi),   "set the input lumi list")
     ("outfilename,o",  po::value<std::string>()->default_value("Auto"),        "set output file name")
     ("outputdir,d",    po::value<std::string>()->default_value("results"),     "set output directory")
     ("writetext,t",    po::value<bool>()->default_value(true),                 "write rate to output")
@@ -57,6 +59,7 @@ int main ( int argc, char *argv[] )
     ("maxEvent,n",     po::value<int>()->default_value(-1),                    "run number of events; -1 for all")
     ("nBunches,b",     po::value<float>(),                                     "set number of bunches")
     ("SumJetET",       po::value<int>(),                                       "PT threshold of Jet for HT")
+    ("SumJetEta",      po::value<float>(),                                     "Eta threshold of Jet for HT")
     ("SetMuonER",      po::value<float>(),                                     "Set the ER in eta for Muon")
     ("SetNoPrescale",  po::bool_switch()->default_value(false),                "Set all prescales to 1")
     ("UseUpgradeLyr1", po::bool_switch()->default_value(false),                "Use Upgrade Layer1 Tree")

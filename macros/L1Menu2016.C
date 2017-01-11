@@ -101,9 +101,8 @@ bool L1Menu2016::InitConfig()
 {
   L1Config["isData"] = 0;
   L1Config["SumJetET"] = 0;
-  L1Config["nBunches"] = 3965.4; //Scaling Run259721 to 1.15E34 Lumi
-  //L1Config["nBunches"] = 2736;
-  //L1Config["nBunches"] = 0;
+  L1Config["SumJetEta"] = 999;
+  L1Config["nBunches"] = 2592;  //default for 2017 nBunches
   L1Config["AveragePU"] = 0;
   L1Config["Energy"] = 0;
   L1Config["targetlumi"] = 0;
@@ -129,6 +128,7 @@ bool L1Menu2016::InitConfig()
   
   L1ConfigStr["SelectLS"] = "";
   L1ConfigStr["SelectBX"] = "";
+  L1ConfigStr["Lumilist"] = "";
 
   L1ObjectMap["Jet"] = &L1Event.JetPt;
   L1ObjectMap["JetC"] = &L1Event.JetCenPt;
@@ -157,6 +157,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.6);
   L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,false,18, 1.6);
   L1SeedFun["L1_DoubleMu0er1p25_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.25);
+  L1SeedFun["L1_DoubleMu0er1p0_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.25);
   L1SeedFun["L1_DoubleMu0er1p4_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.4);
   L1SeedFun["L1_DoubleMu_10_0_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18, 1.6);
   L1SeedFun["L1_DoubleMu0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 0.,0.,true, false);
@@ -292,16 +293,38 @@ bool L1Menu2016::BookHistogram()
   HistMap["All"]             = new TH1F("h_All","h_All",N128,-0.5,N128-0.5);
   HistMap["Pure"]           = new TH1F("h_Pure","h_Pure",N128,-0.5,N128-0.5);
 
-  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds", vL1Seed.size()+1, 0, vL1Seed.size(), vL1Seed.size()+1, 0, vL1Seed.size());
+  // Correlation among L1Seeds
+  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds", vL1Seed.size(), 0, vL1Seed.size(), vL1Seed.size(), 0, vL1Seed.size());
   for (unsigned int i = 0; i < vL1Seed.size(); ++i)
   {
     int bin = Hist2D["cor_Seeds"]->GetXaxis()->FindBin(i);
     Hist2D["cor_Seeds"]->GetXaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
     Hist2D["cor_Seeds"]->GetYaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
   }
-  Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block",10,-0.5,9.5,19,-0.5,9.5);
-  Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS",NPAGS,-0.5,(float)NPAGS-0.5,NPAGS,-0.5,(float)NPAGS-0.5);
-  Hist2D["cor_TRIGPHYS"]    = new TH2F("cor_TRIGPHYS","cor_TRIGPHYS",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5,NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
+
+  // Correlation among L1Seed type/Block/POG
+  Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block", POGMap.size(), 0, POGMap.size(), POGMap.size(), 0, POGMap.size());
+  for (unsigned int i = 0; i < POGMap.size(); ++i)
+  {
+    std::map<std::string, std::vector<int> >::iterator mapit = POGMap.begin();
+    std::advance(mapit, i);
+    std::string key = mapit-> first;
+    int bin = Hist2D["cor_Block"]->GetXaxis()->FindBin(i);
+    Hist2D["cor_Block"]->GetXaxis()->SetBinLabel(bin, key.c_str());
+    Hist2D["cor_Block"]->GetYaxis()->SetBinLabel(bin, key.c_str());
+  }
+
+  // Correlation among L1Seeds PAGs
+  Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS", PAGMap.size(), 0, PAGMap.size(), PAGMap.size(), 0, PAGMap.size());
+  for (unsigned int i = 0; i < PAGMap.size(); ++i)
+  {
+    std::map<std::string, std::vector<int> >::iterator mapit = PAGMap.begin();
+    std::advance(mapit, i);
+    std::string key = mapit-> first;
+    int bin = Hist2D["cor_PAGS"]->GetXaxis()->FindBin(i);
+    Hist2D["cor_PAGS"]->GetXaxis()->SetBinLabel(bin, key.c_str());
+    Hist2D["cor_PAGS"]->GetYaxis()->SetBinLabel(bin, key.c_str());
+  }
   return true;
 }       // -----  end of function L1Menu2016::BookHistogram  -----
 
@@ -673,7 +696,7 @@ bool L1Menu2016::GetL1Event()
   L1AlgoFactory::SingleMuPt(L1Event.MuerPt, true, 2);
 
   //Sum
-  if (L1Config["SumJetET"] != 0)
+  if (L1Config["SumJetET"] != 0 || L1Config["SumJetEta"] != 999)
   {
     CalLocalHT(L1Event.HTT);
     CalLocalHTM(L1Event.HTM);
@@ -682,7 +705,11 @@ bool L1Menu2016::GetL1Event()
     L1AlgoFactory::HTMVal(L1Event.HTM);
   }
 
-  L1AlgoFactory::ETMVal(L1Event.ETM);
+  if (L1Config["UseL1CaloTower"])
+    CalLocalETM(L1Event.ETM);
+  else
+    L1AlgoFactory::ETMVal(L1Event.ETM);
+
   L1AlgoFactory::ETTVal(L1Event.ETT);
 
   // Mulit
@@ -1142,6 +1169,9 @@ bool L1Menu2016::CheckPureFire()
 // ===========================================================================
 bool L1Menu2016::CheckPhysFire()
 {
+  std::set<std::string> eventPOG;
+  std::set<std::string> eventPAG;
+
   for(auto fired : FireSeed)
   {
     L1Seed &seed = mL1Seed[fired];
@@ -1149,14 +1179,25 @@ bool L1Menu2016::CheckPhysFire()
       //*outfile <<  event_->run <<","<<event_->lumi<<"," <<event_->event<<","<<seed.name << std::endl;
     for(auto pog : seed.POG)
     {
-      if (FiredPhy.insert(pog).second) PhyCounts[pog]++;
+      if (FiredPhy.insert(pog).second) 
+      {
+        eventPOG.insert(pog);
+        PhyCounts[pog]++;
+      }
     }
     for(auto pag : seed.PAG)
     {
-      if (FiredPhy.insert(pag).second) PhyCounts[pag]++;
+      if (FiredPhy.insert(pag).second) 
+      {
+        eventPAG.insert(pag);
+        PhyCounts[pag]++;
+      }
     }
   }
 
+  Fill2DCorrelations("cor_Seeds", FireSeed);
+  Fill2DCorrelations("cor_Block", eventPOG);
+  Fill2DCorrelations("cor_PAGS", eventPAG);
   return true;
 }       // -----  end of function L1Menu2016::CheckPhysFire  -----
 
@@ -1228,6 +1269,25 @@ bool L1Menu2016::FillDefHist2D()
   }
   return true;
 }       // -----  end of function L1Menu2016::FillDefHist2D  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::Fill2DCorrelations
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::Fill2DCorrelations(const std::string &histname, std::set<std::string> &event) const
+{
+
+  for(auto fire1 : event)
+  {
+    for(auto fire2 : event)
+    {
+      Hist2D.at(histname)->Fill(fire1.c_str(), fire2.c_str(), 1);
+    }
+
+  }
+  return true;
+}       // -----  end of function L1Menu2016::Fill2DCorrelations  -----
+
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::SetOutputName
 //  Description:  
@@ -1275,6 +1335,8 @@ bool L1Menu2016::ParseL1Seed(const std::string SeedName)
   if (ParseEGSum(SeedName)) return true;
 
   if (ParseEGStrategy(SeedName)) return true;
+
+  if (ParseETMJetdPhi(SeedName)) return true;
 
   if (ParseComplexSingleMu(SeedName)) return true;
   // EGMass
@@ -1567,6 +1629,30 @@ bool L1Menu2016::ParseEGStrategy(const std::string & SeedName)
 
   return false;
 }       // -----  end of function L1Menu2016::ParseEGStrategy  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ParseETMJetdPhi
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ParseETMJetdPhi(const std::string & SeedName)
+{
+  int ETMpt = -10;
+  int Jetpt = -10;
+  bool isCentral = false;
+
+  std::smatch base_match;
+  std::regex ETMJetdPhi("L1_ETM([0-9]+)_Jet([C]*)([0-9]+)_dPhi_Min0p4");
+  if (std::regex_match(SeedName, base_match, ETMJetdPhi))
+  {
+    ETMpt =  std::stoi(base_match[1].str(), nullptr);
+    isCentral = base_match.length(2) == 1;
+    Jetpt =  std::stoi(base_match[3].str(), nullptr);
+    L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::ETM_Jet, this, ETMpt, Jetpt, isCentral);
+    return true;
+  }
+
+  return false;
+}       // -----  end of function L1Menu2016::ParseETMJetdPhi  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::ParseMultiEGMass
@@ -2014,7 +2100,7 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
 // ===========================================================================
 bool L1Menu2016::ReadDataPU() 
 {
-  const std::string pucsv = "menu/run_lumi.csv";
+  const std::string pucsv = L1ConfigStr["Lumilist"];
   std::ifstream csvfile(pucsv);
   if (!csvfile)
   {
@@ -2050,7 +2136,8 @@ void L1Menu2016::CalLocalHT(float &HTTcut)
     Int_t bx = upgrade_->jetBx.at(ue);        		
     if(bx != 0) continue;
     Float_t pt = upgrade_->jetEt.at(ue);
-    if (pt >= L1Config["SumJetET"])
+    Float_t eta = upgrade_->jetEta.at(ue);
+    if (pt >= L1Config["SumJetET"] && fabs(eta) <= L1Config["SumJetEta"] )
       sumJetHt += pt;
   }
   HTTcut = sumJetHt;
@@ -2070,7 +2157,8 @@ void L1Menu2016::CalLocalHTM(float &HTMcut)
     Int_t bx = upgrade_->jetBx.at(ue);        		
     if(bx != 0) continue;
     Float_t pt = upgrade_->jetEt.at(ue);
-    if (pt >= L1Config["SumJetET"])
+    Float_t eta = upgrade_->jetEta.at(ue);
+    if (pt >= L1Config["SumJetET"] && fabs(eta) <= L1Config["SumJetEta"] )
     {
       TLorentzVector jet(0, 0,0,0);
       jet.SetPtEtaPhiE(upgrade_->jetEt.at(ue),
@@ -2144,3 +2232,37 @@ bool L1Menu2016::CheckBX(unsigned int currentBX) const
   }
   return true;
 }       // -----  end of function L1Menu2016::CheckBX  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::CalLocalETM
+//  Description:  
+// ===========================================================================
+void L1Menu2016::CalLocalETM(float &ETMcut)
+{
+
+  if (!l1CaloTower_) return;
+
+  TVector2 revec(0,0);
+  
+  // Ignore Tower 28
+  const int ietamax = 28;
+  float metX =0;
+  float metY =0;
+
+
+  for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+    Int_t ieta = l1CaloTower_->ieta[jTower];
+    Int_t iphi = l1CaloTower_->iphi[jTower];
+    Int_t iet  = l1CaloTower_->iet[jTower];
+    Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
+    Double_t et = 0.5 * (Double_t)iet;
+    if( abs(ieta) < ietamax){
+      metX -= et * TMath::Cos(phi);
+      metY -= et * TMath::Sin(phi);
+    }
+  }
+
+  revec.Set(metX, metY);
+  ETMcut = revec.Mod();
+}       // -----  end of function L1Menu2016::CalLocalETM  -----

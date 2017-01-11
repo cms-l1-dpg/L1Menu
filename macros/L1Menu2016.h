@@ -108,6 +108,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseEGSum(const std::string& SeedName);
     bool ParseComplexSingleMu(const std::string& SeedName);
     bool ParseEGStrategy(const std::string & SeedName);
+    bool ParseETMJetdPhi(const std::string & SeedName);
 
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);
@@ -149,8 +150,10 @@ class L1Menu2016 : public L1AlgoFactory
     bool RunMenu();
     bool FillDefHist1D();
     bool FillDefHist2D();
+    bool Fill2DCorrelations(const std::string &histname, std::set<std::string> &event) const;
     void CalLocalHT(float &HTTcut);
     void CalLocalHTM(float &HTMcut);
+    void CalLocalETM(float &ETMcut);
 
     // ====================  DATA MEMBERS  ===============================
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Configurations ~~~~~
