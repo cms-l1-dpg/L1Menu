@@ -15,7 +15,7 @@ git cms-init
 
 #### L1Menu DPG package for menu-making 
 <pre><code>
-git clone -b 2016-Tune git@github.com:cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
+git clone -b 2017-Tune git@github.com:cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
 cd L1TriggerDPG/L1Menu/macros
 make -j 9
 </code></pre>
