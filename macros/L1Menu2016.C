@@ -99,53 +99,53 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
 // ===========================================================================
 bool L1Menu2016::InitConfig()
 {
-  L1Config["isData"] = 0;
-  L1Config["SumJetET"] = 0;
-  L1Config["SumJetEta"] = 999;
-  L1Config["nBunches"] = 2592;  //default for 2017 nBunches
-  L1Config["AveragePU"] = 0;
-  L1Config["Energy"] = 0;
-  L1Config["targetlumi"] = 0;
-  L1Config["doPlotRate"] = 0;
-  L1Config["doPlotEff"] = 0;
-  L1Config["doPlotTest"] = 0;
-  L1Config["doPlotuGt"] = 0;  
-  L1Config["doTnPMuon"] = 0;
-  L1Config["doPlotLS"] = 0;
-  L1Config["doPrintPU"] = 0;
-  L1Config["doCompuGT"] = 0;
-  L1Config["maxEvent"] = -1;
-  L1Config["SetMuonER"] = -1;
-  L1Config["SetNoPrescale"] = 0;
+  L1Config["isData"]         = 0;
+  L1Config["SumJetET"]       = 0;
+  L1Config["SumJetEta"]      = 999;
+  L1Config["nBunches"]       = 2592; //default for 2017 nBunches
+  L1Config["AveragePU"]      = 0;
+  L1Config["Energy"]         = 0;
+  L1Config["targetlumi"]     = 0;
+  L1Config["doPlotRate"]     = 0;
+  L1Config["doPlotEff"]      = 0;
+  L1Config["doPlotTest"]     = 0;
+  L1Config["doPlotuGt"]      = 0;
+  L1Config["doTnPMuon"]      = 0;
+  L1Config["doPlotLS"]       = 0;
+  L1Config["doPrintPU"]      = 0;
+  L1Config["doCompuGT"]      = 0;
+  L1Config["maxEvent"]       = -1;
+  L1Config["SetMuonER"]      = -1;
+  L1Config["SetNoPrescale"]  = 0;
   L1Config["UseUpgradeLyr1"] = -1;
   L1Config["UseL1CaloTower"] = -1;
-  L1Config["SelectRun"] = -1;
-  L1Config["SelectEvent"] = -1;
+  L1Config["SelectRun"]      = -1;
+  L1Config["SelectEvent"]    = -1;
   L1Config["UsePFMETNoMuon"] = 0;
   L1Config["UseuGTDecision"] = 0;
-  L1Config["UseUnpackTree"] = 0;
-  L1Config["doScanLS"] = 0;
+  L1Config["UseUnpackTree"]  = 0;
+  L1Config["doScanLS"]       = 0;
   
   L1ConfigStr["SelectLS"] = "";
   L1ConfigStr["SelectBX"] = "";
   L1ConfigStr["Lumilist"] = "";
 
-  L1ObjectMap["Jet"] = &L1Event.JetPt;
-  L1ObjectMap["JetC"] = &L1Event.JetCenPt;
-  L1ObjectMap["Tau"] = &L1Event.TauPt;
-  L1ObjectMap["Tauer"] = &L1Event.TauerPt;
-  L1ObjectMap["IsoTau"] = &L1Event.IsoTauPt;
-  L1ObjectMap["EG"] = &L1Event.EGPt;
-  L1ObjectMap["EGer"] = &L1Event.EGerPt;
-  L1ObjectMap["IsoEG"] = &L1Event.IsoEGPt;
+  L1ObjectMap["Jet"]     = &L1Event.JetPt;
+  L1ObjectMap["JetC"]    = &L1Event.JetCenPt;
+  L1ObjectMap["Tau"]     = &L1Event.TauPt;
+  L1ObjectMap["Tauer"]   = &L1Event.TauerPt;
+  L1ObjectMap["IsoTau"]  = &L1Event.IsoTauPt;
+  L1ObjectMap["EG"]      = &L1Event.EGPt;
+  L1ObjectMap["EGer"]    = &L1Event.EGerPt;
+  L1ObjectMap["IsoEG"]   = &L1Event.IsoEGPt;
   L1ObjectMap["IsoEGer"] = &L1Event.IsoEGerPt;
-  L1ObjectMap["Mu"] = &L1Event.MuPt;
-  L1ObjectMap["MuOpen"] = &L1Event.MuOpenPt;
-  L1ObjectMap["Muer"] = &L1Event.MuerPt;
-  L1ObjectMap["HTT"] = &L1Event.HTT;
-  L1ObjectMap["HTM"] = &L1Event.HTM;
-  L1ObjectMap["ETM"] = &L1Event.ETM;
-  L1ObjectMap["ETT"] = &L1Event.ETT;
+  L1ObjectMap["Mu"]      = &L1Event.MuPt;
+  L1ObjectMap["MuOpen"]  = &L1Event.MuOpenPt;
+  L1ObjectMap["Muer"]    = &L1Event.MuerPt;
+  L1ObjectMap["HTT"]     = &L1Event.HTT;
+  L1ObjectMap["HTM"]     = &L1Event.HTM;
+  L1ObjectMap["ETM"]     = &L1Event.ETM;
+  L1ObjectMap["ETT"]     = &L1Event.ETT;
 
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Map to old func for now. ~~~~~
@@ -265,65 +265,9 @@ bool L1Menu2016::InitConfig()
 // ===========================================================================
 bool L1Menu2016::BookHistogram()
 {
-
-  Int_t Nbin_max = 50;
-  const Int_t NPAGS = 7;
-  const Int_t NTRIGPHYS = 6;
-  const Int_t N128 = 128;			// could be > 128 for "test seeds"
-
-  HistMap["Cross"]           = new TH1F("h_Cross","h_Cross",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["MultiCross"]      = new TH1F("h_MultiCross","h_MultiCross",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["Sums"]            = new TH1F("h_Sums","h_Sums",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["Jets"]            = new TH1F("h_Jets","h_Jets",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["MultiJets"]       = new TH1F("h_MultiJets","h_MultiJets",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["EG"]          = new TH1F("h_Egamma","h_Egamma",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["MultiEG"]     = new TH1F("h_MultiEgamma","h_MultiEgamma",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["Muons"]           = new TH1F("h_Muons","h_Muons",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["MultiMuons"]      = new TH1F("h_MultiMuons","h_MultiMuons",Nbin_max,-0.5,(float)Nbin_max-0.5);
-  HistMap["Technical"]       = new TH1F("h_Technical","h_Technical",Nbin_max,-0.5,(float)Nbin_max-0.5);
-
-  HistMap["Block"]           = new TH1F("h_Block","h_Block",11,-0.5,10.5);
-
-  HistMap["PAGS_pure"]       = new TH1F("h_PAGS_pure","h_PAGS_pure",NPAGS,-0.5,(float)NPAGS-0.5);
-  HistMap["PAGS_shared"]     = new TH1F("h_PAGS_shared","h_PAGS_shared",NPAGS,-0.5,(float)NPAGS-0.5);
-
-  HistMap["TRIGPHYS_pure"]   = new TH1F("h_TRIGPHYS_pure","h_TRIGPHYS_pure",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
-  HistMap["TRIGPHYS_shared"] = new TH1F("h_TRIGPHYS_shared","h_TRIGPHYS_shared",NTRIGPHYS,-0.5,(float)NTRIGPHYS-0.5);
-
-  HistMap["All"]             = new TH1F("h_All","h_All",N128,-0.5,N128-0.5);
-  HistMap["Pure"]           = new TH1F("h_Pure","h_Pure",N128,-0.5,N128-0.5);
-
-  // Correlation among L1Seeds
-  Hist2D["cor_Seeds"]       = new TH2F("cor_Seeds","cor_Seeds", vL1Seed.size(), 0, vL1Seed.size(), vL1Seed.size(), 0, vL1Seed.size());
-  for (unsigned int i = 0; i < vL1Seed.size(); ++i)
+  for(auto col : ColumnMap)
   {
-    int bin = Hist2D["cor_Seeds"]->GetXaxis()->FindBin(i);
-    Hist2D["cor_Seeds"]->GetXaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
-    Hist2D["cor_Seeds"]->GetYaxis()->SetBinLabel(bin, vL1Seed.at(i).c_str());
-  }
-
-  // Correlation among L1Seed type/Block/POG
-  Hist2D["cor_Block"]       = new TH2F("cor_Block","cor_Block", POGMap.size(), 0, POGMap.size(), POGMap.size(), 0, POGMap.size());
-  for (unsigned int i = 0; i < POGMap.size(); ++i)
-  {
-    std::map<std::string, std::vector<int> >::iterator mapit = POGMap.begin();
-    std::advance(mapit, i);
-    std::string key = mapit-> first;
-    int bin = Hist2D["cor_Block"]->GetXaxis()->FindBin(i);
-    Hist2D["cor_Block"]->GetXaxis()->SetBinLabel(bin, key.c_str());
-    Hist2D["cor_Block"]->GetYaxis()->SetBinLabel(bin, key.c_str());
-  }
-
-  // Correlation among L1Seeds PAGs
-  Hist2D["cor_PAGS"]        = new TH2F("cor_PAGS","cor_PAGS", PAGMap.size(), 0, PAGMap.size(), PAGMap.size(), 0, PAGMap.size());
-  for (unsigned int i = 0; i < PAGMap.size(); ++i)
-  {
-    std::map<std::string, std::vector<int> >::iterator mapit = PAGMap.begin();
-    std::advance(mapit, i);
-    std::string key = mapit-> first;
-    int bin = Hist2D["cor_PAGS"]->GetXaxis()->FindBin(i);
-    Hist2D["cor_PAGS"]->GetXaxis()->SetBinLabel(bin, key.c_str());
-    Hist2D["cor_PAGS"]->GetYaxis()->SetBinLabel(bin, key.c_str());
+    col.second->BookHistogram();
   }
   return true;
 }       // -----  end of function L1Menu2016::BookHistogram  -----
@@ -334,17 +278,10 @@ bool L1Menu2016::BookHistogram()
 // ===========================================================================
 bool L1Menu2016::WriteHistogram() 
 {
-
-  outrootfile->cd();
-  for(auto h : HistMap)
+  for(auto col : ColumnMap)
   {
-    h.second->Write();
+    col.second->WriteHistogram(outrootfile);
   }
-  for(auto h : Hist2D)
-  {
-    h.second->Write();
-  }
-
   return true;
 }       // -----  end of function L1Menu2016::WriteHistogram  -----
 
@@ -357,9 +294,7 @@ bool L1Menu2016::ReadMenu()
   mL1Seed.clear();
 
   //Read the prescales table
-  boost::char_separator<char> sep(",");
   std::ifstream menufile(menufilename);
-  std::string line;
   if (!menufile)
   {
     std::cout << "MenuFile "<<menufilename<<" is not found !"<<std::endl;
@@ -368,6 +303,31 @@ bool L1Menu2016::ReadMenu()
 
   if (writefiles)
     *outfile <<  "---------------------------- Input Menu -------------------------" << std::endl;
+
+  if (menufilename.find_last_of("txt")!= std::string::npos)
+    ReadMenuTXT(menufile);
+  else if (menufilename.find_last_of("csv")!= std::string::npos)
+    ReadMenuCSV(menufile);
+  else
+  {
+    std::cout << "Can not understand MenuFile "<<menufilename<<"! Please provide TXT or CSV format."<<std::endl;
+    return false;
+  }
+
+  if (writefiles)
+    *outfile <<  "---------------------------- Input Menu -------------------------" <<std::endl << std::endl;
+
+  return true;
+}       // -----  end of function L1Menu2016::ReadMenu  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ReadMenuTXT
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
+{
+  boost::char_separator<char> sep(",");
+  std::string line;
 
   while (std::getline(menufile, line))
   {
@@ -407,10 +367,7 @@ bool L1Menu2016::ReadMenu()
     temp.name = seed;
     temp.bit = bit;
     temp.comment = comline;
-    if (prescale < 0)
-      temp.prescale = INFTY;
-    else
-      temp.prescale = prescale;
+    temp.prescale = prescale;
 
     if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
       temp.prescale = 1;
@@ -438,14 +395,65 @@ bool L1Menu2016::ReadMenu()
     }
 
     mL1Seed[seed] = temp;
-
   }
-  
-  if (writefiles)
-    *outfile <<  "---------------------------- Input Menu -------------------------" <<std::endl << std::endl;
+  return true;
+}       // -----  end of function L1Menu2016::ReadMenuTXT  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::ReadMenuCSV
+//  Description:  To be finished
+// ===========================================================================
+bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
+{
+
+  // Get the first line
+  std::string line;
+  while (std::getline(menufile, line))
+    std::cout << "-------" << line << std::endl;
+  //tokenizer tokens(line, sep);
+  //boost::char_separator<char> sep(",");
+  //for(auto i : tokens)
+  //{
+    //std::cout << i << std::endl;
+  //}
+
 
   return true;
-}       // -----  end of function L1Menu2016::ReadMenu  -----
+}       // -----  end of function L1Menu2016::ReadMenuCSV  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::FormPrescaleColumns
+//  Description:  
+// ===========================================================================
+bool L1Menu2016::FormPrescaleColumns()
+{
+  std::vector<std::string> VarSeeds;
+  for(auto &seed : mL1Seed)
+  {
+    if (seed.second.prescale < 0)
+    {
+      VarSeeds.push_back(seed.first);
+      std::cout << "Varing " << seed.first << std::endl;
+    }
+  }
+ 
+  const int varSize = VarSeeds.size();
+  int varCounts = 1 << varSize;
+  for (int i = 0; i < varCounts; ++i)
+  {
+    std::map<std::string, L1Seed> tempL1Seed = mL1Seed;
+    for (int j = 0; j < varSize; ++j)
+    {
+      tempL1Seed.at(VarSeeds.at(j)).prescale = (i & 1 << j) > 0 ; 
+    }
+    ColumnMap[i] = new PreColumn(i, tempL1Seed);
+    ColumnMap[i]->PassRelation( vL1Seed, BitMap, POGMap, PAGMap);
+  }
+
+  std::cout << "In total ColumnMap "<< ColumnMap.size() << std::endl;
+  return true;
+}       // -----  end of function L1Menu2016::FormPrescaleColumns  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::ReadFilelist
@@ -601,16 +609,18 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
 {
   GetRunConfig(config, configstr);
 
+  //Prepare Menu
   ReadMenu();
   BuildRelation();
   L1SeedFunc();
+  FormPrescaleColumns();
 
   OpenWithList(tuplefilename);
-  BookHistogram();
 
   // Set the Run Config as highest priority
   GetRunConfig(config, configstr);
   PrintConfig();
+  BookHistogram();
   
   if (writeplots)
   {
@@ -737,7 +747,6 @@ bool L1Menu2016::Loop()
   //Int_t nevents = fChain->GetEntriesFast();//GetEntries();
   unsigned int currentLumi(-1);
   nZeroBiasevents = 0.;
-  nFireevents = 0.;
   int i = -1;
   nLumi.clear();
   bool skipLS = false;
@@ -776,7 +785,9 @@ bool L1Menu2016::Loop()
     }
 
     if (i % 200000 == 0)
+    {
       std::cout << "Processed " << i << " events." << std::endl;
+    }
 
     //Use Final decision by default, unless for PlotLS
     if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
@@ -785,9 +796,7 @@ bool L1Menu2016::Loop()
     nZeroBiasevents++;
 
     GetL1Event();
-
-    if (RunMenu())
-      nFireevents++;
+    RunMenu();
 
     if (L1Config["doPlotLS"])
       FillLumiSection(currentLumi);
@@ -817,18 +826,21 @@ bool L1Menu2016::PostLoop()
 {
   scale = CalScale(0, 0, true);
 
-  std::cout << "Summary" << std::endl;
+  std::cout << "==================================== Summary" << std::endl;
 
-  for(auto &seed : mL1Seed)
+  for(auto col : ColumnMap)
   {
-    seed.second.firerate = seed.second.firecounts *scale;
-    seed.second.firerateerror = sqrt(seed.second.firecounts)*scale;
-    seed.second.purerate = seed.second.purecounts *scale;
+    col.second->CalRate(scale);
+    col.second->FillDefHist1D(scale);
+    col.second->FillDefHist2D(scale);
   }
   
-  FillDefHist1D();
-  FillDefHist2D();
-  PrintRates(std::cout);
+  if (ColumnMap.size() == 1)
+    PrintRates(std::cout);
+  else{
+    for(auto col : ColumnMap)
+      col.second->PrintMenuRate(scale);
+  }
   if (writefiles)
     PrintRates(*outfile);
   PrintCSV(*outcsv);
@@ -856,23 +868,20 @@ bool L1Menu2016::PostLoop()
 // ===========================================================================
 bool L1Menu2016::PrintPUCSV()
 {
-  const int nBunches = 2736;
+  //const int nBunches = 2736;
   std::fstream pucsv (outputdir + "/" + outputname+"_PU" +".csv", std::fstream::out );
-  pucsv <<"L1Seed,PileUp,Fired,Total,Rate,Error"<<std::endl;
-  for(auto l1seed : L1PUCount)
-  {
-    if (l1seed.first == "Count") continue;
-    if (l1seed.first.find("L1A_") !=std::string::npos) continue;
 
-    for(auto pu : l1seed.second)
-    {
-      pucsv << l1seed.first <<","<< pu.first <<","
-        <<pu.second<<","
-        <<L1PUCount["Count"][pu.first]<<","
-        <<pu.second * CalScale(L1PUCount["Count"][pu.first], nBunches) <<","
-        <<sqrt(pu.second) * CalScale(L1PUCount["Count"][pu.first], nBunches)
-        <<std::endl;
-    }
+  // L1Seeds
+  std::vector<std::string> csvout;
+  for(auto col : ColumnMap)
+  {
+    col.second->PrintPUCSV(csvout);
+  }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Writing out to file ~~~~~
+  for(auto i : csvout)
+  {
+    pucsv << i <<std::endl;
   }
   pucsv.close();
 
@@ -885,68 +894,10 @@ bool L1Menu2016::PrintPUCSV()
 // ===========================================================================
 bool L1Menu2016::PrintRates(std::ostream &out)
 {
-  
-  float totalrate = 0.;
-  float totalpurerate = 0.;
-  bool bybit = true;
-  std::size_t L1NameLength = 0;
-  for(auto k : mL1Seed)
+  for(auto col : ColumnMap)
   {
-    L1NameLength = k.first.size() > L1NameLength ? k.first.size() : L1NameLength;
+    col.second->PrintRates(out, scale);
   }
-
-  out << std::left
-      << std::setw(10)             << "L1Bit"
-      << std::setw(L1NameLength+2) << "L1SeedName"
-      << std::setw(10)             << "pre-scale"
-      << std::setw(10)             << "rate@13TeV"       << " +/- "
-      << std::setw(20)             << "error_rate@13TeV"
-      << std::setw(10)             << "pure@13TeV"       
-      << "Comments"
-      << std::endl;
-
-  if (bybit)
-  {
-    for(auto i : BitMap)
-    {
-      auto seed = mL1Seed[i.second];
-      out << std::left
-          << std::setw(10)             << seed.bit
-          << std::setw(L1NameLength+2) << seed.name
-          << std::setw(10)             << seed.prescale
-          << std::setw(10)             << seed.firerate      << " +/- "
-          << std::setw(20)             << seed.firerateerror
-          << std::setw(10)             << seed.purerate      
-          << seed.comment
-          << std::endl;
-      totalrate +=seed.firerate;
-      totalpurerate +=seed.purerate;
-    }
-    
-  }
-  else{
-    for(auto seed : mL1Seed)
-    {
-      out << std::left
-          << std::setw(10)             << seed.second.bit
-          << std::setw(L1NameLength+2) << seed.first
-          << std::setw(10)             << seed.second.prescale
-          << std::setw(10)             << seed.second.firerate      << " +/- "
-          << std::setw(20)             << seed.second.firerateerror
-          << std::setw(10)             << seed.second.purerate      
-          << seed.second.comment
-          << std::endl;
-      totalrate +=seed.second.firerate;
-      totalpurerate +=seed.second.purerate;
-    }
-
-  }
-
-
-  out << std::endl << "Total rate  = " << nFireevents / 1000 * scale 
-    <<" +/- " << sqrt(nFireevents) * scale / 1000 << " (kHz)" << std::endl;
-  out << std::endl << "Total rate (with overlaps) = " << totalrate / 1000 << " (kHz)" << std::endl;
-  out << std::endl << "Total pure rate  = " << totalpurerate / 1000 <<" (kHz)" << std::endl;
   return true;
 }       // -----  end of function L1Menu2016::PrintRates  -----
 
@@ -995,18 +946,6 @@ bool L1Menu2016::BuildRelation()
     vL1Seed.push_back(bitm.second);
   }
 
-  // Total
-  for(auto& pog : POGMap)
-  {
-    PhyCounts[pog.first] = 0;
-    PhyPureCounts[pog.first] = 0;
-  }
-  for(auto& pag : PAGMap)
-  {
-    PhyCounts[pag.first] = 0;
-    PhyPureCounts[pag.first] = 0;
-  }
-
   return true;
 }       // -----  end of function L1Menu2016::BuildRelation  -----
 
@@ -1031,60 +970,6 @@ bool L1Menu2016::L1SeedFunc()
 }       // -----  end of function L1Menu2016::L1SeedFunc  -----
 
 
-void L1Menu2016::CorrectScale(TH1* h, Float_t scal) {
-
-  Int_t nbins = h -> GetNbinsX();
-
-  for (Int_t i=1; i<= nbins; i++)  {
-    Float_t val = h -> GetBinContent(i);
-    Float_t er = sqrt(val);
-    val = val * scal;
-    er = er * scal;
-    h -> SetBinContent(i,val);
-    h -> SetBinError(i,er);
-  }
-}
-
-bool L1Menu2016::InsertInMenu(std::string L1name, bool value) {
-
-
-  bool post_prescale = false;
-
-  if ( mL1Seed.find(L1name) == mL1Seed.end() ) {
-    std::cout << "This shouldn't happen!" << std::endl;
-    return false;
-  }
-
-  mL1Seed[L1name].eventfire = false;
-  if (value)
-    mL1Seed[L1name].ncounts++;
-
-  if (mL1Seed[L1name].prescale == 0)
-    return true;
-
-  if ( mL1Seed[L1name].ncounts % mL1Seed[L1name].prescale == 0) 
-    post_prescale = value; 
-
-  mL1Seed[L1name].eventfire = post_prescale;
-  if (post_prescale)
-  {
-    mL1Seed[L1name].firecounts++;
-    FireSeed.insert(L1name);
-  }
-
-  return true;
-}
-
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::BindAlgo
-//  Description:  
-// ===========================================================================
-bool L1Menu2016::BindAlgo() 
-{
-
-  return true;
-}       // -----  end of function L1Menu2016::BindAlgo  -----
-
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::CheckL1Seed
 //  Description:  /* cursor */
@@ -1104,102 +989,36 @@ bool L1Menu2016::CheckL1Seed(const std::string L1Seed)
 // ===========================================================================
 bool L1Menu2016::RunMenu()
 {
-  FireSeed.clear();
-  FiredPhy.clear();
+  for(auto col : ColumnMap)
+  {
+    col.second->EventReset();
+  }
+
   for(auto& seed: mL1Seed)
   {
+    bool IsFired = false;
     if (L1Config["UseuGTDecision"])
     {
       assert(l1uGT != NULL);
-      InsertInMenu(seed.first, l1uGT->GetuGTDecision(seed.first));
+      IsFired = l1uGT->GetuGTDecision(seed.first);
     }
     else
-      InsertInMenu(seed.first, CheckL1Seed(seed.first));
+      IsFired = CheckL1Seed(seed.first);
+
+    for(auto col : ColumnMap)
+    {
+      col.second->InsertInMenu(seed.first, IsFired);
+    }
   }
 
-  CheckPhysFire();
-  CheckPureFire();
+  for(auto col : ColumnMap)
+  {
+    col.second->CheckCorrelation();
+  }
 
-  return FireSeed.size() > 0;
+  return true;
 }       // -----  end of function L1Menu2016::RunMenu  -----
 
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::CheckPureFire
-//  Description:  
-// ===========================================================================
-bool L1Menu2016::CheckPureFire() 
-{
-  // Trigger path pure rate
-  if (FireSeed.size() == 1) 
-    mL1Seed[*(FireSeed.begin())].purecounts++;
-
-  // POG pure rate
-  std::set<std::string> POGset;
-  for(auto fireit : FireSeed)
-  {
-    for(auto &pog : mL1Seed[fireit].POG)
-    {
-      POGset.insert(pog);
-    }
-  }
-  if (POGset.size() == 1)
-  {
-    PhyPureCounts[*(POGset.begin())]++;
-  }
-
-  std::set<std::string> PAGset;
-  for(auto fireit : FireSeed)
-  {
-    for(auto &pag : mL1Seed[fireit].PAG)
-    {
-      PAGset.insert(pag);
-    }
-  }
-  if (PAGset.size() == 1)
-  {
-    PhyPureCounts[*(PAGset.begin())]++;
-  }
-
-  return true;
-}       // -----  end of function L1Menu2016::CheckPureFire  -----
-
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::CheckPhysFire
-//  Description:  
-// ===========================================================================
-bool L1Menu2016::CheckPhysFire()
-{
-  std::set<std::string> eventPOG;
-  std::set<std::string> eventPAG;
-
-  for(auto fired : FireSeed)
-  {
-    L1Seed &seed = mL1Seed[fired];
-    //if (writefiles)
-      //*outfile <<  event_->run <<","<<event_->lumi<<"," <<event_->event<<","<<seed.name << std::endl;
-    for(auto pog : seed.POG)
-    {
-      if (FiredPhy.insert(pog).second) 
-      {
-        eventPOG.insert(pog);
-        PhyCounts[pog]++;
-      }
-    }
-    for(auto pag : seed.PAG)
-    {
-      if (FiredPhy.insert(pag).second) 
-      {
-        eventPAG.insert(pag);
-        PhyCounts[pag]++;
-      }
-    }
-  }
-
-  Fill2DCorrelations("cor_Seeds", FireSeed);
-  Fill2DCorrelations("cor_Block", eventPOG);
-  Fill2DCorrelations("cor_PAGS", eventPAG);
-  return true;
-}       // -----  end of function L1Menu2016::CheckPhysFire  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::CalScale
@@ -1228,65 +1047,6 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_, bool print)
   return scale;
 }       // -----  end of function L1Menu2016::CalScale  -----
 
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::FillDefHist1D
-//  Description:  Fill in the redantant Histogram, for comparison with the old
-//  code
-// ===========================================================================
-bool L1Menu2016::FillDefHist1D()
-{
-  for(auto pog : POGMap)
-  {
-    if (HistMap.find(pog.first) == HistMap.end())
-      continue;
-    //Sort by bit
-    std::sort( pog.second.begin(), pog.second.end());
-    int binidx =1;
-    for(auto l1bit : pog.second)
-    {
-      std::string l1name = BitMap[l1bit];
-      std::cout << l1bit << " " << l1name<< std::endl;
-      HistMap[pog.first]->GetXaxis()->SetBinLabel(binidx, l1name.c_str());
-      HistMap[pog.first]->SetBinContent(binidx, mL1Seed[l1name].firecounts);
-      binidx++;
-    }
-    //assert(binidx == pog.second.size());
-    CorrectScale(HistMap[pog.first], scale);
-  }
-
-  return true;
-}       // -----  end of function L1Menu2016::FillDefHist1D  -----
-
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::FillDefHist2D
-//  Description:  
-// ===========================================================================
-bool L1Menu2016::FillDefHist2D()
-{
-  for(auto h2d : Hist2D)
-  {
-    CorrectScale(h2d.second, scale);
-  }
-  return true;
-}       // -----  end of function L1Menu2016::FillDefHist2D  -----
-
-// ===  FUNCTION  ============================================================
-//         Name:  L1Menu2016::Fill2DCorrelations
-//  Description:  
-// ===========================================================================
-bool L1Menu2016::Fill2DCorrelations(const std::string &histname, std::set<std::string> &event) const
-{
-
-  for(auto fire1 : event)
-  {
-    for(auto fire2 : event)
-    {
-      Hist2D.at(histname)->Fill(fire1.c_str(), fire2.c_str(), 1);
-    }
-
-  }
-  return true;
-}       // -----  end of function L1Menu2016::Fill2DCorrelations  -----
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::SetOutputName
@@ -1918,7 +1678,7 @@ bool L1Menu2016::FillLumiSection(int currentLumi)
 bool L1Menu2016::FillPileUpSec()
 {
   float pu = -1;
-  bool eFired = false;
+  //bool eFired = false;
   // Data
   if (event_->run > 1 && DataLSPU.find(event_->run) != DataLSPU.end())
   {
@@ -1931,80 +1691,13 @@ bool L1Menu2016::FillPileUpSec()
   // MC
   if (event_->run == 1)
   {
-    //pu = event_->event
+    pu = event_->nPV;
   }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ L1Seed ~~~~~
-  for(auto l1 : mL1Seed)
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Fill Rate per PU ~~~~~
+  for(auto col : ColumnMap)
   {
-    if(L1PUCount[l1.first].find(pu) == L1PUCount[l1.first].end())
-    {
-      L1PUCount[l1.first][pu] = 0;
-    }
-    if (l1.second.eventfire)
-    {
-      eFired= true;
-      L1PUCount[l1.first][pu]++;
-    }
-  }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ POG ~~~~~
-  std::set<std::string> POGset;
-  for(auto& pog : POGMap)
-  {
-    std::string l1pog = "L1T_"+pog.first;
-    std::string l1pogpure = "L1T_Pure"+pog.first;
-    if(L1PUCount[l1pog].find(pu) == L1PUCount[l1pog].end())
-    {
-      L1PUCount[l1pog][pu] = 0;
-    }
-    if(L1PUCount[l1pogpure].find(pu) == L1PUCount[l1pogpure].end())
-    {
-      L1PUCount[l1pogpure][pu] = 0;
-    }
-
-    if (FiredPhy.find(pog.first) != FiredPhy.end())
-    {
-      L1PUCount[l1pog][pu] ++;
-      POGset.insert(pog.first);
-    }
-  }
-  if (POGset.size() == 1)
-  {
-    std::string l1pogpure = "L1T_Pure"+*(POGset.begin());
-    L1PUCount[l1pogpure][pu]++;
-  }
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PAG ~~~~~
-  std::set<std::string> PAGset;
-  for(auto& pag : PAGMap)
-  {
-    std::string l1pag = "L1A_"+pag.first;
-    std::string l1pagpure = "L1A_Pure"+pag.first;
-    if(L1PUCount[l1pag].find(pu) == L1PUCount[l1pag].end())
-    {
-      L1PUCount[l1pag][pu] = 0;
-    }
-    if(L1PUCount[l1pagpure].find(pu) == L1PUCount[l1pagpure].end())
-    {
-      L1PUCount[l1pagpure][pu] = 0;
-    }
-    if (FiredPhy.find(pag.first) != FiredPhy.end())
-    {
-      L1PUCount[l1pag][pu] ++;
-      PAGset.insert(pag.first);
-    }
-  }
-  if (PAGset.size() == 1)
-  {
-    std::string l1pagpure = "L1A_Pure"+*(PAGset.begin());
-    L1PUCount[l1pagpure][pu]++;
-  }
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Total ~~~~~
-  L1PUCount["Count"][pu]++;
-  if (eFired)
-  {
-    L1PUCount["L1APhysics"][pu]++;
+    col.second->FillPileUpSec(pu);
   }
 
   return true;
@@ -2017,79 +1710,60 @@ bool L1Menu2016::FillPileUpSec()
 bool L1Menu2016::PrintCSV(std::ostream &out)
 {
   if (!writecsv) return false;
-  out << "L1Bit"
-      << "," << "L1SeedName"
-      << "," << "pre-scale"
-      << "," << "rate"
-      << "," << "error_rate"
-      << "," << "pure"       
-      << "," << "Comments"
-      << std::endl;
 
-
-  bool bybit = true;
-  float totalrate = 0.;
-  float totalpurerate = 0.;
-
-  if (bybit)
+  // L1Seeds
+  std::vector<std::string> csvout;
+  std::stringstream ss;
+  ss << "L1Bit"         
+    << "," << "L1SeedName"<< "," ;
+  csvout.push_back(ss.str());
+  for(auto seed : mL1Seed)
   {
-    for(auto i : BitMap)
-    {
-      auto seed = mL1Seed[i.second];
-      out << seed.bit
-        << "," << seed.name
-        << "," << seed.prescale
-        << "," << seed.firerate     
-        << "," << seed.firerateerror
-        << "," << seed.purerate      
-        << ",\""<<seed.comment<<"\""
-        << std::endl;
-      totalrate +=seed.firerate;
-      totalpurerate +=seed.purerate;
-    }
-  } else{
-    for(auto seed : mL1Seed)
-    {
-      out << seed.second.bit
-          << "," << seed.first
-          << "," << seed.second.prescale
-          << "," << seed.second.firerate
-          << "," << seed.second.firerateerror
-          << "," << seed.second.purerate      
-          << ",\""<<seed.second.comment<<"\""
-          << std::endl;
-      totalrate +=seed.second.firerate;
-      totalpurerate +=seed.second.purerate;
-    }
+    ss.str("");
+    ss << seed.second.bit
+      << "," << seed.first<< "," ;
+    csvout.push_back(ss.str());
   }
-  
-  out << std::endl;
 
-  out << "L1Type"
-      << "," << "rate(kHz)"
-      << "," << "error_rate(kHz)"
-      << "," << "pure(kHz)"       
-      << "," << "error_rate(kHz)"
-      << std::endl;
+  // POG
+  ss.str("");
+  csvout.push_back(ss.str());
 
+  int idx = 1000;
   for(auto pog : POGMap)
   {
-    out << pog.first 
-      <<","<< PhyCounts[pog.first]           *scale / 1000.
-      <<","<< sqrt(PhyCounts[pog.first])     *scale / 1000.
-      <<","<< PhyPureCounts[pog.first]       *scale / 1000.
-      <<","<< sqrt(PhyPureCounts[pog.first]) *scale / 1000.
-      << std::endl;
+  ss.str("");
+  ss << idx++ << "," << pog.first <<",";
+  csvout.push_back(ss.str());
   }
-  out << std::endl;
 
-  out << std::endl;
-  out << std::endl << "Total rate  = " << nFireevents / 1000 * scale 
-    <<" +/- " << sqrt(nFireevents) * scale / 1000 << " (kHz)" << std::endl;
-  out << std::endl;
-  out << std::endl << "Total rate (with overlaps) = " << totalrate / 1000 << " (kHz)" << std::endl;
-  out << std::endl;
-  out << std::endl << "Total pure rate  = " << totalpurerate / 1000 <<" (kHz)" << std::endl;
+  // PAG
+  ss.str("");
+  csvout.push_back(ss.str());
+
+  idx = 2000;
+  for(auto pag : PAGMap)
+  {
+    ss.str("");
+    ss << idx++ << "," << pag.first <<",";
+    csvout.push_back(ss.str());
+  }
+
+  // Total
+  csvout.push_back("");
+  csvout.push_back("9999,Total rate,");
+
+  for(auto col : ColumnMap)
+  {
+    col.second->PrintCSV(csvout, scale);
+  }
+
+ 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Writing out to file ~~~~~
+  for(auto i : csvout)
+  {
+    out << i <<std::endl;
+  }
   return true;
 }       // -----  end of function L1Menu2016::PrintCSV  -----
 

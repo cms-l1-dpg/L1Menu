@@ -23,7 +23,7 @@ ifneq ($(shell echo $$CMSSW_BASE), )
 		  -lboost_program_options -lboost_filesystem
 endif
 
-TestOBJS = L1Ntuple L1AlgoFactory L1Menu2016 L1Plot L1TnP L1uGT
+TestOBJS = L1Ntuple L1AlgoFactory L1Menu2016 L1Plot L1TnP L1uGT PreColumn
 OBJS := $(TestOBJS:%=$(ODIR)/%.o)
 
 PROGRAM = testMenu2016 RunL1Menu2016

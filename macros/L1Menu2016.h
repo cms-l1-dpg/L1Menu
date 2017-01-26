@@ -42,6 +42,7 @@
 #include "L1TnP.h"
 #include "L1uGT.h"
 #include "L1Struct.h"
+#include "PreColumn.h"
 
 #define INFTY 262139
 typedef boost::tokenizer<boost::char_separator<char> > tokenizer;
@@ -64,11 +65,10 @@ class L1Menu2016 : public L1AlgoFactory
   public:
 
     // ====================  LIFECYCLE     ===============================
-    L1Menu2016 (std::string MenuName, std::string filelist);                             // constructor
-    ~L1Menu2016 ();                            // destructor
+    L1Menu2016 (std::string MenuName, std::string filelist); // constructor
+    ~L1Menu2016 ();                                          // destructor
 
     // ====================  ACCESSORS     ===============================
-    bool BindAlgo();
     bool InitConfig();
     bool PrintRates(std::ostream &out);
     bool OpenWithList(std::string filelist);
@@ -82,6 +82,8 @@ class L1Menu2016 : public L1AlgoFactory
     bool PreLoop(std::map<std::string, float> &config, std::map<std::string, std::string> &configstr);
     bool BookHistogram();
     bool ReadMenu();
+    bool ReadMenuCSV(std::ifstream &menufile);
+    bool ReadMenuTXT(std::ifstream &menufile);
     bool ReadDataPU();
     bool BuildRelation();
     bool PrintPUCSV();
@@ -109,7 +111,6 @@ class L1Menu2016 : public L1AlgoFactory
     bool ParseComplexSingleMu(const std::string& SeedName);
     bool ParseEGStrategy(const std::string & SeedName);
     bool ParseETMJetdPhi(const std::string & SeedName);
-
     bool ParseCrossMu(const std::string& SeedName);
     std::function<bool()> ParseBptx(const std::string Seedtoken);
     bool ParseMultiEGMass(const std::string& SeedName);
@@ -140,8 +141,6 @@ class L1Menu2016 : public L1AlgoFactory
     bool FillLumiSection(int currentLumi);
     bool FillPileUpSec();
     bool PrintCSV(std::ostream &out);
-    bool CheckPureFire();
-    bool CheckPhysFire();
     // ====================  DATA MEMBERS  ===============================
 
   private:
@@ -154,6 +153,7 @@ class L1Menu2016 : public L1AlgoFactory
     void CalLocalHT(float &HTTcut);
     void CalLocalHTM(float &HTMcut);
     void CalLocalETM(float &ETMcut);
+    bool FormPrescaleColumns();
 
     // ====================  DATA MEMBERS  ===============================
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Configurations ~~~~~
@@ -164,7 +164,6 @@ class L1Menu2016 : public L1AlgoFactory
 
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Rate variables ~~~~~
     double scale;
-    double nFireevents;
     unsigned int nZeroBiasevents;
     std::set<unsigned int> nLumi;
     std::vector<std::pair<unsigned int, unsigned int> > pLS;
@@ -181,25 +180,19 @@ class L1Menu2016 : public L1AlgoFactory
     std::map<std::string, float> L1Config;
     std::map<std::string, std::string> L1ConfigStr;
     std::map<std::string, L1Seed> mL1Seed;
-    std::map<std::string, TH1F*> HistMap;
-    std::map<std::string, TH2F*> Hist2D;
 	std::map<std::string, std::function<bool()>> L1SeedFun;
     std::map<int, std::string> BitMap;
+    std::map<int, PreColumn*> ColumnMap;
     std::vector<std::string> vL1Seed;
 
     //Relationship
-    std::set<std::string> FireSeed;
     std::map<std::string, std::map<int, int> > L1LSCount; // counting lumi section
 
     // Seed, PU, count
-    std::map<std::string, std::map<double, int> > L1PUCount; // counting lumi section
     std::map<unsigned, std::map<unsigned, double> > DataLSPU; // mapping of PU for data
 
     std::map<std::string, std::vector<int> > POGMap;
     std::map<std::string, std::vector<int> > PAGMap;
-    std::map<std::string, int > PhyCounts;
-    std::map<std::string, int > PhyPureCounts;
-    std::set<std::string> FiredPhy;
 
 
 }; // -----  end of class L1Menu2016  -----

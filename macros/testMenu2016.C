@@ -21,6 +21,8 @@
 #include <string>
 #include <vector>
 
+#include "TError.h"
+
 #include <boost/program_options.hpp>
 #include <boost/filesystem.hpp>
 
@@ -87,6 +89,9 @@ int main ( int argc, char *argv[] )
   {
     boost::filesystem::create_directory(vm["outputdir"].as<std::string>());
   }
+
+  // We need same histname for later on comparison
+  gErrorIgnoreLevel = kFatal;
 
   L1Menu2016 men(vm["menufile"].as<std::string>(), vm["filelist"].as<std::string>());
 
