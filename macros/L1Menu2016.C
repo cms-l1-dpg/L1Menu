@@ -129,6 +129,7 @@ bool L1Menu2016::InitConfig()
   L1ConfigStr["SelectLS"] = "";
   L1ConfigStr["SelectBX"] = "";
   L1ConfigStr["Lumilist"] = "";
+  L1ConfigStr["SelectCol"] = "";
 
   L1ObjectMap["Jet"]     = &L1Event.JetPt;
   L1ObjectMap["JetC"]    = &L1Event.JetCenPt;
@@ -326,7 +327,6 @@ bool L1Menu2016::ReadMenu()
 // ===========================================================================
 bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
 {
-  boost::char_separator<char> sep(",");
   std::string line;
 
   while (std::getline(menufile, line))
@@ -373,21 +373,9 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
       temp.prescale = 1;
       
     if (pog.length() != 0)
-    {
-      tokenizer tokens(pog, sep);
-      for(auto &t : tokens)
-      {
-        temp.POG.push_back(t);
-      }
-    }
+      temp.POG = TokenGroups(pog);
     if (pag.length() != 0)
-    {
-      tokenizer tokens2(pag, sep);
-      for(auto &t : tokens2)
-      {
-        temp.PAG.push_back(t);
-      }
-    }
+      temp.PAG = TokenGroups(pag);
     if (writefiles)
     {
       assert(outfile != nullptr);
@@ -406,18 +394,155 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
 // ===========================================================================
 bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
 {
-
   // Get the first line
   std::string line;
   while (std::getline(menufile, line))
-    std::cout << "-------" << line << std::endl;
-  //tokenizer tokens(line, sep);
-  //boost::char_separator<char> sep(",");
-  //for(auto i : tokens)
-  //{
-    //std::cout << i << std::endl;
-  //}
+  {
+    if (line.empty()) continue;
+    if (line.at(0) == '#')
+      continue;
+    break; // Get the first line
+  }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting the header  ~~~~~
+  boost::char_separator<char> sep(",");
+  tokenizer tokens(line, sep);
+  std::map<int, std::string> premap;
+  std::map<int, std::string> infomap;
+  int j = 0;
+  for(auto i : tokens)
+  {
+    i.erase(std::remove_if(i.begin(), i.end(), ::isspace), i.end());
+    try
+    {
+      boost::lexical_cast<double>(i);
+      premap[j] = i;
+    }
+    catch (const boost::bad_lexical_cast &) {
+      infomap[j] = i;
+    };
+    j++;
+  }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Select the prescale column ~~~~~
+  int targetcol = -1;
+  if (premap.size() == 0)
+  {
+    std::cout << "No prescale column found in " << menufilename<<". Exiting"  << std::endl;
+    exit(1);
+  }
+
+  if (premap.size() == 1)
+  {
+    targetcol = premap.begin()->first;
+  }
+  else{
+    if (premap.size() > 1 && L1ConfigStr["SelectCol"] == "")
+    {
+      std::cout << "Select prescale columns from: ";
+      for(const auto &i : premap)
+        std::cout << i.second <<", ";
+      std::cout << std::endl;
+      exit(1);
+    }
+
+    for(const auto &i : premap)
+    {
+      if (i.second == L1ConfigStr["SelectCol"] )
+      {
+        targetcol = i.first;
+        break;
+      }
+    }
+    if (targetcol == -1)
+    {
+      std::cout << "Can not find " << L1ConfigStr["SelectCol"] <<" in ";
+      for(const auto &i : premap)
+        std::cout << i.second <<", ";
+      std::cout <<"Exiting" << std::endl;
+      exit(1);
+    }
+  }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Finally reading in the menu ~~~~~
+  std::vector<int> outidx;
+  std::stringstream ss;
+  ss << std::left;
+  infomap[targetcol] = "Prescale";
+  for(const auto &k : infomap)
+  {
+    tokenizer::iterator t = tokens.begin();
+    std::advance(t, k.first);
+    std::string it = std::regex_replace(*t, std::regex("^ +| +$|( ) +"), "$1");
+    ss << it <<" "; 
+  }
+  if (writefiles)
+  {
+    assert(outfile != nullptr);
+    *outfile << ss.str() <<std::endl;
+  }
+
+  while (std::getline(menufile, line))
+  {
+    if (line.empty()) continue;
+    if (line.at(0) == '#')
+      continue;
+    if (line.at(0) == '%')
+    {
+      ParseConfig(line);
+      continue;
+    }
+
+    ss.str("");
+    L1Seed temp;
+
+    tokenizer tokens(line, sep);
+    for(const auto &k : infomap)
+    {
+      tokenizer::iterator t = tokens.begin();
+      std::advance(t, k.first);
+      std::string it = std::regex_replace(*t, std::regex("^ +|\t+$| +$|( ) +"), "$1");
+      
+      if (k.second == "n")
+      {
+        ss << std::setw(4) << it <<" "; 
+        temp.bit = boost::lexical_cast<int>(it);
+      }
+      if (k.second == "L1AlgoName")
+      {
+        ss << std::setw(65) << it <<" "; 
+        temp.name = it;
+      }
+      if (k.second == "Prescale")
+      {
+        ss << std::setw(5) << it <<" "; 
+        temp.prescale = boost::lexical_cast<int>(it);
+      }
+      if (k.second == "Comment")
+      {
+
+        ss << it <<" "; 
+        temp.comment = it;
+      }
+      if (k.second == "POG")
+      {
+        ss << std::setw(15) << it <<" "; 
+        temp.POG = TokenGroups(it);
+      }
+      if (k.second == "PAG")
+      {
+        ss << std::setw(15) << it <<" "; 
+        temp.PAG = TokenGroups(it);
+      }
+
+      if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
+        temp.prescale = 1;
+    }
+
+    if (writefiles)
+      *outfile << ss.str() <<std::endl;
+    mL1Seed[temp.name] = temp;
+  }
 
   return true;
 }       // -----  end of function L1Menu2016::ReadMenuCSV  -----
@@ -1732,9 +1857,9 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
   int idx = 1000;
   for(auto pog : POGMap)
   {
-  ss.str("");
-  ss << idx++ << "," << pog.first <<",";
-  csvout.push_back(ss.str());
+    ss.str("");
+    ss << idx++ << "," << pog.first <<",";
+    csvout.push_back(ss.str());
   }
 
   // PAG
@@ -1940,3 +2065,21 @@ void L1Menu2016::CalLocalETM(float &ETMcut)
   revec.Set(metX, metY);
   ETMcut = revec.Mod();
 }       // -----  end of function L1Menu2016::CalLocalETM  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1Menu2016::TokenGroups
+//  Description:  
+// ===========================================================================
+std::vector<std::string> L1Menu2016::TokenGroups(std::string instring) const
+{
+  std::vector<std::string>  temp;
+  if (instring.empty()) return temp;
+
+  boost::char_separator<char> sep(",.;|-");
+  tokenizer tokens(instring, sep);
+  for(auto &t : tokens)
+  {
+    temp.push_back(t);
+  }
+  return temp;
+}       // -----  end of function L1Menu2016::TokenGroups  -----

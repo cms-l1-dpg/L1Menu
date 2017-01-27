@@ -26,6 +26,8 @@
 #include <fstream>
 #include <sstream>
 #include <functional>
+#include <ctype.h>
+#include <stdlib.h>
 
 // ROOT
 #include "TH1F.h"
@@ -35,6 +37,7 @@
 #include "boost/bind.hpp"
 #include "boost/tokenizer.hpp"
 #include "boost/filesystem.hpp"
+#include "boost/lexical_cast.hpp"
 
 // Local
 #include "L1AlgoFactory.h"
@@ -147,13 +150,12 @@ class L1Menu2016 : public L1AlgoFactory
     // ====================  METHODS       ===============================
     double CalScale(int nEvents_ = 0, int nBunches_ = 0, bool print=false);
     bool RunMenu();
-    bool FillDefHist1D();
-    bool FillDefHist2D();
     bool Fill2DCorrelations(const std::string &histname, std::set<std::string> &event) const;
     void CalLocalHT(float &HTTcut);
     void CalLocalHTM(float &HTMcut);
     void CalLocalETM(float &ETMcut);
     bool FormPrescaleColumns();
+    std::vector<std::string> TokenGroups(std::string instring) const;
 
     // ====================  DATA MEMBERS  ===============================
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Configurations ~~~~~

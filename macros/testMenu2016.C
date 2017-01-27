@@ -73,6 +73,7 @@ int main ( int argc, char *argv[] )
     ("SelectEvent",    po::value<int>()->default_value(-1),                    "Select specific event")
     ("SelectLS",       po::value<std::string>()->default_value(""),            "Select specific LS ranges")
     ("SelectBX",       po::value<std::string>()->default_value(""),            "Select specific BX ranges")
+    ("SelectCol",      po::value<std::string>()->default_value(""),            "Select prescale column from input csv menu")
     ;
 
   po::variables_map vm;
