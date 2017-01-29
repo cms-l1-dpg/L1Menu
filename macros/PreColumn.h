@@ -34,6 +34,7 @@ class PreColumn
 
     // ====================  LIFECYCLE     ===============================
     PreColumn (int ColIdx, std::map<std::string, L1Seed> mL1Seed); // constructor
+    ~PreColumn ();
     bool PassRelation( std::vector<std::string> vL1Seed_, 
         std::map<int, std::string> BitMap_, 
         std::map<std::string, std::vector<int> > POGMap_, 

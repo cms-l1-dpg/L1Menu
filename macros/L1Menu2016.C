@@ -41,7 +41,6 @@ L1Menu2016::L1Menu2016 (std::string MenuName, std::string filelist):
 //----------------------------------------------------------------------------
 L1Menu2016::~L1Menu2016 ()
 {
-  WriteHistogram();
   outfile->close();
   outcsv->close();
   outrootfile->Close();
@@ -293,6 +292,7 @@ bool L1Menu2016::WriteHistogram()
 bool L1Menu2016::ReadMenu()
 {
   mL1Seed.clear();
+  vL1Seed.clear();
 
   //Read the prescales table
   std::ifstream menufile(menufilename);
@@ -365,6 +365,7 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Form L1Seed ~~~~~
     L1Seed temp;
     temp.name = seed;
+    vL1Seed.push_back(seed);
     temp.bit = bit;
     temp.comment = comline;
     temp.prescale = prescale;
@@ -398,6 +399,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
   std::string line;
   while (std::getline(menufile, line))
   {
+    line.erase( std::remove(line.begin(), line.end(), '\r'), line.end() );
     if (line.empty()) continue;
     if (line.at(0) == '#')
       continue;
@@ -484,6 +486,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
 
   while (std::getline(menufile, line))
   {
+    line.erase( std::remove(line.begin(), line.end(), '\r'), line.end() );
     if (line.empty()) continue;
     if (line.at(0) == '#')
       continue;
@@ -506,17 +509,32 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
       if (k.second == "n")
       {
         ss << std::setw(4) << it <<" "; 
-        temp.bit = boost::lexical_cast<int>(it);
+        try
+        {
+          temp.bit = boost::lexical_cast<int>(it);
+        }
+        catch (const boost::bad_lexical_cast &)
+        {
+          std::cout << "Can't cast bit " << it<< " to int type in line: " << line << std::endl;
+        }
       }
       if (k.second == "L1AlgoName")
       {
         ss << std::setw(65) << it <<" "; 
         temp.name = it;
+        vL1Seed.push_back(it);
       }
       if (k.second == "Prescale")
       {
         ss << std::setw(5) << it <<" "; 
-        temp.prescale = boost::lexical_cast<int>(it);
+        try
+        {
+          temp.prescale = boost::lexical_cast<int>(it);
+        }
+        catch (const boost::bad_lexical_cast &)
+        {
+          std::cout << "Can't cast prescale " << it<< " to int type in line: " << line << std::endl;
+        }
       }
       if (k.second == "Comment")
       {
@@ -984,6 +1002,7 @@ bool L1Menu2016::PostLoop()
   {
     PrintPUCSV();
   }
+  WriteHistogram();
   return true;
 }       // -----  end of function L1Menu2016::PostLoop  -----
 
@@ -1064,11 +1083,6 @@ bool L1Menu2016::BuildRelation()
         assert(PAGMap[pag].size() == 0);
       } else PAGMap[pag].push_back(l1.second.bit);
     }
-  }
-
-  for(auto bitm : BitMap)
-  {
-    vL1Seed.push_back(bitm.second);
   }
 
   return true;

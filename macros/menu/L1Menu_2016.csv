@@ -172,10 +172,6 @@ n   , L1AlgoName                                                   , 1.6E34 , 1.
 197 , L1_DoubleEG_22_15                                            , 0      , 0       , 0       , 0       , 0       , 0       , 1      , 1      , 1      , 1
 198 , L1_MU20_EG15                                                 , 1      , 1       , 1       , 1       , 1       , 1       , 1      , 1      , 1      , 1
 199 , L1_IsoEG22er_Tau20er_dEta_Min0p2                             , 0      , 0       , 0       , 0       , 0       , 0       , 1      , 1      , 1      , 1
-200 , L1_SingleMuOpen_NotBptxOR_3BX                                , 1      , 1       , 1       , 1       , 1       , 1       , 1      , 1      , 1      , 1
-201 , L1_SingleJetC20_NotBptxOR_3BX                                , 0      , 0       , 0       , 0       , 0       , 0       , 0      , 0      , 0      , 0
-202 , L1_SingleJetC40_NotBptxOR_5BX                                , 0      , 0       , 0       , 0       , 0       , 0       , 0      , 0      , 0      , 0
-203 , L1_SingleJetC40_NotBptxOR_3BX                                , 1      , 1       , 1       , 1       , 1       , 1       , 1      , 1      , 1      , 1
 210 , L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4                       , 1      , 1       , 1       , 1       , 1       , 1       , 1      , 1      , 1      , 1
 212 , L1_DoubleJet8_ForwardBackward                                , 0      , 0       , 0       , 0       , 0       , 0       , 0      , 0      , 0      , 0
 213 , L1_DoubleJet12_ForwardBackward                               , 0      , 0       , 0       , 0       , 0       , 0       , 0      , 0      , 0      , 0
@@ -217,3 +213,8 @@ n   , L1AlgoName                                                   , 1.6E34 , 1.
 289 , L1_DoubleTau70er                                             , 1      , 1       , 1       , 1       , 1       , 1       , 1      , 1      , 1      , 1
 290 , L1_DoubleJet_90_30_Mj30j30_620                               , 1000   , 1000    , 1000    , 1000    , 1000    , 1000    , 1000   , 1000   , 1000   , 1000
 292 , L1_DoubleJet30_Mj30j30_400_Mu6                               , 1000   , 1000    , 1000    , 1000    , 1000    , 1000    , 1000   , 1000   , 1000   , 1000
+
+#200 , L1_SingleMuOpen_NotBptxOR_3BX                                , 1      , 1       , 1       , 1       , 1       , 1       , 1      , 1      , 1      , 1
+#201 , L1_SingleJetC20_NotBptxOR_3BX                                , 0      , 0       , 0       , 0       , 0       , 0       , 0      , 0      , 0      , 0
+#202 , L1_SingleJetC40_NotBptxOR_5BX                                , 0      , 0       , 0       , 0       , 0       , 0       , 0      , 0      , 0      , 0
+#203 , L1_SingleJetC40_NotBptxOR_3BX                                , 1      , 1       , 1       , 1       , 1       , 1       , 1      , 1      , 1      , 1

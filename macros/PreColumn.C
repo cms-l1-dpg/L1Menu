@@ -30,6 +30,15 @@ PreColumn::PreColumn (int ColIdx_, std::map<std::string, L1Seed> mL1Seed_):
   nFireevents = 0;
 }  // -----  end of method PreColumn::PreColumn  (constructor)  -----
 
+//----------------------------------------------------------------------------
+//       Class:  PreColumn
+//      Method:  ~PreColumn
+// Description:  destructor
+//----------------------------------------------------------------------------
+PreColumn::~PreColumn ()
+{
+}  // -----  end of method PreColumn::-PreColumn  (destructor)  -----
+
 // ===  FUNCTION  ============================================================
 //         Name:  PreColumn::PassRelation
 //  Description:  
@@ -537,22 +546,22 @@ bool PreColumn::PrintRates(std::ostream &out, double scale)
       totalrate +=seed.firerate;
       totalpurerate +=seed.purerate;
     }
-    
   }
   else{
-    for(auto seed : mL1Seed)
+    for(auto name : vL1Seed)
     {
+      auto seed = mL1Seed[name];
       out << std::left
-          << std::setw(10)             << seed.second.bit
-          << std::setw(L1NameLength+2) << seed.first
-          << std::setw(10)             << seed.second.prescale
-          << std::setw(10)             << seed.second.firerate      << " +/- "
-          << std::setw(20)             << seed.second.firerateerror
-          << std::setw(10)             << seed.second.purerate      
-          << seed.second.comment
+          << std::setw(10)             << seed.bit
+          << std::setw(L1NameLength+2) << seed.name
+          << std::setw(10)             << seed.prescale
+          << std::setw(10)             << seed.firerate      << " +/- "
+          << std::setw(20)             << seed.firerateerror
+          << std::setw(10)             << seed.purerate      
+          << seed.comment
           << std::endl;
-      totalrate +=seed.second.firerate;
-      totalpurerate +=seed.second.purerate;
+      totalrate +=seed.firerate;
+      totalpurerate +=seed.purerate;
     }
 
   }
