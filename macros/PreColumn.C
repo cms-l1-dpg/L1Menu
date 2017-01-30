@@ -399,17 +399,18 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
   csvout++->append(ss.str());
 
   // L1Seeds
-  for(auto seed : mL1Seed)
+  for(auto sed : vL1Seed)
   {
+    auto seed = mL1Seed[sed];
     ss.str("");
-    ss<< seed.second.prescale
-      << "," << seed.second.firerate
-      << "," << seed.second.firerateerror
-      << "," << seed.second.purerate      <<",";
+    ss<< seed.prescale
+      << "," << seed.firerate
+      << "," << seed.firerateerror
+      << "," << seed.purerate      <<",";
       //<< ",\""<<seed.second.comment<<"\""<<",";
     csvout++->append(ss.str());
-    totalrate +=seed.second.firerate;
-    totalpurerate +=seed.second.purerate;
+    totalrate +=seed.firerate;
+    totalpurerate +=seed.purerate;
   }
   
   // POG
@@ -464,13 +465,14 @@ bool PreColumn::PrintPUCSV( std::vector<std::string> &csvout)
     ss << "L1Seed"<< ",PileUp,Total,Prescale"<<ColIdx <<",Fired"<<ColIdx<<",";
     csvout.push_back(ss.str());
 
-    for(auto l1seed : L1PUCount)
+    for(auto name : vL1Seed)
     {
-      for(auto pu : l1seed.second)
+      auto l1seed = L1PUCount[name];
+      for(auto pu : l1seed)
       {
-        int prescale = mL1Seed.find(l1seed.first) != mL1Seed.end() ?  mL1Seed.at(l1seed.first).prescale : 1;
+        int prescale = mL1Seed.find(name) != mL1Seed.end() ?  mL1Seed.at(name).prescale : 1;
         ss.str("");
-        ss<<l1seed.first <<","<< pu.first <<","
+        ss<<name<<","<< pu.first <<","
           <<L1PUCount["Count"][pu.first]<<","
           <<prescale<<","
           <<pu.second<<",";
@@ -486,11 +488,12 @@ bool PreColumn::PrintPUCSV( std::vector<std::string> &csvout)
     ss << "Prescale"<<ColIdx <<",Fired"<<ColIdx<<",";
     ctit++->append(ss.str());
 
-    for(auto l1seed : L1PUCount)
+    for(auto name : vL1Seed)
     {
-      for(auto pu : l1seed.second)
+      auto l1seed = L1PUCount[name];
+      for(auto pu : l1seed)
       {
-        int prescale = mL1Seed.find(l1seed.first) != mL1Seed.end() ?  mL1Seed.at(l1seed.first).prescale : 1;
+        int prescale = mL1Seed.find(name) != mL1Seed.end() ?  mL1Seed.at(name).prescale : 1;
         ss.str("");
         ss<<prescale<<"," <<pu.second<<",";
         ctit++->append(ss.str());

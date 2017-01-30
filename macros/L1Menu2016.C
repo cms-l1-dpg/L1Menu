@@ -396,6 +396,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
   {
     line.erase( std::remove(line.begin(), line.end(), '\r'), line.end() );
     if (line.empty()) continue;
+    if (line.find_first_not_of(", ") == std::string::npos) continue;
     if (line.at(0) == '#')
       continue;
     break; // Get the first line
@@ -483,6 +484,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
   {
     line.erase( std::remove(line.begin(), line.end(), '\r'), line.end() );
     if (line.empty()) continue;
+    if (line.find_first_not_of(", ") == std::string::npos) continue;
     if (line.at(0) == '#')
       continue;
     if (line.at(0) == '%')
