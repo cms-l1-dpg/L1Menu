@@ -44,6 +44,7 @@ L1Menu2016::~L1Menu2016 ()
   outfile->close();
   outcsv->close();
   outrootfile->Close();
+  fChain->Reset();
   //delete outfile;
   //delete outcsv;
   //delete outrootfile;
@@ -377,12 +378,6 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
       temp.POG = TokenGroups(pog);
     if (pag.length() != 0)
       temp.PAG = TokenGroups(pag);
-    if (writefiles)
-    {
-      assert(outfile != nullptr);
-      
-    }
-
     mL1Seed[seed] = temp;
   }
   return true;

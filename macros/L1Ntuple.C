@@ -340,7 +340,15 @@ bool L1Ntuple::OpenWithoutInit()
 
 L1Ntuple::~L1Ntuple()
 {
+  if (rf)                 delete rf;
+  if (fChain)             delete fChain;
+  if (fEvent)             delete fEvent;
   if (ftreeUpgradeLayer1) delete ftreeUpgradeLayer1;
+  if (ftreeEvent)         delete ftreeEvent;
+  if (ftreemuon)          delete ftreemuon;
+  if (ftreeExtra)         delete ftreeExtra;
+  if (ftreeMenu)          delete ftreeMenu;
+  if (ftreeEmuExtra)      delete ftreeEmuExtra;
   if (ftreeRecoJet)       delete ftreeRecoJet;
   if (ftreeRecoMet)       delete ftreeRecoMet;
   if (ftreeRecoEle)       delete ftreeRecoEle;
@@ -348,15 +356,9 @@ L1Ntuple::~L1Ntuple()
   if (ftreeRecoTau)       delete ftreeRecoTau;
   if (ftreeRecoFilter)    delete ftreeRecoFilter;
   if (ftreeRecoVtx)       delete ftreeRecoVtx;
-  if (ftreemuon)          delete ftreemuon;
-  if (ftreeExtra)         delete ftreeExtra;
-  if (ftreeEmuExtra)      delete ftreeEmuExtra;
-  if (ftreeMenu)          delete ftreeMenu;
   if (ftreeCaloTower)     delete ftreeCaloTower;
-  if (fChain)             delete fChain;
   if (fl1uGT)             delete fl1uGT;
   if (fl1unpackuGT)       delete fl1unpackuGT;
-  if (rf)                 delete rf;
 }
 
 
