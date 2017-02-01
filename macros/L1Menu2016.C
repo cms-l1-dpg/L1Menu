@@ -1853,11 +1853,12 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
   ss << "L1Bit"         
     << "," << "L1SeedName"<< "," ;
   csvout.push_back(ss.str());
-  for(auto seed : mL1Seed)
+  for(auto sed : vL1Seed)
   {
+    auto seed = mL1Seed[sed];
     ss.str("");
-    ss << seed.second.bit
-      << "," << seed.first<< "," ;
+    ss << seed.bit
+      << "," << sed<< "," ;
     csvout.push_back(ss.str());
   }
 
