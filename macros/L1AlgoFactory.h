@@ -68,6 +68,8 @@ class L1AlgoFactory: public L1Ntuple{
   void HTTVal(Float_t& HTTcut);
   void HTMVal(Float_t& HTMcut);
   void ETTVal(Float_t& ETTcut);
+  void ETMHFVal(Float_t& ETMcut );
+  void HTTHFVal(Float_t& HTTcut);
 
 
   Bool_t SingleMu(Float_t ptcut, Bool_t isER, Int_t qualmin=2);

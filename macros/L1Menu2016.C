@@ -848,17 +848,25 @@ bool L1Menu2016::GetL1Event()
   //Sum
   if (L1Config["SumJetET"] != 0 || L1Config["SumJetEta"] != 999)
   {
-    CalLocalHT(L1Event.HTT);
+    CalLocalHT(L1Event.HTT, false);
+    CalLocalHT(L1Event.HTTHF, true);
     CalLocalHTM(L1Event.HTM);
   } else {
     L1AlgoFactory::HTTVal(L1Event.HTT);
+    L1AlgoFactory::HTTHFVal(L1Event.HTTHF);
     L1AlgoFactory::HTMVal(L1Event.HTM);
   }
 
   if (L1Config["UseL1CaloTower"])
-    CalLocalETM(L1Event.ETM);
+  {
+    CalLocalETM(L1Event.ETM, false);
+    CalLocalETM(L1Event.ETMHF, true);
+  }
   else
+  {
     L1AlgoFactory::ETMVal(L1Event.ETM);
+    L1AlgoFactory::ETMHFVal(L1Event.ETMHF);
+  }
 
   L1AlgoFactory::ETTVal(L1Event.ETT);
 
@@ -1940,7 +1948,7 @@ bool L1Menu2016::ReadDataPU()
 //         Name:  L1Menu2016::CalLocalHT
 //  Description:  
 // ===========================================================================
-void L1Menu2016::CalLocalHT(float &HTTcut)
+void L1Menu2016::CalLocalHT(float &HTTcut, bool withHF)
 {
   float sumJetHt= 0;
   for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
@@ -1948,8 +1956,17 @@ void L1Menu2016::CalLocalHT(float &HTTcut)
     if(bx != 0) continue;
     Float_t pt = upgrade_->jetEt.at(ue);
     Float_t eta = upgrade_->jetEta.at(ue);
-    if (pt >= L1Config["SumJetET"] && fabs(eta) <= L1Config["SumJetEta"] )
-      sumJetHt += pt;
+    if (pt >= L1Config["SumJetET"])
+    {
+      if (withHF)
+      {
+        sumJetHt += pt;
+      }
+      else{
+        if ( fabs(eta) <= L1Config["SumJetEta"] )
+          sumJetHt += pt;
+      }
+    }
   }
   HTTcut = sumJetHt;
   return;
@@ -2049,7 +2066,7 @@ bool L1Menu2016::CheckBX(unsigned int currentBX) const
 //         Name:  L1Menu2016::CalLocalETM
 //  Description:  
 // ===========================================================================
-void L1Menu2016::CalLocalETM(float &ETMcut)
+void L1Menu2016::CalLocalETM(float &ETMcut, bool withHF)
 {
 
   if (!l1CaloTower_) return;
@@ -2057,7 +2074,9 @@ void L1Menu2016::CalLocalETM(float &ETMcut)
   TVector2 revec(0,0);
   
   // Ignore Tower 28
-  const int ietamax = 28;
+  int ietamax = 29;
+  if (withHF)
+    ietamax = 99;
   float metX =0;
   float metY =0;
 
@@ -2068,7 +2087,8 @@ void L1Menu2016::CalLocalETM(float &ETMcut)
     Int_t iet  = l1CaloTower_->iet[jTower];
     Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
     Double_t et = 0.5 * (Double_t)iet;
-    if( abs(ieta) < ietamax){
+    if (abs(ieta) == 28) continue;
+    if(abs(ieta) < ietamax){
       metX -= et * TMath::Cos(phi);
       metY -= et * TMath::Sin(phi);
     }

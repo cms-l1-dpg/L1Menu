@@ -181,6 +181,9 @@ bool L1Plot::BookRateHistogram()
   hRate1F["nHTMVsHTM"] = new TH1F("nHTMVsHTM","HTM; HTM cut; rate [Hz]",512,-.5,511.5);
   hRate1F["nETTVsETT"] = new TH1F("nETTVsETT","ETT; ETT cut; rate [Hz]",512,-.5,511.5);
   hRate1F["nETMVsETM"] = new TH1F("nETMVsETM","ETM; ETM cut; rate [Hz]",512,-.5,511.5);
+  hRate1F["nETMHF"] = new TH1F("nETMHF","ETMHF; ETMHF cut; rate [Hz]",512,-.5,511.5);
+  hRate2F["nETMVsETMHF"]    = new TH2F("nETMVsETMHF","nETMVsETMHF; E_{T} cut ETM; E_{T} cut ETMHF", 14, 80, 150, 14, 80, 150);
+  hRate2F["nHTTVsHTTHF"]    = new TH2F("nHTTVsHTTHF","nHTTVsHTTHF; E_{T} cut HTT; E_{T} cut HTTHF", 20, 240, 440, 20, 240,440);
 
   // EG Rate study
   hRate2F["nEGvsIsoEG_0"]    = new TH2F("nEGvsIsoEG_0","nEGvsIsoEG_0IsoEGer; E_{T} cut SingleEG; E_{T} cut SingleIsoEG", 21, 20, 41, 21, 20, 41);
@@ -247,6 +250,10 @@ bool L1Plot::BookTestHistogram()
   hTest2F["Mu5BxEta"]  = new TH2F("Mu5BxEta","Mu5BxEta; muonEta (pT>5); muonBX",    60, -3, 3, 6, -3, 3);
   hTest2F["Mu16BxEta"] = new TH2F("Mu16BxEta","Mu16BxEta; muonEta (pT>16); muonBX", 60, -3, 3, 6, -3, 3);
   hTest2F["Mu25BxEta"] = new TH2F("Mu25BxEta","Mu25BxEta; muonEta (pT>25); muonBX", 60, -3, 3, 6, -3, 3);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TT 28 Study ~~~~~
+  hTest1F["TT28Diff"]     = new TH1F("TT28Diff","TT28Diff",                                100, -50,  50);
+  hTest1F["TT27Diff"]     = new TH1F("TT27Diff","TT27Diff",                                100, -50,  50);
   return true;
 }       // -----  end of function L1Plot::BookTestHistogram  -----
 
@@ -437,6 +444,7 @@ bool L1Plot::FillRateHistogram()
     if(L1Event->HTM>httCut) hRate1F["nHTMVsHTM"]->Fill(httCut);
     if(L1Event->ETT>httCut) hRate1F["nETTVsETT"]->Fill(httCut);
     if(L1Event->ETM>httCut) hRate1F["nETMVsETM"]->Fill(httCut);
+    if(L1Event->ETMHF>httCut) hRate1F["nETMHF"]->Fill(httCut);
   }
 
 
@@ -464,6 +472,23 @@ bool L1Plot::FillRateHistogram()
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DoubleMu Rate Study ~~~~~
   FillRateDoubleMu(0, 1, 0);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ETM vs ETMHF ~~~~~
+  for(int ETMCut=80; ETMCut<150; ETMCut+=5) {
+    for(int EHFCut=80; EHFCut<150; EHFCut+=5) {
+      if (L1Event->ETM >=ETMCut || L1Event->ETMHF>=EHFCut)
+        hRate2F["nETMVsETMHF"] ->Fill(ETMCut, EHFCut);
+    }
+  }
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HTT vs HTTHF ~~~~~
+  for(int HTTCut=240; HTTCut<440; HTTCut+=10) {
+    for(int HHFCut=240; HHFCut<440; HHFCut+=10) {
+      if (L1Event->HTT >= HTTCut || L1Event->HTTHF>=HHFCut)
+        hRate2F["nHTTVsHTTHF"] ->Fill(HTTCut, HHFCut);
+    }
+  }
+
   return true;
 }       // -----  end of function L1Plot::FillRateHistogram  -----
 
@@ -1359,3 +1384,30 @@ bool L1Plot::ScaleLSHistogram( const std::map<std::string, std::map<int, int> > 
   return true;
 }       // -----  end of function L1Plot::ScaleLSHistogram  -----
 
+//// ===  FUNCTION  ============================================================
+////         Name:  L1Plot::TestCaloTower28
+////  Description:  
+//// ===========================================================================
+//bool L1Plot::TestCaloTower28() const
+//{
+  //if (!l1CaloTower_) return false;
+
+  //TVector2 MET28(0,0);
+  //int p28 = n28 = p27 = n27 = 1;
+  //for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+  //}
+
+  //for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
+    //Int_t ieta = l1CaloTower_->ieta[jTower];
+    //Int_t iphi = l1CaloTower_->iphi[jTower];
+    //Int_t iet  = l1CaloTower_->iet[jTower];
+    //Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
+    //Double_t et = 0.5 * (Double_t)iet;
+    //if( abs(ieta) < ietamax){
+      //metX += et * TMath::Cos(phi);
+      //metY += et * TMath::Sin(phi);
+    //}
+  //}
+
+  //return true;
+//}       // -----  end of function L1Plot::TestCaloTower28  -----

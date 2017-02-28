@@ -151,9 +151,9 @@ class L1Menu2016 : public L1AlgoFactory
     double CalScale(int nEvents_ = 0, int nBunches_ = 0, bool print=false);
     bool RunMenu();
     bool Fill2DCorrelations(const std::string &histname, std::set<std::string> &event) const;
-    void CalLocalHT(float &HTTcut);
+    void CalLocalHT(float &HTTcut, bool withHF);
     void CalLocalHTM(float &HTMcut);
-    void CalLocalETM(float &ETMcut);
+    void CalLocalETM(float &ETMcut, bool withHF);
     bool FormPrescaleColumns();
     std::vector<std::string> TokenGroups(std::string instring) const;
 

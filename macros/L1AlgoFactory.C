@@ -1418,6 +1418,19 @@ int L1AlgoFactory::GetSumEtIdx(EtSumType type)
   return -1;
 }       // -----  end of function L1AlgoFactory::GetSumEtIdx  -----
 
+void L1AlgoFactory::ETMHFVal(Float_t& ETMcut ) 
+{
+
+  Float_t TheETM = -10;
+  int idx = GetSumEtIdx(EtSumType::ETMHF);
+  if (idx == -1) return;
+  assert(upgrade_->sumType.at(idx) == EtSumType::ETMHF);
+  if(upgrade_->sumBx.at(idx)==SelBx) TheETM =upgrade_->sumEt.at(idx);
+  ETMcut = TheETM;
+
+  return;
+}
+
 void L1AlgoFactory::ETMVal(Float_t& ETMcut ) {
 
   Float_t TheETM = -10;
@@ -1471,6 +1484,21 @@ void L1AlgoFactory::HTTVal(Float_t& HTTcut) {
   HTTcut = TheHTT;
   return;
 }
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::HTTHFVal
+//  Description:  
+// ===========================================================================
+void L1AlgoFactory::HTTHFVal(Float_t& HTTcut)
+{
+  Float_t TheHTT = -10;
+  int idx= GetSumEtIdx(EtSumType::HTTHF);
+  if (idx == -1) return;
+  assert(upgrade_->sumType.at(idx) == EtSumType::HTTHF);
+  if(upgrade_->sumBx.at(idx)==SelBx) TheHTT =upgrade_->sumEt.at(idx);
+  HTTcut = TheHTT;
+  return;
+}       // -----  end of function L1AlgoFactory::HTTHFVal  -----
 
 void L1AlgoFactory::HTMVal(Float_t& HTMcut) {
 

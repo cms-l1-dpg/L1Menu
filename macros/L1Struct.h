@@ -105,6 +105,13 @@ struct StructL1Event
   float diEG2       = -10.;
   float diIsolEG1   = -10.;
   float diIsolEG2   = -10.;
+  float ETMHF       = -10.;
+  float ETTHF       = -10.;
+  float ETTEM       = -10.;
+  float HTTHF       = -10.;
+  float HTMHF       = -10.;
+
+
 
   StructL1Event()
   {
@@ -141,6 +148,11 @@ struct StructL1Event
     diEG2       = -10.;
     diIsolEG1   = -10.;
     diIsolEG2   = -10.;
+    ETMHF       = -10.;
+    ETTHF       = -10.;
+    ETTEM       = -10.;
+    HTTHF       = -10.;
+    HTMHF       = -10.;
   }
 };
 
