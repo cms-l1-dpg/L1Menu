@@ -17,6 +17,10 @@
 #ifndef  MY_L1MENU2016_INC
 #define  MY_L1MENU2016_INC
 
+#ifdef UTM_MENULIB
+#include "menulib.hh"
+#endif /* UTM_MENULIB */
+
 #include <map>
 #include <regex>
 #include <sstream>

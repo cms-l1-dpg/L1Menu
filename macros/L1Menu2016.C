@@ -99,13 +99,9 @@ bool L1Menu2016::ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_,
 // ===========================================================================
 bool L1Menu2016::InitConfig()
 {
-  L1Config["isData"]         = 0;
   L1Config["SumJetET"]       = 0;
   L1Config["SumJetEta"]      = 999;
   L1Config["nBunches"]       = 2592; //default for 2017 nBunches
-  L1Config["AveragePU"]      = 0;
-  L1Config["Energy"]         = 0;
-  L1Config["targetlumi"]     = 0;
   L1Config["doPlotRate"]     = 0;
   L1Config["doPlotEff"]      = 0;
   L1Config["doPlotTest"]     = 0;
@@ -147,6 +143,8 @@ bool L1Menu2016::InitConfig()
   L1ObjectMap["HTM"]     = &L1Event.HTM;
   L1ObjectMap["ETM"]     = &L1Event.ETM;
   L1ObjectMap["ETT"]     = &L1Event.ETT;
+  L1ObjectMap["ETMHF"]     = &L1Event.ETMHF;
+  L1ObjectMap["HTTHF"]     = &L1Event.HTTHF;
 
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Map to old func for now. ~~~~~
@@ -836,7 +834,7 @@ bool L1Menu2016::GetL1Event()
   L1AlgoFactory::SingleEGPt(L1Event.IsoEGerPt,true, true);
 
   //Tau
-  L1AlgoFactory::SingleTauPt(L1Event.TauPt, false, false);
+  L1AlgoFactory::SingleTauPt(L1Event.TauPt, false, false); 
   L1AlgoFactory::SingleTauPt(L1Event.TauerPt, true, false);
   L1AlgoFactory::SingleTauPt(L1Event.IsoTauPt, false, true);
 
@@ -853,7 +851,7 @@ bool L1Menu2016::GetL1Event()
     CalLocalHTM(L1Event.HTM);
   } else {
     L1AlgoFactory::HTTVal(L1Event.HTT);
-    L1AlgoFactory::HTTHFVal(L1Event.HTTHF);
+    L1AlgoFactory::HTTHFVal(L1Event.HTTHF); // Not in L1Ntuple yet
     L1AlgoFactory::HTMVal(L1Event.HTM);
   }
 
@@ -1107,7 +1105,9 @@ bool L1Menu2016::L1SeedFunc()
     if(ParseL1Seed(L1Seed.first))
       continue;
 
+#ifndef UTM_MENULIB
     std::cout << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
+#endif
   }
 
   return true;
@@ -1147,7 +1147,11 @@ bool L1Menu2016::RunMenu()
       IsFired = l1uGT->GetuGTDecision(seed.first);
     }
     else
+#ifdef UTM_MENULIB
+      IsFired = getFuncFromName(seed.first)(upgrade_);
+#else
       IsFired = CheckL1Seed(seed.first);
+#endif /* UTM_MENULIB */
 
     for(auto col : ColumnMap)
     {
