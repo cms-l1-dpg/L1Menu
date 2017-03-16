@@ -34,7 +34,7 @@ L1_SingleEG40                         50     1         EG
 L1_SingleEG45                         52     1         EG
 L1_SingleIsoEG34                      61     0         EG
 L1_SingleIsoEG36                      262    0         EG
-L1_SingleIsoEG38                      266    1         EG
+L1_SingleIsoEG38                      286    1         EG
 L1_SingleIsoEG32er                    263    0         EG
 L1_SingleIsoEG34er                    70     0         EG
 L1_SingleIsoEG36er                    270    1         EG
