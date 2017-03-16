@@ -25,28 +25,21 @@ from Config import DualMap, S1S2Map, S2S1Map
 
 
 label = "ZeroBias"
-config = 2017
-# nBunches = 0
-
-if config == 2016:
-    nBunches = 2208
-
-if config == 2017:
-    nBunches = 2592
-# label = "CMS Data"
 PU = 35
 freq = 11245.6
-unit = "kHz"
-# filedir = "ITGv88/Oct31HighPUStudy_HTTv0/r283171_Trains_*_UnpackC++_PU.csv"
-# filedir = "ITGv87/Oct28HighPUStudy_ETM/*PU.csv"
-# filedir = "ITGv87/Nov01HighPUStudyv0/*PU.csv"
-# filedir = "ITGv87/Nov02HighPUStudyv2/*PU.csv"
-# filedir = "ITGv87/Nov032017Studyv6/EG*PU.csv"
-# filedir = "ITGv87/Nov112017HTTv2/r283171_Trains_*_Eta2p5_PU.csv"
-# filedir = "ITGv87/Nov192017EGTT28_v2/*UnpackC++_PU.csv"
-filedir = "ITGv87/Nov192017EGTT28_v2/*CaloTower_PU.csv"
-# filedir = "ITGv87/Nov142017EGHTTv*/*PU.csv"
+config = 2017
+filedir = "Nov192017EGTT28_v2/*CaloTower_PU.csv"
 maxy = 40
+if config == 2016:
+    nBunches = 2208
+    unit = "kHz"
+if config == 2017:
+    nBunches = 2592
+    unit = "kHz"
+
+if config == 1:
+    nBunches = 1
+    unit = "Hz"
 
 pubins = np.arange(11,60, 1)
 pumap = collections.defaultdict(list)
@@ -70,14 +63,13 @@ PatMap = {
     # 'DTau': 'L1_DoubleIsoTau\d+er',
 }
 
-
 def DrawPU(canvas, f, l1seed, count, key=None):
     df = f[(f.L1Seed == l1seed )]
     RetVar = None
 
     for i in range(0, len(pubins) -1):
         pumap[pubins[i]] = []
-        pumap[pubins[i]].append(df[np.logical_and(df.PileUp > pubins[i], df.PileUp <= pubins[i+1])].Fired.sum())
+        pumap[pubins[i]].append(df[np.logical_and(df.PileUp > pubins[i], df.PileUp <= pubins[i+1])].Fired0.sum())
         pumap[pubins[i]].append(df[np.logical_and(df.PileUp > pubins[i], df.PileUp <= pubins[i+1])].Total.sum())
 
     x = []
@@ -109,7 +101,7 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     graph.SetMarkerColor(1+count)
     graph.SetLineColor(1+count)
     graph.SetLineWidth(2)
-    # tdrstyle.setTDRStyle()
+    tdrstyle.setTDRStyle()
     canvas.cd()
     canvas.Update()
     if count == 0:
@@ -120,38 +112,21 @@ def DrawPU(canvas, f, l1seed, count, key=None):
         graph.GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit))
     else:
         graph.Draw("P")
-    # graph.GetXaxis().SetLimits(0, 70)
-    # graph.GetYaxis().SetLimits(0.1, 100)
     canvas.Update()
     leg.AddEntry(graph, l1seed, "p")
-    # graph.Draw("Psame")
-    # graph.SetTitle(l1seed)
-    # leg = None
-    # for p in canvas.GetListOfPrimitives():
-        # if p.GetName() == "TPave":
-            # leg = p
-    # leg.AddEntry(graph, label, "p")
 
     ## Pol2
     fitname = "pol2"
-    # graph.Fit(fitname, "Q", "", 25, max(x))
     graph.Fit(fitname, "Q", "", minx, max(x))
-    # graph.Fit(fitname, "Q", "", 30, max(x))
     f2 = graph.GetFunction(fitname).Clone()
     f2.SetLineColor(1+count)
     f2.SetLineWidth(2)
     fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
-    print l1seed, f2.GetChisquare()
-    # fun = "Fit = %.2f + %.2f*x + %.3f*x^2+ %.3f*x^3 " % (f2.GetParameter(0),
-                                                         # f2.GetParameter(1),
-                                                         # f2.GetParameter(2), f2.GetParameter(3)) 
-    # fun = "f2 = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
-    # RetVar = f2.GetParameter(2)
-    f2.Draw("same")
+    # f2.Draw("same")
     f2_2 = f2.Clone("dashline2")
     f2_2.SetRange(minx, 70)
     f2_2.SetLineStyle(5)
-    f2_2.Draw("same")
+    # f2_2.Draw("same")
     key = "Rate(PU=%d): %.1f" % (PU, f2_2.Eval(PU))
     tex = ROOT.TLatex(0.15, 0.75, fun)
     tex.SetNDC()
@@ -174,16 +149,6 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 
     # leg.Draw()
     canvas.Update()
-    # canvas.SetLogy()
-    # wait()
-
-# HLTfilename = "HLT_instLumi_vs_rawRate_NoFit_Run279691-279694_Tot12_cert.root"
-
-# f = r.L1_Mu6_HTT200_instLumi_vs_rawRate.Clone()
-# print f.Draw()
-# wait()
-
-# filedir = "ITGv87/Oct28HighPUStudy_ETM/*Trains*PU.csv"
 
 
 def DrawL1(key, pattern):
@@ -196,27 +161,9 @@ def DrawL1(key, pattern):
     for x in [x for x in pd.unique(df.L1Seed)]:
         if pat.match(x):
             inputlist.append(x)
-            # print "Match ", x
-        # path = x.split("_")[1:]
-        # if len(path) == 0:
-            # continue
-        # num = int(re.search(r'\d+', path[0]).group())
-        # print map(int, re.findall(r'\d+', path[0]))
-        # if num != 0 and num < 120:
-            # inputlist.append(x)
-        # inputlist.append(x)
-        # num= [int(s) for s in x.split() if s.isdigit()]
-        # print x, num
-        # if len(num) ==0 or num[0] > 100:
-            # continue
-        # else: 
-            # index_col+=x
-
-    print inputlist
-
+    print key, " : ",  inputlist
 
     for i, seed in enumerate(inputlist):
-        histobj = "%s_instLumi_vs_rawRate" % seed
         DrawPU(c1, df, seed, i)
     leg.Draw()
 
@@ -253,41 +200,30 @@ def DrawL1(key, pattern):
         l60.SetLineWidth(2)
         l60.Draw()
 
-    # tex = ROOT.TLatex(0.2, 0.3, "%d |eta|<=2.5" % config)
-    tex = ROOT.TLatex(0.2, 0.3, "%d noTT28" % config)
-    # tex = ROOT.TLatex(0.2, 0.3, "%d Thresholds" % config)
+    tex = ROOT.TLatex(0.2, 0.3, "%d Thresholds" % config)
     tex.SetNDC()
     tex.SetTextAlign(13)
     tex.SetTextFont(61)
     tex.SetTextSize(0.04)
     tex.SetTextColor(ROOT.kBlue)
     tex.SetLineWidth(2)
-    tex.Draw()
+    # tex.Draw()
     c1.SetGrid()
 
 
     box = ROOT.TBox(10, 8, 70, 12)
-    # box = ROOT.TBox(10, 13, 70, 17)
-    # box = ROOT.TBox(10, 13, 70, 15)
-    # box = ROOT.TBox(10, 17, 70, 19)
-    # # box = ROOT.TBox(0, 27, 70, 28)
     box.SetFillColor(38)
     box.SetFillStyle(3002)
-    # box.Draw()
-    # box = ROOT.TBox(10, 13, 70, 17)
-
-    # l47.DrawLine(55, 0, 55,100)
 
     c1.Update()
-    c1.SaveAs("plots2/%s_%d.root" % (key, config))
-    c1.SaveAs("plots2/%s_%d.png" % (key, config))
-    c1.SaveAs("plots2/%s_%d.pdf" % (key, config))
-    # wait()
+    c1.SaveAs("plots/%s_%d.root" % (key, config))
+    c1.SaveAs("plots/%s_%d.png" % (key, config))
+    c1.SaveAs("plots/%s_%d.pdf" % (key, config))
 
 if __name__ == "__main__":
     allfiles = glob.glob(filedir)
-    if not os.path.exists("plots2"):
-        os.mkdir("plots2")
+    if not os.path.exists("plots"):
+        os.mkdir("plots")
 
     df = pd.DataFrame()
     flist = [ ]
@@ -296,6 +232,9 @@ if __name__ == "__main__":
         flist.append(df_)
     df = pd.concat(flist)
 
+    ## Redefine PatMap for each L1Seed in the dataframe
+    PatMap = {k:k for k in pd.unique(df.L1Seed)}
+
     ROOT.gStyle.SetOptStat(000000000)
     tdrstyle.setTDRStyle()
     c1 = ROOT.TCanvas("fd","Fdf", 1200, 1000)
@@ -303,18 +242,7 @@ if __name__ == "__main__":
     leg.SetFillColor(0)
     leg.SetBorderSize(0)
     leg.SetBorderSize(0)
-    # leg.SetTextSize(0.06976744);
     leg.SetFillStyle(0)
     leg.SetTextFont(62)
-    # for config in [2016, 2017]:
-    for config in [2017]:
-        if config == 2016:
-            nBunches = 2208
-
-        if config == 2017:
-            nBunches = 2592
-        for k, v in PatMap.items():
-            DrawL1(k, v)
-            # wait()
-
-
+    for k, v in PatMap.items():
+        DrawL1(k, v)
