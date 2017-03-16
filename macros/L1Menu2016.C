@@ -337,6 +337,7 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
       continue;
     if (line.at(0) == '%')
     {
+      std::cout << "Parsing config from menu: " << line  << std::endl;
       ParseConfig(line);
       continue;
     }
@@ -487,6 +488,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
       continue;
     if (line.at(0) == '%')
     {
+      std::cout << "Parsing config from menu: " << line  << std::endl;
       ParseConfig(line);
       continue;
     }
@@ -623,6 +625,7 @@ bool L1Menu2016::OpenWithList(std::string filelist)
       continue;
     if (line.at(0) == '%')
     {
+      std::cout << "Parsing config from ntuple list: " << line  << std::endl;
       ParseConfig(line);
       continue;
     }

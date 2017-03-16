@@ -619,10 +619,11 @@ bool L1Ntuple::PrintRecoTree() const
 // ===========================================================================
 std::map<std::string, std::string> L1Ntuple::GetuGTAlias(TChain* fl1uGT)
 {
-  fl1uGT->GetEntry(1);
-
   std::map<std::string, std::string> SeedAlias;
   std::vector<std::string> names;
+  if (fl1uGT == NULL)  return SeedAlias;
+
+  fl1uGT->GetEntry(1);
   TList * aliases = fl1uGT->GetTree()->GetListOfAliases();
   TIter iter(aliases);
   std::for_each(iter.Begin(), TIter::End(), [&](TObject* alias){ names.push_back(alias->GetName()); } );
