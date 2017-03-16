@@ -233,7 +233,7 @@ if __name__ == "__main__":
     df = pd.concat(flist)
 
     ## Redefine PatMap for each L1Seed in the dataframe
-    PatMap = {k:k for k in pd.unique(df.L1Seed)}
+    # PatMap = {k:k for k in pd.unique(df.L1Seed)}
 
     ROOT.gStyle.SetOptStat(000000000)
     tdrstyle.setTDRStyle()
@@ -246,3 +246,4 @@ if __name__ == "__main__":
     leg.SetTextFont(62)
     for k, v in PatMap.items():
         DrawL1(k, v)
+        # wait()
