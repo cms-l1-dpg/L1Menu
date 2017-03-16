@@ -7,15 +7,15 @@ Package to put together code and configuration file to prepare first version of 
 #### The Stage2 emulator and L1Ntuples package
 
 <pre><code>
-cmsrel CMSSW_8_0_24
-cd CMSSW_8_0_24/src
+cmsrel CMSSW_9_0_0_pre6
+cd CMSSW_9_0_0_pre6/src
 cmsenv
 git cms-init
 </code></pre>
 
 #### L1Menu DPG package for menu-making 
 <pre><code>
-git clone -b 2017-Tune git@github.com:cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
+git clone -b git@github.com:cms-l1-dpg/L1Menu.git L1TriggerDPG/L1Menu
 cd L1TriggerDPG/L1Menu/macros
 make -j 9
 </code></pre>
@@ -26,14 +26,14 @@ make -j 9
 Beside the old code inherited from 2015 L1Menu, a new executable *testMenu2016* is rewritten for easier tunning process.
 
 <pre><code>
-$ ./testMenu2016 -h
+ ./testMenu2016 -h
 Allowed options:
   -h [ --help ]                         produce help message
-  -m [ --menufile ] arg (=menu/Menu_259721_TSGv3_FixPre_Mu18.txt)
+  -m [ --menufile ] arg (=menu/Slim2E34.txt)
                                         set the input menu
-  -l [ --filelist ] arg (=ntuple/r259721_tsgv3.list)
+  -l [ --filelist ] arg (=ntuple/Train_v87p3_PU55.list)
                                         set the input ntuple list
-  -u [ --Lumilist ] arg (=menu/run_lumi.csv)
+  -u [ --Lumilist ] arg (=menu/TrainPLTZ.csv)
                                         set the input lumi list
   -o [ --outfilename ] arg (=Auto)      set output file name
   -d [ --outputdir ] arg (=results)     set output directory
@@ -64,6 +64,7 @@ Allowed options:
   --SelectEvent arg (=-1)               Select specific event
   --SelectLS arg                        Select specific LS ranges
   --SelectBX arg                        Select specific BX ranges
+  --SelectCol arg                       Select prescale column from input csv menu
 </code></pre>
 
 #### Tips
@@ -71,6 +72,7 @@ Allowed options:
                    negative number will be treated as L1 and HLT ZB prescales for post-deadtime rate estimation.
 * `--SelectLS string`: SelectLS allows JSON-like format, like "[1, 30], [34, 40]"
 * `--SelectBX string`: SelectBX allows JSON-like format, like "[1, 30], [34, 40]"
+* If you set the prescale of a L1Seed to -1 in the menu, the code will produce rates of two prescale columns, with/without this L1Seed.
 
 
 

@@ -35,9 +35,9 @@ int main ( int argc, char *argv[] )
   namespace po = boost::program_options;
   // Declare the supported options.
   boost::program_options::options_description desc("Allowed options");
-  const std::string defaultMenu = "menu/Menu_259721_TSGv3_FixPre_Mu18.txt";
-  const std::string defaultntuple = "ntuple/r259721_tsgv3.list";
-  const std::string defaultLumi = "menu/run_lumi.csv";
+  const std::string defaultMenu = "menu/Slim2E34.txt";
+  const std::string defaultntuple = "ntuple/Train_v87p3_PU55.list";
+  const std::string defaultLumi = "menu/TrainPLTZ.csv";
 
   desc.add_options()
     ("help,h", "produce help message")
