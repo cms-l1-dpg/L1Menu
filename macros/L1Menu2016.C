@@ -674,14 +674,14 @@ bool L1Menu2016::ParseConfig(const std::string line)
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Parse for string inputs ~~~~~
   bool parString = true;
-  iss.str("");
+  std::istringstream isss(line);
   key=sign="";
   std::string valstr="";
 
   if (parDouble)
   {
-    iss >> sign >> key >> sign >> valstr;
-    parString = iss.fail();
+    isss >> sign >> std::ws >> key >>std::ws >> sign >>std::ws >> valstr;
+    parString = isss.fail();
   }
 
   if (!parString && L1ConfigStr.find(key) != L1ConfigStr.end())
@@ -755,9 +755,6 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
   L1SeedFunc();
   FormPrescaleColumns();
 
-
-  // Set the Run Config as highest priority
-  GetRunConfig(config, configstr);
   PrintConfig();
   BookHistogram();
   
