@@ -24,11 +24,10 @@ ifneq ($(shell echo $$CMSSW_BASE), )
 endif
 
 TestOBJS = L1Ntuple L1AlgoFactory L1Menu2016 L1Plot L1TnP L1uGT PreColumn
-ifneq ($(wildcard menulib.cc), )
+
+ifeq ($(wildcard menulib.cc)$(wildcard menulib.hh), menulib.ccmenulib.hh)
+  CXXFLAGS += -DUTM_MENULIB
   TestOBJS += menulib
-endif
-ifneq ($(wildcard menulib.hh), )
-  CXXFLAGS += -DUTM_MENULIB_HEADER
 endif
 
 OBJS := $(TestOBJS:%=$(ODIR)/%.o)

@@ -746,14 +746,15 @@ bool L1Menu2016::PrintConfig() const
 bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::string, std::string> &configstr)
 {
   GetRunConfig(config, configstr);
+  OpenWithList(tuplefilename);
 
   //Prepare Menu
+  std::cout << "Preparing menus __________________________________ " << std::endl;
   ReadMenu();
   BuildRelation();
   L1SeedFunc();
   FormPrescaleColumns();
 
-  OpenWithList(tuplefilename);
 
   // Set the Run Config as highest priority
   GetRunConfig(config, configstr);
@@ -1097,6 +1098,10 @@ bool L1Menu2016::BuildRelation()
 // ===========================================================================
 bool L1Menu2016::L1SeedFunc()
 {
+#ifdef UTM_MENULIB
+  addFuncFromName(L1SeedFun, upgrade_);
+#endif
+    
   for(auto &L1Seed : mL1Seed)
   {
     if (L1SeedFun.find(L1Seed.first) != L1SeedFun.end())
@@ -1105,9 +1110,7 @@ bool L1Menu2016::L1SeedFunc()
     if(ParseL1Seed(L1Seed.first))
       continue;
 
-#ifndef UTM_MENULIB
     std::cout << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
-#endif
   }
 
   return true;
@@ -1147,11 +1150,7 @@ bool L1Menu2016::RunMenu()
       IsFired = l1uGT->GetuGTDecision(seed.first);
     }
     else
-#ifdef UTM_MENULIB
-      IsFired = getFuncFromName(seed.first)(upgrade_);
-#else
       IsFired = CheckL1Seed(seed.first);
-#endif /* UTM_MENULIB */
 
     for(auto col : ColumnMap)
     {
