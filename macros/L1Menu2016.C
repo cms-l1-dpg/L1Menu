@@ -1099,7 +1099,7 @@ bool L1Menu2016::BuildRelation()
 bool L1Menu2016::L1SeedFunc()
 {
 #ifdef UTM_MENULIB
-  addFuncFromName(L1SeedFun, upgrade_);
+  addFuncFromName(L1SeedFun, upgrade_, l1CaloTower_);
 #endif
     
   for(auto &L1Seed : mL1Seed)
