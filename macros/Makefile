@@ -32,7 +32,7 @@ endif
 
 OBJS := $(TestOBJS:%=$(ODIR)/%.o)
 
-PROGRAM = testMenu2016 RunL1Menu2016
+PROGRAM = testMenu2016
 
 MKBIN = $(CXX) $(CXXFLAGS) `root-config  --libs --cflags` -lMinuit -lGenVector
 
@@ -46,11 +46,6 @@ all : $(PROGRAM)
 
 comparePlots : comparePlots.cc 
 	$(MKBIN) $< -o $@ 
-
-RunL1Menu2016 : $(ODIR)/RunL1Menu2016.o $(OBJS)
-	@echo "Linking $(PROGRAM) ..."
-	$(LD) $^ $(LIBS)  -o $@
-	@echo "done"
 
 testMenu2016 : $(ODIR)/testMenu2016.o $(OBJS)
 	@echo "Linking $(PROGRAM) ..."
