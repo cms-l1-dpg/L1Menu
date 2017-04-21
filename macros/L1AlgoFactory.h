@@ -175,7 +175,6 @@ class L1AlgoFactory: public L1Ntuple{
   Bool_t Tau_ETM(Float_t taucut, Float_t ETMcut, Bool_t isTauER, Bool_t isTauIso);
   void Tau_ETMPt(Float_t& taucut, Float_t& ETMcut, Bool_t isTauER, Bool_t isTauIso);
   bool DoubleMuMass(float mu1cut, float mu2cut, float muER, int Qual, bool isOS, float Mlow, float Mhigh);
-  bool TripleEGIso(Float_t& cut1, Float_t& cut2, Float_t& cut3, bool isIso1, bool isIso2, bool isIso3);
 
   bool DoubleMu_ETMHF_Jets( const float mu1pt, const float mu2pt, const int muqual, const bool ismuER, 
       const float etmcut, const bool isETMHF, const float singleJetpt, const float diJetpt);
@@ -184,6 +183,10 @@ class L1AlgoFactory: public L1Ntuple{
   bool DoubleMu_HTT( Float_t cut1, Float_t cut2, int muqual, Bool_t isER, Float_t HTTcut);
   bool ETM_JetsComb( const float etmcut, const bool isETMHF, const float singleJetpt, const float diJetpt, const float triJetpt, const bool skipJetEta);
   bool DoubleMudRMax(float mu1cut, float mu2cut, float muER, int Qual, bool isOS, float dRMax);
+  bool TripleEGIso(Float_t cut1, Float_t cut2, Float_t cut3, bool isIso1, bool isIso2, bool isIso3);
+  bool TripleMu_DoubleMuMass( const float triMupt1, const float triMupt2, const float triMupt3, 
+      const int triMuQual, const float diMupt1, const float diMupt2, const bool diMuOS, 
+      const float diMuMmin, const float diMuMmax) const;
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Setting variables ~~~~~
   void SetMuonER(float newER);

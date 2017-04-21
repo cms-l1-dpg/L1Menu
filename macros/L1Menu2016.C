@@ -307,6 +307,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu4er1p8_HighQ_OS_dR_Max2p0"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 4  , 4 , 1.8, 2 , true, 2.0);
 
   L1SeedFun["L1_DoubleMu5_OS_EG12"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 5.,12.,1, true);
+  L1SeedFun["L1_TripleMu_5_0_0_DoubleMu_5_0_OS_M0to17"] = std::bind(&L1AlgoFactory::TripleMu_DoubleMuMass, this, 5, 0, 0, 1, 5, 0, true, 0, 17);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SUSY:Laurent ~~~~~
   L1SeedFun["L1_DoubleMu_15_7"]       = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 7. , 1 , false);
@@ -343,6 +344,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu3HighQ_HTT200"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 3, 3, 2, false, 200);
   L1SeedFun["L1_DoubleMu3HighQ_HTT220"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 3, 3, 2, false, 220);
   L1SeedFun["L1_DoubleMu3HighQ_HTT240"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 3, 3, 2, false, 240);
+  L1SeedFun["L1_DoubleMu0HighQ_HTT100"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 0, 0, 2, false, 100);
 
   L1SeedFun["L1_ETMHF70_Jet60ORDiJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 70 , true, 60, 30, 0, false);
   L1SeedFun["L1_ETMHF75_Jet60ORDiJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 75 , true, 60, 30, 0, false);
@@ -363,6 +365,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_ETMHF110_Jet90ORDiJet45ORTriJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 110, true, 90, 45, 30, false);
   L1SeedFun["L1_ETMHF120_Jet90ORDiJet45ORTriJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 120, true, 90, 45, 30, false);
 
+  L1SeedFun["L1_TripleEG_Iso20_10_5"] = std::bind(&L1AlgoFactory::TripleEGIso, this, 20, 10, 5, true, false, false);
 
   
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HIG:Javier ~~~~~

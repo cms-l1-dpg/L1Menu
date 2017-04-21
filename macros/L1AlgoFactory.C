@@ -2820,61 +2820,31 @@ bool L1AlgoFactory::DoubleMuMass(float mu1cut, float mu2cut, float muER, int Qua
 //         Name:  L1AlgoFactory::TripleEGIso
 //  Description:  
 // ===========================================================================
-bool L1AlgoFactory::TripleEGIso(Float_t& cut1, Float_t& cut2, Float_t& cut3, bool isIso1, bool isIso2, bool isIso3)
+bool L1AlgoFactory::TripleEGIso(Float_t cut1, Float_t cut2, Float_t cut3, bool isIso1, bool isIso2, bool isIso3)
 {
   if(upgrade_->nEGs < 2) return false;
 
-  Float_t ele1ptmax = -10.;
-  Float_t ele2ptmax = -10.;
-  Float_t ele3ptmax = -10.;
-
-  bool ele1iso = false;
-  bool ele2iso = false;
-  bool ele3iso = false;
-
-  Float_t ele1Phimax = -1000.;
-  Float_t ele1Etamax = -1000.;
-
-  Float_t ele2Phimax = -1000.;
-  Float_t ele2Etamax = -1000.;
-
+  std::map<Float_t, int> EGPtIdx;
   for (UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
     Float_t pt = upgrade_->egEt.at(ue);
-    bool    iso = upgrade_->egIso.at(ue);
-    Float_t phi = upgrade_->egPhi.at(ue);
-    Float_t eta = upgrade_->egEta.at(ue);
-
-    if(fabs(pt-ele1ptmax) < 0.001 && fabs(phi-ele1Phimax) < 0.001 && fabs(eta-ele1Etamax) < 0.001) continue; //to avoid double counting in noniso/relaxiso lists
-    if(fabs(pt-ele2ptmax) < 0.001 && fabs(phi-ele2Phimax) < 0.001 && fabs(eta-ele2Etamax) < 0.001) continue; //to avoid double counting in noniso/relaxiso lists
-
-    if(pt >= ele1ptmax)
-    {
-      ele3ptmax = ele2ptmax;
-      ele2ptmax = ele1ptmax;
-      ele1ptmax = pt;
-      ele1iso = iso;
-      ele1Phimax = phi;
-      ele1Etamax = eta;
-    }
-    else if(pt >= ele2ptmax){
-      ele3ptmax = ele2ptmax;
-      ele2ptmax = pt;
-      ele2iso = iso;
-      ele1Phimax = phi;
-      ele2Phimax = phi;
-      ele2Etamax = eta;
-    }
-    else if(pt >= ele3ptmax) ele3ptmax = pt;
+    EGPtIdx[pt] = ue;
   }
 
-  if(ele3ptmax >= 0.){
-    cut1 = ele1ptmax;
-    cut2 = ele2ptmax;
-    cut3 = ele3ptmax;
-  }
-
+  if (EGPtIdx.size() < 3) return false;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ First EG ~~~~~
+  std::map<Float_t, int>::reverse_iterator it=EGPtIdx.rbegin();
+  if (upgrade_->egEt.at(it->second) < cut1) return false;
+  if (isIso1 && !upgrade_->egIso.at(it->second)) return false;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Second EG ~~~~~
+  it++;
+  if (upgrade_->egEt.at(it->second) < cut2) return false;
+  if (isIso2 && !upgrade_->egIso.at(it->second)) return false;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Third EG ~~~~~
+  it++;
+  if (upgrade_->egEt.at(it->second) < cut3) return false;
+  if (isIso3 && !upgrade_->egIso.at(it->second)) return false;
 
   return true;
 }       // -----  end of function L1AlgoFactory::TripleEGIso  -----
@@ -3136,3 +3106,86 @@ bool L1AlgoFactory::DoubleMudRMax(float mu1cut, float mu2cut, float muER, int Qu
   }
   return false;
 }       // -----  end of function L1AlgoFactory::DoubleMudRMax  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::TripleMu_DoubleMuMass
+//  Description:  // for L1_TripleMu_5_0_0_DoubleMu_5_0_OS_M0to17;
+// ===========================================================================
+bool L1AlgoFactory::TripleMu_DoubleMuMass(
+    const float triMupt1,
+    const float triMupt2,
+    const float triMupt3,
+    const int triMuQual,
+    const float diMupt1,
+    const float diMupt2,
+    const bool diMuOS,
+    const float diMuMmin,
+    const float diMuMmax) const
+{
+
+  if(upgrade_->nMuons < 3) return false;
+
+  std::map<Float_t, int> MuPtIdx;
+  for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);		
+    if(bx != 0) continue;
+    if(!PassMuonQual(imu, triMuQual)) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);			
+    MuPtIdx[pt] = imu;
+  }
+  if (MuPtIdx.size()< 3) return false;
+
+  UInt_t mu1idx = -10;
+  UInt_t mu2idx = -10;
+  UInt_t mu3idx = -10;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ First Mu ~~~~~
+  std::map<Float_t, int>::reverse_iterator it=MuPtIdx.rbegin();
+  if (upgrade_->muonEt.at(it->second) < triMupt1) return false;
+  mu1idx = it->second;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Second EG ~~~~~
+  it++;
+  if (upgrade_->muonEt.at(it->second) < triMupt2) return false;
+  mu2idx = it->second;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Third EG ~~~~~
+  it++;
+  if (upgrade_->muonEt.at(it->second) < triMupt3) return false;
+  mu3idx = it->second;
+
+
+//~~~~~~~~~~~~~~~~ This algo takes dimuon mass from the triple muon legs ~~~~~
+  std::vector<std::pair<UInt_t, UInt_t> > muonPair;
+  muonPair.push_back(std::make_pair(mu1idx, mu2idx));
+  muonPair.push_back(std::make_pair(mu1idx, mu3idx));
+  std::vector<Float_t> diMuMass;
+
+  for(auto mp : muonPair)
+  {
+    Float_t pt1 = upgrade_->muonEt.at(mp.first);			
+    Float_t pt2 = upgrade_->muonEt.at(mp.second);			
+    if (pt1 < diMupt1 || pt2 < diMupt2) continue;
+
+    Int_t charge1 = upgrade_->muonChg.at(mp.first);
+    Int_t charge2 = upgrade_->muonChg.at(mp.second);
+    if (diMuOS &&  charge1*charge2 > 0) continue;
+
+    TLorentzVector mu1(0 , 0 , 0 , 0);
+    TLorentzVector mu2(0 , 0 , 0 , 0);
+    mu1.SetPtEtaPhiM( upgrade_->muonEt.at(mp.first),
+        upgrade_->muonEta.at(mp.first),
+        upgrade_->muonPhi.at(mp.first),0);
+    mu2.SetPtEtaPhiM( upgrade_->muonEt.at(mp.second),
+        upgrade_->muonEta.at(mp.second),
+        upgrade_->muonPhi.at(mp.second),0);
+    diMuMass.push_back((mu1+mu2).M());
+  }
+
+  if (diMuMass.size() == 0 ) return false;
+  
+  for(auto m : diMuMass)
+  {
+    if (m >= diMuMmin && m <= diMuMmax ) return true;
+  }
+
+  return false;
+}       // -----  end of function L1AlgoFactory::TripleMu_DoubleMuMass  -----
