@@ -1228,7 +1228,7 @@ void L1AlgoFactory::Mu_JetCentral_deltaPt(Float_t& mucut, Float_t& jetcut) {
   return;
 }
 
-void L1AlgoFactory::EG_JetPt(Float_t& EGcut, Float_t& FWcut, bool isEGER, bool isEGIso, bool isJetCen, Float_t dRMin) {
+void L1AlgoFactory::EG_JetPt(Float_t& EGcut, Float_t& Jetcut, bool isEGER, bool isEGIso, bool isJetCen, Float_t dRMin) {
 
   Float_t eleptmax = -10.;
   Float_t jetptmax = -10.;
@@ -1247,7 +1247,7 @@ void L1AlgoFactory::EG_JetPt(Float_t& EGcut, Float_t& FWcut, bool isEGER, bool i
       if(jetbx != 0) continue;
       Float_t jeteta = upgrade_->jetEta.at(uj);
       Float_t jetphi = upgrade_->jetPhi.at(uj);
-      Bool_t isFwdJet = fabs(jeteta) > 3. ? true : false;
+      Bool_t isFwdJet = fabs(jeteta) > jetCentFwd ? true : false;
       if(isJetCen && !isFwdJet) continue;
 
       if (correlatedRMin (EGeta, jeteta, EGphi, jetphi,dRMin)) continue;
@@ -1261,7 +1261,7 @@ void L1AlgoFactory::EG_JetPt(Float_t& EGcut, Float_t& FWcut, bool isEGER, bool i
 
   if(eleptmax >= 0. && jetptmax >= 0.){
     EGcut = eleptmax;
-    FWcut = jetptmax;
+    Jetcut = jetptmax;
   }
 
   return;
