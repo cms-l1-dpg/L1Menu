@@ -56,7 +56,7 @@ class L1AlgoFactory: public L1Ntuple{
   void Mu_JetCentral_deltaPt(Float_t& mucut, Float_t& jetcut);
   void Mu_DoubleJetCentralPt(Float_t& mucut, Float_t& jetcut);
 
-  void EG_JetPt(Float_t& EGcut, Float_t& FWcut, bool isEGER, bool isEGIso, bool isJetCen, Float_t dRMin);
+  void EG_JetPt(Float_t& EGcut, Float_t& Jetcut, Float_t dRMin, bool isEGER, bool isEGIso, bool isJetCen);
   void EG_DoubleJetCentralPt(Float_t& EGcut, Float_t& jetcut);
   void EGer_TripleJetCentralPt(Float_t& EGcut, Float_t& jetcut, bool &isEGER, bool &isEGIso);
   void IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut, bool& IsIsoTau);
