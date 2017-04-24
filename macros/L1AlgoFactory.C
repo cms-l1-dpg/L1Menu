@@ -236,7 +236,7 @@ inline Bool_t L1AlgoFactory::correlateInEta(Float_t mueta, Float_t jeteta, Float
 inline Bool_t L1AlgoFactory::correlatedRMax(Float_t eta1, Float_t eta2, Float_t phi1, Float_t phi2, Float_t dRbound)
 {
   Float_t dEtaSq = pow(eta1 - eta2, 2);
-  Float_t dPhiSq = pow(phi1 - phi2, 2);
+  Float_t dPhiSq = pow(Phi_mpi_pi(phi1 - phi2), 2);
   if ( dEtaSq + dPhiSq > pow(dRbound, 2) ) return true;
   return false;
 }
@@ -244,7 +244,7 @@ inline Bool_t L1AlgoFactory::correlatedRMax(Float_t eta1, Float_t eta2, Float_t 
 inline Bool_t L1AlgoFactory::correlatedRMin(Float_t eta1, Float_t eta2, Float_t phi1, Float_t phi2, Float_t dRbound)
 {
   Float_t dEtaSq = pow(eta1 - eta2, 2);
-  Float_t dPhiSq = pow(phi1 - phi2, 2);
+  Float_t dPhiSq = pow(Phi_mpi_pi(phi1 - phi2), 2);
   if ( dEtaSq + dPhiSq < pow(dRbound, 2) ) return true;
   return false;
 }
@@ -1248,14 +1248,17 @@ void L1AlgoFactory::EG_JetPt(Float_t& EGcut, Float_t& Jetcut, Float_t dRMin, boo
       Float_t jeteta = upgrade_->jetEta.at(uj);
       Float_t jetphi = upgrade_->jetPhi.at(uj);
       Bool_t isFwdJet = fabs(jeteta) > jetCentFwd ? true : false;
-      if(isJetCen && !isFwdJet) continue;
+      if(isJetCen && isFwdJet) continue;
 
       if (correlatedRMin (EGeta, jeteta, EGphi, jetphi,dRMin)) continue;
 
       Float_t jetpt = upgrade_->jetEt.at(uj);
-      if (jetpt >= jetptmax) jetptmax = jetpt;
       Float_t EGpt  = upgrade_->egEt.at(ue);
-      if(EGpt >= eleptmax) eleptmax = EGpt;
+      if (jetpt >= jetptmax &&  EGpt >= eleptmax)
+      {
+        jetptmax = jetpt;
+        eleptmax = EGpt;
+      }
     }
   }
 
@@ -3190,3 +3193,33 @@ bool L1AlgoFactory::TripleMu_DoubleMuMass(
 
   return false;
 }       // -----  end of function L1AlgoFactory::TripleMu_DoubleMuMass  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::MuonCDC_dPhi
+//  Description:  
+// ===========================================================================
+//bool L1AlgoFactory::MuonCDC_dPhi(float mupt, int muQual, float muER, float dPhiMin, float dPhiMax)
+//{
+  //std::vector<int> topmuidx;
+  //std::vector<int> botmuidx;
+  //int topmuidx = -10;
+  //int botmuidx = -10;
+
+  //Float_t ptmax = -10.;
+
+  //for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
+    //if(!PassMuonQual(imu, muQual)) continue;
+    //if(fabs(eta) > muER) continue;
+    //Float_t pt = upgrade_->muonEt.at(imu);                       
+    //if (pt < mupt) continue;
+
+    //Int_t bx = upgrade_->muonBx.at(imu);
+    //Float_t phi = upgrade_->muonPhi.at(imu);
+    //if (bx == -1 && (phi >= 0.524 && phi <= 2.618))
+      //topmuidx.push_back(imu);
+    //if (bx == 0 &&  (phi >= 3.665 && phi <= 5.760))
+      //botmuidx.push_back(imu);
+  //}
+
+  //return true;
+//}       // -----  end of function L1AlgoFactory::MuonCDC_dPhi  -----
