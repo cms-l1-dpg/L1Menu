@@ -1113,12 +1113,17 @@ bool L1Plot::TestMuon()
   
   for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     if (upgrade_->muonQual.at(imu) < 12) continue;
+#ifdef  L1NTUPLE_MUONCORATVTX
+    Float_t eta = upgrade_->muonEtaAtVtx.at(imu);        
+#else      // -----  not L1NTUPLE_MUONCORATVTX  -----
+    Float_t eta = upgrade_->muonEta.at(imu);        
+#endif     // -----  not L1NTUPLE_MUONCORATVTX  -----
     if(upgrade_->muonEt.at(imu) > 5)  
-      hTest2F["Mu5BxEta"] -> Fill(upgrade_->muonEta.at(imu), upgrade_->muonBx.at(imu));
+      hTest2F["Mu5BxEta"] -> Fill(eta, upgrade_->muonBx.at(imu));
     if(upgrade_->muonEt.at(imu) > 16)  
-      hTest2F["Mu16BxEta"] -> Fill(upgrade_->muonEta.at(imu), upgrade_->muonBx.at(imu));
+      hTest2F["Mu16BxEta"] -> Fill(eta, upgrade_->muonBx.at(imu));
     if(upgrade_->muonEt.at(imu) > 25)  
-      hTest2F["Mu25BxEta"] -> Fill(upgrade_->muonEta.at(imu), upgrade_->muonBx.at(imu));
+      hTest2F["Mu25BxEta"] -> Fill(eta, upgrade_->muonBx.at(imu));
   }
 
   return true;
@@ -1201,7 +1206,12 @@ float L1Plot::SingleMuEta(float ptCut, unsigned int qualmin) const
     }
   }
   
-  return maxPt>ptCut ? upgrade_ -> muonEta.at(iMuMaxPt) : -10.; 
+#ifdef  L1NTUPLE_MUONCORATVTX
+    Float_t eta = upgrade_->muonEtaAtVtx.at(iMuMaxPt);        
+#else      // -----  not L1NTUPLE_MUONCORATVTX  -----
+    Float_t eta = upgrade_->muonEta.at(iMuMaxPt);        
+#endif     // -----  not L1NTUPLE_MUONCORATVTX  -----
+  return maxPt>ptCut ? eta : -10.; 
 }       // -----  end of function L1Plot::SingleMuEta  -----
 
 
@@ -1240,13 +1250,20 @@ float L1Plot::FillRateDoubleMu(float pt2Cut, unsigned int qualmin, float pt1Cut)
   if (mu1idx == mu2idx || mu1idx == -1 || mu2idx == -1 || mu1ptmax < pt1Cut || mu2ptmax < pt2Cut)
     return false;
 
+#ifdef  L1NTUPLE_MUONCORATVTX
+    Float_t eta1 = upgrade_->muonEtaAtVtx.at(mu1idx);        
+    Float_t eta2 = upgrade_->muonEtaAtVtx.at(mu2idx);        
+#else      // -----  not L1NTUPLE_MUONCORATVTX  -----
+    Float_t eta1 = upgrade_->muonEta.at(mu1idx);        
+    Float_t eta2 = upgrade_->muonEta.at(mu2idx);        
+#endif     // -----  not L1NTUPLE_MUONCORATVTX  -----
   if (mu2ptmax >= 0)
-    hRate1F["nDiMu0VsEta"]->Fill(upgrade_->muonEta.at(mu2idx));
+    hRate1F["nDiMu0VsEta"]->Fill(eta2);
   if (mu2ptmax >= 3)
-    hRate1F["nDiMu0VsEta"]->Fill(upgrade_->muonEta.at(mu2idx));
+    hRate1F["nDiMu0VsEta"]->Fill(eta2);
 
   hRate2F["nDiMuIdx1VsIdx2"]->Fill(upgrade_->muonTfMuonIdx.at(mu1idx), upgrade_->muonTfMuonIdx.at(mu2idx));
-  hRate2F["nDiMuEta1VsEta2"]->Fill(upgrade_->muonEta.at(mu1idx), upgrade_->muonEta.at(mu2idx));
+  hRate2F["nDiMuEta1VsEta2"]->Fill(eta1, eta2);
   return true;
 
 }       // -----  end of function L1Plot::FillRateDoubleMu  -----

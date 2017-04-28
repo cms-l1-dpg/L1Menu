@@ -5,6 +5,8 @@
 #ifndef L1Ntuple_h
 #define L1Ntuple_h
 
+#define L1NTUPLE_MUONCORATVTX
+
 #include <vector>
 #include <string>
 #include <iostream>

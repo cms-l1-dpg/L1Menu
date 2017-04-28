@@ -34,7 +34,7 @@ class L1AlgoFactory: public L1Ntuple{
   void ComplexSingleMuPt(Float_t& ptcut, Bool_t isER, Int_t qualmin, int muonType=0, int muonBX=0);
 
   void SingleEGPt(Float_t& ptcut, Bool_t isIsolated, Bool_t isER);
-  void DoubleEGPt(Float_t& cut1, Float_t& cut2, Bool_t isIsolated1=false, Bool_t isIsolated2=false, Bool_t isER=false );
+  void DoubleEGPt(Float_t& ele1pt, Float_t& ele2pt, Bool_t isIsolated = false, Bool_t isER = false);
   void TripleEGPt(Float_t& ele1pt, Float_t& ele2pt, Float_t& ele3pt);
 
   void SingleJetPt(Float_t& ptcut, Bool_t isCentral = false);
@@ -80,7 +80,7 @@ class L1AlgoFactory: public L1Ntuple{
   Bool_t QuadMu(Float_t mu1pt, Float_t mu2pt, Float_t mu3pt, Float_t mu4pt, Int_t qualmin);
 
   Bool_t SingleEG(Float_t ptcut, Bool_t isIsolated, Bool_t isER);
-  Bool_t DoubleEG(Float_t ptcut1, Float_t ptcut2, Bool_t isIsolated1=false, Bool_t isIsolated2=false, Bool_t isER=false );
+  Bool_t DoubleEG(Float_t ptcut1, Float_t ptcut2, Bool_t isIsolated = false);
   Bool_t TripleEG(Float_t ptcut1, Float_t ptcut2, Float_t ptcut3);
 
   Bool_t SingleJet(Float_t ptcut, Bool_t isCentral = false);
@@ -119,6 +119,7 @@ class L1AlgoFactory: public L1Ntuple{
   Int_t phiINjetCoord(Double_t phi);
   Int_t etaINjetCoord(Double_t eta);
   inline Double_t degree(Double_t radian);
+  inline Bool_t correlateMT(Float_t pt1, Float_t pt2, Float_t phi1, Float_t phi2, Float_t MTcut);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MultiMuon ~~~~~
   Bool_t DoubleMuXOpen(Float_t mu1pt);
@@ -178,8 +179,6 @@ class L1AlgoFactory: public L1Ntuple{
 
   bool DoubleMu_ETMHF_Jets( const float mu1pt, const float mu2pt, const int muqual, const bool ismuER, 
       const float etmcut, const bool isETMHF, const float singleJetpt, const float diJetpt);
-  bool SingleMu_ETMHF_Jets( const float mupt, const int muqual, const bool ismuER, const float etmcut, 
-      const bool isETMHF, const float singleJetpt, const float diJetpt);
   bool DoubleMu_HTT( Float_t cut1, Float_t cut2, int muqual, Bool_t isER, Float_t HTTcut);
   bool ETM_JetsComb( const float etmcut, const bool isETMHF, const float singleJetpt, const float diJetpt, const float triJetpt, const bool skipJetEta);
   bool DoubleMudRMax(float mu1cut, float mu2cut, float muER, int Qual, bool isOS, float dRMax);
@@ -188,6 +187,10 @@ class L1AlgoFactory: public L1Ntuple{
       const int triMuQual, const float diMupt1, const float diMupt2, const bool diMuOS, 
       const float diMuMmin, const float diMuMmax) const;
 
+  bool DoubleEGIsoPer(Float_t cut1, Float_t cut2, Bool_t Iso1, Bool_t Iso2, Bool_t isER);
+  bool TripleEGIsoPer(Float_t cut1, Float_t cut2, Float_t cut3, bool isIso1, bool isIso2, bool isIso3);
+  bool SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Bool_t isIso, Bool_t isER);
+  bool MuonCDC_dPhi(float mupt, int muQual, float muER, float dPhiMin, float dPhiMax);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Setting variables ~~~~~
   void SetMuonER(float newER);
   void SetUseUpgradeLyr1(bool option);

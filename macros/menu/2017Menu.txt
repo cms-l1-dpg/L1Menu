@@ -257,25 +257,19 @@ L1_ETMHF80_Jet90ORDiJet45ORTriJet30                          339 1        Cross 
 L1_ETMHF90_Jet90ORDiJet45ORTriJet30                          340 1        Cross SUS     #Laurent
 L1_ETMHF100_Jet90ORDiJet45ORTriJet30                         341 1        Cross SUS     #Laurent
 L1_ETMHF110_Jet90ORDiJet45ORTriJet30                         342 1        Cross SUS     #Laurent
-L1_DoubleMu0er1p4_HighQ_OS_dR_Max1p3                         350 1        Mu    BPH     #Sergey
-L1_DoubleMu0er1p4_HighQ_OS_M0to9                             351 1        Mu    BPH     #Sergey
-L1_DoubleMu0er1p5_HighQ_OS_dR_Max1p3                         352 1        Mu    BPH     #Sergey
-L1_DoubleMu0er1p5_HighQ_OS_M0to9                             353 1        Mu    BPH     #Sergey
-L1_DoubleMu3er1p6_HighQ_OS_dR_Max2p0                         354 1        Mu    BPH     #Sergey
-L1_DoubleMu3er1p6_HighQ_OS_M6to20                            355 1        Mu    BPH     #Sergey
-L1_DoubleMu3er1p8_HighQ_OS_dR_Max2p0                         356 1        Mu    BPH     #Sergey
-L1_DoubleMu3er1p8_HighQ_OS_M6to20                            357 1        Mu    BPH     #Sergey
-L1_DoubleMu4er1p8_HighQ_OS_dR_Max2p0                         358 1        Mu    BPH     #Sergey
-L1_DoubleMu4er1p8_HighQ_OS_M6to20                            359 1        Mu    BPH     #Sergey
-L1_DoubleMu4p5_HighQ_OS_M0to9                                360 1        Mu    BPH     #Sergey
-L1_DoubleMu5_HighQ_OS_M0to9                                  361 1        Mu    BPH     #Sergey
-L1_DoubleMu6_HighQ_OS_M0to20                                 362 1        Mu    BPH     #Sergey
-L1_DoubleMu_7_5_HighQ_OS_M0to20                              363 1        Mu    BPH     #Sergey
-L1_DoubleMu5_OS_EG12                                         364 1        Cross BPH     #Sergey
-L1_DoubleMu_9_2_HighQ_OS_M0to9                               365 1        Mu    BPH     #Sergey
-L1_DoubleMu_7_4_HighQ_OS_M0to9                               366 1        Mu    BPH     #Sergey
-L1_DoubleMu6_HighQ_OS                                        367 1        Mu    BPH     #Sergey
-L1_TripleMu_5_0_0_DoubleMu_5_0_OS_M0to17                     368 1        Mu    BPH     #Sergey
+L1_DoubleMu4_OS_EG12                                         358 1        Cross BPH #Sergey
+L1_DoubleMu5_OS_EG12                                         359 1        Cross BPH #Sergey
+L1_DoubleMu6_HighQ_OS                                        360 1        Mu    BPH #Sergey
+L1_DoubleMu0er1p4_HighQ_OS_dR_Max1p4                         361 1        Mu    BPH #Sergey
+L1_DoubleMu0er1p5_HighQ_OS_dR_Max1p4                         362 1        Mu    BPH #Sergey
+L1_DoubleMu4_HighQ_OS_dR_Max1p2                              363 1        Mu    BPH #Sergey
+L1_DoubleMu4p5_HighQ_OS_dR_Max1p2                            364 1        Mu    BPH #Sergey
+L1_DoubleMu4p5er2p0_HighQ_OS_M7to18                          365 1        Mu    BPH #Sergey
+L1_DoubleMu5_HighQ_OS_M7to18                                 366 1        Mu    BPH #Sergey
+L1_DoubleMu_20_2_HighQ_M0to20                                367 1        Mu    BPH #Sergey
+L1_TripleMu_5_0_0_DoubleMu_5_0_OS_M0to17                     368 1        Mu    BPH #Sergey
+L1_TripleMu_5_3_0_DoubleMu_5_3_OS_M0to17                     369 1        Mu    BPH #Sergey(Backup)
+
 L1_IsolatedBunch                                             400 1        External
 L1_FirstBunchInTrain                                         401 1        External
 L1_FirstBunchAfterTrain                                      402 1        External
@@ -350,10 +344,6 @@ L1_BRIL_bit020                                               480 1        Extern
 L1_BRIL_bit021                                               481 1        External
 L1_Last_Collision_in_Train                                   482 1        External
 L1_First_Collision_in_Train                                  483 1        External
-L1_SingleMu0_ETMHF70_Jet60ORDiJet30                          500 1        Cross SUS     #Laurent
-L1_SingleMu0_ETMHF80_Jet60ORDiJet30                          501 1        Cross SUS     #Laurent
-L1_SingleMu0_ETMHF90_Jet60ORDiJet30                          502 1        Cross SUS     #Laurent
-L1_SingleMu0_ETMHF100_Jet60ORDiJet30                         503 1        Cross SUS     #Laurent
 L1_DoubleMu3HighQ_HTT200                                     504 1        Cross SUS     #Laurent
 L1_DoubleMu3HighQ_HTT220                                     505 1        Cross SUS     #Laurent
 L1_DoubleMu3HighQ_HTT240                                     506 1        Cross SUS     #Laurent
@@ -362,10 +352,11 @@ L1_CDC_4_er1p2_TOP120_DPHI2p618_3p665                        508 1        Cross 
 L1_Mu20_IsoEG17                                              509 1        Cross Top     #Sergio
 L1_Mu7_EG23                                                  510 1        Cross Top     #Sergio
 L1_Mu7_IsoEG20                                               511 1        Cross Top     #Sergio
-L1_TripleMu_5_3_0_DoubleMu_5_3_OS_M0to17                     512 1        Mu    BPH     #Sergey(Backup)
 L1_Mu7_IsoEG23                                               513 1        Cross Top     #Sergio
 L1_HTT360                                                    514 1        Sum   Slim
 L1_Mu6_DoubleEG17                                            410 1        Cross SMP     #Gabriella
 L1_DoubleMu7_EG7                                             428 1        Cross SMP     #Gabriella
+L1_SingleIsoEG33_Mt40                                        429 1        Cross ECAL     #ABeschi
+L1_DoubleMu7HighQ_EG7                                        430 1        Cross SUS     #Laurent
 
 #vim:ft=python:nolbr:cc=88:tw=0
