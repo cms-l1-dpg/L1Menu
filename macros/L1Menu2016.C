@@ -269,8 +269,8 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_Mu18_JetC24"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 18, 24, false, true);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Top:Marina ~~~~~
   L1SeedFun["L1_HTT250_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 250, 70, 55, 40, 35, 2.5);
-  L1SeedFun["L1_HTT280_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 250, 70, 55, 40, 35, 2.5);
-  L1SeedFun["L1_HTT300_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 250, 70, 55, 40, 35, 2.5);
+  L1SeedFun["L1_HTT280_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 280, 70, 55, 40, 35, 2.5);
+  L1SeedFun["L1_HTT300_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 300, 70, 55, 40, 35, 2.5);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Top:JIRA38 ~~~~~
   L1SeedFun["L1_DoubleJet100er2p3_dEtaMax1p6"] = std::bind(&L1AlgoFactory::DoubleJet_EtaRes_deltaEta, this, 100, 100, 2.3, 1.6);
   L1SeedFun["L1_Mu10er2p3_Jet32er2p3_dRMax0p4_DoubleJet32er2p3_dEtaMax1p6"] = std::bind(&L1AlgoFactory::Mu_DoubleJet_Cor, this, 10, 32, 2.3, 0.4, 1.6);

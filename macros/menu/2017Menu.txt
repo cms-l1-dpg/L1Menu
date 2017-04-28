@@ -1,12 +1,12 @@
-#============================================================================#           
-#-------------------------------     Menu     -------------------------------#          
-#============================================================================#          
+#============================================================================#
+#-------------------------------     Menu     -------------------------------#
+#============================================================================#
 #L1Seed                                                      Bit Prescale POG   PAG     Comment
 L1_SingleMuCosmics                                           0   1        Mu    Muon
 L1_SingleMuOpen                                              1   1        Mu    Muon
 L1_SingleMu3                                                 2   1        Mu    Slim
 L1_SingleMu5                                                 3   1        Mu    Slim
-L1_SingleMu7                                                 4   1        Mu    Slim 
+L1_SingleMu7                                                 4   1        Mu    Slim
 L1_SingleMu11_LowQ                                           6   1        Mu    Muon   #L1TDPG67
 L1_SingleMu16                                                7   1        Mu    Slim
 L1_SingleMu18                                                8   1        Mu    Slim
@@ -222,11 +222,11 @@ L1_DoubleMu0_ETMHF50_Jet60ORDiJet30                          304 1        Cross 
 L1_DoubleMu0_ETMHF60_Jet60ORDiJet30                          305 1        Cross SUS     #Laurent
 L1_DoubleMu0_ETMHF70_Jet60ORDiJet30                          306 1        Cross SUS     #Laurent
 L1_DoubleMu0_ETMHF80_Jet60ORDiJet30                          307 1        Cross SUS     #Laurent
-L1_DoubleMu0HighQ_ETMHF40_Jet60ORDiJet30                     308 1        Cross SUS     #Laurent
-L1_DoubleMu0HighQ_ETMHF50_Jet60ORDiJet30                     309 1        Cross SUS     #Laurent
-L1_DoubleMu0HighQ_ETMHF60_Jet60ORDiJet30                     310 1        Cross SUS     #Laurent
-L1_DoubleMu0HighQ_ETMHF70_Jet60ORDiJet30                     311 1        Cross SUS     #Laurent
-L1_DoubleMu0HighQ_ETMHF80_Jet60ORDiJet30                     312 1        Cross SUS     #Laurent
+L1_DoubleMu3HighQ_ETMHF40_Jet60ORDiJet30                     308 1        Cross SUS     #Laurent
+L1_DoubleMu3HighQ_ETMHF50_Jet60ORDiJet30                     309 1        Cross SUS     #Laurent
+L1_DoubleMu3HighQ_ETMHF60_Jet60ORDiJet30                     310 1        Cross SUS     #Laurent
+L1_DoubleMu3HighQ_ETMHF70_Jet60ORDiJet30                     311 1        Cross SUS     #Laurent
+L1_DoubleMu3HighQ_ETMHF80_Jet60ORDiJet30                     312 1        Cross SUS     #Laurent
 L1_DoubleMu3HighQ_HTT100                                     313 1        Cross SUS     #Laurent
 L1_DoubleMuHighQ_15_7                                        314 1        Cross SUS     #Laurent
 L1_DoubleMuHighQ_15_7_M4                                     315 1        Cross SUS     #Laurent
@@ -316,11 +316,7 @@ L1_FirstBunchAfterTrain                                      402 1        Extern
 
 
 
-
-
-
-
-L1_MinimumBiasHF0_AND_BptxAND                                444 1        External 
+L1_MinimumBiasHF0_AND_BptxAND                                444 1        External
 L1_MinimumBiasHF0_OR_BptxAND                                 445 1        External
 L1_AlwaysTrue                                                450 1        External
 L1_BptxPlus                                                  451 1        External
@@ -368,7 +364,8 @@ L1_Mu7_EG23                                                  510 1        Cross 
 L1_Mu7_IsoEG20                                               511 1        Cross Top     #Sergio
 L1_TripleMu_5_3_0_DoubleMu_5_3_OS_M0to17                     512 1        Mu    BPH     #Sergey(Backup)
 L1_Mu7_IsoEG23                                               513 1        Cross Top     #Sergio
+L1_HTT360                                                    514 1        Sum   Slim
+L1_Mu6_DoubleEG17                                            410 1        Cross SMP     #Gabriella
+L1_DoubleMu7_EG7                                             428 1        Cross SMP     #Gabriella
 
-
-
-#vim:ft=python:nolbr:cc=88
+#vim:ft=python:nolbr:cc=88:tw=0
