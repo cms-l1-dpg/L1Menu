@@ -30,6 +30,9 @@ ifeq ($(wildcard menulib.cc)$(wildcard menulib.hh), menulib.ccmenulib.hh)
   TestOBJS += menulib
 endif
 
+## Whether to use Muon Eta/Phi at Vtx
+CXXFLAGS += -DL1NTUPLE_MUONCORATVTX
+
 OBJS := $(TestOBJS:%=$(ODIR)/%.o)
 
 PROGRAM = testMenu2016
