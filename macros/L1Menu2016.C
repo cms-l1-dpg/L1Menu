@@ -263,6 +263,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_IsoEG30er_JetC34_dRMin0p3"] = std::bind(&L1AlgoFactory::EG_Jet, this, 30,  34,  0.3, true, true, true);
   L1SeedFun["L1_IsoEG24er_HTT100"] = std::bind(&L1AlgoFactory::EG_HTT, this, 24, 100, true, true);
   L1SeedFun["L1_IsoEG26er_HTT100"] = std::bind(&L1AlgoFactory::EG_HTT, this, 26, 100, true, true);
+  L1SeedFun["L1_IsoEG28er_HTT100"] = std::bind(&L1AlgoFactory::EG_HTT, this, 28, 100, true, true);
   L1SeedFun["L1_IsoEG30er_HTT100"] = std::bind(&L1AlgoFactory::EG_HTT, this, 30, 100, true, true);
   //L1SeedFun["L1_IsoEG24er_TripleJetC26"] = std::bind(&L1AlgoFactory::EGer_TripleJetCentral, this, 24, 26, true, true);
   L1SeedFun["L1_Mu18_HTT100"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 18, 100);
@@ -323,7 +324,7 @@ bool L1Menu2016::InitConfig()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SUSY:Laurent ~~~~~
   L1SeedFun["L1_DoubleMu_15_7"]       = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 7. , 1 , false);
   L1SeedFun["L1_DoubleMuHighQ_15_7"] = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 7. , 2 , false);
-  L1SeedFun["L1_DoubleMuHighQ_15_7_M4"] = std::bind(&L1AlgoFactory::DoubleMuMass, this , 15. , 7. , false, 2 , false, 4, 999);
+  L1SeedFun["L1_DoubleMuHighQ_15_7_M4"] = std::bind(&L1AlgoFactory::DoubleMuMass, this , 15. , 7. , 999, 2 , false, 4, 999);
   L1SeedFun["L1_TripleMu3"] = std::bind(&L1AlgoFactory::TripleMu, this, 3.,3.,3.,1);
   L1SeedFun["L1_TripleMu3HighQ"] = std::bind(&L1AlgoFactory::TripleMu, this, 3.,3.,3.,2);
   L1SeedFun["L1_TripleMu_5_0_0"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,0.,0.,1);
@@ -2040,7 +2041,25 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
     col.second->PrintCSV(csvout, scale);
   }
 
- 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Print out additional info ~~~~~
+  std::vector<std::string>::iterator csvt = csvout.begin();
+  ss.str("");
+  ss <<"Type"<<","<<"PAG"<<","<<"Comment";
+  csvt++->append(ss.str());
+  // L1Seeds
+  for(auto sed : vL1Seed)
+  {
+    auto seed = mL1Seed[sed];
+    ss.str("");
+    std::copy(seed.POG.begin(), seed.POG.end(), std::ostream_iterator<std::string>(ss, "|"));
+    ss.seekp(ss.str().length()-1); //remove trailing |
+    ss<<",";
+    std::copy(seed.PAG.begin(), seed.PAG.end(), std::ostream_iterator<std::string>(ss, "|"));
+    ss.seekp(ss.str().length()-1); //remove trailing |
+    ss<<","<<seed.comment;
+    csvt++->append(ss.str());
+  }
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Writing out to file ~~~~~
   for(auto i : csvout)
   {

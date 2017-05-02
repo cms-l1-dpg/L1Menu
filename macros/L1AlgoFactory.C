@@ -3069,18 +3069,17 @@ bool L1AlgoFactory::ETM_JetsComb(
   SingleJetPt(tmp_SingleJetpt, false);
 
 
-  if (tmp_ETMpt>= etmcut)
+  if (tmp_ETMpt >= etmcut)
   {
-    if (triJetpt <= 0)
-    {
-      if ( ( singleJetpt <= 0 || tmp_SingleJetpt >= singleJetpt )
-          || ( diJetpt <= 0 || (tmp_diJet1pt >= diJetpt && tmp_diJet2pt >= diJetpt ) )
-         )
-        return true;
-    }
-    if ((tmp_triJet1pt >= triJetpt && tmp_triJet2pt >= triJetpt && tmp_triJet3pt >= triJetpt ) 
-        || ( singleJetpt <= 0 || tmp_SingleJetpt >= singleJetpt )
-        || ( diJetpt <= 0 || (tmp_diJet1pt >= diJetpt && tmp_diJet2pt >= diJetpt ) ))
+    bool fire = false;
+
+    if (singleJetpt > 0 && (tmp_SingleJetpt >= singleJetpt ))
+      fire = true;
+    if ( diJetpt  > 0  && (tmp_diJet1pt >= diJetpt && tmp_diJet2pt >= diJetpt ) )
+      fire = true;
+    if (triJetpt > 0 && (tmp_triJet1pt >= triJetpt && tmp_triJet2pt >= triJetpt && tmp_triJet3pt >= triJetpt ) )
+      fire = true;
+    if (fire)
       return true;
   }
 
@@ -3369,6 +3368,7 @@ bool L1AlgoFactory::TripleEGIsoPer(Float_t cut1, Float_t cut2, Float_t cut3, boo
     if(bx != 0) continue;
     Float_t pt = upgrade_->egEt.at(ue);
     if (pt < cut3) continue;
+    EGIdx.push_back(ue);
   }
 
   if (EGIdx.size() < 3) return false;
