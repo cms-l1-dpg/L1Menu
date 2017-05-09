@@ -3413,9 +3413,10 @@ bool L1AlgoFactory::SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Boo
 
   std::vector<UInt_t> EGIdx;
   Float_t ptmax = -10.;
-  UInt_t leadidx = -10;
+  int leadidx = -10;
+  int ETMidx = -10;
 
-  for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
+  for(int ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
     if(isIso && !upgrade_->egIso.at(ue)) continue;
@@ -3423,16 +3424,16 @@ bool L1AlgoFactory::SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Boo
     if(fabs(eta) > eleER && isER) continue;  // eta = 5 - 16
 
     Float_t pt = upgrade_->egEt.at(ue);    // the rank of the electron
-    if(pt >= EGcut) 
-      EGIdx.push_back(ue);
+    //if(pt >= EGcut) 
+      //EGIdx.push_back(ue);
     if (pt > ptmax)
     {
-      pt = ptmax;
+      ptmax = pt;
       leadidx = ue;
     }
   }
 
-  int ETMidx = GetSumEtIdx(EtSumType::ETM);
+  ETMidx = GetSumEtIdx(EtSumType::ETM);
 
   // All the combination
   //for(auto i : EGIdx)
@@ -3446,16 +3447,18 @@ bool L1AlgoFactory::SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Boo
     //else
       //return true;
   //}
+  if (ptmax < EGcut) return false;
+  if (leadidx == -10 || ETMidx == -10 )
+    return false;
 
   // Leading EG
-  if (!correlateMT( upgrade_->egEt.at(leadidx), 
+  if (correlateMT( upgrade_->egEt.at(leadidx), 
         upgrade_->sumEt.at(ETMidx),
         upgrade_->egPhi.at(leadidx), 
         upgrade_->sumPhi.at(ETMidx),
         MTcut))
+    return false;
+  else
     return true;
-
-
-  return false;
 }       // -----  end of function L1AlgoFactory::SingleEGMT  -----
 

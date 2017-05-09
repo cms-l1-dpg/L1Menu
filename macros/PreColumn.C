@@ -105,7 +105,6 @@ bool PreColumn::CheckCorrelation()
   if (FireSeed.size() > 0)
     nFireevents ++;
 
-
   CheckPhysFire();
   CheckPureFire();
   return true;
@@ -158,13 +157,13 @@ bool PreColumn::CheckPureFire()
 //**************************************************************************//
   // Get Proportional counts;
   for(auto i : FireSeed)
-    mL1Seed[i].propcounts += 1 / FireSeed.size();
+    mL1Seed[i].propcounts += 1.0 / FireSeed.size();
 
   for(auto i : POGset)
-    PhyPropCounts[i] += 1/ POGset.size();
+    PhyPropCounts[i] += 1.0 / POGset.size();
 
   for(auto i : PAGset)
-    PhyPropCounts[i] += 1/ PAGset.size();
+    PhyPropCounts[i] += 1.0/ PAGset.size();
     
   return true;
 }       // -----  end of function PreColumn::CheckPureFire  -----
@@ -399,7 +398,7 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
   ss << "pre-scale"<<ColIdx
     << "," << "rate"<<ColIdx
     << "," << "error_rate"<<ColIdx
-    << "," << "pure"<<ColIdx<<","
+    << "," << "pure"<<ColIdx
     << "," << "propotional"<<ColIdx<<",";
     //<< "," << "Comments"<<ColIdx<<",";
   csvout++->append(ss.str());
@@ -412,7 +411,7 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
     ss<< seed.prescale
       << "," << seed.firerate
       << "," << seed.firerateerror
-      << "," << seed.purerate      <<","
+      << "," << seed.purerate     
       << "," << seed.proprate      <<",";
       //<< ",\""<<seed.second.comment<<"\""<<",";
     csvout++->append(ss.str());
@@ -454,7 +453,7 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
   ss.str("");
   ss <<"1,"<< nFireevents / 1000 * scale 
     <<","<<sqrt(nFireevents) * scale / 1000 
-    <<","<<totalpurerate / 1000 <<","
+    <<","<<totalpurerate / 1000 
     <<","<<totalproprate / 1000 <<",";
   csvout++->append(ss.str());
 
