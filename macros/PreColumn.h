@@ -41,7 +41,6 @@ class PreColumn
         std::map<std::string, std::vector<int> > PAGMap_);
 
     // ====================  ACCESSORS     ===============================
-    bool PostLoop( double scale);
     bool CheckCorrelation();
     bool EventReset();
     bool InsertInMenu(std::string L1name, bool value);
@@ -82,6 +81,7 @@ class PreColumn
     std::set<std::string> FiredPhy;
     std::map<std::string, int > PhyCounts;
     std::map<std::string, int > PhyPureCounts;
+    std::map<std::string, float > PhyPropCounts;
     std::map<std::string, std::map<float, int> > L1PUCount; // counting lumi section
 
     std::map<std::string, TH1F*> HistMap;

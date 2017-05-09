@@ -46,9 +46,11 @@ struct L1Seed
   bool eventfire;
   unsigned int firecounts;
   unsigned int purecounts;
+  float propcounts; // proportional counts;
   double firerate;
   double firerateerror;
   double purerate;
+  double proprate;
   std::string comment;
   std::string singleObj;
 
