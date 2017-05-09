@@ -275,11 +275,13 @@ bool L1Menu2016::InitConfig()
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Top:JIRA38 ~~~~~
   L1SeedFun["L1_DoubleJet100er2p3_dEtaMax1p6"] = std::bind(&L1AlgoFactory::DoubleJet_EtaRes_deltaEta, this, 100, 100, 2.3, 1.6);
   L1SeedFun["L1_Mu10er2p3_Jet32er2p3_dRMax0p4_DoubleJet32er2p3_dEtaMax1p6"] = std::bind(&L1AlgoFactory::Mu_DoubleJet_Cor, this, 10, 32, 2.3, 0.4, 1.6);
+  L1SeedFun["L1_Mu12er2p3_Jet40er2p3_dRMax0p4_DoubleJet40er2p3_dEtaMax1p6"] = std::bind(&L1AlgoFactory::Mu_DoubleJet_Cor, this, 12, 40, 2.3, 0.4, 1.6);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EXO:JIRA48 ~~~~~
   L1SeedFun["L1_IsoTau40er_ETM100"] = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 100, true, true);
   L1SeedFun["L1_QuadJetC36_IsoTau52er"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36, 52, true, true);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Higgs:Chiara ~~~~~
   L1SeedFun["L1_DoubleJet_90_30_Mj30j30_620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 620); 
+  L1SeedFun["L1_DoubleJet_100_35_Mj35j35_620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 100, 35., false, 35, 35, false, 620); 
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BPH:Sergey ~~~~~
 //
