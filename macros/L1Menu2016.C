@@ -667,7 +667,8 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
         }
         catch (const boost::bad_lexical_cast &)
         {
-          std::cout << "Can't cast prescale " << it<< " to int type in line: " << line << std::endl;
+          std::cout << "Can't cast prescale " << it<< " to int type in line: " << line <<"; set to disable" << std::endl;
+          temp.prescale = 0;
         }
       }
       if (k.second == "Comment")
