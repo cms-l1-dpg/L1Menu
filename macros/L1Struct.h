@@ -64,6 +64,7 @@ struct L1Seed
     ncounts = 0;
     firecounts = 0;
     purecounts = 0;
+    propcounts = 0.0;
     eventfire = false;
     comment = "";
     singleObj = "";

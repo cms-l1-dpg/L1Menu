@@ -2789,15 +2789,15 @@ bool L1AlgoFactory::Mu_DoubleJet_Cor(Float_t mupt, Float_t diJetpt, Float_t EtaR
 
 
 
-Bool_t L1AlgoFactory::Tau_ETM(Float_t taucut, Float_t ETMcut, Bool_t isTauER, Bool_t isTauIso) {
+Bool_t L1AlgoFactory::Tau_ETM(Float_t taucut, Float_t ETMcut, Bool_t isTauER, Bool_t isTauIso, Bool_t isETMHF) {
   Float_t tmp_taucut = -10.;
   Float_t tmp_ETMcut = -10.;
-  Tau_ETMPt(tmp_taucut,tmp_ETMcut, isTauER, isTauIso);
+  Tau_ETMPt(tmp_taucut,tmp_ETMcut, isTauER, isTauIso, isETMHF);
   if(tmp_taucut >= taucut && tmp_ETMcut >= ETMcut) return true;
   return false;
 }
 
-void L1AlgoFactory::Tau_ETMPt(Float_t& taucut, Float_t& ETMcut, Bool_t isTauER, Bool_t isTauIso) {
+void L1AlgoFactory::Tau_ETMPt(Float_t& taucut, Float_t& ETMcut, Bool_t isTauER, Bool_t isTauIso, Bool_t isETMHF) {
 
   Float_t tauptmax = -10.;
 
@@ -2811,7 +2811,10 @@ void L1AlgoFactory::Tau_ETMPt(Float_t& taucut, Float_t& ETMcut, Bool_t isTauER, 
   }
 
   Float_t TheETM = -10;
-  ETMVal(TheETM);
+  if (isETMHF)
+    ETMHFVal(TheETM);
+  else
+    ETMVal(TheETM);
 
   if(tauptmax >= 0.){
     taucut = tauptmax;

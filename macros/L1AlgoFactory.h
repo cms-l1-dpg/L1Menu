@@ -173,8 +173,8 @@ class L1AlgoFactory: public L1Ntuple{
   bool HTT_QuadJet(Float_t HTTcut, Float_t Jet1cut, Float_t Jet2cut, Float_t Jet3cut, Float_t Jet4cut, Float_t JetEtaRestr);
   void HTT_QuadJetPt(Float_t &HTTcut, Float_t &Jet1cut, Float_t &Jet2cut, Float_t &Jet3cut, Float_t &Jet4cut, Float_t &JetEtaRestr);
   bool Mu_DoubleJet_Cor(Float_t mupt, Float_t diJetpt, Float_t EtaRestrict, Float_t MuJetdRMax, Float_t diJetdEtaMax);
-  Bool_t Tau_ETM(Float_t taucut, Float_t ETMcut, Bool_t isTauER, Bool_t isTauIso);
-  void Tau_ETMPt(Float_t& taucut, Float_t& ETMcut, Bool_t isTauER, Bool_t isTauIso);
+  Bool_t Tau_ETM(Float_t taucut, Float_t ETMcut, Bool_t isTauER, Bool_t isTauIso, Bool_t isETMHF);
+  void Tau_ETMPt(Float_t& taucut, Float_t& ETMcut, Bool_t isTauER, Bool_t isTauIso, Bool_t isETMHF);
   bool DoubleMuMass(float mu1cut, float mu2cut, float muER, int Qual, bool isOS, float Mlow, float Mhigh);
 
   bool DoubleMu_ETMHF_Jets( const float mu1pt, const float mu2pt, const int muqual, const bool ismuER, 
