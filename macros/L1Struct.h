@@ -56,18 +56,22 @@ struct L1Seed
 
   L1Seed()
   {
-    name = "";
-    bit = -1;
-    prescale = 0;
+    name          = "";
+    bit           = -1;
+    prescale      = 0;
+    ncounts       = 0;
+    eventfire     = false;
+    firecounts    = 0;
+    purecounts    = 0;
+    propcounts    = 0.0;
+    firerate      = 0.0;
+    firerateerror = 0.0;
+    purerate      = 0.0;
+    proprate      = 0.0;
+    comment       = "";
+    singleObj     = "";
     POG.clear();
     PAG.clear();
-    ncounts = 0;
-    firecounts = 0;
-    purecounts = 0;
-    propcounts = 0.0;
-    eventfire = false;
-    comment = "";
-    singleObj = "";
   }
 };
 

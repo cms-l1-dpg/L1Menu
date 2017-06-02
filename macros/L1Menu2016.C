@@ -423,6 +423,9 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleEG_Iso23_10"] = std::bind(&L1AlgoFactory::DoubleEGIsoPer, this, 23.,10.,true, false, false );
   L1SeedFun["L1_DoubleEG_Iso24_10"] = std::bind(&L1AlgoFactory::DoubleEGIsoPer, this, 24.,10.,true, false, false );
   L1SeedFun["L1_TripleEG_Iso20_10_5"] = std::bind(&L1AlgoFactory::TripleEGIsoPer, this, 20, 10, 5, true, false, false);
+  L1SeedFun["L1_DoubleIsoEG22er2p1"] = std::bind(&L1AlgoFactory::DoubleEGIsoPer, this, 22.,22.,true, true, true );
+  L1SeedFun["L1_DoubleMu18er2p1"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 18. , 18.  , 1 , true);
+  L1SeedFun["L1_DoubleMu22er2p1"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 22. , 22.  , 1 , true);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ECal:Andrea ~~~~~
   L1SeedFun["L1_SingleIsoEG33_Mt40"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 33.,40., 0, true, false);
@@ -431,6 +434,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_SingleIsoEG33_Mt48"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 33.,48., 0, true, false);
   L1SeedFun["L1_SingleIsoEG34_Mt44"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 34.,44., 0, true, false);
   L1SeedFun["L1_SingleIsoEG34_Mt46"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 34.,46., 0, true, false);
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Tracker:L1DPG74 ~~~~~
   L1SeedFun["L1_CDC_3_er1p2_TOP120_DPHI2p618_3p665"] = std::bind(&L1AlgoFactory::MuonCDC_dPhi, this, 3, 0, 1.2, 2.618, 3.665);
   L1SeedFun["L1_CDC_4_er1p2_TOP120_DPHI2p618_3p665"] = std::bind(&L1AlgoFactory::MuonCDC_dPhi, this, 4, 0, 1.2, 2.618, 3.665);

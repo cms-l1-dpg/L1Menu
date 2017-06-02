@@ -1,5 +1,5 @@
 n     , L1AlgoName                                                     , 2.20   , 2.00   , 1.80E+34 , POG         , PAG           , Comment                         , uGT
-0     , L1_SingleMuCosmics                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
+# 0   , L1_SingleMuCosmics                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
 1     , L1_SingleMuOpen                                                , 46000  , 42000  , 38000    , Mu          , Slim          , Check user                      , 
 2     , L1_SingleMu3                                                   , 24000  , 22000  , 20000    , Mu          , Slim          ,                                 , 
 3     , L1_SingleMu5                                                   ,        , 0      ,          , Mu          , Slim          ,                                 , 
@@ -163,12 +163,12 @@ n     , L1AlgoName                                                     , 2.20   
 204   , L1_ETMHF110                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
 205   , L1_ETMHF120                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
 206   , L1_ETMHF150                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-240   , L1_SingleMuOpen_NotBptxOR                                      , 24     , 22     , 20       , Cross       , EXO           , L1TDPG66                        , 
-241   , L1_SingleMuOpen_NotBptxOR_3BX                                  , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
-242   , L1_SingleJet20er3p0_NotBptxOR                                  , 480    , 440    , 400      , Cross       , EXO           , L1TDPG66                        , 
-243   , L1_SingleJet20er3p0_NotBptxOR_3BX                              , 0      , 0      , 0        , Cross       , EXO           , L1TDPG66                        , 
-244   , L1_SingleJet43er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
-245   , L1_SingleJet46er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
+# 240 , L1_SingleMuOpen_NotBptxOR                                      , 24     , 22     , 20       , Cross       , EXO           , L1TDPG66                        , 
+# 241 , L1_SingleMuOpen_NotBptxOR_3BX                                  , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
+# 242 , L1_SingleJet20er3p0_NotBptxOR                                  , 480    , 440    , 400      , Cross       , EXO           , L1TDPG66                        , 
+# 243 , L1_SingleJet20er3p0_NotBptxOR_3BX                              , 0      , 0      , 0        , Cross       , EXO           , L1TDPG66                        , 
+# 244 , L1_SingleJet43er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
+# 245 , L1_SingleJet46er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
 250   , L1_IsoEG24er2p1_Jet26er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
 251   , L1_IsoEG26er2p1_Jet34er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
 252   , L1_IsoEG28er2p1_Jet34er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
@@ -223,21 +223,21 @@ n     , L1AlgoName                                                     , 2.20   
 295   , L1_DoubleEG_Iso23_10                                           ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
 296   , L1_DoubleEG_Iso24_10                                           ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
 297   , L1_TripleEG_Iso20_10_5                                         ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
-298   , L1_DoubleJet_90_30_DoubleJet30_Mass_Min620                     ,        ,        ,          , Cross       , HIG           , L1TDPG102                       , 
-299   , L1_DoubleJet_100_30_DoubleJet30_Mass_Min620                    ,        ,        ,          , Cross       , HIG           , L1TDPG102                       , 
-300   , L1_DoubleJet_100_35_DoubleJet35_Mass_Min620                    ,        ,        ,          , Cross       , HIG           , L1TDPG102                       , 
+298   , L1_DoubleJet_90_30_DoubleJet30_Mass_Min620                     ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
+299   , L1_DoubleJet_100_30_DoubleJet30_Mass_Min620                    ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
+300   , L1_DoubleJet_100_35_DoubleJet35_Mass_Min620                    ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
 246   , L1_DoubleJet_110_35_DoubleJet35_Mass_Min620                    ,        , 1      ,          , Cross       , HIG           , L1TDPG102 (HLT not ready x1000) , Add
-301   , L1_DoubleJet30_Mass_Min400_Mu6                                 ,        ,        ,          , Cross       , HIG|SUS       , L1TDPG102                       , 
+301   , L1_DoubleJet30_Mass_Min400_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , L1TDPG102                       , 
 302   , L1_DoubleJet30_Mass_Min400_Mu10                                ,        , 1      ,          , Cross       , HIG|SUS       , L1TDPG102 (HLT not ready x1000) , 
 303   , L1_IsoEG18er2p1_IsoTau24er2p1_dR_Min0p3                        ,        , 0      ,          , Correlation , HIG           , L1TDPG100                       , Change
 304   , L1_IsoEG20er2p1_IsoTau25er2p1_dR_Min0p3                        ,        , 0      ,          , Correlation , HIG           , L1TDPG100                       , Change
 305   , L1_IsoEG22er2p1_IsoTau26er2p1_dR_Min0p3                        ,        , 1      ,          , Correlation , HIG           , L1TDPG100                       , Change
-306   , L1_Mu16er2p1_Tau20er2p1                                        ,        ,        , 1        , Cross       , HIG           , L1TDPG82                        , 
-307   , L1_Mu16er2p1_Tau24er2p1                                        ,        ,        , 1        , Cross       , HIG           , L1TDPG82                        , 
+306   , L1_Mu16er2p1_Tau20er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
+307   , L1_Mu16er2p1_Tau24er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
 308   , L1_Mu18er2p1_Tau20er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
 309   , L1_Mu18er2p1_Tau24er2p1                                        ,        , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
-310   , L1_Mu18er2p1_IsoTau26er2p1                                     , 1      ,        ,          , Cross       , HIG           , L1TDPG82                        , 
-311   , L1_Mu20er2p1_IsoTau26er2p1                                     , 1      ,        ,          , Cross       , HIG           , L1TDPG82                        , 
+310   , L1_Mu18er2p1_IsoTau26er2p1                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
+311   , L1_Mu20er2p1_IsoTau26er2p1                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
 315   , L1_Mu6_HTT240er                                                ,        , 1      ,          , Cross       , SUSY          ,                                 , 
 316   , L1_Mu6_HTT250er                                                ,        , 1      ,          , Cross       , SUSY          ,                                 , 
 317   , L1_Mu15_HTT100er                                               ,        , 0      ,          , Cross       , SUSY          ,                                 , 
@@ -300,18 +300,18 @@ n     , L1AlgoName                                                     , 2.20   
 211   , L1_TripleMu_5_4_2p5_DoubleMu_5_2p5_OS_Mass_5to17               ,        , 0      ,          , Mass        , BPH           , L1TDPG78  (bakcup)              , Add
 212   , L1_TripleMu_5SQ_3SQ_0OQ_DoubleMu_5_3_SQ_OS_Mass_Max9           ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , Add
 213   , L1_TripleMu_5SQ_3SQ_0_DoubleMu_5_3_SQ_OS_Mass_Max9             ,        , 1      ,          , Mass        , BPH           , L1TDPG78  (bakcup)              , Add
-214   , L1_DoubleMu0_SQ                                                ,        , 350    ,          , Mu          , BPH           , L1TDPG96                        , Add
-215   , L1_DoubleMu0_SQ_OS                                             ,        , 700    ,          , Mu          , BPH           , L1TDPG96                        , Add
-216   , L1_DoubleMu4p5_SQ                                              ,        , 60     ,          , Mu          , BPH           , L1TDPG96                        , Add
-217   , L1_DoubleMu4p5_SQ_OS                                           ,        , 240    ,          , Mu          , BPH           , L1TDPG96                        , Add
-218   , L1_DoubleMu4p5er2p0_SQ_OS                                      ,        , 240    ,          , Mu          , BPH           , L1TDPG96                        , Add
-219   , L1_DoubleMu0er1p5_SQ_OS                                        ,        , 1000   ,          , Mu          , BPH           , L1TDPG96                        , Add
-220   , L1_DoubleMu4_SQ_OS                                             ,        , 2300   ,          , Mu          , BPH           , L1TDPG96                        , Add
-221   , L1_DoubleMu5_SQ_OS                                             ,        , 240    ,          , Mu          , BPH           , L1TDPG96                        , Add
-222   , L1_TripleMu_5_3p5_2p5                                          ,        , 70     ,          , Mu          , BPH           , L1TDPG96                        , Add
-223   , L1_TripleMu0_OQ                                                ,        , 1000   ,          , Mu          , BPH           , L1TDPG96                        , Add
-224   , L1_TripleMu_5SQ_3SQ_0OQ                                        ,        , 70     ,          , Mu          , BPH           , L1TDPG96                        , Add
-381   , L1_DoubleMu6_SQ_OS                                             ,        , 1      ,          , Mu          , BPH           ,                                 , 
+214   , L1_DoubleMu0_SQ                                                ,        , 300    ,          , Mu          , BPH           , L1TDPG96 (500|650)              , Add
+215   , L1_DoubleMu0_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96                        , Drop
+216   , L1_DoubleMu4p5_SQ                                              ,        , 80     ,          , Mu          , BPH           , L1TDPG96 (120|180)              , Add
+217   , L1_DoubleMu4p5_SQ_OS                                           ,        , 0      ,          , Mu          , BPH           , L1TDPG96                        , Drop
+218   , L1_DoubleMu4p5er2p0_SQ_OS                                      ,        , 0      ,          , Mu          , BPH           , L1TDPG96                        , Drop
+219   , L1_DoubleMu0er1p5_SQ_OS                                        ,        , 0      ,          , Mu          , BPH           , L1TDPG96                        , Drop
+220   , L1_DoubleMu4_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96                        , Drop
+221   , L1_DoubleMu5_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96                        , Drop
+222   , L1_TripleMu_5_3p5_2p5                                          ,        , 70     ,          , Mu          , BPH           , L1TDPG96 (70|140)               , Add
+223   , L1_TripleMu0_OQ                                                ,        , 1000   ,          , Mu          , BPH           , L1TDPG96 (1000)                 , Add
+224   , L1_TripleMu_5SQ_3SQ_0OQ                                        ,        , 70     ,          , Mu          , BPH           , L1TDPG96 (70|140)               , Add
+381   , L1_DoubleMu6_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG78(included but off)      , 
 390   , L1_Mu6_DoubleEG17                                              ,        , 1      ,          , Cross       , SMP           , L1TDPG81                        , 
 391   , L1_DoubleMu7_EG7                                               ,        , 0      ,          , Cross       , SMP           , L1TDPG81                        , 
 # 400 , L1_IsolatedBunch                                               ,        , 0      ,          , External    , AlCa          ,                                 , Reassign type
@@ -389,15 +389,16 @@ n     , L1AlgoName                                                     , 2.20   
 # 479 , L1_BPTX_B1_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
 # 480 , L1_BPTX_B2_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
 # 481 , L1_BPTX_OR_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
-93    , L1_SingleEGiso33_Mt_40                                         ,        , 1      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-94    , L1_SingleEGiso33_Mt_43                                         ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-95    , L1_SingleEGiso33_Mt_47                                         ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-96    , L1_SingleEGiso33_Mt_48                                         ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-97    , L1_SingleEGiso34_Mt_44                                         ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-98    , L1_SingleEGiso34_Mt_46                                         ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+93    , L1_SingleIsoEG33_Mt40                                          ,        , 1      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+94    , L1_SingleIsoEG33_Mt43                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+95    , L1_SingleIsoEG33_Mt47                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+96    , L1_SingleIsoEG33_Mt48                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+97    , L1_SingleIsoEG34_Mt44                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+98    , L1_SingleIsoEG34_Mt46                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
 34    , L1_CDC_3_er1p2_TOP120_DPHI2p618_3p665                          ,        , 0      ,          , Correlation , Tracker       , L1TDPG74                        , Add
 35    , L1_CDC_4_er1p2_TOP120_DPHI2p618_3p665                          ,        , 0      ,          , Correlation , Tracker       , L1TDPG75                        , Add
 36    , L1_DoubleIsoEG22er2p1                                          ,        , 1      ,          , EG          , TOP           , L1TDPG116                       , Add
 37    , L1_DoubleMu18er2p1                                             ,        , 1      ,          , Mu          , TOP           , L1TDPG116                       , Add
 38    , L1_DoubleMu22er2p1                                             ,        , 1      ,          , Mu          , TOP           , L1TDPG116                       , Add
-403   , L1_DoubleJet30_Mass_Min600_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , Laurent                         , Add
+#403  , L1_DoubleJet30_Mass_Min600_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , L1TDPG102 (backup)              , Add
+#404  , L1_DoubleJet35_rmovlp_IsoTau45_Mass_Min450                     ,        ,        ,          , Correlation , HIG           , L1TDPG121 (mask for monitor)    , Add
