@@ -298,7 +298,8 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleJet_100_30_DoubleJet30_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 100, 30., false, 30, 30, false, 620); 
   L1SeedFun["L1_DoubleJet_100_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 100, 35., false, 35, 35, false, 620); 
   L1SeedFun["L1_DoubleJet_110_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 110, 35., false, 35, 35, false, 620); 
-
+  L1SeedFun["L1_DoubleJet30_Mass_Min400_Mu10"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 400, 10, false, 2); 
+  L1SeedFun["L1_DoubleJet30_Mass_Min400_Mu6"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 400, 6, false, 2); 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BPH:Sergey ~~~~~
 //
   L1SeedFun["L1_DoubleMu4_OS_EG12"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 4.,12.,1, true);
@@ -322,7 +323,7 @@ bool L1Menu2016::InitConfig()
 
   L1SeedFun["L1_DoubleMu0_SQ"]    = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0. , 0. , 999 , 2, false, 999, 999);
   L1SeedFun["L1_DoubleMu0_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0. , 0. , 999 , 2, true,  999, 999);
-  L1SeedFun["L1_DoubleMu0er1p5_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0. , 0. , 1.5 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu0er1p5_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0. , 0. , 1.5061875 , 2, true,  999, 999);
   L1SeedFun["L1_DoubleMu4_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4. , 4. , 999 , 2, true,  999, 999);
   L1SeedFun["L1_DoubleMu4p5_SQ"]    = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.5 , 4.5 , 999 , 2, false, 999, 999);
   L1SeedFun["L1_DoubleMu4p5_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.5 , 4.5 , 999 , 2, true,  999, 999);
@@ -332,7 +333,7 @@ bool L1Menu2016::InitConfig()
 
   L1SeedFun["L1_TripleMu0_OQ"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,0);
   L1SeedFun["L1_TripleMu_5_3p5_2p5"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,3.5,2.5,1);
-
+  L1SeedFun["L1_TripleMu_5_5_5_OQ_OS"] = std::bind(&L1AlgoFactory::TripleMuOS, this, 5., 5, 5, 0, 5, 5, true);
 
   //L1SeedFun["L1_DoubleMu_12_5_OS"]      = std::bind(&L1AlgoFactory::DoubleMuMass , this , 12. , 5. , 999, 1 , true, 999, 999);
   //L1SeedFun["L1_DoubleMu_9_5_HighQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 9.  , 5. , 999, 2 , true, 999, 999);
@@ -1286,7 +1287,8 @@ bool L1Menu2016::BuildRelation()
 bool L1Menu2016::L1SeedFunc()
 {
 #ifdef UTM_MENULIB
-  addFuncFromName(L1SeedFun, upgrade_);
+  addFuncFromName(L1SeedFun, upgrade_, l1CaloTower_);
+  //addFuncFromName(L1SeedFun, upgrade_);
 #endif
     
   for(auto &L1Seed : mL1Seed)

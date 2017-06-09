@@ -185,7 +185,9 @@ class L1AlgoFactory: public L1Ntuple{
   bool TripleEGIso(Float_t cut1, Float_t cut2, Float_t cut3, bool isIso1, bool isIso2, bool isIso3);
   bool TripleMu_DoubleMuMass( const float triMupt1, const float triMupt2, const float triMupt3, 
       const int triMuQual, const float diMupt1, const float diMupt2, const bool diMuOS, 
-      const float diMuMmin, const float diMuMmax) const;
+      const float diMuMmin, const float diMuMmax);
+  bool TripleMuOS( const float triMupt1, const float triMupt2, const float triMupt3, const int triMuQual, 
+      const float diMupt1, const float diMupt2, const bool diMuOS);
 
   bool DoubleEGIsoPer(Float_t cut1, Float_t cut2, Bool_t Iso1, Bool_t Iso2, Bool_t isER);
   bool TripleEGIsoPer(Float_t cut1, Float_t cut2, Float_t cut3, bool isIso1, bool isIso2, bool isIso3);

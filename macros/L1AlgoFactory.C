@@ -3188,7 +3188,7 @@ bool L1AlgoFactory::TripleMu_DoubleMuMass(
     const float diMupt2,
     const bool diMuOS,
     const float diMuMmin,
-    const float diMuMmax) const
+    const float diMuMmax)
 {
 
   if(upgrade_->nMuons < 3) return false;
@@ -3219,6 +3219,8 @@ bool L1AlgoFactory::TripleMu_DoubleMuMass(
   if (upgrade_->muonEt.at(it->second) < triMupt3) return false;
   mu3idx = it->second;
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ DiMuon Mass indepedant of the tripleMu ~~~~~
+  return DoubleMuMass(diMupt1, diMupt2, 999, triMuQual, diMuOS, diMuMmin, diMuMmax);
 
 //~~~~~~~~~~~~~~~~ This algo takes dimuon mass from the triple muon legs ~~~~~
   std::vector<std::pair<UInt_t, UInt_t> > muonPair;
@@ -3464,4 +3466,67 @@ bool L1AlgoFactory::SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Boo
   else
     return true;
 }       // -----  end of function L1AlgoFactory::SingleEGMT  -----
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::TripleMuOS
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::TripleMuOS(
+    const float triMupt1,
+    const float triMupt2,
+    const float triMupt3,
+    const int triMuQual,
+    const float diMupt1,
+    const float diMupt2,
+    const bool diMuOS,
+    ) 
+{
+  if(upgrade_->nMuons < 3) return false;
+
+  std::map<Float_t, int> MuPtIdx;
+  for (UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
+    Int_t bx = upgrade_->muonBx.at(imu);		
+    if(bx != 0) continue;
+    if(!PassMuonQual(imu, triMuQual)) continue;
+    Float_t pt = upgrade_->muonEt.at(imu);			
+    MuPtIdx[pt] = imu;
+  }
+  if (MuPtIdx.size()< 3) return false;
+
+  UInt_t mu1idx = -10;
+  UInt_t mu2idx = -10;
+  UInt_t mu3idx = -10;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ First Mu ~~~~~
+  std::map<Float_t, int>::reverse_iterator it=MuPtIdx.rbegin();
+  if (upgrade_->muonEt.at(it->second) < triMupt1) return false;
+  mu1idx = it->second;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Second EG ~~~~~
+  it++;
+  if (upgrade_->muonEt.at(it->second) < triMupt2) return false;
+  mu2idx = it->second;
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Third EG ~~~~~
+  it++;
+  if (upgrade_->muonEt.at(it->second) < triMupt3) return false;
+  mu3idx = it->second;
+
+//~~~~~~~~~~~~~~~~ This algo takes dimuon mass from the triple muon legs ~~~~~
+  std::vector<std::pair<UInt_t, UInt_t> > muonPair;
+  muonPair.push_back(std::make_pair(mu1idx, mu2idx));
+  muonPair.push_back(std::make_pair(mu1idx, mu3idx));
+
+  for(auto mp : muonPair)
+  {
+    Float_t pt1 = upgrade_->muonEt.at(mp.first);			
+    Float_t pt2 = upgrade_->muonEt.at(mp.second);			
+    if (pt1 < diMupt1 || pt2 < diMupt2) continue;
+
+    Int_t charge1 = upgrade_->muonChg.at(mp.first);
+    Int_t charge2 = upgrade_->muonChg.at(mp.second);
+    if (diMuOS &&  charge1*charge2 > 0) continue;
+
+    return true;
+  }
+
+  return false;
+}       // -----  end of function L1AlgoFactory::TripleMuOS  -----
 
