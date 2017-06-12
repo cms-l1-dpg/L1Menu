@@ -493,7 +493,7 @@ void L1AlgoFactory::SingleEGPt(Float_t& cut, Bool_t isIsolated , Bool_t isER) {
   for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
-    if(isIsolated && !upgrade_->egIso.at(ue)) continue;
+    if(isIsolated && (upgrade_->egIso.at(ue) & 1 ) == 0) continue;
     Float_t eta = upgrade_->egEta.at(ue);
     if(fabs(eta) > eleER && isER) continue;  // eta = 5 - 16
 
@@ -519,8 +519,8 @@ void L1AlgoFactory::DoubleEGPt(Float_t& cut1, Float_t& cut2, Bool_t isIsolated, 
   Bool_t EG1_ER = false;
   Bool_t EG2_ER = false;
 
-  Bool_t EG1_isol = false;
-  Bool_t EG2_isol = false;
+  Int_t EG1_isol = 0;
+  Int_t EG2_isol = 0;
 
   for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {               
     Int_t bx = upgrade_->egBx.at(ue);  
@@ -552,7 +552,7 @@ void L1AlgoFactory::DoubleEGPt(Float_t& cut1, Float_t& cut2, Bool_t isIsolated, 
   }
 
   if(isER && (!EG1_ER || !EG2_ER)) return;
-  if(isIsolated && (!EG1_isol && !EG2_isol)) return;
+  if(isIsolated && ( (EG1_isol  & EGIsobit ) == 0 || (EG2_isol & EGIsobit ) == 0)) return;
 
   if(ele2ptmax >= 0.){
     cut1 = ele1ptmax;
@@ -982,7 +982,7 @@ void L1AlgoFactory::Mu_EGPt(Float_t& mucut, Float_t& EGcut, Bool_t isIsolated, I
   for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);        		
     if(bx != 0) continue;
-    if(isIsolated && !upgrade_->egIso.at(ue)) continue;
+    if(isIsolated && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     Float_t pt = upgrade_->egEt.at(ue);    // the rank of the electron
     if(pt >= eleptmax) eleptmax = pt;
   }
@@ -1264,7 +1264,7 @@ void L1AlgoFactory::EG_JetPt(Float_t& EGcut, Float_t& Jetcut, Float_t dRMin, boo
   for (UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t egbx = upgrade_->egBx.at(ue);        		
     if(egbx != 0) continue;
-    if(isEGIso && !upgrade_->egIso.at(ue)) continue;
+    if(isEGIso && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     Float_t EGeta = upgrade_->egEta.at(ue);
     if(fabs(EGeta) > eleER && isEGER) continue;  // eta = 5 - 16
     Float_t EGphi = upgrade_->egPhi.at(ue);
@@ -1349,7 +1349,7 @@ void L1AlgoFactory::EGer_TripleJetCentralPt(Float_t& EGcut, Float_t& jetcut, boo
     Float_t pt  = upgrade_->egEt.at(ue);
     Float_t eta = upgrade_->egEta.at(ue);
     if(isEGER && fabs(eta) > eleER) continue;  // eta = 5 - 16
-    if(isEGIso && !upgrade_->egIso.at(ue)) continue;
+    if(isEGIso && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     if(pt >= eleptmax){
       eleptmax = pt; 
       elemaxeta = upgrade_->egEta.at(ue);
@@ -1399,7 +1399,7 @@ void L1AlgoFactory::IsoEGer_TauJetEta2p17Pt(Float_t& egcut, Float_t& taucut, boo
   for (UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);        		
     if(bx != 0) continue;
-    if(!upgrade_->egIso.at(ue)) continue;
+    if((upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     Float_t pt  = upgrade_->egEt.at(ue);
     Float_t eta = upgrade_->egEta.at(ue);
     if(fabs(eta) > eleER) continue;  // eta = 5 - 16
@@ -1741,7 +1741,7 @@ void L1AlgoFactory::SingleEG_Eta2p1_HTTPt(Float_t& egcut, Float_t& HTTcut, Bool_
   for (Int_t ue=0; ue < Nele; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
-    if(isIsolated && !upgrade_->egIso.at(ue)) continue;
+    if(isIsolated && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     Float_t eta = upgrade_->egEta.at(ue);
     if(fabs(eta) > eleER ) continue;  
     Float_t pt = upgrade_->egEt.at(ue);   
@@ -2239,7 +2239,7 @@ bool L1AlgoFactory::MultiEGMass(int pt1, int pt2, int pt3, int pt4, int Mcut, bo
   for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {               
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
-    if (isIsolated && !upgrade_->egIso.at(ue)) continue;
+    if(isIsolated && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     Float_t eta = upgrade_->egEta.at(ue);
     if(fabs(eta) > eleER && isER) continue;  // eta = 5 - 16
 
@@ -2610,7 +2610,7 @@ void L1AlgoFactory::EG_HTTPt(Float_t& egcut, Float_t& HTcut, bool &isEGER, bool 
   for(UInt_t ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
-    if(isEGIso && !upgrade_->egIso.at(ue)) continue;
+    if(isEGIso && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     Float_t eta = upgrade_->egEta.at(ue);
     if(fabs(eta) > eleER && isEGER) continue;  // eta = 5 - 16
 
@@ -2935,15 +2935,15 @@ bool L1AlgoFactory::TripleEGIso(Float_t cut1, Float_t cut2, Float_t cut3, bool i
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ First EG ~~~~~
   std::map<Float_t, int>::reverse_iterator it=EGPtIdx.rbegin();
   if (upgrade_->egEt.at(it->second) < cut1) return false;
-  if (isIso1 && !upgrade_->egIso.at(it->second)) return false;
+  if(isIso1 && (upgrade_->egIso.at(it->second) & EGIsobit ) == 0) return false;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Second EG ~~~~~
   it++;
   if (upgrade_->egEt.at(it->second) < cut2) return false;
-  if (isIso2 && !upgrade_->egIso.at(it->second)) return false;
+  if(isIso2 && (upgrade_->egIso.at(it->second) & EGIsobit ) == 0) return false;
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Third EG ~~~~~
   it++;
   if (upgrade_->egEt.at(it->second) < cut3) return false;
-  if (isIso3 && !upgrade_->egIso.at(it->second)) return false;
+  if(isIso3 && (upgrade_->egIso.at(it->second) & EGIsobit ) == 0) return false;
 
   return true;
 }       // -----  end of function L1AlgoFactory::TripleEGIso  -----
@@ -3350,9 +3350,9 @@ bool L1AlgoFactory::DoubleEGIsoPer(Float_t cut1, Float_t cut2, Bool_t Iso1, Bool
   for(auto p : EGPair)
   {
     if (upgrade_->egEt.at(p.first) < cut1) continue;
-    if(Iso1 && !upgrade_->egIso.at(p.first)) continue;
+    if(Iso1 && (upgrade_->egIso.at(p.first) & EGIsobit ) == 0) continue;
     if (upgrade_->egEt.at(p.second) < cut2) continue;
-    if(Iso2 && !upgrade_->egIso.at(p.second)) continue;
+    if(Iso2 && (upgrade_->egIso.at(p.second) & EGIsobit ) == 0) continue;
     return true;
   }
 
@@ -3392,15 +3392,15 @@ bool L1AlgoFactory::TripleEGIsoPer(Float_t cut1, Float_t cut2, Float_t cut3, boo
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ First EG ~~~~~
     std::map<Float_t, int>::reverse_iterator it=EGPtIdx.rbegin();
     if (upgrade_->egEt.at(it->second) < cut1) continue;
-    if (isIso1 && !upgrade_->egIso.at(it->second)) continue;
+    if(isIso1 && (upgrade_->egIso.at(it->second) & EGIsobit ) == 0) continue;
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Second EG ~~~~~
     it++;
     if (upgrade_->egEt.at(it->second) < cut2) continue;
-    if (isIso2 && !upgrade_->egIso.at(it->second)) continue;
+    if(isIso2 && (upgrade_->egIso.at(it->second) & EGIsobit ) == 0) continue;
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Third EG ~~~~~
     it++;
     if (upgrade_->egEt.at(it->second) < cut3) continue;
-    if (isIso3 && !upgrade_->egIso.at(it->second)) continue;
+    if(isIso3 && (upgrade_->egIso.at(it->second) & EGIsobit ) == 0) continue;
     return true;
 
   } while (std::prev_permutation(bitmask.begin(), bitmask.end()));
@@ -3424,7 +3424,7 @@ bool L1AlgoFactory::SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Boo
   for(int ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
-    if(isIso && !upgrade_->egIso.at(ue)) continue;
+    if(isIso && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
     Float_t eta = upgrade_->egEta.at(ue);
     if(fabs(eta) > eleER && isER) continue;  // eta = 5 - 16
 
@@ -3478,8 +3478,7 @@ bool L1AlgoFactory::TripleMuOS(
     const int triMuQual,
     const float diMupt1,
     const float diMupt2,
-    const bool diMuOS,
-    ) 
+    const bool diMuOS) 
 {
   if(upgrade_->nMuons < 3) return false;
 

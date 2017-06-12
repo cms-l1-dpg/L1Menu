@@ -93,8 +93,8 @@ float BasicRatePlots::SingleEGEta(float ptCut, bool doIso) {
   for (UInt_t ue=0; ue < upgrade_ -> nEGs; ue++) {
     Int_t bx = upgrade_ -> egBx.at(ue);        		
     if (bx != 0) continue;
-    Bool_t iso = upgrade_ -> egIso.at(ue);
-    if (!iso && doIso) continue;
+    Int_t iso = upgrade_ -> egIso.at(ue);
+    if (doIso && ( iso & 1 ) == 0)  continue;
     Float_t pt = upgrade_ -> egEt.at(ue);
     if ( pt >= maxPt) 
       {

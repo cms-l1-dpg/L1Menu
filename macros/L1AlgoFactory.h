@@ -21,7 +21,7 @@ inline float Phi_mpi_pi(double x)
 class L1AlgoFactory: public L1Ntuple{
  public:
   L1AlgoFactory():jetCentFwd(3.0015),muonER(2.1),eleER(2.1315),tauER(2.1315),
-  MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(0.4), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0),
+  MuJetCordPhi(0.4), MuJetCordEta(0.4), MuOpenJetCordPhi(0.4), MuMudPhi(1.0), Onia2015ER(1.6), SelBx(0), EGIsobit(2),
   UseUpgradeLyr1(false), UseL1CaloTower(false)
   {};
   //L1AlgoFactory(TTree *tree);
@@ -213,6 +213,7 @@ class L1AlgoFactory: public L1Ntuple{
  float MuMudPhi;
  float Onia2015ER;
  int SelBx;
+ int EGIsobit;
  
  bool UseUpgradeLyr1;
  bool UseL1CaloTower;

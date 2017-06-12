@@ -330,6 +330,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu4p5er2p0_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.5 , 4.5 ,2.0 , 2, true,  999, 999);
   L1SeedFun["L1_DoubleMu5_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 5 , 5 , 999 , 2, true,  999, 999);
   L1SeedFun["L1_DoubleMu6_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 6 , 6 , 999 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu8_SQ"]    = std::bind(&L1AlgoFactory::DoubleMuMass , this , 8. , 8. , 999 , 2, false, 999, 999);
 
   L1SeedFun["L1_TripleMu0_OQ"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,0);
   L1SeedFun["L1_TripleMu_5_3p5_2p5"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,3.5,2.5,1);
