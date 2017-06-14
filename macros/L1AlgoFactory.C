@@ -3424,7 +3424,7 @@ bool L1AlgoFactory::SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Boo
   for(int ue=0; ue < upgrade_->nEGs; ue++) {
     Int_t bx = upgrade_->egBx.at(ue);  
     if(bx != 0) continue;
-    if(isIso && (upgrade_->egIso.at(ue) & EGIsobit ) == 0) continue;
+    if(isIso && (upgrade_->egIso.at(ue) & 1 ) == 0) continue;
     Float_t eta = upgrade_->egEta.at(ue);
     if(fabs(eta) > eleER && isER) continue;  // eta = 5 - 16
 

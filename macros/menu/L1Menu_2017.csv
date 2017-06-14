@@ -276,9 +276,9 @@ n     , L1AlgoName                                                     , 2.20   
 350   , L1_ETMHF70_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
 351   , L1_ETMHF80_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
 352   , L1_ETMHF90_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
-353   , L1_ETMHF100_Jet60_OR_DiJet30woTT28                             ,        , 0      ,          , Cross       , SUS           ,                                 , 
-354   , L1_ETMHF110_Jet60_OR_DiJet30woTT28                             ,        , 0      ,          , Cross       , SUS           ,                                 , 
-355   , L1_ETMHF120_Jet60_OR_DiJet30woTT28                             ,        , 0      ,          , Cross       , SUS           ,                                 , 
+353   , L1_ETMHF100_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
+354   , L1_ETMHF110_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
+355   , L1_ETMHF120_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
 356   , L1_ETMHF70_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
 357   , L1_ETMHF80_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
 358   , L1_ETMHF90_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
@@ -344,9 +344,9 @@ n     , L1AlgoName                                                     , 2.20   
 # 425 , L1_DoubleMu0er1p4_dEta_Max1p8_OS                               ,        ,        ,          , Correlation , BPH           ,                                 , Remove
 # 426 , L1_DoubleMu_10_0_dEta_Max1p8                                   ,        ,        ,          , Correlation , BPH           ,                                 , Remove
 # 427 , L1_Mu6_DoubleEG10                                              ,        ,        ,          , Cross       , SMP           ,                                 , Remove
- 428 , L1_Mu3_JetC16_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 , 
- 429 , L1_Mu3_JetC60_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 ,
- 430 , L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4                         ,        , 1      ,          , Correlation ,               ,                                 ,
+428   , L1_Mu3_JetC16_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 , 
+429   , L1_Mu3_JetC60_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 , 
+430   , L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4                         ,        , 1      ,          , Correlation ,               ,                                 , 
 # 431 , L1_SingleEG2_BptxAND                                           ,        , 0      ,          , Cross       ,               ,                                 , Remove
 # 432 , L1_SingleJet12_BptxAND                                         ,        , 0      ,          , Cross       ,               ,                                 , Remove
 # 433 , L1_ETT53_BptxAND                                               ,        ,        ,          , Cross       , HIN           , L1TDPG86                        , Add
@@ -410,3 +410,11 @@ n     , L1AlgoName                                                     , 2.20   
 388   , L1_DiJet30_dEtaMax1p5_Mjj360                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
 389   , L1_DiJet30_dEtaMax1p5_Mjj380                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
 392   , L1_DiJet30_dEtaMax1p5_Mjj400                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+393   , L1_SingleMuCosmics_XMTF                                        ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
+394   , L1_SingleMu0_XMTF                                              ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
+395   , L1_SingleMu12_LowQ_XMTF                                        ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
+396   , L1_SingleMu22_XMTF                                             ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
+397   , L1_SingleJet35_HFp                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
+398   , L1_SingleJet35_HFm                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
+399   , L1_SingleJet60_HFp                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
+400   , L1_SingleJet60_HFm                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
