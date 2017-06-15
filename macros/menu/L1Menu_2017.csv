@@ -1,420 +1,433 @@
-n     , L1AlgoName                                                     , 2.20   , 2.00   , 1.80E+34 , POG         , PAG           , Comment                         , uGT
-# 0   , L1_SingleMuCosmics                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
-1     , L1_SingleMuOpen                                                , 46000  , 42000  , 38000    , Mu          , Slim          , Check user                      , 
-2     , L1_SingleMu3                                                   , 24000  , 22000  , 20000    , Mu          , Slim          ,                                 , 
-3     , L1_SingleMu5                                                   ,        , 0      ,          , Mu          , Slim          ,                                 , 
-4     , L1_SingleMu7                                                   , 300    , 275    , 250      , Mu          , Slim          ,                                 , 
-# 5   , L1_SingleMu10_LowQ                                             ,        , 0      ,          , Mu          , Slim          ,                                 , Remove
-6     , L1_SingleMu11_LowQ                                             , 910    , 830    , 750      , Mu          , Slim | Muon   , L1TDPG67                        , 
-7     , L1_SingleMu16                                                  ,        , 0      ,          , Mu          , Slim          ,                                 , 
-8     , L1_SingleMu18                                                  , 300    , 275    , 250      , Mu          , Slim          ,                                 , 
-9     , L1_SingleMu20                                                  ,        , 0      ,          , Mu          , Slim          ,                                 , 
-10    , L1_SingleMu22                                                  ,        , 0      ,          , Mu          , Slim          ,                                 , 
-11    , L1_SingleMu25                                                  ,        , 1      ,          , Mu          , Slim          ,                                 , 
-12    , L1_SingleMu30                                                  ,        , 1      ,          , Mu          , Slim          ,                                 , 
-13    , L1_SingleMu14er2p1                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
-14    , L1_SingleMu16er2p1                                             , 300    , 275    , 250      , Mu          , Slim          ,                                 , 
-15    , L1_SingleMu18er2p1                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
-16    , L1_SingleMu20er2p1                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
-17    , L1_SingleMu22er2p1                                             ,        , 1      ,          , Mu          , Slim          ,                                 , 
-20    , L1_DoubleMu0                                                   , 910    , 830    , 750      , Mu          , Slim          ,                                 , 
-21    , L1_DoubleMu_11_4                                               ,        , 0      ,          , Mu          , Slim | Muon   ,                                 , 
-22    , L1_DoubleMu_12_5                                               ,        , 0      ,          , Mu          , Slim          ,                                 , 
-23    , L1_DoubleMu_12_8                                               ,        , 1      ,          , Mu          , Slim          , Disable                         , 
-24    , L1_DoubleMu_13_6                                               ,        , 0      ,          , Mu          , Slim          ,                                 , 
-25    , L1_DoubleMu_15_5                                               ,        , 1      ,          , Mu          , Slim          , can disable                     , 
-26    , L1_DoubleMu_15_7                                               ,        , 1      ,          , Mu          , Slim          ,                                 , 
-27    , L1_TripleMu0                                                   ,        , 0      ,          , Mu          , Slim          ,                                 , 
-28    , L1_TripleMu3                                                   ,        , 0      ,          , Mu          , Slim          ,                                 , 
-29    , L1_TripleMu_4_4_4                                              ,        , 1      ,          , Mu          , Slim          ,                                 , 
-30    , L1_TripleMu_5_0_0                                              ,        , 0      ,          , Mu          , Slim          ,                                 , 
-31    , L1_TripleMu_5_3_3                                              ,        , 1      ,          , Mu          , Slim          ,                                 , 
-32    , L1_TripleMu_5_5_3                                              ,        , 1      ,          , Mu          , Slim          ,                                 , 
-33    , L1_QuadMu0                                                     ,        , 1      ,          , Mu          , Slim          ,                                 , 
-40    , L1_SingleEG5                                                   , 120000 , 110000 , 100000   , EG          , Slim          ,                                 , 
-41    , L1_SingleEG10                                                  , 18000  , 16000  , 15000    , EG          , Slim          ,                                 , 
-42    , L1_SingleEG15                                                  , 4600   , 4200   , 3800     , EG          , Slim|AlCa     ,                                 , 
-43    , L1_SingleEG18                                                  , 12000  , 11000  , 10000    , EG          , Slim          ,                                 , 
-44    , L1_SingleEG24                                                  , 7600   , 6900   , 6200     , EG          , Slim          ,                                 , 
-45    , L1_SingleEG26                                                  , 760    , 690    , 620      , EG          , Slim|AlCa     ,                                 , 
-46    , L1_SingleEG28                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-47    , L1_SingleEG30                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-48    , L1_SingleEG32                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-49    , L1_SingleEG34                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-50    , L1_SingleEG36                                                  ,        , 0      ,          , EG          , Slim          ,                                 , 
-51    , L1_SingleEG38                                                  ,        , 0      ,          , EG          , Slim          ,                                 , 
-52    , L1_SingleEG40                                                  ,        , 1      ,          , EG          , Slim          ,                                 , 
-53    , L1_SingleEG45                                                  ,        , 1      ,          , EG          , Slim|AlCa     ,                                 , 
-# 54  , L1_SingleEG34er2p1                                             ,        ,        ,          , EG          , Slim          ,                                 , Remove
-# 55  , L1_SingleEG36er2p1                                             ,        ,        ,          , EG          , Slim          ,                                 , Remove
-# 56  , L1_SingleEG38er2p1                                             ,        ,        ,          , EG          , Slim          ,                                 , Remove
-57    , L1_SingleIsoEG18                                               ,        , 0      ,          , EG          , Slim          ,                                 , 
-58    , L1_SingleIsoEG20                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-59    , L1_SingleIsoEG22                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-60    , L1_SingleIsoEG24                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-61    , L1_SingleIsoEG26                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-62    , L1_SingleIsoEG28                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-63    , L1_SingleIsoEG30                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-64    , L1_SingleIsoEG32                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-65    , L1_SingleIsoEG34                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-66    , L1_SingleIsoEG36                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-67    , L1_SingleIsoEG38                                               ,        , 1      ,          , EG          , Slim          ,                                 , 
-68    , L1_SingleIsoEG18er2p1                                          ,        , 0      ,          , EG          , Slim          ,                                 , 
-69    , L1_SingleIsoEG20er2p1                                          ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-70    , L1_SingleIsoEG22er2p1                                          ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-71    , L1_SingleIsoEG24er2p1                                          ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-72    , L1_SingleIsoEG26er2p1                                          ,        , 0      , 50       , EG          , Slim|AlCa     , L1TDPG89                        , 
-73    , L1_SingleIsoEG28er2p1                                          ,        , 50     ,          , EG          , Slim|AlCa|TOP , L1TDPG89                        , 
-74    , L1_SingleIsoEG30er2p1                                          ,        , 50     ,          , EG          , Slim|AlCa|TOP , L1TDPG89                        , 
-75    , L1_SingleIsoEG32er2p1                                          ,        , 0      ,          , EG          , Slim          ,                                 , 
-76    , L1_SingleIsoEG34er2p1                                          ,        , 0      ,          , EG          , Slim          ,                                 , 
-77    , L1_SingleIsoEG36er2p1                                          ,        , 1      ,          , EG          , Slim          ,                                 , 
-80    , L1_DoubleEG_15_10                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-81    , L1_DoubleEG_18_17                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-82    , L1_DoubleEG_20_18                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-83    , L1_DoubleEG_22_10                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-84    , L1_DoubleEG_22_12                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-85    , L1_DoubleEG_22_15                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-86    , L1_DoubleEG_23_10                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
-87    , L1_DoubleEG_24_17                                              ,        , 1      ,          , EG          , Slim|AlCa     ,                                 , 
-88    , L1_DoubleEG_25_12                                              ,        , 0      ,          , EG          , Slim          ,                                 , 
-89    , L1_DoubleEG_25_13                                              ,        , 0      ,          , EG          , Slim          ,                                 , 
-90    , L1_DoubleEG_25_14                                              ,        , 1      ,          , EG          , Slim          ,                                 , 
-91    , L1_TripleEG_14_10_8                                            ,        , 0      ,          , EG          , Slim          ,                                 , 
-92    , L1_TripleEG_18_17_8                                            ,        , 1      ,          , EG          , Slim          ,                                 , 
-100   , L1_SingleTau20                                                 , 0      , 0      , 0        , Tau         , Tau           , L1TDPG85(Dummy)                 , 
-101   , L1_SingleTau80er2p1                                            ,        , 0      ,          , Tau         , Slim          ,                                 , 
-102   , L1_SingleTau100er2p1                                           ,        , 0      ,          , Tau         , Slim          ,                                 , 
-103   , L1_SingleTau120er2p1                                           ,        , 1      ,          , Tau         , Slim          ,                                 , 
-104   , L1_DoubleTau50er2p1                                            ,        , 0      ,          , Tau         , Slim          ,                                 , 
-105   , L1_DoubleTau70er2p1                                            ,        , 1      ,          , Tau         , Slim          ,                                 , 
-106   , L1_DoubleIsoTau28er2p1                                         ,        , 0      ,          , Tau         , Slim          ,                                 , 
-107   , L1_DoubleIsoTau30er2p1                                         ,        , 0      ,          , Tau         , Slim          ,                                 , 
-108   , L1_DoubleIsoTau32er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
-109   , L1_DoubleIsoTau33er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
-110   , L1_DoubleIsoTau34er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
-111   , L1_DoubleIsoTau35er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
-112   , L1_DoubleIsoTau36er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
-113   , L1_DoubleIsoTau38er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
-120   , L1_SingleJet16                                                 ,        , 0      ,          , Jet         , Slim          ,                                 , 
-121   , L1_SingleJet20                                                 ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-122   , L1_SingleJet35                                                 , 7600   , 6900   , 6200     , Jet         , Slim          ,                                 , 
-123   , L1_SingleJet60                                                 , 3000   , 2800   , 2500     , Jet         , Slim          ,                                 , 
-124   , L1_SingleJet90                                                 , 4600   , 4100   , 3800     , Jet         , Slim          ,                                 , 
-125   , L1_SingleJet120                                                , 460    , 410    , 380      , Jet         , Slim          ,                                 , 
-126   , L1_SingleJet140                                                ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-127   , L1_SingleJet150                                                ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-128   , L1_SingleJet160                                                ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-129   , L1_SingleJet170                                                ,        , 0      ,          , Jet         , Slim          ,                                 , 
-130   , L1_SingleJet180                                                ,        , 1      ,          , Jet         , Slim          ,                                 , 
-131   , L1_SingleJet200                                                ,        , 1      ,          , Jet         , Slim          ,                                 , 
-132   , L1_SingleJet35_FWD                                             ,        , 6900   ,          , Jet         , JME           , L1TDPG99                        , Add
-133   , L1_SingleJet60_FWD                                             ,        , 2800   ,          , Jet         , JME           , L1TDPG99                        , Add
-134   , L1_SingleJet90_FWD                                             ,        , 4100   ,          , Jet         , JME           , L1TDPG99                        , Add
-135   , L1_SingleJet120_FWD                                            ,        , 410    ,          , Jet         , JME           , L1TDPG99                        , Add
-140   , L1_DoubleJet40er3p0                                            ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-141   , L1_DoubleJet50er3p0                                            ,        , 0      ,          , Jet         , Slim          ,                                 , 
-142   , L1_DoubleJet60er3p0                                            ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-143   , L1_DoubleJet80er3p0                                            ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-144   , L1_DoubleJet100er3p0                                           ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
-145   , L1_DoubleJet112er3p0                                           ,        , 0      ,          , Jet         , Slim          ,                                 , 
-146   , L1_DoubleJet120er3p0                                           ,        , 1      ,          , Jet         , Slim|AlCa     ,                                 , 
-147   , L1_TripleJet_84_68_48_VBF                                      ,        , 0      ,          , Cross       , Slim          ,                                 , 
-148   , L1_TripleJet_88_72_56_VBF                                      ,        , 0      ,          , Cross       , Slim|AlCa     ,                                 , 
-149   , L1_TripleJet_92_76_64_VBF                                      ,        , 1      ,          , Cross       , Slim          ,                                 , 
-150   , L1_QuadJet40er3p0                                              ,        , 0      ,          , Jet         , Slim          ,                                 , 
-151   , L1_QuadJet50er3p0                                              ,        , 0      ,          , Jet         , Slim          ,                                 , 
-152   , L1_QuadJet60er3p0                                              ,        , 1      ,          , Jet         , Slim|AlCa     ,                                 , 
-160   , L1_HTT120er                                                    , 79000  , 72000  , 65000    , Sum         , Slim|AlCa     ,                                 , 
-161   , L1_HTT160er                                                    , 18000  , 16000  , 15000    , Sum         , Slim          ,                                 , 
-162   , L1_HTT200er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
-163   , L1_HTT220er                                                    , 12000  , 11000  , 10000    , Sum         , Slim          ,                                 , 
-164   , L1_HTT240er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
-165   , L1_HTT255er                                                    ,        , 8000   ,          , Sum         , Slim          ,                                 , 
-166   , L1_HTT270er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
-167   , L1_HTT280er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
-168   , L1_HTT300er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
-169   , L1_HTT320er                                                    ,        , 10000  ,          , Sum         , Slim          ,                                 , 
-170   , L1_HTT340er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
-171   , L1_HTT380er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-172   , L1_HTT400er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-173   , L1_HTT450er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-174   , L1_HTT500er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-180   , L1_ETM30                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-181   , L1_ETM40                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-182   , L1_ETM50                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-183   , L1_ETM60                                                       , 1500   , 1400   , 1200     , Sum         , Slim          ,                                 , 
-184   , L1_ETM70                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-185   , L1_ETM75                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-186   , L1_ETM80                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-187   , L1_ETM85                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-188   , L1_ETM90                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-189   , L1_ETM95                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
-190   , L1_ETM100                                                      ,        , 0      ,          , Sum         , Slim          ,                                 , 
-191   , L1_ETM105                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
-192   , L1_ETM110                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
-193   , L1_ETM115                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
-194   , L1_ETM120                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
-195   , L1_ETM150                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
-200   , L1_ETMHF70                                                     ,        , 0      ,          , Sum         , Slim          ,                                 , 
-201   , L1_ETMHF80                                                     ,        , 0      ,          , Sum         , Slim          ,                                 , 
-202   , L1_ETMHF90                                                     ,        , 0      ,          , Sum         , Slim          ,                                 , 
-203   , L1_ETMHF100                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
-204   , L1_ETMHF110                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-205   , L1_ETMHF120                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-206   , L1_ETMHF150                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
-# 240 , L1_SingleMuOpen_NotBptxOR                                      , 24     , 22     , 20       , Cross       , EXO           , L1TDPG66                        , 
-# 241 , L1_SingleMuOpen_NotBptxOR_3BX                                  , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
-# 242 , L1_SingleJet20er3p0_NotBptxOR                                  , 480    , 440    , 400      , Cross       , EXO           , L1TDPG66                        , 
-# 243 , L1_SingleJet20er3p0_NotBptxOR_3BX                              , 0      , 0      , 0        , Cross       , EXO           , L1TDPG66                        , 
-# 244 , L1_SingleJet43er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
-# 245 , L1_SingleJet46er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
-250   , L1_IsoEG24er2p1_Jet26er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
-251   , L1_IsoEG26er2p1_Jet34er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
-252   , L1_IsoEG28er2p1_Jet34er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
-253   , L1_IsoEG30er2p1_Jet34er3p0_dR_Min0p3                           ,        , 1      ,          , Correlation , Top           , L1TDPG84                        , 
-254   , L1_IsoEG24er2p1_HTT100er                                       ,        , 0      ,          , Cross       , Top           , L1TDPG84                        , 
-255   , L1_IsoEG26er2p1_HTT100er                                       ,        , 0      ,          , Cross       , Top           , L1TDPG84                        , 
-256   , L1_IsoEG28er2p1_HTT100er                                       ,        , 1      ,          , Cross       , Top           , L1TDPG84                        , 
-# 257 , L1_IsoEG24er2p1_TripleJet_26er3p0_26_26er3p0                   ,        , 0      ,          ,             ,               , L1TDPG105                       , Drop
-258   , L1_Mu18_HTT100er                                               ,        , 1      ,          , Cross       , Top           , L1TDPG84                        , 
-# 259 , L1_Mu18_Jet24er3p0                                             ,        , 0      ,          , Cross       ,               , L1TDPG105                       , Drop
-260   , L1_Mu20_EG17                                                   ,        , 1      ,          , Cross       , Top           , L1TDPG76 #Sergio123             , 
-261   , L1_Mu23_EG10                                                   ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio123            , 
-262   , L1_Mu23_IsoEG10                                                ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio123            , 
-263   , L1_Mu5_EG23                                                    ,        , 0      ,          , Cross       , Top           , L1TDPG76  #Sergio1              , 
-264   , L1_Mu5_IsoEG20                                                 ,        , 0      ,          , Cross       , Top           , L1TDPG76  #Sergio1              , 
-265   , L1_Mu7_EG23                                                    ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio2              , 
-266   , L1_Mu7_IsoEG20                                                 ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio23             , 
-267   , L1_Mu7_IsoEG23                                                 ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio3              , 
-268   , L1_HTT250er_QuadJet_70_55_40_35_er2p5                          ,        , 0      ,          , Cross       , Top           , L1TDPG84 #Marina(1.8)           , 
-269   , L1_HTT280er_QuadJet_70_55_40_35_er2p5                          ,        , 0      ,          , Cross       , Top           , L1TDPG84   #Marina(1.8&2)       , 
-270   , L1_HTT300er_QuadJet_70_55_40_35_er2p5                          ,        , 1      ,          , Cross       , Top           , L1TDPG84   #Marina(2)           , 
-275   , L1_DoubleJet100er2p3_dEta_Max1p6                               ,        , 1      ,          , Correlation , HIG           , #L1TDPG38                       , 
-276   , L1_Mu10er2p3_Jet32er2p3_dR_Max0p4_DoubleJet32er2p3_dEta_Max1p6 ,        , 0      ,          , Cross       , HIG           , #L1TDPG38                       , 
-277   , L1_Mu12er2p3_Jet40er2p3_dR_Max0p4_DoubleJet40er2p3_dEta_Max1p6 ,        , 1      ,          , Cross       , HIG           , #L1TDPG38                       , 
-278   , L1_IsoTau40er_ETM80                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
-279   , L1_IsoTau40er_ETM85                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
-280   , L1_IsoTau40er_ETM90                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
-281   , L1_IsoTau40er_ETM95                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
-282   , L1_IsoTau40er_ETM100                                           ,        , 1      ,          , Cross       , HIG           , #L1TDPG48                       , 
-283   , L1_IsoTau40er_ETMHF80                                          ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
-284   , L1_IsoTau40er_ETMHF90                                          ,        , 1      ,          , Cross       , HIG           , #L1TDPG48 (?)                   , 
-247   , L1_Mu22er2p1_Tau50er2p1                                        ,        , 0      ,          , Cross       , HIG           , L1TDPG103                       , Add
-248   , L1_Mu22er2p1_Tau70er2p1                                        ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-249   , L1_Mu22er2p1_IsoTau28er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-271   , L1_Mu22er2p1_IsoTau30er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-225   , L1_Mu22er2p1_IsoTau32er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-226   , L1_Mu22er2p1_IsoTau33er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-227   , L1_Mu22er2p1_IsoTau34er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-228   , L1_Mu22er2p1_IsoTau35er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-229   , L1_Mu22er2p1_IsoTau36er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-230   , L1_Mu22er2p1_IsoTau38er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
-285   , L1_Mu22er2p1_IsoTau40er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , 
-286   , L1_QuadJet36er3p0_IsoTau52er2p1                                , 12     , 10     , 8        , Cross       , HIG           , #L1TDPG48(Prescale)             , 
-287   , L1_ETM80_Jet60_dPhi_Min0p4                                     ,        , 0      ,          , Correlation , HIG           , L1TDPG87                        , 
-288   , L1_ETM90_Jet60_dPhi_Min0p4                                     ,        , 0      ,          , Correlation , HIG           , L1TDPG87                        , 
-289   , L1_ETM100_Jet60_dPhi_Min0p4                                    ,        , 1      ,          , Correlation , HIG           , L1TDPG87                        , 
-290   , L1_ETM110_Jet60_dPhi_Min0p4                                    , 1      , 1      ,          , Correlation , HIG           , L1TDPG87                        , 
-291   , L1_DoubleJet60er3p0_ETM70                                      ,        , 0      ,          , Cross       , HIG           , L1TDPG87                        , 
-292   , L1_DoubleJet60er3p0_ETM80                                      ,        , 0      ,          , Cross       , HIG           , L1TDPG87                        , 
-293   , L1_DoubleJet60er3p0_ETM90                                      ,        , 1      ,          , Cross       , HIG           , L1TDPG87                        , 
-294   , L1_DoubleJet60er3p0_ETM100                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG87                        , 
-295   , L1_DoubleEG_Iso23_10                                           ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
-296   , L1_DoubleEG_Iso24_10                                           ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
-297   , L1_TripleEG_Iso20_10_5                                         ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
-298   , L1_DoubleJet_90_30_DoubleJet30_Mass_Min620                     ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
-299   , L1_DoubleJet_100_30_DoubleJet30_Mass_Min620                    ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
-300   , L1_DoubleJet_100_35_DoubleJet35_Mass_Min620                    ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
-246   , L1_DoubleJet_110_35_DoubleJet35_Mass_Min620                    ,        , 1      ,          , Cross       , HIG           , L1TDPG102 (HLT not ready x1000) , Add
-301   , L1_DoubleJet30_Mass_Min400_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , L1TDPG102                       , 
-302   , L1_DoubleJet30_Mass_Min400_Mu10                                ,        , 1      ,          , Cross       , HIG|SUS       , L1TDPG102 (HLT not ready x1000) , 
-303   , L1_IsoEG18er2p1_IsoTau24er2p1_dR_Min0p3                        ,        , 0      ,          , Correlation , HIG           , L1TDPG100                       , Change
-304   , L1_IsoEG20er2p1_IsoTau25er2p1_dR_Min0p3                        ,        , 0      ,          , Correlation , HIG           , L1TDPG100                       , Change
-305   , L1_IsoEG22er2p1_IsoTau26er2p1_dR_Min0p3                        ,        , 1      ,          , Correlation , HIG           , L1TDPG100                       , Change
-306   , L1_Mu16er2p1_Tau20er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
-307   , L1_Mu16er2p1_Tau24er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
-308   , L1_Mu18er2p1_Tau20er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
-309   , L1_Mu18er2p1_Tau24er2p1                                        ,        , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
-310   , L1_Mu18er2p1_IsoTau26er2p1                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
-311   , L1_Mu20er2p1_IsoTau26er2p1                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
-315   , L1_Mu6_HTT240er                                                ,        , 1      ,          , Cross       , SUS           ,                                 , 
-316   , L1_Mu6_HTT250er                                                ,        , 1      ,          , Cross       , SUS           ,                                 , 
-317   , L1_Mu15_HTT100er                                               ,        , 0      ,          , Cross       , SUS           ,                                 , 
-318   , L1_DoubleMu0_ETMHF40_Jet60_OR_DoubleJet30                      ,        , 0      ,          , Cross       , SUS           ,                                 , 
-319   , L1_DoubleMu0_ETMHF50_Jet60_OR_DoubleJet30                      ,        , 0      ,          , Cross       , SUS           ,                                 , 
-320   , L1_DoubleMu0_ETMHF60_Jet60_OR_DoubleJet30                      ,        , 0      ,          , Cross       , SUS           ,                                 , 
-321   , L1_DoubleMu0_ETMHF70_Jet60_OR_DoubleJet30                      ,        , 1      ,          , Cross       , SUS           ,                                 , 
-322   , L1_DoubleMu0_ETMHF80_Jet60_OR_DoubleJet30                      ,        , 1      ,          , Cross       , SUS           ,                                 , 
-323   , L1_DoubleMu3_SQ_ETMHF40_Jet60_OR_DoubleJet30                   ,        , 0      ,          , Cross       , SUS           ,                                 , 
-324   , L1_DoubleMu3_SQ_ETMHF50_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
-325   , L1_DoubleMu3_SQ_ETMHF60_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
-326   , L1_DoubleMu3_SQ_ETMHF70_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
-327   , L1_DoubleMu3_SQ_ETMHF80_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
-328   , L1_DoubleMu3_SQ_HTT100er                                       ,        , 0      ,          , Cross       , SUS           ,                                 , 
-329   , L1_DoubleMu3_SQ_HTT200er                                       ,        , 1      ,          , Cross       , SUS           ,                                 , 
-330   , L1_DoubleMu3_SQ_HTT220er                                       ,        , 1      ,          , Cross       , SUS           ,                                 , 
-331   , L1_DoubleMu3_SQ_HTT240er                                       ,        , 1      ,          , Cross       , SUS           ,                                 , 
-332   , L1_DoubleMu_15_7_SQ                                            ,        , 1      ,          , Mu          , SUS           ,                                 , 
-333   , L1_DoubleMu_15_7_SQ_Mass_Min4                                  ,        , 1      ,          , Mass        , SUS           ,                                 , 
-334   , L1_TripleMu3_SQ                                                ,        , 1      ,          , Mu          , SUS           , #Laurent                        , 
-335   , L1_DoubleEG6_HTT240er                                          ,        , 0      ,          , Cross       , SUS           ,                                 , 
-336   , L1_DoubleEG6_HTT250er                                          ,        , 0      ,          , Cross       , SUS           ,                                 , 
-337   , L1_DoubleEG6_HTT270er                                          ,        , 1      ,          , Cross       , SUS           ,                                 , 
-338   , L1_DoubleEG6_HTT300er                                          ,        , 1      ,          , Cross       , SUS           ,                                 , 
-339   , L1_ETMHF70_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
-340   , L1_ETMHF75_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
-341   , L1_ETMHF80_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
-342   , L1_ETMHF85_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
-343   , L1_ETMHF90_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
-344   , L1_ETMHF95_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
-345   , L1_ETMHF100_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
-346   , L1_ETMHF105_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
-347   , L1_ETMHF110_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
-348   , L1_ETMHF115_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
-349   , L1_ETMHF120_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
-350   , L1_ETMHF70_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
-351   , L1_ETMHF80_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
-352   , L1_ETMHF90_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
-353   , L1_ETMHF100_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
-354   , L1_ETMHF110_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
-355   , L1_ETMHF120_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
-356   , L1_ETMHF70_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
-357   , L1_ETMHF80_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
-358   , L1_ETMHF90_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
-359   , L1_ETMHF100_Jet90_OR_DoubleJet45_OR_TripleJet30                ,        , 1      ,          , Cross       , SUS           ,                                 , 
-360   , L1_ETMHF110_Jet90_OR_DoubleJet45_OR_TripleJet30                ,        , 1      ,          , Cross       , SUS           ,                                 , 
-361   , L1_DoubleMu7_SQ_EG7                                            ,        , 1      ,          , Cross       , SUS|SMP       ,                                 , 
-370   , L1_DoubleMu0er1p5_SQ_OS_dR_Max1p4                              ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
-371   , L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18                            ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , 
-372   , L1_DoubleMu4_SQ_OS_dR_Max1p2                                   ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
-373   , L1_DoubleMu5_SQ_OS_Mass7to18                                   ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , 
-374   , L1_DoubleMu_20_2_SQ_Mass_Max20                                 ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , 
-375   , L1_TripleMu_5_0_0_DoubleMu_5_0_OS_Mass_Max17                   ,        , 0      ,          , Mass        , BPH           , L1TDPG78                        , 
-376   , L1_DoubleMu4_OS_EG12                                           ,        , 1      ,          , Cross       , BPH           , L1TDPG78                        , 
-377   , L1_DoubleMu0er1p4_SQ_OS_dR_Max1p4                              ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
-378   , L1_DoubleMu4p5_SQ_OS_dR_Max1p2                                 ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
-379   , L1_TripleMu_5_3_0_DoubleMu_5_3_OS_Mass_Max17                   ,        , 0      ,          , Mass        , BPH           , L1TDPG78                        , 
-380   , L1_DoubleMu5_OS_EG12                                           ,        , 1      ,          , Cross       , BPH           , L1TDPG78                        , 
-210   , L1_TripleMu_5_3p5_2p5_DoubleMu_5_2p5_OS_Mass_5to17             ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , Add
-211   , L1_TripleMu_5_4_2p5_DoubleMu_5_2p5_OS_Mass_5to17               ,        , 1      ,          , Mass        , BPH           , L1TDPG78  (bakcup)              , Add
-212   , L1_TripleMu_5SQ_3SQ_0OQ_DoubleMu_5_3_SQ_OS_Mass_Max9           ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , Add
-213   , L1_TripleMu_5SQ_3SQ_0_DoubleMu_5_3_SQ_OS_Mass_Max9             ,        , 1      ,          , Mass        , BPH           , L1TDPG78  (bakcup)              , Add
-214   , L1_DoubleMu0_SQ                                                ,        , 300    ,          , Mu          , BPH           , L1TDPG96 (500|650)              , Add
-215   , L1_DoubleMu0_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
-216   , L1_DoubleMu4p5_SQ                                              ,        , 80     ,          , Mu          , BPH           , L1TDPG96 (120|180)              , Add
-217   , L1_DoubleMu4p5_SQ_OS                                           ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
-218   , L1_DoubleMu4p5er2p0_SQ_OS                                      ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
-219   , L1_DoubleMu0er1p5_SQ_OS                                        ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
-220   , L1_DoubleMu4_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
-221   , L1_DoubleMu5_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
-222   , L1_TripleMu_5_3p5_2p5                                          ,        , 70     ,          , Mu          , BPH           , L1TDPG96 (70|140)               , Add
-223   , L1_TripleMu0_OQ                                                ,        , 1000   ,          , Mu          , BPH           , L1TDPG96 (1000)                 , Add
-224   , L1_TripleMu_5SQ_3SQ_0OQ                                        ,        , 70     ,          , Mu          , BPH           , L1TDPG96 (70|140)               , Add
-381   , L1_DoubleMu6_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG78(included but off)      , 
-231   , L1_DoubleMu8_SQ                                                ,        , 1      ,          , Mu          , BPH           , L1TDPG78                        , Add
-232   , L1_TripleMu_5_5_5_OQ_OS                                        ,        , 1      ,          , Mu          , BPH           , L1TDPG78                        , Add
-390   , L1_Mu6_DoubleEG17                                              ,        , 1      ,          , Cross       , SMP           , L1TDPG81                        , 
-391   , L1_DoubleMu7_EG7                                               ,        , 0      ,          , Cross       , SMP           , L1TDPG81                        , 
-# 400 , L1_IsolatedBunch                                               ,        , 0      ,          , External    , AlCa          ,                                 , Reassign type
-# 401 , L1_FirstBunchInTrain                                           ,        , 0      ,          , External    ,               ,                                 , Reassign type
-# 402 , L1_FirstBunchAfterTrain                                        ,        , 0      ,          , External    ,               ,                                 , Reassign type
-# 403 , L1_Mu5_EG15                                                    ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 404 , L1_Mu5_EG20                                                    ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 405 , L1_Mu5_IsoEG18                                                 ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 406 , L1_Mu12_EG10                                                   ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 407 , L1_Mu20_EG10                                                   ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 408 , L1_MU20_EG15                                                   ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 409 , L1_Mu20_IsoEG6                                                 ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 410 , L1_Mu6_HTT200er                                                ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 411 , L1_Mu8_HTT150er                                                ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 412 , L1_EG25er2p1_HTT125er                                          ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 413 , L1_EG27er2p1_HTT200er                                          ,        ,        ,          , Cross       , TOP           ,                                 , Remove
-# 414 , L1_DoubleJet60er3p0_ETM60                                      ,        ,        ,          , Cross       , HIG           ,                                 , Remove
-# 415 , L1_QuadJet36er3p0_Tau52                                        ,        ,        ,          , Cross       , HIG           ,                                 , Remove
-# 416 , L1_ETM75_Jet60_dPhi_Min0p4                                     ,        ,        ,          , Correlation , HIG           ,                                 , Remove
-# 417 , L1_DoubleMu0_ETM40                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 418 , L1_DoubleMu0_ETM55                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 419 , L1_DoubleMu0_ETM60                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 420 , L1_DoubleMu0_ETM65                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 421 , L1_DoubleMu0_ETM70                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 422 , L1_Jet32_DoubleMu_10_0_dPhi_Jet_Mu0_Max0p4_dPhi_Mu_Mu_Min1p0   ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 423 , L1_Jet32_Mu0_EG10_dPhi_Jet_Mu_Max0p4_dPhi_Mu_EG_Min1p0         ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 424 , L1_DoubleEG6_HTT255er                                          ,        ,        ,          , Cross       , SUS           ,                                 , Remove
-# 425 , L1_DoubleMu0er1p4_dEta_Max1p8_OS                               ,        ,        ,          , Correlation , BPH           ,                                 , Remove
-# 426 , L1_DoubleMu_10_0_dEta_Max1p8                                   ,        ,        ,          , Correlation , BPH           ,                                 , Remove
-# 427 , L1_Mu6_DoubleEG10                                              ,        ,        ,          , Cross       , SMP           ,                                 , Remove
-428   , L1_Mu3_JetC16_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 , 
-429   , L1_Mu3_JetC60_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 , 
-430   , L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4                         ,        , 1      ,          , Correlation ,               ,                                 , 
-# 431 , L1_SingleEG2_BptxAND                                           ,        , 0      ,          , Cross       ,               ,                                 , Remove
-# 432 , L1_SingleJet12_BptxAND                                         ,        , 0      ,          , Cross       ,               ,                                 , Remove
-# 433 , L1_ETT53_BptxAND                                               ,        ,        ,          , Cross       , HIN           , L1TDPG86                        , Add
-# 434 , L1_ETT55_BptxAND                                               ,        ,        ,          , Cross       , HIN           ,                                 , 
-# 435 , L1_ETT60_BptxAND                                               ,        ,        ,          , Cross       , HIN           , L1TDPG86                        , Add
-# 436 , L1_ETT68_BptxAND                                               ,        ,        ,          , Cross       , HIN           , L1TDPG86                        , Add
-# 437 , L1_ETT70_BptxAND                                               ,        ,        ,          , Cross       , HIN           ,                                 , 
-# 438 , L1_ETT75_BptxAND                                               ,        ,        ,          , Cross       , HIN           ,                                 , 
-# 439 , L1_MinimumBiasHF0_AND_BptxAND                                  ,        , 0      ,          , Cross       ,               ,                                 , Remove
-# 440 , L1_MinimumBiasHF0_OR_BptxAND                                   ,        , 0      ,          , Cross       ,               ,                                 , Remove
-# 441 , L1_Mu10er2p1_ETM30                                             ,        , 0      ,          , Cross       ,               ,                                 , Remove
-# 442 , L1_Mu14er2p1_ETM30                                             ,        , 0      ,          , Cross       ,               ,                                 , Remove
-# 450 , L1_AlwaysTrue                                                  ,        ,        ,          , External    ,               ,                                 , 
-# 451 , L1_NotBptxOR                                                   ,        ,        ,          , External    ,               ,                                 , 
-# 452 , L1_BptxXOR                                                     ,        ,        ,          , External    ,               ,                                 , 
-# 453 , L1_ZeroBias_copy                                               ,        ,        ,          , External    ,               ,                                 , 
-# 454 , L1_BPTX_BeamGas_Ref1_VME                                       ,        ,        ,          , External    ,               ,                                 , 
-# 455 , L1_BPTX_BeamGas_Ref2_VME                                       ,        ,        ,          , External    ,               ,                                 , 
-# 456 , L1_BPTX_BeamGas_B1_VME                                         ,        ,        ,          , External    ,               ,                                 , 
-# 457 , L1_BPTX_BeamGas_B2_VME                                         ,        ,        ,          , External    ,               ,                                 , 
-# 458 , L1_ZeroBias                                                    ,        ,        ,          , External    ,               ,                                 , 
-# 459 , L1_BptxPlus                                                    ,        ,        ,          , External    ,               ,                                 , 
-# 460 , L1_BptxMinus                                                   ,        ,        ,          , External    ,               ,                                 , 
-# 461 , L1_BptxOR                                                      ,        ,        ,          , Cross       ,               ,                                 , 
-# 462 , L1_BPTX_AND_Ref1_VME                                           ,        ,        ,          , External    ,               ,                                 , 
-# 463 , L1_BPTX_B1NotB2_VME                                            ,        ,        ,          , External    ,               ,                                 , 
-# 464 , L1_BPTX_B2NotB1_VME                                            ,        ,        ,          , External    ,               ,                                 , 
-# 465 , L1_BPTX_NotOR_VME                                              ,        ,        ,          , External    ,               ,                                 , 
-# 466 , L1_BPTX_AND_Ref2_NIM                                           ,        ,        ,          , External    ,               ,                                 , 
-# 467 , L1_BPTX_B1NotB2_NIM                                            ,        ,        ,          , External    ,               ,                                 , 
-# 468 , L1_BPTX_B2NotB1_NIM                                            ,        ,        ,          , External    ,               ,                                 , 
-# 469 , L1_BPTX_NotOR_NIM                                              ,        ,        ,          , External    ,               ,                                 , 
-# 470 , L1_BPTX_AND_Ref3_VME                                           ,        ,        ,          , External    ,               ,                                 , 
-# 471 , L1_BPTX_OR_Ref3_VME                                            ,        ,        ,          , External    ,               ,                                 , 
-# 472 , L1_BPTX_RefAND_VME                                             ,        ,        ,          , External    ,               ,                                 , 
-# 473 , L1_FirstCollisionInOrbit                                       ,        ,        ,          , External    ,               ,                                 , 
-# 474 , L1_BPTX_AND_Ref4_VME                                           ,        ,        ,          , External    ,               ,                                 , 
-# 475 , L1_BPTX_OR_Ref4_VME                                            ,        ,        ,          , External    ,               ,                                 , 
-# 476 , L1_LastCollisionInTrain                                        ,        ,        ,          , External    ,               ,                                 , 
-# 477 , L1_FirstCollisionInTrain                                       ,        ,        ,          , External    ,               ,                                 , 
-# 478 , L1_BPTX_AND_NIM                                                ,        ,        ,          , External    ,               ,                                 , 
-# 479 , L1_BPTX_B1_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
-# 480 , L1_BPTX_B2_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
-# 481 , L1_BPTX_OR_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
-93    , L1_SingleIsoEG33_Mt40                                          ,        , 1      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-94    , L1_SingleIsoEG33_Mt43                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-95    , L1_SingleIsoEG33_Mt47                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-96    , L1_SingleIsoEG33_Mt48                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-97    , L1_SingleIsoEG34_Mt44                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-98    , L1_SingleIsoEG34_Mt46                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
-34    , L1_CDC_3_er1p2_TOP120_DPHI2p618_3p665                          ,        , 0      ,          , Correlation , Tracker       , L1TDPG74                        , Add
-35    , L1_CDC_4_er1p2_TOP120_DPHI2p618_3p665                          ,        , 0      ,          , Correlation , Tracker       , L1TDPG75                        , Add
-36    , L1_DoubleIsoEG22er2p1                                          ,        , 1      ,          , EG          , TOP           , L1TDPG116                       , Add
-37    , L1_DoubleMu18er2p1                                             ,        , 1      ,          , Mu          , TOP           , L1TDPG116                       , Add
-38    , L1_DoubleMu22er2p1                                             ,        , 1      ,          , Mu          , TOP           , L1TDPG116                       , Add
-#383  , L1_DoubleJet30_Mass_Min600_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , L1TDPG102 (backup)              , Add
-#384  , L1_DoubleJet35_rmovlp_IsoTau45_Mass_Min450                     ,        ,        ,          , Correlation , HIG           , L1TDPG121 (mask for monitor)    , Add
-385   , L1_DiJet30_dEtaMax1p5_Mjj300                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-386   , L1_DiJet30_dEtaMax1p5_Mjj320                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-387   , L1_DiJet30_dEtaMax1p5_Mjj340                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-388   , L1_DiJet30_dEtaMax1p5_Mjj360                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-389   , L1_DiJet30_dEtaMax1p5_Mjj380                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-392   , L1_DiJet30_dEtaMax1p5_Mjj400                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-393   , L1_SingleMuCosmics_XMTF                                        ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
-394   , L1_SingleMu0_XMTF                                              ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
-395   , L1_SingleMu12_LowQ_XMTF                                        ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
-396   , L1_SingleMu22_XMTF                                             ,        ,        ,          , Mu          , AlCa          , L1TDPG113                       , Add
-397   , L1_SingleJet35_HFp                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
-398   , L1_SingleJet35_HFm                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
-399   , L1_SingleJet60_HFp                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
-400   , L1_SingleJet60_HFm                                             ,        ,        ,          , Jet         , HCAL          , L1TDPG128                       , Add
+n    , L1AlgoName                                                     , 2.20   , 2.00   , 1.80E+34 , POG         , PAG           , Comment                         , uGT
+#0   , L1_SingleMuCosmics                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
+1    , L1_SingleMuOpen                                                , 46000  , 42000  , 38000    , Mu          , Slim          , Check user                      , 
+2    , L1_SingleMu3                                                   , 24000  , 22000  , 20000    , Mu          , Slim          ,                                 , 
+3    , L1_SingleMu5                                                   ,        , 0      ,          , Mu          , Slim          ,                                 , 
+4    , L1_SingleMu7                                                   , 300    , 275    , 250      , Mu          , Slim          ,                                 , 
+5    , L1_SingleMu10_LowQ                                             , 910    , 830    , 750      , Mu          , Slim          ,                                 , 
+#6   , L1_SingleMu11_LowQ                                             , 910    , 830    , 750      , Mu          , Slim | Muon   , L1TDPG67                        , 
+7    , L1_SingleMu16                                                  ,        , 0      ,          , Mu          , Slim          ,                                 , 
+8    , L1_SingleMu18                                                  , 300    , 275    , 250      , Mu          , Slim          ,                                 , 
+9    , L1_SingleMu20                                                  ,        , 0      ,          , Mu          , Slim          ,                                 , 
+10   , L1_SingleMu22                                                  ,        , 0      ,          , Mu          , Slim          ,                                 , 
+11   , L1_SingleMu25                                                  ,        , 1      ,          , Mu          , Slim          ,                                 , 
+12   , L1_SingleMu30                                                  ,        , 1      ,          , Mu          , Slim          ,                                 , 
+13   , L1_SingleMu14er2p1                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
+14   , L1_SingleMu16er2p1                                             , 300    , 275    , 250      , Mu          , Slim          ,                                 , 
+15   , L1_SingleMu18er2p1                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
+16   , L1_SingleMu20er2p1                                             ,        , 0      ,          , Mu          , Slim          ,                                 , 
+17   , L1_SingleMu22er2p1                                             ,        , 1      ,          , Mu          , Slim          ,                                 , 
+20   , L1_DoubleMu0                                                   , 910    , 830    , 750      , Mu          , Slim          ,                                 , 
+21   , L1_DoubleMu_11_4                                               ,        , 0      ,          , Mu          , Slim | Muon   ,                                 , 
+22   , L1_DoubleMu_12_5                                               ,        , 0      ,          , Mu          , Slim          ,                                 , 
+23   , L1_DoubleMu_12_8                                               ,        , 1      ,          , Mu          , Slim          , Disable                         , 
+24   , L1_DoubleMu_13_6                                               ,        , 0      ,          , Mu          , Slim          ,                                 , 
+25   , L1_DoubleMu_15_5                                               ,        , 1      ,          , Mu          , Slim          , can disable                     , 
+26   , L1_DoubleMu_15_7                                               ,        , 1      ,          , Mu          , Slim          ,                                 , 
+27   , L1_TripleMu0                                                   ,        , 0      ,          , Mu          , Slim          ,                                 , 
+28   , L1_TripleMu3                                                   ,        , 0      ,          , Mu          , Slim          ,                                 , 
+29   , L1_TripleMu_4_4_4                                              ,        , 1      ,          , Mu          , Slim          ,                                 , 
+30   , L1_TripleMu_5_0_0                                              ,        , 0      ,          , Mu          , Slim          ,                                 , 
+31   , L1_TripleMu_5_3_3                                              ,        , 1      ,          , Mu          , Slim          ,                                 , 
+32   , L1_TripleMu_5_5_3                                              ,        , 1      ,          , Mu          , Slim          ,                                 , 
+33   , L1_QuadMu0                                                     ,        , 1      ,          , Mu          , Slim          ,                                 , 
+40   , L1_SingleEG5                                                   , 120000 , 110000 , 100000   , EG          , Slim          ,                                 , 
+41   , L1_SingleEG10                                                  , 18000  , 16000  , 15000    , EG          , Slim          ,                                 , 
+42   , L1_SingleEG15                                                  , 4600   , 4200   , 3800     , EG          , Slim|AlCa     ,                                 , 
+43   , L1_SingleEG18                                                  , 12000  , 11000  , 10000    , EG          , Slim          ,                                 , 
+44   , L1_SingleEG24                                                  , 7600   , 6900   , 6200     , EG          , Slim          ,                                 , 
+45   , L1_SingleEG26                                                  , 760    , 690    , 620      , EG          , Slim|AlCa     ,                                 , 
+46   , L1_SingleEG28                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+47   , L1_SingleEG30                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+48   , L1_SingleEG32                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+49   , L1_SingleEG34                                                  ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+50   , L1_SingleEG36                                                  ,        , 0      ,          , EG          , Slim          ,                                 , 
+51   , L1_SingleEG38                                                  ,        , 0      ,          , EG          , Slim          ,                                 , 
+52   , L1_SingleEG40                                                  ,        , 1      ,          , EG          , Slim          ,                                 , 
+53   , L1_SingleEG45                                                  ,        , 1      ,          , EG          , Slim|AlCa     ,                                 , 
+#54  , L1_SingleEG34er2p1                                             ,        ,        ,          , EG          , Slim          ,                                 , Remove
+#55  , L1_SingleEG36er2p1                                             ,        ,        ,          , EG          , Slim          ,                                 , Remove
+#56  , L1_SingleEG38er2p1                                             ,        ,        ,          , EG          , Slim          ,                                 , Remove
+57   , L1_SingleIsoEG18                                               ,        , 0      ,          , EG          , Slim          ,                                 , 
+58   , L1_SingleIsoEG20                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+59   , L1_SingleIsoEG22                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+60   , L1_SingleIsoEG24                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+61   , L1_SingleIsoEG26                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+62   , L1_SingleIsoEG28                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+63   , L1_SingleIsoEG30                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+64   , L1_SingleIsoEG32                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+65   , L1_SingleIsoEG34                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+66   , L1_SingleIsoEG36                                               ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+67   , L1_SingleIsoEG38                                               ,        , 1      ,          , EG          , Slim          ,                                 , 
+68   , L1_SingleIsoEG18er2p1                                          ,        , 0      ,          , EG          , Slim          ,                                 , 
+69   , L1_SingleIsoEG20er2p1                                          ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+70   , L1_SingleIsoEG22er2p1                                          ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+71   , L1_SingleIsoEG24er2p1                                          ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+72   , L1_SingleIsoEG26er2p1                                          ,        , 0      , 50       , EG          , Slim|AlCa     , L1TDPG89                        , 
+73   , L1_SingleIsoEG28er2p1                                          ,        , 50     ,          , EG          , Slim|AlCa|TOP , L1TDPG89                        , 
+74   , L1_SingleIsoEG30er2p1                                          ,        , 50     ,          , EG          , Slim|AlCa|TOP , L1TDPG89                        , 
+75   , L1_SingleIsoEG32er2p1                                          ,        , 0      ,          , EG          , Slim          ,                                 , 
+76   , L1_SingleIsoEG34er2p1                                          ,        , 0      ,          , EG          , Slim          ,                                 , 
+77   , L1_SingleIsoEG36er2p1                                          ,        , 1      ,          , EG          , Slim          ,                                 , 
+80   , L1_DoubleEG_15_10                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+81   , L1_DoubleEG_18_17                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+82   , L1_DoubleEG_20_18                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+83   , L1_DoubleEG_22_10                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+84   , L1_DoubleEG_22_12                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+85   , L1_DoubleEG_22_15                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+86   , L1_DoubleEG_23_10                                              ,        , 0      ,          , EG          , Slim|AlCa     ,                                 , 
+87   , L1_DoubleEG_24_17                                              ,        , 1      ,          , EG          , Slim|AlCa     ,                                 , 
+88   , L1_DoubleEG_25_12                                              ,        , 0      ,          , EG          , Slim          ,                                 , 
+89   , L1_DoubleEG_25_13                                              ,        , 0      ,          , EG          , Slim          ,                                 , 
+90   , L1_DoubleEG_25_14                                              ,        , 1      ,          , EG          , Slim          ,                                 , 
+91   , L1_TripleEG_14_10_8                                            ,        , 0      ,          , EG          , Slim          ,                                 , 
+92   , L1_TripleEG_18_17_8                                            ,        , 1      ,          , EG          , Slim          ,                                 , 
+100  , L1_SingleTau20                                                 , 0      , 0      , 0        , Tau         , Tau           , L1TDPG85(Dummy)                 , 
+101  , L1_SingleTau80er2p1                                            ,        , 0      ,          , Tau         , Slim          ,                                 , 
+102  , L1_SingleTau100er2p1                                           ,        , 0      ,          , Tau         , Slim          ,                                 , 
+103  , L1_SingleTau120er2p1                                           ,        , 1      ,          , Tau         , Slim          ,                                 , 
+104  , L1_DoubleTau50er2p1                                            ,        , 0      ,          , Tau         , Slim          ,                                 , 
+105  , L1_DoubleTau70er2p1                                            ,        , 1      ,          , Tau         , Slim          ,                                 , 
+106  , L1_DoubleIsoTau28er2p1                                         ,        , 0      ,          , Tau         , Slim          ,                                 , 
+107  , L1_DoubleIsoTau30er2p1                                         ,        , 0      ,          , Tau         , Slim          ,                                 , 
+108  , L1_DoubleIsoTau32er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
+109  , L1_DoubleIsoTau33er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
+110  , L1_DoubleIsoTau34er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
+111  , L1_DoubleIsoTau35er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
+112  , L1_DoubleIsoTau36er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
+113  , L1_DoubleIsoTau38er2p1                                         ,        , 1      ,          , Tau         , Slim          ,                                 , 
+120  , L1_SingleJet16                                                 ,        , 0      ,          , Jet         , Slim          ,                                 , 
+121  , L1_SingleJet20                                                 ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+122  , L1_SingleJet35                                                 , 7600   , 6900   , 6200     , Jet         , Slim          ,                                 , 
+123  , L1_SingleJet60                                                 , 3000   , 2800   , 2500     , Jet         , Slim          ,                                 , 
+124  , L1_SingleJet90                                                 , 4600   , 4100   , 3800     , Jet         , Slim          ,                                 , 
+125  , L1_SingleJet120                                                , 460    , 410    , 380      , Jet         , Slim          ,                                 , 
+126  , L1_SingleJet140                                                ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+127  , L1_SingleJet150                                                ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+128  , L1_SingleJet160                                                ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+129  , L1_SingleJet170                                                ,        , 0      ,          , Jet         , Slim          ,                                 , 
+130  , L1_SingleJet180                                                ,        , 1      ,          , Jet         , Slim          ,                                 , 
+131  , L1_SingleJet200                                                ,        , 1      ,          , Jet         , Slim          ,                                 , 
+132  , L1_SingleJet35_FWD                                             ,        , 6900   ,          , Jet         , JME           , L1TDPG99                        , Add
+133  , L1_SingleJet60_FWD                                             ,        , 2800   ,          , Jet         , JME           , L1TDPG99                        , Add
+134  , L1_SingleJet90_FWD                                             ,        , 4100   ,          , Jet         , JME           , L1TDPG99                        , Add
+135  , L1_SingleJet120_FWD                                            ,        , 410    ,          , Jet         , JME           , L1TDPG99                        , Add
+140  , L1_DoubleJet40er3p0                                            ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+141  , L1_DoubleJet50er3p0                                            ,        , 0      ,          , Jet         , Slim          ,                                 , 
+142  , L1_DoubleJet60er3p0                                            ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+143  , L1_DoubleJet80er3p0                                            ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+144  , L1_DoubleJet100er3p0                                           ,        , 0      ,          , Jet         , Slim|AlCa     ,                                 , 
+145  , L1_DoubleJet112er3p0                                           ,        , 0      ,          , Jet         , Slim          ,                                 , 
+146  , L1_DoubleJet120er3p0                                           ,        , 1      ,          , Jet         , Slim|AlCa     ,                                 , 
+147  , L1_TripleJet_84_68_48_VBF                                      ,        , 0      ,          , Cross       , Slim          ,                                 , 
+148  , L1_TripleJet_88_72_56_VBF                                      ,        , 0      ,          , Cross       , Slim|AlCa     ,                                 , 
+149  , L1_TripleJet_92_76_64_VBF                                      ,        , 1      ,          , Cross       , Slim          ,                                 , 
+150  , L1_QuadJet40er3p0                                              ,        , 0      ,          , Jet         , Slim          ,                                 , 
+151  , L1_QuadJet50er3p0                                              ,        , 0      ,          , Jet         , Slim          ,                                 , 
+152  , L1_QuadJet60er3p0                                              ,        , 1      ,          , Jet         , Slim|AlCa     ,                                 , 
+160  , L1_HTT120er                                                    , 79000  , 72000  , 65000    , Sum         , Slim|AlCa     ,                                 , 
+161  , L1_HTT160er                                                    , 18000  , 16000  , 15000    , Sum         , Slim          ,                                 , 
+162  , L1_HTT200er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
+163  , L1_HTT220er                                                    , 12000  , 11000  , 10000    , Sum         , Slim          ,                                 , 
+164  , L1_HTT240er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
+165  , L1_HTT255er                                                    ,        , 8000   ,          , Sum         , Slim          ,                                 , 
+166  , L1_HTT270er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
+167  , L1_HTT280er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
+168  , L1_HTT300er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
+169  , L1_HTT320er                                                    ,        , 10000  ,          , Sum         , Slim          ,                                 , 
+170  , L1_HTT340er                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
+171  , L1_HTT380er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
+172  , L1_HTT400er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
+173  , L1_HTT450er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
+174  , L1_HTT500er                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
+180  , L1_ETM30                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+181  , L1_ETM40                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+182  , L1_ETM50                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+183  , L1_ETM60                                                       , 1500   , 1400   , 1200     , Sum         , Slim          ,                                 , 
+184  , L1_ETM70                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+185  , L1_ETM75                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+186  , L1_ETM80                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+187  , L1_ETM85                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+188  , L1_ETM90                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+189  , L1_ETM95                                                       ,        , 0      ,          , Sum         , Slim          ,                                 , 
+190  , L1_ETM100                                                      ,        , 0      ,          , Sum         , Slim          ,                                 , 
+191  , L1_ETM105                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
+192  , L1_ETM110                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
+193  , L1_ETM115                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
+194  , L1_ETM120                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
+195  , L1_ETM150                                                      ,        , 1      ,          , Sum         , Slim          ,                                 , 
+200  , L1_ETMHF70                                                     ,        , 0      ,          , Sum         , Slim          ,                                 , 
+201  , L1_ETMHF80                                                     ,        , 0      ,          , Sum         , Slim          ,                                 , 
+202  , L1_ETMHF90                                                     ,        , 0      ,          , Sum         , Slim          ,                                 , 
+203  , L1_ETMHF100                                                    ,        , 0      ,          , Sum         , Slim          ,                                 , 
+204  , L1_ETMHF110                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
+205  , L1_ETMHF120                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
+206  , L1_ETMHF150                                                    ,        , 1      ,          , Sum         , Slim          ,                                 , 
+#240 , L1_SingleMuOpen_NotBptxOR                                      , 24     , 22     , 20       , Cross       , EXO           , L1TDPG66                        , 
+#241 , L1_SingleMuOpen_NotBptxOR_3BX                                  , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
+#242 , L1_SingleJet20er3p0_NotBptxOR                                  , 480    , 440    , 400      , Cross       , EXO           , L1TDPG66                        , 
+#243 , L1_SingleJet20er3p0_NotBptxOR_3BX                              , 0      , 0      , 0        , Cross       , EXO           , L1TDPG66                        , 
+#244 , L1_SingleJet43er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
+#245 , L1_SingleJet46er3p0_NotBptxOR_3BX                              , 1      , 1      , 1        , Cross       , EXO           , L1TDPG66                        , 
+250  , L1_IsoEG24er2p1_Jet26er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
+251  , L1_IsoEG26er2p1_Jet34er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
+252  , L1_IsoEG28er2p1_Jet34er3p0_dR_Min0p3                           ,        , 0      ,          , Correlation , Top           , L1TDPG84                        , 
+253  , L1_IsoEG30er2p1_Jet34er3p0_dR_Min0p3                           ,        , 1      ,          , Correlation , Top           , L1TDPG84                        , 
+254  , L1_IsoEG24er2p1_HTT100er                                       ,        , 0      ,          , Cross       , Top           , L1TDPG84                        , 
+255  , L1_IsoEG26er2p1_HTT100er                                       ,        , 0      ,          , Cross       , Top           , L1TDPG84                        , 
+256  , L1_IsoEG28er2p1_HTT100er                                       ,        , 1      ,          , Cross       , Top           , L1TDPG84                        , 
+#257 , L1_IsoEG24er2p1_TripleJet_26er3p0_26_26er3p0                   ,        , 0      ,          ,             ,               , L1TDPG105                       , Drop
+258  , L1_Mu18_HTT100er                                               ,        , 1      ,          , Cross       , Top           , L1TDPG84                        , 
+#259 , L1_Mu18_Jet24er3p0                                             ,        , 0      ,          , Cross       ,               , L1TDPG105                       , Drop
+260  , L1_Mu20_EG17                                                   ,        , 1      ,          , Cross       , Top           , L1TDPG76 #Sergio123             , 
+261  , L1_Mu23_EG10                                                   ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio123            , 
+262  , L1_Mu23_IsoEG10                                                ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio123            , 
+263  , L1_Mu5_EG23                                                    ,        , 0      ,          , Cross       , Top           , L1TDPG76  #Sergio1              , 
+264  , L1_Mu5_IsoEG20                                                 ,        , 0      ,          , Cross       , Top           , L1TDPG76  #Sergio1              , 
+265  , L1_Mu7_EG23                                                    ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio2              , 
+266  , L1_Mu7_IsoEG20                                                 ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio23             , 
+267  , L1_Mu7_IsoEG23                                                 ,        , 1      ,          , Cross       , Top           , L1TDPG76  #Sergio3              , 
+268  , L1_HTT250er_QuadJet_70_55_40_35_er2p5                          ,        , 0      ,          , Cross       , Top           , L1TDPG84 #Marina(1.8)           , 
+269  , L1_HTT280er_QuadJet_70_55_40_35_er2p5                          ,        , 0      ,          , Cross       , Top           , L1TDPG84   #Marina(1.8&2)       , 
+270  , L1_HTT300er_QuadJet_70_55_40_35_er2p5                          ,        , 1      ,          , Cross       , Top           , L1TDPG84   #Marina(2)           , 
+275  , L1_DoubleJet100er2p3_dEta_Max1p6                               ,        , 1      ,          , Correlation , HIG           , #L1TDPG38                       , 
+276  , L1_Mu10er2p3_Jet32er2p3_dR_Max0p4_DoubleJet32er2p3_dEta_Max1p6 ,        , 0      ,          , Cross       , HIG           , #L1TDPG38                       , 
+277  , L1_Mu12er2p3_Jet40er2p3_dR_Max0p4_DoubleJet40er2p3_dEta_Max1p6 ,        , 1      ,          , Cross       , HIG           , #L1TDPG38                       , 
+278  , L1_IsoTau40er_ETM80                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
+279  , L1_IsoTau40er_ETM85                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
+280  , L1_IsoTau40er_ETM90                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
+281  , L1_IsoTau40er_ETM95                                            ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
+282  , L1_IsoTau40er_ETM100                                           ,        , 1      ,          , Cross       , HIG           , #L1TDPG48                       , 
+283  , L1_IsoTau40er_ETMHF80                                          ,        , 0      ,          , Cross       , HIG           , #L1TDPG48                       , 
+284  , L1_IsoTau40er_ETMHF90                                          ,        , 1      ,          , Cross       , HIG           , #L1TDPG48 (?)                   , 
+247  , L1_Mu22er2p1_Tau50er2p1                                        ,        , 0      ,          , Cross       , HIG           , L1TDPG103                       , Add
+248  , L1_Mu22er2p1_Tau70er2p1                                        ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+249  , L1_Mu22er2p1_IsoTau28er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+271  , L1_Mu22er2p1_IsoTau30er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+225  , L1_Mu22er2p1_IsoTau32er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+226  , L1_Mu22er2p1_IsoTau33er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+227  , L1_Mu22er2p1_IsoTau34er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+228  , L1_Mu22er2p1_IsoTau35er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+229  , L1_Mu22er2p1_IsoTau36er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+230  , L1_Mu22er2p1_IsoTau38er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , Add
+285  , L1_Mu22er2p1_IsoTau40er2p1                                     ,        , 1      ,          , Cross       , HIG           , L1TDPG103                       , 
+286  , L1_QuadJet36er3p0_IsoTau52er2p1                                , 12     , 10     , 8        , Cross       , HIG           , #L1TDPG48(Prescale)             , 
+287  , L1_ETM80_Jet60_dPhi_Min0p4                                     ,        , 0      ,          , Correlation , HIG           , L1TDPG87                        , 
+288  , L1_ETM90_Jet60_dPhi_Min0p4                                     ,        , 0      ,          , Correlation , HIG           , L1TDPG87                        , 
+289  , L1_ETM100_Jet60_dPhi_Min0p4                                    ,        , 1      ,          , Correlation , HIG           , L1TDPG87                        , 
+290  , L1_ETM110_Jet60_dPhi_Min0p4                                    , 1      , 1      ,          , Correlation , HIG           , L1TDPG87                        , 
+291  , L1_DoubleJet60er3p0_ETM70                                      ,        , 0      ,          , Cross       , HIG           , L1TDPG87                        , 
+292  , L1_DoubleJet60er3p0_ETM80                                      ,        , 0      ,          , Cross       , HIG           , L1TDPG87                        , 
+293  , L1_DoubleJet60er3p0_ETM90                                      ,        , 1      ,          , Cross       , HIG           , L1TDPG87                        , 
+294  , L1_DoubleJet60er3p0_ETM100                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG87                        , 
+295  , L1_DoubleEG_Iso23_10                                           ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
+296  , L1_DoubleEG_Iso24_10                                           ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
+297  , L1_TripleEG_Iso20_10_5                                         ,        , 1      ,          , EG          , HIG           , #Sumit                          , 
+298  , L1_DoubleJet_90_30_DoubleJet30_Mass_Min620                     ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
+299  , L1_DoubleJet_100_30_DoubleJet30_Mass_Min620                    ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
+300  , L1_DoubleJet_100_35_DoubleJet35_Mass_Min620                    ,        , 0      ,          , Cross       , HIG           , L1TDPG102                       , 
+246  , L1_DoubleJet_110_35_DoubleJet35_Mass_Min620                    ,        , 1      ,          , Cross       , HIG           , L1TDPG102                       , Add
+301  , L1_DoubleJet30_Mass_Min400_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , L1TDPG102                       , 
+302  , L1_DoubleJet30_Mass_Min400_Mu10                                ,        , 1000   ,          , Cross       , HIG|SUS       , L1TDPG102 (HLT not ready x1000) , 
+303  , L1_IsoEG18er2p1_IsoTau24er2p1_dR_Min0p3                        ,        , 0      ,          , Correlation , HIG           , L1TDPG100                       , Change
+304  , L1_IsoEG20er2p1_IsoTau25er2p1_dR_Min0p3                        ,        , 0      ,          , Correlation , HIG           , L1TDPG100                       , Change
+305  , L1_IsoEG22er2p1_IsoTau26er2p1_dR_Min0p3                        ,        , 1      ,          , Correlation , HIG           , L1TDPG100                       , Change
+306  , L1_Mu16er2p1_Tau20er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
+307  , L1_Mu16er2p1_Tau24er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
+308  , L1_Mu18er2p1_Tau20er2p1                                        ,        , 0      , 1        , Cross       , HIG           , L1TDPG82                        , 
+309  , L1_Mu18er2p1_Tau24er2p1                                        ,        , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
+310  , L1_Mu18er2p1_IsoTau26er2p1                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
+311  , L1_Mu20er2p1_IsoTau26er2p1                                     , 1      , 1      ,          , Cross       , HIG           , L1TDPG82                        , 
+315  , L1_Mu6_HTT240er                                                ,        , 1      ,          , Cross       , SUS           ,                                 , 
+316  , L1_Mu6_HTT250er                                                ,        , 1      ,          , Cross       , SUS           ,                                 , 
+317  , L1_Mu15_HTT100er                                               ,        , 0      ,          , Cross       , SUS           ,                                 , 
+318  , L1_DoubleMu0_ETMHF40_Jet60_OR_DoubleJet30                      ,        , 0      ,          , Cross       , SUS           ,                                 , 
+319  , L1_DoubleMu0_ETMHF50_Jet60_OR_DoubleJet30                      ,        , 0      ,          , Cross       , SUS           ,                                 , 
+320  , L1_DoubleMu0_ETMHF60_Jet60_OR_DoubleJet30                      ,        , 0      ,          , Cross       , SUS           ,                                 , 
+321  , L1_DoubleMu0_ETMHF70_Jet60_OR_DoubleJet30                      ,        , 1      ,          , Cross       , SUS           ,                                 , 
+322  , L1_DoubleMu0_ETMHF80_Jet60_OR_DoubleJet30                      ,        , 1      ,          , Cross       , SUS           ,                                 , 
+323  , L1_DoubleMu3_SQ_ETMHF40_Jet60_OR_DoubleJet30                   ,        , 0      ,          , Cross       , SUS           ,                                 , 
+324  , L1_DoubleMu3_SQ_ETMHF50_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
+325  , L1_DoubleMu3_SQ_ETMHF60_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
+326  , L1_DoubleMu3_SQ_ETMHF70_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
+327  , L1_DoubleMu3_SQ_ETMHF80_Jet60_OR_DoubleJet30                   ,        , 1      ,          , Cross       , SUS           ,                                 , 
+328  , L1_DoubleMu3_SQ_HTT100er                                       ,        , 0      ,          , Cross       , SUS           ,                                 , 
+329  , L1_DoubleMu3_SQ_HTT200er                                       ,        , 1      ,          , Cross       , SUS           ,                                 , 
+330  , L1_DoubleMu3_SQ_HTT220er                                       ,        , 1      ,          , Cross       , SUS           ,                                 , 
+331  , L1_DoubleMu3_SQ_HTT240er                                       ,        , 1      ,          , Cross       , SUS           ,                                 , 
+332  , L1_DoubleMu_15_7_SQ                                            ,        , 1      ,          , Mu          , SUS           ,                                 , 
+333  , L1_DoubleMu_15_7_SQ_Mass_Min4                                  ,        , 1      ,          , Mass        , SUS           ,                                 , 
+334  , L1_TripleMu3_SQ                                                ,        , 1      ,          , Mu          , SUS           , #Laurent                        , 
+335  , L1_DoubleEG6_HTT240er                                          ,        , 0      ,          , Cross       , SUS           ,                                 , 
+336  , L1_DoubleEG6_HTT250er                                          ,        , 0      ,          , Cross       , SUS           ,                                 , 
+337  , L1_DoubleEG6_HTT270er                                          ,        , 1      ,          , Cross       , SUS           ,                                 , 
+338  , L1_DoubleEG6_HTT300er                                          ,        , 1      ,          , Cross       , SUS           ,                                 , 
+339  , L1_ETMHF70_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
+340  , L1_ETMHF75_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
+341  , L1_ETMHF80_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
+342  , L1_ETMHF85_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
+343  , L1_ETMHF90_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
+344  , L1_ETMHF95_Jet60_OR_DoubleJet30                                ,        , 0      ,          , Cross       , SUS           ,                                 , 
+345  , L1_ETMHF100_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
+346  , L1_ETMHF105_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
+347  , L1_ETMHF110_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
+348  , L1_ETMHF115_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
+349  , L1_ETMHF120_Jet60_OR_DoubleJet30                               ,        , 1      ,          , Cross       , SUS           ,                                 , 
+350  , L1_ETMHF70_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
+351  , L1_ETMHF80_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
+352  , L1_ETMHF90_Jet60_OR_DiJet30woTT28                              ,        , 0      ,          , Cross       , SUS           ,                                 , 
+353  , L1_ETMHF100_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
+354  , L1_ETMHF110_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
+355  , L1_ETMHF120_Jet60_OR_DiJet30woTT28                             ,        , 1      ,          , Cross       , SUS           ,                                 , 
+356  , L1_ETMHF70_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
+357  , L1_ETMHF80_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
+358  , L1_ETMHF90_Jet90_OR_DoubleJet45_OR_TripleJet30                 ,        , 0      ,          , Cross       , SUS           ,                                 , 
+359  , L1_ETMHF100_Jet90_OR_DoubleJet45_OR_TripleJet30                ,        , 1      ,          , Cross       , SUS           ,                                 , 
+360  , L1_ETMHF110_Jet90_OR_DoubleJet45_OR_TripleJet30                ,        , 1      ,          , Cross       , SUS           ,                                 , 
+361  , L1_DoubleMu7_SQ_EG7                                            ,        , 1      ,          , Cross       , SUS|SMP       ,                                 , 
+370  , L1_DoubleMu0er1p5_SQ_OS_dR_Max1p4                              ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
+371  , L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18                            ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , 
+372  , L1_DoubleMu4_SQ_OS_dR_Max1p2                                   ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
+373  , L1_DoubleMu5_SQ_OS_Mass7to18                                   ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , 
+374  , L1_DoubleMu_20_2_SQ_Mass_Max20                                 ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , 
+375  , L1_TripleMu_5_0_0_DoubleMu_5_0_OS_Mass_Max17                   ,        , 0      ,          , Mass        , BPH           , L1TDPG78                        , 
+376  , L1_DoubleMu4_OS_EG12                                           ,        , 1      ,          , Cross       , BPH           , L1TDPG78                        , 
+377  , L1_DoubleMu0er1p4_SQ_OS_dR_Max1p4                              ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
+378  , L1_DoubleMu4p5_SQ_OS_dR_Max1p2                                 ,        , 1      ,          , Correlation , BPH           , L1TDPG78                        , 
+379  , L1_TripleMu_5_3_0_DoubleMu_5_3_OS_Mass_Max17                   ,        , 0      ,          , Mass        , BPH           , L1TDPG78                        , 
+380  , L1_DoubleMu5_OS_EG12                                           ,        , 1      ,          , Cross       , BPH           , L1TDPG78                        , 
+210  , L1_TripleMu_5_3p5_2p5_DoubleMu_5_2p5_OS_Mass_5to17             ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , Add
+211  , L1_TripleMu_5_4_2p5_DoubleMu_5_2p5_OS_Mass_5to17               ,        , 1      ,          , Mass        , BPH           , L1TDPG78  (bakcup)              , Add
+212  , L1_TripleMu_5SQ_3SQ_0OQ_DoubleMu_5_3_SQ_OS_Mass_Max9           ,        , 1      ,          , Mass        , BPH           , L1TDPG78                        , Add
+213  , L1_TripleMu_5SQ_3SQ_0_DoubleMu_5_3_SQ_OS_Mass_Max9             ,        , 1      ,          , Mass        , BPH           , L1TDPG78  (bakcup)              , Add
+214  , L1_DoubleMu0_SQ                                                ,        , 300    ,          , Mu          , BPH           , L1TDPG96 (500|650)              , Add
+215  , L1_DoubleMu0_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
+216  , L1_DoubleMu4p5_SQ                                              ,        , 80     ,          , Mu          , BPH           , L1TDPG96 (120|180)              , Add
+217  , L1_DoubleMu4p5_SQ_OS                                           ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
+218  , L1_DoubleMu4p5er2p0_SQ_OS                                      ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
+219  , L1_DoubleMu0er1p5_SQ_OS                                        ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
+220  , L1_DoubleMu4_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
+221  , L1_DoubleMu5_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG96 (Mask for HLT)         , Add
+222  , L1_TripleMu_5_3p5_2p5                                          ,        , 70     ,          , Mu          , BPH           , L1TDPG96 (70|140)               , Add
+223  , L1_TripleMu0_OQ                                                ,        , 1000   ,          , Mu          , BPH           , L1TDPG96 (1000)                 , Add
+224  , L1_TripleMu_5SQ_3SQ_0OQ                                        ,        , 70     ,          , Mu          , BPH           , L1TDPG96 (70|140)               , Add
+381  , L1_DoubleMu6_SQ_OS                                             ,        , 0      ,          , Mu          , BPH           , L1TDPG78(included but off)      , 
+231  , L1_DoubleMu8_SQ                                                ,        , 1      ,          , Mu          , BPH           , L1TDPG78                        , Add
+232  , L1_TripleMu_5_5_5_OQ_OS                                        ,        , 1      ,          , Mu          , BPH           , L1TDPG78                        , Add
+390  , L1_Mu6_DoubleEG17                                              ,        , 1      ,          , Cross       , SMP           , L1TDPG81                        , 
+391  , L1_DoubleMu7_EG7                                               ,        , 0      ,          , Cross       , SMP           , L1TDPG81                        , 
+#400 , L1_IsolatedBunch                                               ,        , 0      ,          , External    , AlCa          ,                                 , Reassign type
+#401 , L1_FirstBunchInTrain                                           ,        , 0      ,          , External    ,               ,                                 , Reassign type
+#402 , L1_FirstBunchAfterTrain                                        ,        , 0      ,          , External    ,               ,                                 , Reassign type
+#403 , L1_Mu5_EG15                                                    ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#404 , L1_Mu5_EG20                                                    ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#405 , L1_Mu5_IsoEG18                                                 ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#406 , L1_Mu12_EG10                                                   ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#407 , L1_Mu20_EG10                                                   ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#408 , L1_MU20_EG15                                                   ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#409 , L1_Mu20_IsoEG6                                                 ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#410 , L1_Mu6_HTT200er                                                ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#411 , L1_Mu8_HTT150er                                                ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#412 , L1_EG25er2p1_HTT125er                                          ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#413 , L1_EG27er2p1_HTT200er                                          ,        ,        ,          , Cross       , TOP           ,                                 , Remove
+#414 , L1_DoubleJet60er3p0_ETM60                                      ,        ,        ,          , Cross       , HIG           ,                                 , Remove
+#415 , L1_QuadJet36er3p0_Tau52                                        ,        ,        ,          , Cross       , HIG           ,                                 , Remove
+#416 , L1_ETM75_Jet60_dPhi_Min0p4                                     ,        ,        ,          , Correlation , HIG           ,                                 , Remove
+#417 , L1_DoubleMu0_ETM40                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#418 , L1_DoubleMu0_ETM55                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#419 , L1_DoubleMu0_ETM60                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#420 , L1_DoubleMu0_ETM65                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#421 , L1_DoubleMu0_ETM70                                             ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#422 , L1_Jet32_DoubleMu_10_0_dPhi_Jet_Mu0_Max0p4_dPhi_Mu_Mu_Min1p0   ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#423 , L1_Jet32_Mu0_EG10_dPhi_Jet_Mu_Max0p4_dPhi_Mu_EG_Min1p0         ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#424 , L1_DoubleEG6_HTT255er                                          ,        ,        ,          , Cross       , SUS           ,                                 , Remove
+#425 , L1_DoubleMu0er1p4_dEta_Max1p8_OS                               ,        ,        ,          , Correlation , BPH           ,                                 , Remove
+#426 , L1_DoubleMu_10_0_dEta_Max1p8                                   ,        ,        ,          , Correlation , BPH           ,                                 , Remove
+#427 , L1_Mu6_DoubleEG10                                              ,        ,        ,          , Cross       , SMP           ,                                 , Remove
+428  , L1_Mu3_JetC16_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 , 
+429  , L1_Mu3_JetC60_dEta_Max0p4_dPhi_Max0p4                          ,        , 0      ,          , Correlation ,               ,                                 , 
+430  , L1_Mu3_JetC120_dEta_Max0p4_dPhi_Max0p4                         ,        , 1      ,          , Correlation ,               ,                                 , 
+#431 , L1_SingleEG2_BptxAND                                           ,        , 0      ,          , Cross       ,               ,                                 , Remove
+#432 , L1_SingleJet12_BptxAND                                         ,        , 0      ,          , Cross       ,               ,                                 , Remove
+#433 , L1_ETT53_BptxAND                                               ,        ,        ,          , Cross       , HIN           , L1TDPG86                        , Add
+#434 , L1_ETT55_BptxAND                                               ,        ,        ,          , Cross       , HIN           ,                                 , 
+#435 , L1_ETT60_BptxAND                                               ,        ,        ,          , Cross       , HIN           , L1TDPG86                        , Add
+#436 , L1_ETT68_BptxAND                                               ,        ,        ,          , Cross       , HIN           , L1TDPG86                        , Add
+#437 , L1_ETT70_BptxAND                                               ,        ,        ,          , Cross       , HIN           ,                                 , 
+#438 , L1_ETT75_BptxAND                                               ,        ,        ,          , Cross       , HIN           ,                                 , 
+#439 , L1_MinimumBiasHF0_AND_BptxAND                                  ,        , 0      ,          , Cross       ,               ,                                 , Remove
+#440 , L1_MinimumBiasHF0_OR_BptxAND                                   ,        , 0      ,          , Cross       ,               ,                                 , Remove
+#441 , L1_Mu10er2p1_ETM30                                             ,        , 0      ,          , Cross       ,               ,                                 , Remove
+#442 , L1_Mu14er2p1_ETM30                                             ,        , 0      ,          , Cross       ,               ,                                 , Remove
+#450 , L1_AlwaysTrue                                                  ,        ,        ,          , External    ,               ,                                 , 
+#451 , L1_NotBptxOR                                                   ,        ,        ,          , External    ,               ,                                 , 
+#452 , L1_BptxXOR                                                     ,        ,        ,          , External    ,               ,                                 , 
+#453 , L1_ZeroBias_copy                                               ,        ,        ,          , External    ,               ,                                 , 
+#454 , L1_BPTX_BeamGas_Ref1_VME                                       ,        ,        ,          , External    ,               ,                                 , 
+#455 , L1_BPTX_BeamGas_Ref2_VME                                       ,        ,        ,          , External    ,               ,                                 , 
+#456 , L1_BPTX_BeamGas_B1_VME                                         ,        ,        ,          , External    ,               ,                                 , 
+#457 , L1_BPTX_BeamGas_B2_VME                                         ,        ,        ,          , External    ,               ,                                 , 
+#458 , L1_ZeroBias                                                    ,        ,        ,          , External    ,               ,                                 , 
+#459 , L1_BptxPlus                                                    ,        ,        ,          , External    ,               ,                                 , 
+#460 , L1_BptxMinus                                                   ,        ,        ,          , External    ,               ,                                 , 
+#461 , L1_BptxOR                                                      ,        ,        ,          , Cross       ,               ,                                 , 
+#462 , L1_BPTX_AND_Ref1_VME                                           ,        ,        ,          , External    ,               ,                                 , 
+#463 , L1_BPTX_B1NotB2_VME                                            ,        ,        ,          , External    ,               ,                                 , 
+#464 , L1_BPTX_B2NotB1_VME                                            ,        ,        ,          , External    ,               ,                                 , 
+#465 , L1_BPTX_NotOR_VME                                              ,        ,        ,          , External    ,               ,                                 , 
+#466 , L1_BPTX_AND_Ref2_NIM                                           ,        ,        ,          , External    ,               ,                                 , 
+#467 , L1_BPTX_B1NotB2_NIM                                            ,        ,        ,          , External    ,               ,                                 , 
+#468 , L1_BPTX_B2NotB1_NIM                                            ,        ,        ,          , External    ,               ,                                 , 
+#469 , L1_BPTX_NotOR_NIM                                              ,        ,        ,          , External    ,               ,                                 , 
+#470 , L1_BPTX_AND_Ref3_VME                                           ,        ,        ,          , External    ,               ,                                 , 
+#471 , L1_BPTX_OR_Ref3_VME                                            ,        ,        ,          , External    ,               ,                                 , 
+#472 , L1_BPTX_RefAND_VME                                             ,        ,        ,          , External    ,               ,                                 , 
+#473 , L1_FirstCollisionInOrbit                                       ,        ,        ,          , External    ,               ,                                 , 
+#474 , L1_BPTX_AND_Ref4_VME                                           ,        ,        ,          , External    ,               ,                                 , 
+#475 , L1_BPTX_OR_Ref4_VME                                            ,        ,        ,          , External    ,               ,                                 , 
+#476 , L1_LastCollisionInTrain                                        ,        ,        ,          , External    ,               ,                                 , 
+#477 , L1_FirstCollisionInTrain                                       ,        ,        ,          , External    ,               ,                                 , 
+#478 , L1_BPTX_AND_NIM                                                ,        ,        ,          , External    ,               ,                                 , 
+#479 , L1_BPTX_B1_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
+#480 , L1_BPTX_B2_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
+#481 , L1_BPTX_OR_NIM                                                 ,        ,        ,          , External    ,               ,                                 , 
+93   , L1_SingleIsoEG33_Mt40                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+94   , L1_SingleIsoEG33_Mt43                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+95   , L1_SingleIsoEG33_Mt47                                          ,        , 1      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+96   , L1_SingleIsoEG33_Mt48                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+97   , L1_SingleIsoEG34_Mt44                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+98   , L1_SingleIsoEG34_Mt46                                          ,        , 0      ,          , Mass        , ECAL          , L1TDPG66                        , Add
+#34  , L1_CDC_3_er1p2_TOP120_DPHI2p618_3p665                          ,        , 1      ,          , Correlation , Tracker       , L1TDPG74                        , Add
+#35  , L1_CDC_4_er1p2_TOP120_DPHI2p618_3p665                          ,        , 1      ,          , Correlation , Tracker       , L1TDPG75                        , Add
+36   , L1_DoubleIsoEG22er2p1                                          ,        , 1      ,          , EG          , TOP           , L1TDPG116                       , Add
+37   , L1_DoubleMu18er2p1                                             ,        , 1      ,          , Mu          , TOP           , L1TDPG116                       , Add
+38   , L1_DoubleMu22er2p1                                             ,        , 1      ,          , Mu          , TOP           , L1TDPG116                       , Add
+#383 , L1_DoubleJet30_Mass_Min600_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , L1TDPG102 (backup)              , Add
+#384 , L1_DoubleJet35_rmovlp_IsoTau45_Mass_Min450                     ,        ,        ,          , Correlation , HIG           , L1TDPG121 (mask for monitor)    , Add
+385  , L1_DiJet30_dEtaMax1p5_Mjj300                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+386  , L1_DiJet30_dEtaMax1p5_Mjj320                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+387  , L1_DiJet30_dEtaMax1p5_Mjj340                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+388  , L1_DiJet30_dEtaMax1p5_Mjj360                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+389  , L1_DiJet30_dEtaMax1p5_Mjj380                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+392  , L1_DiJet30_dEtaMax1p5_Mjj400                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+#393 , L1_SingleMuCosmics_XMTF                                        ,        , 0      ,          , Mu          , AlCa          , L1TDPG113(mask for monitor)     , Add
+#394 , L1_SingleMu0_XMTF                                              ,        , 0      ,          , Mu          , AlCa          , L1TDPG113(mask for monitor)     , Add
+#395 , L1_SingleMu12_LowQ_XMTF                                        ,        , 0      ,          , Mu          , AlCa          , L1TDPG113(mask for monitor)     , Add
+#396 , L1_SingleMu22_XMTF                                             ,        , 0      ,          , Mu          , AlCa          , L1TDPG113(mask for monitor)     , Add
+#397 , L1_SingleJet35_HFp                                             ,        , 0      ,          , Jet         , HCAL          , L1TDPG128(mask for monitor)     , Add
+#398 , L1_SingleJet35_HFm                                             ,        , 0      ,          , Jet         , HCAL          , L1TDPG128(mask for monitor)     , Add
+#399 , L1_SingleJet60_HFp                                             ,        , 0      ,          , Jet         , HCAL          , L1TDPG128(mask for monitor)     , Add
+#400 , L1_SingleJet60_HFm                                             ,        , 0      ,          , Jet         , HCAL          , L1TDPG128(mask for monitor)     , Add
+401  , L1_ETMHF100_HTTer60                                            , 0      , 1      , 0        , Cross       , SUS           , Simone                          , Add
+402  , L1_DoubleJet30_Mass_Min300_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+403  , L1_DoubleJet30_Mass_Min320_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+404  , L1_DoubleJet30_Mass_Min340_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+405  , L1_DoubleJet30_Mass_Min360_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+406  , L1_DoubleJet30_Mass_Min380_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+407  , L1_DoubleJet30_Mass_Min400_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+408  , L1_DoubleLeadJet30_Mass_Min300_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+409  , L1_DoubleLeadJet30_Mass_Min320_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+410  , L1_DoubleLeadJet30_Mass_Min340_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+411  , L1_DoubleLeadJet30_Mass_Min360_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+412  , L1_DoubleLeadJet30_Mass_Min380_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+413  , L1_DoubleLeadJet30_Mass_Min400_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add

@@ -166,6 +166,7 @@ class L1AlgoFactory: public L1Ntuple{
   bool HTM_HTT(float HTMcut, float HTTcut);
   bool Mu_Jet(float mucut, float jetcut, bool isMuER, bool isJetCent);
   void Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, const bool isJetCent);
+  bool ETM_HTT(float ETMcut, float HTTcut, bool isETMHF);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2017 Proposals ~~~~~
   Bool_t EG_HTT(Float_t egcut, Float_t HTcut, bool isEGer, bool isEGIso);
@@ -193,6 +194,7 @@ class L1AlgoFactory: public L1Ntuple{
   bool TripleEGIsoPer(Float_t cut1, Float_t cut2, Float_t cut3, bool isIso1, bool isIso2, bool isIso3);
   bool SingleEGMT(Float_t EGcut, Float_t MTcut, Float_t ETMcut, Bool_t isIso, Bool_t isER);
   bool MuonCDC_dPhi(float mupt, int muQual, float muER, float dPhiMin, float dPhiMax);
+  bool DoubleJet_dEtaMass(float Jet1Pt, float Jet2Pt, float EtaRestrict, bool isleading, float dEtaMax, float MassMin);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Setting variables ~~~~~
   void SetMuonER(float newER);
   void SetUseUpgradeLyr1(bool option);

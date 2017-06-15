@@ -3529,3 +3529,89 @@ bool L1AlgoFactory::TripleMuOS(
   return false;
 }       // -----  end of function L1AlgoFactory::TripleMuOS  -----
 
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::ETM_HTT
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::ETM_HTT(float ETMcut, float HTTcut, bool isETMHF)
+{
+  
+  Float_t TheHTT = -10;
+  HTTVal(TheHTT);
+
+  Float_t TheETM = -10;
+  if (isETMHF)
+    ETMHFVal(TheETM);
+  else
+    ETMVal(TheETM);
+
+  if (TheETM >= ETMcut && TheHTT >= HTTcut)
+    return true;
+  return false;
+}       // -----  end of function L1AlgoFactory::ETM_HTT  -----
+
+
+// ===  FUNCTION  ============================================================
+//         Name:  L1AlgoFactory::DoubleJet_dEtaMass
+//  Description:  
+// ===========================================================================
+bool L1AlgoFactory::DoubleJet_dEtaMass(float Jet1Pt,  
+    float Jet2Pt, float EtaRestrict, bool isleading, float dEtaMax, float MassMin)
+{
+  if(upgrade_->nJets < 2) return false;
+
+  std::vector<std::pair<unsigned,unsigned> > jetPairs;
+
+  for (unsigned ue=0; ue < upgrade_->nJets; ue++) {
+    Int_t bx = upgrade_->jetBx.at(ue);        		
+    if(bx != 0) continue;
+    Float_t eta1 = upgrade_->jetEta.at(ue);
+    if (EtaRestrict != 999 && fabs(eta1) > EtaRestrict) continue;  // eta = 6 - 16
+    Float_t pt = upgrade_->jetEt.at(ue);
+
+
+    for(unsigned ve=ue+1; ve < upgrade_->nJets; ve++) {
+      if(ve == ue) continue;
+      Int_t bx2 = upgrade_->jetBx.at(ve);        		
+      if(bx2 != 0) continue;
+      Float_t eta2 = upgrade_->jetEta.at(ve);
+      if (EtaRestrict != 999 && fabs(eta2) > EtaRestrict) continue;  // eta = 6 - 16
+      Float_t pt2 = upgrade_->jetEt.at(ve);
+
+      unsigned tmp_pt1 = pt >= pt2 ? ue : ve;
+      unsigned tmp_pt2 = pt >= pt2 ? ve : ue;
+      jetPairs.push_back(std::pair<unsigned,unsigned>(tmp_pt1,tmp_pt2));
+    }
+  }
+
+  std::vector<std::pair<unsigned,unsigned> > jetPairs2;
+  if (isleading)
+  {
+    auto max_pair = std::max_element(begin(jetPairs), end(jetPairs),
+        [](const std::pair<unsigned, unsigned>& left, const std::pair<unsigned, unsigned>& right){
+        return left.first < right.first || left.second <  right.second;
+        });
+    jetPairs2.push_back(*max_pair);
+  }
+  else
+    jetPairs2 = jetPairs;
+
+
+  for(auto i : jetPairs2)
+  {
+    if (upgrade_->jetEt.at(i.first) < Jet1Pt) continue;
+    if (upgrade_->jetEt.at(i.second) < Jet2Pt) continue;
+    if(!correlateInEta(upgrade_->jetEta.at(i.first), upgrade_->jetEta.at(i.second), dEtaMax)) continue;
+    TLorentzVector jet1(0,0,0,0);
+    TLorentzVector jet2(0,0,0,0);
+    jet1.SetPtEtaPhiM(upgrade_->jetEt.at(i.first),upgrade_->jetEta.at(i.first), upgrade_->jetPhi.at(i.first), 0);
+    jet2.SetPtEtaPhiM(upgrade_->jetEt.at(i.second),upgrade_->jetEta.at(i.second), upgrade_->jetPhi.at(i.second), 0);
+    TLorentzVector dijMass = jet1 + jet2;
+    if (dijMass.M()  < MassMin )
+      continue;
+    return true;
+  }
+
+  return false;
+}       // -----  end of function L1AlgoFactory::DoubleJet_dEtaMass  -----

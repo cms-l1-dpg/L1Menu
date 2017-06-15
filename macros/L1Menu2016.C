@@ -411,6 +411,19 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_ETMHF110_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 110, true, 90, 45, 30, false);
   L1SeedFun["L1_ETMHF120_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 120, true, 90, 45, 30, false);
 
+  L1SeedFun["L1_ETMHF100_HTTer60"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 100, 60, true);
+  L1SeedFun["L1_DoubleJet30_Mass_Min300_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 300);
+  L1SeedFun["L1_DoubleJet30_Mass_Min320_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 320);
+  L1SeedFun["L1_DoubleJet30_Mass_Min340_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 340);
+  L1SeedFun["L1_DoubleJet30_Mass_Min360_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 360);
+  L1SeedFun["L1_DoubleJet30_Mass_Min380_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 380);
+  L1SeedFun["L1_DoubleJet30_Mass_Min400_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 400);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min300_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 300);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min320_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 320);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min340_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 340);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min360_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 360);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min380_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 380);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min400_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 400);
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HIG:Javier ~~~~~
   L1SeedFun["L1_ETM80_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 80., 60., false); 
   L1SeedFun["L1_ETM90_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 90., 60., false); 
