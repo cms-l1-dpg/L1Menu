@@ -4,72 +4,40 @@
 import os
 import time
 import glob
+import copy
 import re
 import subprocess
 import tarfile
 import time
+import shutil
+from collections import defaultdict
 
 ###############################
 DelDir = None #Auto pick up by CMSSW_BASE
-tempdir =None
-ProjectName = None
+tempdir = '/uscmst1b_scratch/lpc1/lpctrig/benwu/CondorTemp'
+ProjectName = "Menu2017"
 DryRun = False
+splitline = 50
 DelExe    = 'testMenu2016'
-OutDir = '/store/user/benwu/L1MenuStage2/TSGv4'
-Analysis  = 'test'
+OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
+Analysis  = 'testv2'
 MenuFile = [
-  #"menu/Menu_MuonStudy.txt",
-  #"menu/Menu_None.txt"
-  #"menu/Menu_259721_TSGv4_Riccardo.txt"
-  # "menu/Menu_259721_TSGv4_Prescales.txt",
-  # "menu/Menu_259721_TSGv3_FixPre_EG.txt",
-  "menu/Menu_259721_TSGv4_FixPre.txt",
-  # "menu/Menu_ETMStudy.txt",
+  "menu/L1Menu_2017.csv"
 ]
 Ntuplelist = [
-  #"ntuple/r259721_tsgv4Latest.list"
-  # "ntuple/r259721_tsgv3.list",
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSG-v4 ~~~~~
-    #"ntuple/MC10PU_tsgv4.list",
-    #"ntuple/MC20PU_tsgv4.list",
-    #"ntuple/MC30PU_tsgv4.list",
-    #"ntuple/MC40PU_tsgv4.list",
-    #"ntuple/MC50PU_tsgv4.list",
-    #"ntuple/r258425_tsgv4.list",
-    #"ntuple/r258427_tsgv4.list",
-    #"ntuple/r258428_tsgv4.list",
-    #"ntuple/r258434_tsgv4.list",
-    #"ntuple/r258440_tsgv4.list",
-    #"ntuple/r258445_tsgv4.list",
-    #"ntuple/r258448_tsgv4.list",
-    #"ntuple/r259626_tsgv4.list",
-    #"ntuple/r259721_tsgv4.list",
-    "ntuple/r259721_tsgv4ZB1.list",
-    # "ntuple/SingleMuZmu_tsgv4.list",
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSGv4-METFix ~~~~~
-  #"ntuple/r259721_tsgv4METfix.list",
-  #"ntuple/r259721_tsgv4.list",
-  #"ntuple/r259721_gomber.list",
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Integration v19 ~~~~~
-  #"ntuple/r258440_itgv19Layer1.list",
-  #"ntuple/r258440_itgv19.list",
-  #"ntuple/r259626_itgv19Layer1.list",
-  #"ntuple/r259626_itgv19.list",
-  #"ntuple/r259721_itgv19Layer1.list",
-  # "ntuple/r259721_itgv19.list",
-  # "ntuple/SingleMuZmu_itgv19Layer1.list",
-  # "ntuple/SingleMuZmu_itgv19.list",
 ]
+Ntupledict = {
+    # "ntuple/Trains_v95p12p2.list" : " --SelectBX \\\"[[714, 761], [1875, 1922]]\\\"  -u menu/TrainPLTZ.csv ",
+    "ntuple/Trains_v95p12p2.list" : " -u menu/TrainPLTZ.csv ",
+}
 GlobalOpt =  " "
-GlobalOpt += " --doPlotEff"
-GlobalOpt += " --doPlotRate"
-GlobalOpt += " --doPlotTest"
+# GlobalOpt += " --doPlotEff"
+# GlobalOpt += " --doPlotRate"
+# GlobalOpt += " --doPlotTest"
 #GlobalOpt += " --doPlotRate --doPrintPU"
-# GlobalOpt = " --doPrintPU"
+GlobalOpt += " --SelectCol 2.00  --doPrintPU --SetNoPrescale"
 Options = {
-  #None:""
-  "test" : "-n 10000"
+  None:""
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Muon ER Study ~~~~~
   #"MuER0p8" : "--SetMuonER 0.8",
   #"MuER1p2" : "--SetMuonER 1.25",
@@ -98,9 +66,9 @@ Options = {
   #"CaloTower" : "--UseL1CaloTower",
 
 }
-nBunches = 3963.7
+nBunches = 2592
 
-def CondorSub(Analysis, Menu, Ntuple, Option):
+def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     npro =[ "%s/ntuple.tgz" % tempdir, "%s/menu.tgz" % tempdir]
     npro.append( DelExe )
 
@@ -130,7 +98,7 @@ def CondorSub(Analysis, Menu, Ntuple, Option):
        return
 
     tranferfiles = ", ".join(npro)
-    arg = "\nArguments = %s \n Queue\n" % arg
+    arg = "\nArguments = %s \n Queue %d\n" % (arg, cnt)
     ## Prepare the condor file
     condorfile = tempdir + "/" + "condor_" + ProjectName
     with open(condorfile, "wt") as outfile:
@@ -160,7 +128,7 @@ def my_process():
         pass
 
     ProjectName = time.strftime('%b%d') + Analysis
-    tempdir = '/tmp/' + os.getlogin() + "/" + ProjectName +  "/"
+    tempdir += '/' + os.getlogin() + "/" + ProjectName +  "/"
     try:
         os.makedirs(tempdir)
     except OSError:
@@ -175,15 +143,65 @@ def my_process():
     curdir = os.path.abspath(os.path.curdir)
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     os.chdir("../")
-    subprocess.call("tar -czf %s/ntuple.tgz ntuple/" % tempdir, shell=True)
     subprocess.call("tar -czf %s/menu.tgz menu/" % tempdir, shell=True)
+
+    tupleDict=SplitNtuple()
+    os.chdir(tempdir)
+    subprocess.call("tar -czf %s/ntuple.tgz ntuple" % tempdir, shell=True)
+
     os.chdir(curdir)
 
     for menu in MenuFile:
-        for ntuple in Ntuplelist:
+        for ntuple, nopt in tupleDict.items():
             for opt in Options.items():
-                #print Analysis, menu, ntuple, opt
-                CondorSub(Analysis, menu, ntuple, opt)
+                lopt = list(copy.copy(opt))
+                lopt[1] += nopt["opt"]
+                # print Analysis, menu, ntuple, opt
+                CondorSub(Analysis, menu, ntuple, tuple(lopt), nopt["cnt"])
+
+
+def SplitNtuple():
+    global Ntupledict
+
+    filelistdir = tempdir + '/' + "ntuple"
+    try:
+        os.makedirs(filelistdir)
+    except OSError:
+        pass
+
+    for n in Ntuplelist:
+        Ntupledict[n]=""
+
+
+    if splitline <= 0:
+        for ntuple in Ntupledict.keys():
+            shutil.copyfile(ntuple, "%s/%s" % (tempdir, ntuple))
+        return Ntupledict
+
+    splitedfiles = defaultdict(dict)
+    for ntuple, opt in Ntupledict.items():
+        f = open(ntuple, 'r')
+        lines = f.readlines()
+        lineperfile = splitline
+        fraction = len(lines) / lineperfile
+        key = os.path.splitext(ntuple)[0]
+
+        for i in range(0, fraction):
+            wlines = []
+            if i == fraction - 1 :
+                wlines = lines[lineperfile*i :]
+            else:
+                wlines = lines[lineperfile*i : lineperfile*(i+1)]
+            if len(wlines) > 0:
+                outf = open("%s/%s_%d.list" % (tempdir, key, i), 'w')
+                outf.writelines(wlines)
+            outf.close()
+
+        splitedfiles["%s_$(Process).list" % key] = {
+            "opt" : opt,
+            "cnt" : fraction,
+        }
+    return splitedfiles
 
 def my_CheckFile():
     global DelDir
