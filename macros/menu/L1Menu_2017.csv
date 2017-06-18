@@ -404,12 +404,12 @@ n    , L1AlgoName                                                     , 2.20   ,
 38   , L1_DoubleMu22er2p1                                             ,        , 1      ,          , Mu          , TOP           , L1TDPG116                       , Add
 #383 , L1_DoubleJet30_Mass_Min600_Mu6                                 ,        , 0      ,          , Cross       , HIG|SUS       , L1TDPG102 (backup)              , Add
 #384 , L1_DoubleJet35_rmovlp_IsoTau45_Mass_Min450                     ,        ,        ,          , Correlation , HIG           , L1TDPG121 (mask for monitor)    , Add
-385  , L1_DiJet30_dEtaMax1p5_Mjj300                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-386  , L1_DiJet30_dEtaMax1p5_Mjj320                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-387  , L1_DiJet30_dEtaMax1p5_Mjj340                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-388  , L1_DiJet30_dEtaMax1p5_Mjj360                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-389  , L1_DiJet30_dEtaMax1p5_Mjj380                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
-392  , L1_DiJet30_dEtaMax1p5_Mjj400                                   ,        ,        ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+385  , L1_DoubleJet30_Mass_Min300_dEta_Max1p5                         ,        , 1      ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+386  , L1_DoubleJet30_Mass_Min320_dEta_Max1p5                         ,        , 1      ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+387  , L1_DoubleJet30_Mass_Min340_dEta_Max1p5                         ,        , 1      ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+388  , L1_DoubleJet30_Mass_Min360_dEta_Max1p5                         ,        , 1      ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+389  , L1_DoubleJet30_Mass_Min380_dEta_Max1p5                         ,        , 1      ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
+392  , L1_DoubleJet30_Mass_Min400_dEta_Max1p5                         ,        , 1      ,          , Mass        , SUS|EXO       , L1TDPG?                         , Add
 #393 , L1_SingleMuCosmics_XMTF                                        ,        , 0      ,          , Mu          , AlCa          , L1TDPG113(mask for monitor)     , Add
 #394 , L1_SingleMu0_XMTF                                              ,        , 0      ,          , Mu          , AlCa          , L1TDPG113(mask for monitor)     , Add
 #395 , L1_SingleMu12_LowQ_XMTF                                        ,        , 0      ,          , Mu          , AlCa          , L1TDPG113(mask for monitor)     , Add
@@ -418,16 +418,4 @@ n    , L1AlgoName                                                     , 2.20   ,
 #398 , L1_SingleJet35_HFm                                             ,        , 0      ,          , Jet         , HCAL          , L1TDPG128(mask for monitor)     , Add
 #399 , L1_SingleJet60_HFp                                             ,        , 0      ,          , Jet         , HCAL          , L1TDPG128(mask for monitor)     , Add
 #400 , L1_SingleJet60_HFm                                             ,        , 0      ,          , Jet         , HCAL          , L1TDPG128(mask for monitor)     , Add
-401  , L1_ETMHF100_HTTer60                                            , 0      , 1      , 0        , Cross       , SUS           , Simone                          , Add
-402  , L1_DoubleJet30_Mass_Min300_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-403  , L1_DoubleJet30_Mass_Min320_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-404  , L1_DoubleJet30_Mass_Min340_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-405  , L1_DoubleJet30_Mass_Min360_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-406  , L1_DoubleJet30_Mass_Min380_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-407  , L1_DoubleJet30_Mass_Min400_dEta_Max1p5                         , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-408  , L1_DoubleLeadJet30_Mass_Min300_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-409  , L1_DoubleLeadJet30_Mass_Min320_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-410  , L1_DoubleLeadJet30_Mass_Min340_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-411  , L1_DoubleLeadJet30_Mass_Min360_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-412  , L1_DoubleLeadJet30_Mass_Min380_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
-413  , L1_DoubleLeadJet30_Mass_Min400_dEta_Max1p5                     , 0      , 1      , 0        , Cross       , SUS|EXO       ,                                 , Add
+401  , L1_ETMHF100_HTTer60                                            , 0      , 1      , 0        , Cross       , SUS           , L1TDPG134                       , Add

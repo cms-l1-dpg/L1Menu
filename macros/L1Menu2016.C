@@ -113,6 +113,7 @@ bool L1Menu2016::InitConfig()
   L1Config["maxEvent"]       = -1;
   L1Config["SetMuonER"]      = -1;
   L1Config["SetNoPrescale"]  = 0;
+  L1Config["IgnorePrescale"] = 0;
   L1Config["UseUpgradeLyr1"] = -1;
   L1Config["UseL1CaloTower"] = -1;
   L1Config["SelectRun"]      = -1;
@@ -573,7 +574,10 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
 
     if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
       temp.prescale = 1;
-      
+
+    if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
+      temp.prescale = 0;
+
     if (pog.length() != 0)
       temp.POG = TokenGroups(pog);
     if (pag.length() != 0)
@@ -754,6 +758,9 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
 
       if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
         temp.prescale = 1;
+
+      if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
+        temp.prescale = 0;
     }
 
     if (writefiles)

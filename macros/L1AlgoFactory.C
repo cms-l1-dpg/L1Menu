@@ -3588,11 +3588,18 @@ bool L1AlgoFactory::DoubleJet_dEtaMass(float Jet1Pt,
   std::vector<std::pair<unsigned,unsigned> > jetPairs2;
   if (isleading)
   {
-    auto max_pair = std::max_element(begin(jetPairs), end(jetPairs),
-        [](const std::pair<unsigned, unsigned>& left, const std::pair<unsigned, unsigned>& right){
-        return left.first < right.first || left.second <  right.second;
-        });
-    jetPairs2.push_back(*max_pair);
+    std::pair<unsigned, unsigned> max_pair = jetPairs.front();
+    for(auto j : jetPairs)
+    {
+      //std::cout << j.first <<" : " << j.second <<"   " << upgrade_->jetEt.at(j.first) <<
+        //":" << upgrade_->jetEt.at(j.second) << std::endl;
+      if (upgrade_->jetEt.at(j.first)  >=  upgrade_->jetEt.at(max_pair.first) 
+          && upgrade_->jetEt.at(j.second)  >=  upgrade_->jetEt.at(max_pair.second) )
+      {
+        max_pair = j;
+      }
+    }
+    jetPairs2.push_back(max_pair);
   }
   else
     jetPairs2 = jetPairs;
