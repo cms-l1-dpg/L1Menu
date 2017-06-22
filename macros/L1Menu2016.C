@@ -336,6 +336,8 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_TripleMu0_OQ"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,0);
   L1SeedFun["L1_TripleMu_5_3p5_2p5"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,3.5,2.5,1);
   L1SeedFun["L1_TripleMu_5_5_5_OQ_OS"] = std::bind(&L1AlgoFactory::TripleMuOS, this, 5., 5, 5, 0, 5, 5, true);
+  L1SeedFun["L1_DoubleMu_12_8_SQ"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 12. , 8.  , 2 , false);
+  L1SeedFun["L1_DoubleMu_15_5_SQ"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 5.  , 2 , false);
 
   //L1SeedFun["L1_DoubleMu_12_5_OS"]      = std::bind(&L1AlgoFactory::DoubleMuMass , this , 12. , 5. , 999, 1 , true, 999, 999);
   //L1SeedFun["L1_DoubleMu_9_5_HighQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 9.  , 5. , 999, 2 , true, 999, 999);
@@ -2270,7 +2272,7 @@ bool L1Menu2016::CheckLS(unsigned int currentLumi) const
     if (currentLumi >= p.first && currentLumi <= p.second)
     {
       if (L1Config.at("doScanLS"))
-        std::cout << "LS"<<currentLumi <<" % "<< fChain->GetCurrentFile()->GetName()  << std::endl;
+        std::cout << "LS"<<currentLumi << " within "<< L1ConfigStr.at("SelectLS") << " % "<< fChain->GetCurrentFile()->GetName()  << std::endl;
       return false;
     }
   }
@@ -2339,7 +2341,7 @@ std::vector<std::string> L1Menu2016::TokenGroups(std::string instring) const
   std::vector<std::string>  temp;
   if (instring.empty()) return temp;
 
-  boost::char_separator<char> sep(",.;|-");
+  boost::char_separator<char> sep(",.;|- ");
   tokenizer tokens(instring, sep);
   for(auto &t : tokens)
   {

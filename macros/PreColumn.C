@@ -475,9 +475,10 @@ bool PreColumn::PrintPUCSV( std::vector<std::string> &csvout)
     ss << "L1Seed"<< ",PileUp,Total,Prescale"<<ColIdx <<",Fired"<<ColIdx<<",";
     csvout.push_back(ss.str());
 
-    for(auto name : vL1Seed)
+    for(auto &name_ : L1PUCount)
     {
-      auto l1seed = L1PUCount[name];
+      auto name = name_.first;
+      auto l1seed = name_.second;
       for(auto pu : l1seed)
       {
         int prescale = mL1Seed.find(name) != mL1Seed.end() ?  mL1Seed.at(name).prescale : 1;
@@ -498,9 +499,10 @@ bool PreColumn::PrintPUCSV( std::vector<std::string> &csvout)
     ss << "Prescale"<<ColIdx <<",Fired"<<ColIdx<<",";
     ctit++->append(ss.str());
 
-    for(auto name : vL1Seed)
+    for(auto &name_ : L1PUCount)
     {
-      auto l1seed = L1PUCount[name];
+      auto name = name_.first;
+      auto l1seed = name_.second;
       for(auto pu : l1seed)
       {
         int prescale = mL1Seed.find(name) != mL1Seed.end() ?  mL1Seed.at(name).prescale : 1;
