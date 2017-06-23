@@ -1,0 +1,33 @@
+## Below selects the Lumi Sections corresponding to 55PU
+## When the nBunches = 2592, it corresponds to 2E34 lumi
+% SelectLS = [56,69]
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains0_L1Ntuple_14.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains0_L1Ntuple_15.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains0_L1Ntuple_16.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains0_L1Ntuple_17.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains0_L1Ntuple_18.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains1_L1Ntuple_14.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains1_L1Ntuple_15.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains1_L1Ntuple_16.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains1_L1Ntuple_17.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains1_L1Ntuple_18.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains2_L1Ntuple_14.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains2_L1Ntuple_15.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains2_L1Ntuple_16.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains2_L1Ntuple_17.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains2_L1Ntuple_18.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains3_L1Ntuple_14.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains3_L1Ntuple_15.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains3_L1Ntuple_16.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains3_L1Ntuple_17.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains3_L1Ntuple_18.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains4_L1Ntuple_14.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains4_L1Ntuple_15.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains4_L1Ntuple_16.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains4_L1Ntuple_17.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains4_L1Ntuple_18.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains5_L1Ntuple_14.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains5_L1Ntuple_15.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains5_L1Ntuple_16.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains5_L1Ntuple_17.root
+root://cmseos.fnal.gov//store/user/hats/Trigger/2017/L1Ntuple_v95p14/55PU/ZeroBiasBunchTrains5_L1Ntuple_18.root
