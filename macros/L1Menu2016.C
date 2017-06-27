@@ -299,6 +299,9 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleJet_100_30_DoubleJet30_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 100, 30., false, 30, 30, false, 620); 
   L1SeedFun["L1_DoubleJet_100_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 100, 35., false, 35, 35, false, 620); 
   L1SeedFun["L1_DoubleJet_110_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 110, 35., false, 35, 35, false, 620); 
+  L1SeedFun["L1_DoubleJet_110_40_DoubleJet40_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 110, 40., false, 35, 35, false, 620); 
+  L1SeedFun["L1_DoubleJet_115_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 115, 35., false, 35, 35, false, 620); 
+  L1SeedFun["L1_DoubleJet_115_40_DoubleJet40_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 115, 40., false, 40, 40, false, 620); 
   L1SeedFun["L1_DoubleJet30_Mass_Min400_Mu10"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 400, 10, false, 2); 
   L1SeedFun["L1_DoubleJet30_Mass_Min400_Mu6"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 400, 6, false, 2); 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BPH:Sergey ~~~~~

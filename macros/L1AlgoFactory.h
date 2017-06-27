@@ -164,8 +164,8 @@ class L1AlgoFactory: public L1Ntuple{
   void ETM_JetPt(float& ETMcut, float& jetcut, const bool& isCent);
   void HTM_HTTPt(float &HTMcut, float &HTTcut);
   bool HTM_HTT(float HTMcut, float HTTcut);
-  bool Mu_Jet(float mucut, float jetcut, bool isMuER, bool isJetCent);
-  void Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, const bool isJetCent);
+  bool Mu_Jet(float mucut, float jetcut, bool isMuER, float JetCent);
+  void Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, const float JetCent);
   bool ETM_HTT(float ETMcut, float HTTcut, bool isETMHF);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 2017 Proposals ~~~~~

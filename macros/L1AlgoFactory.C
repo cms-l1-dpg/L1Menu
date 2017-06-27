@@ -2427,11 +2427,11 @@ void L1AlgoFactory::HTM_HTTPt(float &HTMcut, float &HTTcut)
 //         Name:  L1AlgoFactory::Mu_Jet
 //  Description:  
 // ===========================================================================
-bool L1AlgoFactory::Mu_Jet(float mucut, float jetcut, bool isMuER, bool isJetCent)
+bool L1AlgoFactory::Mu_Jet(float mucut, float jetcut, bool isMuER, float JetCent)
 {
   Float_t tmp_mucut = -10.;
   Float_t tmp_jetcut = -10.;
-  Mu_JetPt(tmp_mucut,tmp_jetcut, isMuER, isJetCent);
+  Mu_JetPt(tmp_mucut,tmp_jetcut, isMuER, JetCent);
   if(tmp_mucut >= mucut && tmp_jetcut >= jetcut) return true;
   return false;
 }       // -----  end of function L1AlgoFactory::Mu_Jet  -----
@@ -2440,7 +2440,7 @@ bool L1AlgoFactory::Mu_Jet(float mucut, float jetcut, bool isMuER, bool isJetCen
 //         Name:  L1AlgoFactory::Mu_JetPt
 //  Description:  
 // ===========================================================================
-void L1AlgoFactory::Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, const bool isJetCent)
+void L1AlgoFactory::Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, const float JetCent)
 {
   Float_t muptmax = -10.;
   Float_t jetptmax = -10.;
@@ -2461,8 +2461,7 @@ void L1AlgoFactory::Mu_JetPt(float &mucut, float &jetcut, const bool isMuER, con
   for(UInt_t ue=0; ue < upgrade_->nJets; ue++) {
     Int_t bx = upgrade_->jetBx.at(ue);        		
     if(bx != 0) continue;
-    Bool_t isFwdJet = fabs(upgrade_->jetEta.at(ue)) > jetCentFwd ? true : false;
-    if(isJetCent && isFwdJet) continue;
+    if(JetCent != 999  && fabs(upgrade_->jetEta.at(ue)) > JetCent) continue;
     Float_t pt = upgrade_->jetEt.at(ue);
     if(pt >= jetptmax) jetptmax = pt;
   }
