@@ -379,6 +379,7 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleEG6_HTT255er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 255.);
   L1SeedFun["L1_DoubleEG6_HTT270er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 270.);
   L1SeedFun["L1_DoubleEG6_HTT300er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 300.);
+  L1SeedFun["L1_DoubleEG8_HTT300er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 8., 300.);
 
   L1SeedFun["L1_DoubleMu0_ETMHF40_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 0, 0, 1, false, 40, true, 60, 30);
   L1SeedFun["L1_DoubleMu0_ETMHF50_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 0, 0, 1, false, 50, true, 60, 30);
@@ -417,9 +418,10 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_ETMHF110_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 110, true, 90, 45, 30, false);
   L1SeedFun["L1_ETMHF120_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 120, true, 90, 45, 30, false);
 
-  L1SeedFun["L1_ETMHF100_HTT60"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 100, 60, true);
-  L1SeedFun["L1_ETMHF110_HTT60"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 110, 60, true);
-  L1SeedFun["L1_ETMHF120_HTT60"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 120, 60, true);
+  L1SeedFun["L1_ETMHF90_HTT60er"]  = std::bind(&L1AlgoFactory::ETM_HTT, this, 90,  60, true);
+  L1SeedFun["L1_ETMHF100_HTT60er"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 100, 60, true);
+  L1SeedFun["L1_ETMHF110_HTT60er"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 110, 60, true);
+  L1SeedFun["L1_ETMHF120_HTT60er"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 120, 60, true);
   L1SeedFun["L1_DoubleJet30_Mass_Min300_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 300);
   L1SeedFun["L1_DoubleJet30_Mass_Min320_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 320);
   L1SeedFun["L1_DoubleJet30_Mass_Min340_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 340);
