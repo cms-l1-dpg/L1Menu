@@ -116,6 +116,7 @@ bool L1Menu2016::InitConfig()
   L1Config["IgnorePrescale"] = 0;
   L1Config["UseUpgradeLyr1"] = -1;
   L1Config["UseL1CaloTower"] = -1;
+  L1Config["SelectFill"]     = -1;
   L1Config["SelectRun"]      = -1;
   L1Config["SelectEvent"]    = -1;
   L1Config["UsePFMETNoMuon"] = 0;
@@ -128,30 +129,30 @@ bool L1Menu2016::InitConfig()
   L1ConfigStr["Lumilist"] = "";
   L1ConfigStr["SelectCol"] = "";
 
-  L1ObjectMap["Jet"]     = &L1Event.JetPt;
-  L1ObjectMap["JetC"]    = &L1Event.JetCenPt;
-  L1ObjectMap["Jeter3p0"]    = &L1Event.JetCenPt;
-  L1ObjectMap["Tau"]     = &L1Event.TauPt;
-  L1ObjectMap["Tauer"]   = &L1Event.TauerPt;
+  L1ObjectMap["Jet"]        = &L1Event.JetPt;
+  L1ObjectMap["JetC"]       = &L1Event.JetCenPt;
+  L1ObjectMap["Jeter3p0"]   = &L1Event.JetCenPt;
+  L1ObjectMap["Tau"]        = &L1Event.TauPt;
+  L1ObjectMap["Tauer"]      = &L1Event.TauerPt;
   L1ObjectMap["Tauer2p1"]   = &L1Event.TauerPt;
-  L1ObjectMap["IsoTau"]  = &L1Event.IsoTauPt;
-  L1ObjectMap["EG"]      = &L1Event.EGPt;
-  L1ObjectMap["EGer"]    = &L1Event.EGerPt;
+  L1ObjectMap["IsoTau"]     = &L1Event.IsoTauPt;
+  L1ObjectMap["EG"]         = &L1Event.EGPt;
+  L1ObjectMap["EGer"]       = &L1Event.EGerPt;
   L1ObjectMap["EGer2p1"]    = &L1Event.EGerPt;
-  L1ObjectMap["IsoEG"]   = &L1Event.IsoEGPt;
-  L1ObjectMap["IsoEGer"] = &L1Event.IsoEGerPt;
+  L1ObjectMap["IsoEG"]      = &L1Event.IsoEGPt;
+  L1ObjectMap["IsoEGer"]    = &L1Event.IsoEGerPt;
   L1ObjectMap["IsoEGer2p1"] = &L1Event.IsoEGerPt;
-  L1ObjectMap["Mu"]      = &L1Event.MuPt;
-  L1ObjectMap["MuOpen"]  = &L1Event.MuOpenPt;
-  L1ObjectMap["Muer"]    = &L1Event.MuerPt;
+  L1ObjectMap["Mu"]         = &L1Event.MuPt;
+  L1ObjectMap["MuOpen"]     = &L1Event.MuOpenPt;
+  L1ObjectMap["Muer"]       = &L1Event.MuerPt;
   L1ObjectMap["Muer2p1"]    = &L1Event.MuerPt;
-  L1ObjectMap["HTT"]     = &L1Event.HTT;
-  L1ObjectMap["HTTer"]     = &L1Event.HTT;
-  L1ObjectMap["HTM"]     = &L1Event.HTM;
-  L1ObjectMap["ETM"]     = &L1Event.ETM;
-  L1ObjectMap["ETT"]     = &L1Event.ETT;
-  L1ObjectMap["ETMHF"]     = &L1Event.ETMHF;
-  L1ObjectMap["HTTHF"]     = &L1Event.HTTHF;
+  L1ObjectMap["HTT"]        = &L1Event.HTT;
+  L1ObjectMap["HTTer"]      = &L1Event.HTT;
+  L1ObjectMap["HTM"]        = &L1Event.HTM;
+  L1ObjectMap["ETM"]        = &L1Event.ETM;
+  L1ObjectMap["ETT"]        = &L1Event.ETT;
+  L1ObjectMap["ETMHF"]      = &L1Event.ETMHF;
+  L1ObjectMap["HTTHF"]      = &L1Event.HTTHF;
 
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Map to old func for now. ~~~~~
@@ -997,7 +998,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
     l1Plot->PreRun(&L1Event, &mL1Seed, L1Ntuple::GetuGTAlias(fl1uGTsel));
   }
 
-  if (L1Config["doPrintPU"])
+  if (L1Config["doPrintPU"] || L1Config["SelectFill"] != -1 )
   {
     ReadDataPU();
   }
@@ -1130,6 +1131,10 @@ bool L1Menu2016::Loop()
     {
       if (L1Config["SelectRun"] != -1 && event_->run != L1Config["SelectRun"])
         continue;
+
+      if (L1Config["SelectFill"] != -1 && (DataFillNO.find(event_->run) == DataFillNO.end() 
+            || DataFillNO.at(event_->run)  !=  L1Config["SelectFill"] ))
+          continue;
 
       if (L1Config["SelectEvent"] != -1 && event_->event != L1Config["SelectEvent"])
         continue;
@@ -1319,7 +1324,8 @@ bool L1Menu2016::BuildRelation()
 bool L1Menu2016::L1SeedFunc()
 {
 #ifdef UTM_MENULIB
-  addFuncFromName(L1SeedFun, upgrade_, l1CaloTower_);
+  std::map<std::string, std::function<bool()>> L1SeedFun_temp;
+  addFuncFromName(L1SeedFun_temp, upgrade_, l1CaloTower_);
   //addFuncFromName(L1SeedFun, upgrade_);
 #endif
     
@@ -1330,6 +1336,13 @@ bool L1Menu2016::L1SeedFunc()
 
     if(ParseL1Seed(L1Seed.first))
       continue;
+
+    if (L1SeedFun_temp.find(L1Seed.first) != L1SeedFun_temp.end())
+    {
+      //std::cout << "Add from Menulib " << L1Seed.first << std::endl;
+      L1SeedFun[L1Seed.first] = L1SeedFun_temp[L1Seed.first];
+      continue;
+    }
 
     std::cout << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
   }
@@ -2172,6 +2185,7 @@ bool L1Menu2016::ReadDataPU()
 
   std::string line;
   DataLSPU.clear();
+  DataFillNO.clear();
   std::getline(csvfile, line); // Skip the first line;
   while (std::getline(csvfile, line))
   {
@@ -2182,6 +2196,7 @@ bool L1Menu2016::ReadDataPU()
     float pileup;
     iss >> Fill >> c >> Run >> c >> LS >> c >> pileup;
     DataLSPU[Run][LS] = pileup;
+    DataFillNO[Run] = Fill;
   }
 
   return true;

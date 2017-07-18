@@ -196,6 +196,7 @@ class L1Menu2016 : public L1AlgoFactory
 
     // Seed, PU, count
     std::map<unsigned, std::map<unsigned, double> > DataLSPU; // mapping of PU for data
+    std::map<unsigned, unsigned> DataFillNO; // mapping of run and fill for data. Can't find fill info in L1Ntuple
 
     std::map<std::string, std::vector<int> > POGMap;
     std::map<std::string, std::vector<int> > PAGMap;

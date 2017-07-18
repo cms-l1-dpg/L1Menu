@@ -20,7 +20,7 @@ DryRun = False
 splitline = 50
 DelExe    = 'testMenu2016'
 OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
-Analysis  = 'testv2'
+Analysis  = 'v6PUS_v36'
 MenuFile = [
   "menu/L1Menu_2017.csv"
 ]
@@ -28,37 +28,32 @@ Ntuplelist = [
 ]
 Ntupledict = {
     # "ntuple/Trains_v95p12p2.list" : " --SelectBX \\\"[[714, 761], [1875, 1922]]\\\"  -u menu/TrainPLTZ.csv ",
-    "ntuple/Trains_v95p12p2.list" : " -u menu/TrainPLTZ.csv ",
+    # "ntuple/Train_v92p24.list"    : " -u menu/TrainPLTZ.csv ",
+    "ntuple/2017Fill_v96p15.list" : " -u menu/2017_runLumi.csv ",
+    # "ntuple/2017Fill_v96p8.list" : " -u menu/2017_runLumi.csv ",
 }
 GlobalOpt =  " "
 # GlobalOpt += " --doPlotEff"
 # GlobalOpt += " --doPlotRate"
 # GlobalOpt += " --doPlotTest"
 #GlobalOpt += " --doPlotRate --doPrintPU"
-GlobalOpt += " --SelectCol 2.00  --doPrintPU --SetNoPrescale"
+# GlobalOpt += " --SelectCol 2.00 "
 Options = {
-  None:""
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Muon ER Study ~~~~~
-  #"MuER0p8" : "--SetMuonER 0.8",
-  #"MuER1p2" : "--SetMuonER 1.25",
-  #"MuER1p5" : "--SetMuonER 1.5",
-  #"MuER1p8" : "--SetMuonER 1.8",
-  #"MuER2p0" : "--SetMuonER 2.0",
-  #"MuER2p1" : "--SetMuonER 2.1",
-  #"MuER2p2" : "--SetMuonER 2.2",
-  #"MuER2p3" : "--SetMuonER 2.3",
-  #"MuER2p4" : "--SetMuonER 2.4",
-  #"MuER2p5" : "--SetMuonER 2.5",
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Muon Turn on Study ~~~~~
-  #"r258425" : "--SelectRun 258425",
-  #"r258427" : "--SelectRun 258427",
-  #"r258428" : "--SelectRun 258428",
-  #"r258434" : "--SelectRun 258434",
-  #"r258440" : "--SelectRun 258440",
-  #"r258445" : "--SelectRun 258445",
-  #"r258448" : "--SelectRun 258448",
-  #"r259626" : "--SelectRun 259626",
-  #"r259721" : "--SelectRun 259721",
+  # None:" "
+    "MenuPU2t"    : " --doPrintPU --IgnorePrescale --SelectCol 2.01 ",
+    # "MenuPU2p2"  : " --doPrintPU --IgnorePrescale --SelectCol 2.20 ",
+    # "MenuPU2"    : " --doPrintPU --IgnorePrescale --SelectCol 2.00 ",
+    "MenuPU1p8t"  : " --doPrintPU --IgnorePrescale --SelectCol 1.81 ",
+    # "MenuPU1p8"  : " --doPrintPU --IgnorePrescale --SelectCol 1.80 ",
+    # "MenuPU1p81" : " --doPrintPU --IgnorePrescale --SelectCol 1.81 ",
+    # "EmuPU"      : " --doPrintPU --SetNoPrescale  --SelectCol 2.00 ",
+    # "UnpackPU"   : " --doPrintPU --UseUnpackTree --SetNoPrescale  --SelectCol 2.00 ",
+    # "Scan55PU" : " --doScanLS --SelectLS \\\'[56, 69]\\\' ",    #55PU
+    # "Scan38PU" : " --doScanLS --SelectLS \\\"[365,395]\\\" ", #38PU
+    # "Scan45PU" : " --doScanLS --SelectLS \\\"[209,233]\\\" ", #45PU
+    # "Scan47PU" : " --doScanLS --SelectLS \\\"[175,193]\\\" ", #47PU
+    # # "Scan50PU" : " --doScanLS --SelectLS \\\"[126,144]\\\" ", #50PU
+    # "Scan33p9PU" : " --doScanLS --SelectLS \\\"[520,530]\\\" ", #33.9PU
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MET Cross Check ~~~~~
   #"Default"    : "",
