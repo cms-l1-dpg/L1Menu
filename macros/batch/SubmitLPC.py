@@ -20,7 +20,7 @@ DryRun = False
 splitline = 50
 DelExe    = 'testMenu2016'
 OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
-Analysis  = 'v6PUS_v36'
+Analysis  = 'v6PUS_v37'
 MenuFile = [
   "menu/L1Menu_2017.csv"
 ]
@@ -131,7 +131,7 @@ def my_process():
     ## Create the output directory
     OutDir = OutDir +  "/" + ProjectName + "/"
     try:
-        subprocess.call("eosmkdir -p %s" % OutDir, shell=True)
+        subprocess.call("eos root://cmseos.fnal.gov mkdir -p %s" % OutDir, shell=True)
     except OSError:
         pass
 
