@@ -131,7 +131,7 @@ def my_process():
     ## Create the output directory
     OutDir = OutDir +  "/" + ProjectName + "/"
     try:
-        os.makedirs(OutDir)
+        subprocess.call("eosmkdir -p %s" % OutDir, shell=True)
     except OSError:
         pass
 
