@@ -1337,12 +1337,14 @@ bool L1Menu2016::L1SeedFunc()
     if(ParseL1Seed(L1Seed.first))
       continue;
 
+#ifdef UTM_MENULIB
     if (L1SeedFun_temp.find(L1Seed.first) != L1SeedFun_temp.end())
     {
       //std::cout << "Add from Menulib " << L1Seed.first << std::endl;
       L1SeedFun[L1Seed.first] = L1SeedFun_temp[L1Seed.first];
       continue;
     }
+#endif
 
     std::cout << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
   }
@@ -1979,7 +1981,7 @@ bool L1Menu2016::ParseComplexSingleMu(const std::string& SeedName)
     return false;
 
   std::smatch base_match;
-  std::regex integer("L1_Single(Mu)([0-9]+)([^0-9_]*)(_(EMTF|OMTF|BMTF))*(_Bx([-+0-9]+))*(_(Open|LowQ|HighQ))*");
+  std::regex integer("L1_Single(Mu)([0-9]+)([^0-9_]*)(_(Open|LowQ|HighQ))*(_(EMTF|OMTF|BMTF))*(_Bx([-+0-9]+))*");
   std::string L1object ="";
   std::string postfix = "";
   std::string muonType = "";
@@ -1996,15 +1998,15 @@ bool L1Menu2016::ParseComplexSingleMu(const std::string& SeedName)
     postfix =  base_match[3];
     if (base_match[4] != "")
     {
-      muonType = base_match[5];
+      muonQual = base_match[5];
     }
     if (base_match[6]!="")
     {
-      muonBx = std::stoi(base_match[7], nullptr);
+      muonQual = base_match[7];
     }
     if (base_match[8] != "")
     {
-      muonQual = base_match[9];
+      muonBx = std::stoi(base_match[9], nullptr);
     }
   } else return false;
 
