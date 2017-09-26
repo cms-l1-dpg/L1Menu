@@ -718,7 +718,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
     {
       tokenizer::iterator t = tokens.begin();
       std::advance(t, k.first);
-      std::string it = std::regex_replace(*t, std::regex("^ +|\t+$| +$|( ) +"), "$1");
+      std::string it = std::regex_replace(*t, std::regex("^ +|\t+| +|( ) +"), "$1");
       
       if (k.second == "n")
       {
