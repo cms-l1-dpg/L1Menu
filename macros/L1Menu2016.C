@@ -2002,7 +2002,7 @@ bool L1Menu2016::ParseComplexSingleMu(const std::string& SeedName)
     }
     if (base_match[6]!="")
     {
-      muonQual = base_match[7];
+      muonType = base_match[7];
     }
     if (base_match[8] != "")
     {
