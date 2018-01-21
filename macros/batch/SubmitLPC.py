@@ -71,8 +71,8 @@ def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     RunHTFile = tempdir + "/" + "RunExe.csh"
     with open(RunHTFile, "wt") as outfile:
         for line in open("%s/RunExe.csh" % os.path.dirname(os.path.realpath(__file__)), "r"):
-            #line = line.replace("DELDIR", os.environ['PWD'])
-            line = line.replace("DELDIR", os.environ['CMSSW_BASE'])
+            line = line.replace("DELSCR", os.environ['SCRAM_ARCH'])
+            line = line.replace("DELDIR", os.environ['CMSSW_VERSION'])
             line = line.replace("DELEXE", DelExe.split('/')[-1])
             line = line.replace("OUTDIR", OutDir)
             outfile.write(line)
@@ -99,7 +99,6 @@ def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     with open(condorfile, "wt") as outfile:
         for line in open("%s/condor_template" % os.path.dirname(os.path.realpath(__file__)), "r"):
             line = line.replace("EXECUTABLE", os.path.abspath(RunHTFile))
-            #line = line.replace("DELDIR", os.environ['CMSSW_BASE'])
             line = line.replace("TARFILES", tranferfiles)
             line = line.replace("TEMPDIR", tempdir)
             line = line.replace("PROJECTNAME", ProjectName)
