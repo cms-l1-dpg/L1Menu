@@ -14,41 +14,48 @@ from collections import defaultdict
 
 ###############################
 DelDir = None #Auto pick up by CMSSW_BASE
-tempdir = '/uscmst1b_scratch/lpc1/lpctrig/benwu/CondorTemp'
+#tempdir = '/uscmst1b_scratch/lpc1/lpctrig/benwu/CondorTemp'
+tempdir = '/uscms_data/d3/huiwang/condor_temp'
 ProjectName = "Menu2017"
 DryRun = False
 splitline = 50
 DelExe    = 'testMenu2016'
-OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
-Analysis  = 'v6PUS_v36'
+#OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
+OutDir = '/store/user/huiwang/L1Menu2017'
+Analysis  = 'fill_6358_col_1.6_bx128'
+#Analysis  = 'v2.2_menu_2.2_v96p20_v8_run_301912_to_302029_ignor_ps'
 MenuFile = [
-  "menu/L1Menu_2017.csv"
+  "menu/Prescale_Sets_RUN_306091_col_1.6.txt"
+  #"menu/prescale_v2.2_2.2_v8_all_seeds.txt"
 ]
 Ntuplelist = [
 ]
 Ntupledict = {
     # "ntuple/Trains_v95p12p2.list" : " --SelectBX \\\"[[714, 761], [1875, 1922]]\\\"  -u menu/TrainPLTZ.csv ",
     # "ntuple/Train_v92p24.list"    : " -u menu/TrainPLTZ.csv ",
-    "ntuple/2017Fill_v96p15.list" : " -u menu/2017_runLumi.csv ",
-    # "ntuple/2017Fill_v96p8.list" : " -u menu/2017_runLumi.csv ",
+    # "ntuple/2017Fill_v96p15.list" : " -u menu/2017_runLumi.csv ",
+    # "ntuple/fill_6061_LPC.list" : " -u menu/runlumi_fill_6061.csv ",
+    "ntuple/fill_6358.list" : " -u menu/runlumi_fill_6358.csv ",
 }
 GlobalOpt =  " "
-# GlobalOpt += " --doPlotEff"
-# GlobalOpt += " --doPlotRate"
-# GlobalOpt += " --doPlotTest"
-#GlobalOpt += " --doPlotRate --doPrintPU"
-# GlobalOpt += " --SelectCol 2.00 "
+#GlobalOpt += " --SelectRun 299380"
+#GlobalOpt += " --SetNoPrescale"
+#GlobalOpt += " --IgnorePrescale"
+#GlobalOpt += " --doScanLS --SelectLS '[151,200]' "
+GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree"
+#GlobalOpt += " --SelectCol 1.8E34 "
 Options = {
+  "Default"    : "",
   # None:" "
-    "MenuPU2t"    : " --doPrintPU --IgnorePrescale --SelectCol 2.01 ",
+    #"MenuPU2t"    : " --doPrintPU --IgnorePrescale --SelectCol 2.01 ",
     # "MenuPU2p2"  : " --doPrintPU --IgnorePrescale --SelectCol 2.20 ",
     # "MenuPU2"    : " --doPrintPU --IgnorePrescale --SelectCol 2.00 ",
-    "MenuPU1p8t"  : " --doPrintPU --IgnorePrescale --SelectCol 1.81 ",
+    #"MenuPU1p8t"  : " --doPrintPU --IgnorePrescale --SelectCol 1.81 ",
     # "MenuPU1p8"  : " --doPrintPU --IgnorePrescale --SelectCol 1.80 ",
     # "MenuPU1p81" : " --doPrintPU --IgnorePrescale --SelectCol 1.81 ",
     # "EmuPU"      : " --doPrintPU --SetNoPrescale  --SelectCol 2.00 ",
     # "UnpackPU"   : " --doPrintPU --UseUnpackTree --SetNoPrescale  --SelectCol 2.00 ",
-    # "Scan55PU" : " --doScanLS --SelectLS \\\'[56, 69]\\\' ",    #55PU
+    #"Scan44PU" : " --doScanLS --SelectLS \"[151, 200]\" ",    #44PU
     # "Scan38PU" : " --doScanLS --SelectLS \\\"[365,395]\\\" ", #38PU
     # "Scan45PU" : " --doScanLS --SelectLS \\\"[209,233]\\\" ", #45PU
     # "Scan47PU" : " --doScanLS --SelectLS \\\"[175,193]\\\" ", #47PU
@@ -56,12 +63,13 @@ Options = {
     # "Scan33p9PU" : " --doScanLS --SelectLS \\\"[520,530]\\\" ", #33.9PU
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MET Cross Check ~~~~~
-  #"Default"    : "",
   #"Bitwise"    : "--UseUpgradeLyr1",
   #"CaloTower" : "--UseL1CaloTower",
 
 }
-nBunches = 2592
+#nBunches = 2544
+#nBunches = 1909
+nBunches = 1866
 
 def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     npro =[ "%s/ntuple.tgz" % tempdir, "%s/menu.tgz" % tempdir]
@@ -72,7 +80,9 @@ def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     with open(RunHTFile, "wt") as outfile:
         for line in open("%s/RunExe.csh" % os.path.dirname(os.path.realpath(__file__)), "r"):
             #line = line.replace("DELDIR", os.environ['PWD'])
-            line = line.replace("DELDIR", os.environ['CMSSW_BASE'])
+            #line = line.replace("DELDIR", os.environ['CMSSW_BASE'])
+            line = line.replace("DELSCR", os.environ['SCRAM_ARCH'])
+            line = line.replace("DELDIR", os.environ['CMSSW_VERSION'])
             line = line.replace("DELEXE", DelExe.split('/')[-1])
             line = line.replace("OUTDIR", OutDir)
             outfile.write(line)
@@ -131,7 +141,8 @@ def my_process():
     ## Create the output directory
     OutDir = OutDir +  "/" + ProjectName + "/"
     try:
-        os.makedirs(OutDir)
+        #os.makedirs(OutDir)
+	subprocess.call("eos root://cmseos.fnal.gov mkdir -p %s" % OutDir, shell=True)
     except OSError:
         pass
 
@@ -202,7 +213,7 @@ def my_CheckFile():
     global DelDir
     global DelExe
     ## Check the Delphes Dir
-    DelDir = "%s/src/L1TriggerDPG/L1Menu/macros/" % os.environ['CMSSW_BASE']
+    DelDir = "%s/src/L1TriggerDPG/L1Menu/macros" % os.environ['CMSSW_BASE']
 
     ## Check DelFill to be execute
     DelExe = DelDir + "/" + DelExe
