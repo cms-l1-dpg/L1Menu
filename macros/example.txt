@@ -1,0 +1,1 @@
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_Sets_RUN_306091_col_1.5_core.txt -l ntuple/fill_6358_and_more_test.list -o fill_6358_and_more_test -b 1866 --doPlotRate --doPrintPU --UseUnpackTree

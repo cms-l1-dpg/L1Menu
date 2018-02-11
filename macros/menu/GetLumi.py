@@ -85,19 +85,23 @@ runlist = [
     # 278808,
 
 
-    279862,
-    279931,
-    279966,
-    279975,
-    279993,
-    279994,
-    279995,
-    280002,
-    280006,
-    280007,
-    280013,
-    280014,
-    280015,
+   # 279862,
+   # 279931,
+   # 279966,
+   # 279975,
+   # 279993,
+   # 279994,
+   # 279995,
+   # 280002,
+   # 280006,
+   # 280007,
+   # 280013,
+   # 280014,
+   # 280015,
+
+	306091,
+	306092,
+	306093
 ]
 
 def Runcmd(run):
@@ -105,7 +109,8 @@ def Runcmd(run):
     cmd = "brilcalc lumi --byls -u '1e30/cm2s' "
     cmd += " --output-style csv -b 'STABLE BEAMS' "
     cmd += " -r %d " % run
-    testcmd = cmd + " --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/normtag_DATACERT.json "
+    #testcmd = cmd + " --normtag /afs/cern.ch/user/l/lumipro/public/normtag_file/normtag_DATACERT.json "
+    testcmd = cmd + " -i /afs/cern.ch/user/d/deguio/public/Certification/Cert_13TeV_2017_HCAL_DCS_GOOD.txt "
     pipe = subprocess.Popen(testcmd, shell=True, stdout=subprocess.PIPE)
     out, err = pipe.communicate()
     if len(out) == 221: # Empty output

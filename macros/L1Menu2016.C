@@ -125,6 +125,8 @@ bool L1Menu2016::InitConfig()
   L1Config["UseUnpackTree"]  = 0;
   L1Config["doScanLS"]       = 0;
   L1Config["doBXReweight"]       = 0;
+  L1Config["doBXReweight128"]       = 0;
+  L1Config["doBXReweight34567"]       = 0;
   L1Config["BXReweight_first"]       = 1;
   
   L1ConfigStr["SelectLS"] = "";
@@ -1158,13 +1160,12 @@ bool L1Menu2016::Loop()
       //if (L1Config["doBXReweight"] && BXReweightSkip(event_->bx,  L1Config["BXReweight_first"]) )
         //continue;
 
-      if (!BXReweight_is128(event_->bx))
+      if (L1Config["doBXReweight128"] && !BXReweight_is128(event_->bx))
         continue;
-      //if (!BXReweight_is34567(event_->bx))
-        //continue;
+      if (L1Config["doBXReweight34567"] && !BXReweight_is34567(event_->bx))
+        continue;
 
-      //if (L1Config["doPrintBX"])
-      if (true)
+      if (L1Config["doPrintBX"])
 	std::cout << "BX = " << event_->bx << std::endl;
 
       if (L1Config["doScanLS"])

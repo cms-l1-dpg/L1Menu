@@ -23,17 +23,18 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
-#foldername = "Jan24fill_6358_col_1.6_core"
-foldername = "Jan27fill_6358_col_1.6_bx34567"
+foldername = "Feb10fill_6358_and_more_col_1.6_core"
+#foldername = "Jan24fill_6358_col_1.5"
 label = "ZeroBias"
-fit_min = 41
-fit_max = 73
+fit_min = 45
+fit_max = 75
 plot_min = 20
 plot_max = 90
-maxy = 300
-fitname = "pol4"
+maxy = 20
+fitname = "pol2"
 #fitname = "expo"
 PU = 55
+rebin = 5
 freq = 11245.6
 config = 2017
 
@@ -59,14 +60,14 @@ pubins = np.arange(plot_min,plot_max, 1)
 pumap = collections.defaultdict(list)
 
 PatMap = {  
-    "L1APhysics" : "L1APhysics",
-    #"L1_SingleMu22" :  "L1_SingleMu22",
+    #"L1APhysics" : "L1APhysics",
+    #"L1_SingleMu25" :  "L1_SingleMu25",
     #"L1_DoubleMu_15_7" : "L1_DoubleMu_15_7",
     #"L1_SingleEG40" : "L1_SingleEG40",
     #"L1_SingleIsoEG32" : "L1_SingleIsoEG32",
     #"L1_SingleIsoEG30er2p1" : "L1_SingleIsoEG30er2p1",
     #"L1_DoubleEG_25_14" : "L1_DoubleEG_25_14",
-    #"L1_DoubleIsoTau34er2p1" : "L1_DoubleIsoTau34er2p1",
+    "L1_DoubleIsoTau34er2p1" : "L1_DoubleIsoTau34er2p1",
     #"L1_SingleJet180" : "L1_SingleJet180",
     # 'L1_DoubleJet150er2p7': 'L1_DoubleJet150er2p7',
     # 'L1_HTT320er': 'L1_HTT320er',
@@ -107,10 +108,12 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
         # if yy != 0 and yee/yy >0.3:
             # continue
-	if i == 22 or i == 23 or i == 24:
-	    continue
+	#if i == 22 or i == 23 or i == 24:
+	    # continue
         graph.SetPoint(i, xx, yy)
-	print (i,xx,yy,yee)
+	#print (i,xx,yy,yee)
+        print "h1->SetBinContent( %d, %f);" %(xx,yy)
+        print "h1->SetBinError( %d, %f);" %(xx,yee)
         graph.SetPointError(i, 0, yee)
 
     graph.SetMarkerStyle(20+count)
@@ -139,10 +142,11 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     for i in range (fit_min, plot_max):
       print("bin = %d, Obeserve = %.2f , Expect = %.2f \n" % (i, graph.Eval(i), f2.Eval(i)))
     minChi = f2.GetChisquare() / f2.GetNDF()
-    #fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
+    fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
     # f2.Draw("same")
     print("chi2 = ", f2.GetChisquare())
     print("NDF = ", f2.GetNDF())
+    print fun
     f2_2 = f2.Clone("dashline2")
     f2_2.SetRange(fit_max, plot_max)
     f2_2.SetLineStyle(5)
@@ -237,7 +241,7 @@ def DrawL1(key, pattern):
     c1.Update()
     c1.SaveAs("plots/%s_%d_%s_PU%d.root" % (key, config, foldername, PU))
     c1.SaveAs("plots/%s_%d_%s_PU%d.png" % (key, config, foldername, PU))
-    c1.SaveAs("plots/%s_%d_%s_PU%d.pdf" % (key, config, foldername, PU))
+    #c1.SaveAs("plots/%s_%d_%s_PU%d.pdf" % (key, config, foldername, PU))
 
 if __name__ == "__main__":
     allfiles = glob.glob(filedir)
