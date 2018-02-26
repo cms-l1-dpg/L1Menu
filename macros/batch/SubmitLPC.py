@@ -22,10 +22,10 @@ splitline = 50
 DelExe    = 'testMenu2016'
 #OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
 OutDir = '/store/user/huiwang/L1Menu2017'
-Analysis  = 'fill_6358_and_more_col_1.6_core'
+Analysis  = 'fill_6358_and_more_col_1.6_core_mu_emulator'
 #Analysis  = 'v2.2_menu_2.2_v96p20_v8_run_301912_to_302029_ignor_ps'
 MenuFile = [
-  "menu/Prescale_Sets_RUN_306091_col_1.6_core.txt"
+  "menu/Prescale_Sets_RUN_306091_col_1.6_core_mu.txt"
   #"menu/prescale_v2.2_2.2_v8_all_seeds.txt"
 ]
 Ntuplelist = [
@@ -42,8 +42,9 @@ GlobalOpt =  " "
 #GlobalOpt += " --SetNoPrescale"
 #GlobalOpt += " --IgnorePrescale"
 #GlobalOpt += " --doScanLS --SelectLS '[151,200]' "
-GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree"
-#GlobalOpt += " --doPlotRate --doPrintPU"
+#GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --IgnorePrescale"
+#GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree"
+GlobalOpt += " --doPlotRate --doPrintPU"
 #GlobalOpt += " --SelectCol 1.8E34 "
 Options = {
   "Default"    : "",

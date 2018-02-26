@@ -1,1 +1,3 @@
 ./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_Sets_RUN_306091_col_1.5_core.txt -l ntuple/fill_6358_and_more_test.list -o fill_6358_and_more_test -b 1866 --doPlotRate --doPrintPU --UseUnpackTree
+
+./testMenu2016 -u menu/runlumi_fill_6358.csv -m menu/Prescale_Sets_RUN_306091_col_1.6.txt -l ntuple/fill_6358_test.list -o fill_6358_LS388_test -b 1866 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306091 --SelectLS '[368,409]' --SetNoPrescale

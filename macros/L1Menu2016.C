@@ -593,7 +593,8 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
       temp.prescale = 1;
 
     if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
-      temp.prescale = 0;
+      //temp.prescale = 0;	//original code
+      temp.prescale = 1;
 
     if (pog.length() != 0)
       temp.POG = TokenGroups(pog);
@@ -777,7 +778,8 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
         temp.prescale = 1;
 
       if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
-        temp.prescale = 0;
+        //temp.prescale = 0;	//original code
+        temp.prescale = 1;
     }
 
     if (writefiles)

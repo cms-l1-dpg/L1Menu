@@ -23,20 +23,25 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
-foldername = "Feb10fill_6358_and_more_col_1.6_core"
-#foldername = "Jan24fill_6358_col_1.5"
-label = "ZeroBias"
-fit_min = 45
+#foldername = "Feb24fill_6358_and_more_col_1.6_core_mu"
+foldername = "Feb24fill_6358_and_more_col_1.6_core_mu_emulator"
+#foldername = "Feb15fill_6358_and_more_col_1.6"
+#foldername = "Feb15fill_6358_and_more_col_1.6_emulator"
+#foldername = "Feb17fill_6358_and_more_col_1.6_IgnorePrescale"
+
+fit_min = 20
 fit_max = 75
-plot_min = 20
+plot_min = 0
 plot_max = 90
-maxy = 20
-fitname = "pol2"
-#fitname = "expo"
-PU = 55
-rebin = 5
+maxy = 10
+PU = 60
 freq = 11245.6
 config = 2017
+
+#fitname = "pol4"
+#fitname = "expo"
+fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
+fitname.SetParameters(0.1,0.001);
 
 #filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Sep12v2.2_menu_2.2_v96p20_v8_run_301912_to_302029/*Default_PU.csv"
 #filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Aug17v2.2_menu_2.2_v6_v96p20_IgnorePrescale/*Default_PU.csv"
@@ -67,14 +72,18 @@ PatMap = {
     #"L1_SingleIsoEG32" : "L1_SingleIsoEG32",
     #"L1_SingleIsoEG30er2p1" : "L1_SingleIsoEG30er2p1",
     #"L1_DoubleEG_25_14" : "L1_DoubleEG_25_14",
-    "L1_DoubleIsoTau34er2p1" : "L1_DoubleIsoTau34er2p1",
+    #"L1_DoubleIsoTau34er2p1" : "L1_DoubleIsoTau34er2p1",
     #"L1_SingleJet180" : "L1_SingleJet180",
     # 'L1_DoubleJet150er2p7': 'L1_DoubleJet150er2p7',
-    # 'L1_HTT320er': 'L1_HTT320er',
     # 'L1_DoubleMu_15_5_SQ': 'L1_DoubleMu_15_5_SQ',
-    # 'DMu': 'L1_DoubleMu0er.*_dEta_Max1p8_OS',
-    # 'DEG12': 'L1_DoubleEG_\d+_12',
-    # 'DEG25': 'L1_DoubleEG_25_\d+',
+    # 'L1_HTT320er': 'L1_HTT320er',
+    # 'L1_ETMHF120': 'L1_ETMHF120',
+    # 'L1_TripleJet_105_85_76_VBF': 'L1_TripleJet_105_85_76_VBF',
+    # 'L1_TripleEG_14_10_8': 'L1_TripleEG_14_10_8',
+    # 'L1_SingleIsoEG34er2p1': 'L1_SingleIsoEG34er2p1',
+    # 'L1_SingleMu22_BMTF': 'L1_SingleMu22_BMTF',
+    # 'L1_SingleMu22_EMTF': 'L1_SingleMu22_EMTF',
+     'L1_SingleMu22_OMTF': 'L1_SingleMu22_OMTF',
     # 'DTau': 'L1_DoubleIsoTau\d+er',
 }
 
@@ -102,8 +111,9 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 
     ## Draw the plot
     graph = ROOT.TGraphErrors(len(x))
-    minx = min(x)
-    maxx = max(x)
+    #minx = min(x)
+    #maxx = max(x)
+    #maxyy = max(y)
 
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
         # if yy != 0 and yee/yy >0.3:
@@ -112,9 +122,13 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 	    # continue
         graph.SetPoint(i, xx, yy)
 	#print (i,xx,yy,yee)
-        print "h1->SetBinContent( %d, %f);" %(xx,yy)
-        print "h1->SetBinError( %d, %f);" %(xx,yee)
+        #print "h1->SetBinContent( %d, %f);" %(xx,yy)
+        #print "h1->SetBinError( %d, %f);" %(xx,yee)
         graph.SetPointError(i, 0, yee)
+
+    #fit_p0_init = maxyy / fit_max
+    #print "maxyy = ", maxyy, "fit_p0_init = ", fit_p0_init
+    #fitname.SetParameters(fit_p0_init,0.001);
 
     graph.SetMarkerStyle(20+count)
     graph.SetMarkerSize(1.5)
@@ -135,18 +149,29 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     canvas.Update()
     leg.AddEntry(graph, l1seed, "p")
 
-    graph.Fit(fitname, "Q", "", fit_min, fit_max)
-    f2 = graph.GetFunction(fitname).Clone()
+    result_ptr = graph.Fit(fitname, "SQ", "", fit_min, fit_max)
+    error_vec = result_ptr.GetConfidenceIntervals()
+    #print ("error vec size = %d" % error_vec.size())
+    f2 = graph.GetFunction("fitname").Clone()
+    #f2 = graph.GetFunction(fitname).Clone()
     f2.SetLineColor(1+count)
     f2.SetLineWidth(2)
-    for i in range (fit_min, plot_max):
-      print("bin = %d, Obeserve = %.2f , Expect = %.2f \n" % (i, graph.Eval(i), f2.Eval(i)))
+    #for i in range (fit_min, fit_max):
+      #print("bin = %d, Obeserve = %.2f , Expect = %.2f\n" % (i, graph.Eval(i), f2.Eval(i)) )
+      #print("bin = %d, Obeserve = %.2f , Expect = %.2f , error %.2f \n" % (i, graph.Eval(i), f2.Eval(i), error_vec.at(i-fit_min)) )
+    if error_vec.size() > 60 - fit_min:
+      #print f2.Eval(50), "+-", error_vec.at(50-fit_min), f2.Eval(60), "+-", error_vec.at(60-fit_min)
+      print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(50), error_vec.at(50-fit_min), f2.Eval(60), error_vec.at(60-fit_min))
+    if error_vec.size() <= 60 - fit_min:
+      #print f2.Eval(50), "+-", 0.00, f2.Eval(60), "+-", 0.00
+      print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(50), 0.00, f2.Eval(60), 0.00)
     minChi = f2.GetChisquare() / f2.GetNDF()
-    fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
+    #fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
+    fun = "Fit = %f*x + %f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
     # f2.Draw("same")
-    print("chi2 = ", f2.GetChisquare())
-    print("NDF = ", f2.GetNDF())
-    print fun
+    #print("chi2 = ", f2.GetChisquare())
+    #print("NDF = ", f2.GetNDF())
+    #print fun
     f2_2 = f2.Clone("dashline2")
     f2_2.SetRange(fit_max, plot_max)
     f2_2.SetLineStyle(5)
@@ -162,7 +187,7 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     # tex.Draw()
 
     if key is not None:
-        tex = ROOT.TLatex(0.55, 0.85, key)
+        tex = ROOT.TLatex(0.6, 0.8, key)
         tex.SetNDC()
         tex.SetTextFont(61)
         tex.SetTextSize(0.045)
@@ -184,29 +209,12 @@ def DrawL1(key, pattern):
     for x in [x for x in pd.unique(df.L1Seed)]:
         if pat.match(x):
             inputlist.append(x)
-    print key, " : ",  inputlist
+    #print key, " : ",  inputlist
+    print key,
 
     for i, seed in enumerate(inputlist):
         DrawPU(c1, df, seed, i)
     leg.Draw()
-
-    if config == 2016:
-        l37 = ROOT.TLine(37, 0, 37, maxy)
-        l37.SetLineColor(2)
-        l37.SetLineWidth(2)
-        l37.Draw()
-        l40 = ROOT.TLine(40, 0, 40, maxy)
-        l40.SetLineColor(2)
-        l40.SetLineWidth(2)
-        l40.Draw()
-        l47 = ROOT.TLine(47, 0, 47, maxy)
-        l47.SetLineColor(2)
-        l47.SetLineWidth(2)
-        l47.Draw()
-        l52 = ROOT.TLine(52, 0, 52, maxy)
-        l52.SetLineColor(2)
-        l52.SetLineWidth(2)
-        l52.Draw()
 
     if config == 2017:
         l_PU = ROOT.TLine(PU, 0, PU, maxy)
@@ -239,8 +247,8 @@ def DrawL1(key, pattern):
     box.SetFillStyle(3002)
 
     c1.Update()
-    c1.SaveAs("plots/%s_%d_%s_PU%d.root" % (key, config, foldername, PU))
-    c1.SaveAs("plots/%s_%d_%s_PU%d.png" % (key, config, foldername, PU))
+    #c1.SaveAs("plots/%s_%d_%s_PU%d.root" % (key, config, foldername, PU))
+    c1.SaveAs("plots/%s_%d_%s_PU%d_table.png" % (key, config, foldername, PU))
     #c1.SaveAs("plots/%s_%d_%s_PU%d.pdf" % (key, config, foldername, PU))
 
 if __name__ == "__main__":
@@ -256,17 +264,17 @@ if __name__ == "__main__":
     df = pd.concat(flist)
 
     ## Redefine PatMap for each L1Seed in the dataframe
-    # PatMap = {k:k for k in pd.unique(df.L1Seed)}
+    #PatMap = {k:k for k in pd.unique(df.L1Seed)}
 
     ROOT.gStyle.SetOptStat(000000000)
     tdrstyle.setTDRStyle()
     c1 = ROOT.TCanvas("fd","Fdf", 1200, 1000)
-    leg = ROOT.TLegend(0.2,0.7,0.4,0.9)
+    leg = ROOT.TLegend(0.2,0.75,0.5,0.9)
     leg.SetFillColor(0)
-    leg.SetBorderSize(0)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)
     leg.SetTextFont(62)
+    leg.SetTextSize(0.05)
     for k, v in PatMap.items():
         DrawL1(k, v)
         # wait()
