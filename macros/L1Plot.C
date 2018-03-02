@@ -582,7 +582,6 @@ std::vector<TLorentzVector> L1Plot::GetRecoJet(bool isCent) const
     if (isCent && fabs(recoJet_->eta.at(i)) > jetERcut )
       continue;
 
-    if (!recoJet_->isPF.at(i)) continue;
     
     TLorentzVector temp(0, 0, 0, 0);
 
@@ -636,7 +635,6 @@ std::vector<TLorentzVector> L1Plot::GetRecoHTLocal() const
 
   for (int i = 0; i < recoJet_->nJets; ++i)
   {
-    if (!recoJet_->isPF.at(i)) continue;
     if (fabs(recoJet_->eta.at(i)) > 3) continue;
     if (recoJet_->etCorr.at(i) < 30) continue;
     ht += recoJet_->etCorr.at(i);
@@ -1099,7 +1097,6 @@ float L1Plot::TestRecoAct(float eta) const
 
   for (int i = 0; i < recoJet_->nJets; ++i)
   {
-    if (!recoJet_->isPF.at(i)) continue;
     totHT += recoJet_->etCorr.at(i);
 
     if (fabs(recoJet_->eta.at(i)) >= eta && fabs(recoJet_->eta.at(i)) <= 3.0 ) 
@@ -1407,31 +1404,3 @@ bool L1Plot::ScaleLSHistogram( const std::map<std::string, std::map<int, int> > 
 
   return true;
 }       // -----  end of function L1Plot::ScaleLSHistogram  -----
-
-//// ===  FUNCTION  ============================================================
-////         Name:  L1Plot::TestCaloTower28
-////  Description:  
-//// ===========================================================================
-//bool L1Plot::TestCaloTower28() const
-//{
-  //if (!l1CaloTower_) return false;
-
-  //TVector2 MET28(0,0);
-  //int p28 = n28 = p27 = n27 = 1;
-  //for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
-  //}
-
-  //for(int jTower=0; jTower< l1CaloTower_ ->nTower; ++jTower){
-    //Int_t ieta = l1CaloTower_->ieta[jTower];
-    //Int_t iphi = l1CaloTower_->iphi[jTower];
-    //Int_t iet  = l1CaloTower_->iet[jTower];
-    //Double_t phi = (Double_t)iphi * TMath::Pi()/36.;
-    //Double_t et = 0.5 * (Double_t)iet;
-    //if( abs(ieta) < ietamax){
-      //metX += et * TMath::Cos(phi);
-      //metY += et * TMath::Sin(phi);
-    //}
-  //}
-
-  //return true;
-//}       // -----  end of function L1Plot::TestCaloTower28  -----
