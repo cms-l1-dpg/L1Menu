@@ -1070,7 +1070,7 @@ Bool_t L1Menu2015::MultiJets() {
   InsertInMenu("L1_QuadJetC40", QuadJet(40.,40.,40.,40.,true));
   InsertInMenu("L1_QuadJetC60", QuadJet(60.,60.,60.,60.,true));
 
-  InsertInMenu("L1_QuadJetC36_TauJet52", QuadJetCentral_TauJet(36.,52.));
+  InsertInMenu("L1_QuadJetC36_TauJet52", QuadJetCentral_TauJet(36.,52., false, false));
 
   Int_t NN = insert_ibin;
 

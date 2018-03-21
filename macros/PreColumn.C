@@ -111,26 +111,15 @@ bool PreColumn::CheckCorrelation()
 }       // -----  end of function PreColumn::CheckCorrelation  -----
 
 // ===  FUNCTION  ============================================================
-//         Name:  PreColumn::PostLoop
-//  Description:  
-// ===========================================================================
-bool PreColumn::PostLoop( double scale)
-{
-  for(auto &seed : mL1Seed)
-  {
-    seed.second.firerate = seed.second.firecounts *scale;
-    seed.second.firerateerror = sqrt(seed.second.firecounts)*scale;
-    seed.second.purerate = seed.second.purecounts *scale;
-  }
-  return true;
-}       // -----  end of function PreColumn::PostLoop  -----
-
-// ===  FUNCTION  ============================================================
 //         Name:  PreColumn::CheckPureFire
 //  Description:  
 // ===========================================================================
 bool PreColumn::CheckPureFire() 
 {
+
+//**************************************************************************//
+//                              Check Pure Rate                             //
+//**************************************************************************//
   // Trigger path pure rate
   if (FireSeed.size() == 1) 
     mL1Seed[*(FireSeed.begin())].purecounts++;
@@ -162,6 +151,20 @@ bool PreColumn::CheckPureFire()
     PhyPureCounts[*(PAGset.begin())]++;
   }
 
+
+//**************************************************************************//
+//                          Check Proportional Rate                         //
+//**************************************************************************//
+  // Get Proportional counts;
+  for(auto i : FireSeed)
+    mL1Seed[i].propcounts += 1.0 / FireSeed.size();
+
+  for(auto i : POGset)
+    PhyPropCounts[i] += 1.0 / POGset.size();
+
+  for(auto i : PAGset)
+    PhyPropCounts[i] += 1.0/ PAGset.size();
+    
   return true;
 }       // -----  end of function PreColumn::CheckPureFire  -----
 
@@ -389,12 +392,14 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
   std::vector<std::string>::iterator csvout = out.begin();
   float totalrate = 0.;
   float totalpurerate = 0.;
+  float totalproprate = 0.;
 
   std::stringstream ss;
   ss << "pre-scale"<<ColIdx
     << "," << "rate"<<ColIdx
     << "," << "error_rate"<<ColIdx
-    << "," << "pure"<<ColIdx<<",";
+    << "," << "pure"<<ColIdx
+    << "," << "propotional"<<ColIdx<<",";
     //<< "," << "Comments"<<ColIdx<<",";
   csvout++->append(ss.str());
 
@@ -406,11 +411,13 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
     ss<< seed.prescale
       << "," << seed.firerate
       << "," << seed.firerateerror
-      << "," << seed.purerate      <<",";
+      << "," << seed.purerate     
+      << "," << seed.proprate      <<",";
       //<< ",\""<<seed.second.comment<<"\""<<",";
     csvout++->append(ss.str());
     totalrate +=seed.firerate;
     totalpurerate +=seed.purerate;
+    totalproprate +=seed.proprate;
   }
   
   // POG
@@ -421,6 +428,7 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
     ss <<"1,"<< PhyCounts[pog.first]           *scale / 1000.
       <<","<< sqrt(PhyCounts[pog.first])     *scale / 1000.
       <<","<< PhyPureCounts[pog.first]       *scale / 1000.
+      <<","<< PhyPropCounts[pog.first]       *scale / 1000.
       //<<","<< sqrt(PhyPureCounts[pog.first]) *scale / 1000.
       <<",";
     csvout++->append(ss.str());
@@ -434,6 +442,7 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
     ss <<"1,"<< PhyCounts[pag.first]           *scale / 1000.
       <<","<< sqrt(PhyCounts[pag.first])     *scale / 1000.
       <<","<< PhyPureCounts[pag.first]       *scale / 1000.
+      <<","<< PhyPropCounts[pag.first]       *scale / 1000.
       //<<","<< sqrt(PhyPureCounts[pog.first]) *scale / 1000.
       <<",";
     csvout++->append(ss.str());
@@ -444,7 +453,8 @@ bool PreColumn::PrintCSV(std::vector<std::string> &out, double scale)
   ss.str("");
   ss <<"1,"<< nFireevents / 1000 * scale 
     <<","<<sqrt(nFireevents) * scale / 1000 
-    <<","<<totalpurerate / 1000 <<",";
+    <<","<<totalpurerate / 1000 
+    <<","<<totalproprate / 1000 <<",";
   csvout++->append(ss.str());
 
   return true;
@@ -465,9 +475,10 @@ bool PreColumn::PrintPUCSV( std::vector<std::string> &csvout)
     ss << "L1Seed"<< ",PileUp,Total,Prescale"<<ColIdx <<",Fired"<<ColIdx<<",";
     csvout.push_back(ss.str());
 
-    for(auto name : vL1Seed)
+    for(auto &name_ : L1PUCount)
     {
-      auto l1seed = L1PUCount[name];
+      auto name = name_.first;
+      auto l1seed = name_.second;
       for(auto pu : l1seed)
       {
         int prescale = mL1Seed.find(name) != mL1Seed.end() ?  mL1Seed.at(name).prescale : 1;
@@ -488,9 +499,10 @@ bool PreColumn::PrintPUCSV( std::vector<std::string> &csvout)
     ss << "Prescale"<<ColIdx <<",Fired"<<ColIdx<<",";
     ctit++->append(ss.str());
 
-    for(auto name : vL1Seed)
+    for(auto &name_ : L1PUCount)
     {
-      auto l1seed = L1PUCount[name];
+      auto name = name_.first;
+      auto l1seed = name_.second;
       for(auto pu : l1seed)
       {
         int prescale = mL1Seed.find(name) != mL1Seed.end() ?  mL1Seed.at(name).prescale : 1;
@@ -512,6 +524,7 @@ bool PreColumn::PrintRates(std::ostream &out, double scale)
 {
   float totalrate = 0.;
   float totalpurerate = 0.;
+  float totalproprate = 0.;
   std::size_t L1NameLength = 0;
   for(auto k : mL1Seed)
   {
@@ -528,7 +541,8 @@ bool PreColumn::PrintRates(std::ostream &out, double scale)
       << std::setw(10)             << "pre-scale"
       << std::setw(10)             << "rate@13TeV"       << " +/- "
       << std::setw(20)             << "error_rate@13TeV"
-      << std::setw(10)             << "pure@13TeV"       
+      << std::setw(15)             << "pure@13TeV"       
+      << std::setw(15)             << "prop@13TeV"       
       << "Comments"
       << std::endl;
 
@@ -543,11 +557,13 @@ bool PreColumn::PrintRates(std::ostream &out, double scale)
           << std::setw(10)             << seed.prescale
           << std::setw(10)             << seed.firerate      << " +/- "
           << std::setw(20)             << seed.firerateerror
-          << std::setw(10)             << seed.purerate      
+          << std::setw(15)             << seed.purerate      
+          << std::setw(15)             << seed.proprate
           << seed.comment
           << std::endl;
       totalrate +=seed.firerate;
       totalpurerate +=seed.purerate;
+      totalproprate +=seed.proprate;
     }
   }
   else{
@@ -560,11 +576,13 @@ bool PreColumn::PrintRates(std::ostream &out, double scale)
           << std::setw(10)             << seed.prescale
           << std::setw(10)             << seed.firerate      << " +/- "
           << std::setw(20)             << seed.firerateerror
-          << std::setw(10)             << seed.purerate      
+          << std::setw(15)             << seed.purerate      
+          << std::setw(15)             << seed.proprate
           << seed.comment
           << std::endl;
       totalrate +=seed.firerate;
       totalpurerate +=seed.purerate;
+      totalproprate +=seed.proprate;
     }
 
   }
@@ -574,6 +592,7 @@ bool PreColumn::PrintRates(std::ostream &out, double scale)
     <<" +/- " << sqrt(nFireevents) * scale / 1000 << " (kHz)" << std::endl;
   out << std::endl << "Total rate (with overlaps) = " << totalrate / 1000 << " (kHz)" << std::endl;
   out << std::endl << "Total pure rate  = " << totalpurerate / 1000 <<" (kHz)" << std::endl;
+  out << std::endl << "Total prop rate  = " << totalproprate / 1000 <<" (kHz)" << std::endl;
   return true;
 }       // -----  end of function PreColumn::PrintRates  -----
 
@@ -662,6 +681,7 @@ bool PreColumn::CalRate(double scale)
     seed.second.firerate = seed.second.firecounts *scale;
     seed.second.firerateerror = sqrt(seed.second.firecounts)*scale;
     seed.second.purerate = seed.second.purecounts *scale;
+    seed.second.proprate = seed.second.propcounts *scale;
   }
   return true;
 }       // -----  end of function PreColumn::CalRate  -----

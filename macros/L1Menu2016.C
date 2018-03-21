@@ -109,48 +109,62 @@ bool L1Menu2016::InitConfig()
   L1Config["doTnPMuon"]      = 0;
   L1Config["doPlotLS"]       = 0;
   L1Config["doPrintPU"]      = 0;
+  L1Config["doPrintBX"]      = 0;
   L1Config["doCompuGT"]      = 0;
   L1Config["maxEvent"]       = -1;
   L1Config["SetMuonER"]      = -1;
   L1Config["SetNoPrescale"]  = 0;
+  L1Config["IgnorePrescale"] = 0;
   L1Config["UseUpgradeLyr1"] = -1;
   L1Config["UseL1CaloTower"] = -1;
+  L1Config["SelectFill"]     = -1;
   L1Config["SelectRun"]      = -1;
   L1Config["SelectEvent"]    = -1;
   L1Config["UsePFMETNoMuon"] = 0;
   L1Config["UseuGTDecision"] = 0;
   L1Config["UseUnpackTree"]  = 0;
   L1Config["doScanLS"]       = 0;
+  L1Config["doBXReweight"]       = 0;
+  L1Config["doBXReweight128"]       = 0;
+  L1Config["doBXReweight34567"]       = 0;
+  L1Config["BXReweight_first"]       = 1;
   
   L1ConfigStr["SelectLS"] = "";
   L1ConfigStr["SelectBX"] = "";
   L1ConfigStr["Lumilist"] = "";
   L1ConfigStr["SelectCol"] = "";
 
-  L1ObjectMap["Jet"]     = &L1Event.JetPt;
-  L1ObjectMap["JetC"]    = &L1Event.JetCenPt;
-  L1ObjectMap["Tau"]     = &L1Event.TauPt;
-  L1ObjectMap["Tauer"]   = &L1Event.TauerPt;
-  L1ObjectMap["IsoTau"]  = &L1Event.IsoTauPt;
-  L1ObjectMap["EG"]      = &L1Event.EGPt;
-  L1ObjectMap["EGer"]    = &L1Event.EGerPt;
-  L1ObjectMap["IsoEG"]   = &L1Event.IsoEGPt;
-  L1ObjectMap["IsoEGer"] = &L1Event.IsoEGerPt;
-  L1ObjectMap["Mu"]      = &L1Event.MuPt;
-  L1ObjectMap["MuOpen"]  = &L1Event.MuOpenPt;
-  L1ObjectMap["Muer"]    = &L1Event.MuerPt;
-  L1ObjectMap["HTT"]     = &L1Event.HTT;
-  L1ObjectMap["HTM"]     = &L1Event.HTM;
-  L1ObjectMap["ETM"]     = &L1Event.ETM;
-  L1ObjectMap["ETT"]     = &L1Event.ETT;
-  L1ObjectMap["ETMHF"]     = &L1Event.ETMHF;
-  L1ObjectMap["HTTHF"]     = &L1Event.HTTHF;
+  L1ObjectMap["Jet"]        = &L1Event.JetPt;
+  L1ObjectMap["JetC"]       = &L1Event.JetCenPt;
+  L1ObjectMap["Jeter3p0"]   = &L1Event.JetCenPt;
+  L1ObjectMap["Tau"]        = &L1Event.TauPt;
+  L1ObjectMap["Tauer"]      = &L1Event.TauerPt;
+  L1ObjectMap["Tauer2p1"]   = &L1Event.TauerPt;
+  L1ObjectMap["IsoTau"]     = &L1Event.IsoTauPt;
+  L1ObjectMap["EG"]         = &L1Event.EGPt;
+  L1ObjectMap["EGer"]       = &L1Event.EGerPt;
+  L1ObjectMap["EGer2p1"]    = &L1Event.EGerPt;
+  L1ObjectMap["IsoEG"]      = &L1Event.IsoEGPt;
+  L1ObjectMap["IsoEGer"]    = &L1Event.IsoEGerPt;
+  L1ObjectMap["IsoEGer2p1"] = &L1Event.IsoEGerPt;
+  L1ObjectMap["Mu"]         = &L1Event.MuPt;
+  L1ObjectMap["MuOpen"]     = &L1Event.MuOpenPt;
+  L1ObjectMap["Muer"]       = &L1Event.MuerPt;
+  L1ObjectMap["Muer2p1"]    = &L1Event.MuerPt;
+  L1ObjectMap["HTT"]        = &L1Event.HTT;
+  L1ObjectMap["HTTer"]      = &L1Event.HTT;
+  L1ObjectMap["HTM"]        = &L1Event.HTM;
+  L1ObjectMap["ETM"]        = &L1Event.ETM;
+  L1ObjectMap["ETT"]        = &L1Event.ETT;
+  L1ObjectMap["ETMHF"]      = &L1Event.ETMHF;
+  L1ObjectMap["HTTHF"]      = &L1Event.HTTHF;
 
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Map to old func for now. ~~~~~
   // MutliJets
-  L1SeedFun["L1_QuadJetC36_TauJet52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
-  L1SeedFun["L1_QuadJetC36_Tau52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52.);
+  L1SeedFun["L1_QuadJetC36_TauJet52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52., false, false);
+  L1SeedFun["L1_QuadJetC36_Tau52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52., false, false);
+  L1SeedFun["L1_QuadJet36er3p0_Tau52"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36.,52., false, false);
 
   // MultiMuon
   L1SeedFun["L1_DoubleMu0er1p6_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.6);
@@ -159,16 +173,16 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleMu0er1p0_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.25);
   L1SeedFun["L1_DoubleMu0er1p4_dEta_Max1p8_OS"] = std::bind(&L1AlgoFactory::Onia2015, this, 0.,0.,true,true,18, 1.4);
   L1SeedFun["L1_DoubleMu_10_0_dEta_Max1p8"] = std::bind(&L1AlgoFactory::Onia2015, this, 10.,0.,false,false,18, 1.6);
-  L1SeedFun["L1_DoubleMu0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 0.,0.,true, false);
   L1SeedFun["L1_DoubleMuOpen"] = std::bind(&L1AlgoFactory::DoubleMuOpen, this, 0.);
   L1SeedFun["L1_DoubleMu_10_Open"] = std::bind(&L1AlgoFactory::DoubleMuXOpen, this, 10.);
-  L1SeedFun["L1_DoubleMu_10_0"] = std::bind(&L1AlgoFactory::DoubleMu, this, 10.,0.,true, false);
-  L1SeedFun["L1_DoubleMu_10_3p5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 10.,3.5,true, false);
-  L1SeedFun["L1_DoubleMu_12_5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 12.,5.,true,false);
-  L1SeedFun["L1_DoubleMu_11_4"] = std::bind(&L1AlgoFactory::DoubleMu, this, 11.,4.,true,false);
-  L1SeedFun["L1_DoubleMu_12_8"] = std::bind(&L1AlgoFactory::DoubleMu, this, 12.,8.,true,false);
-  L1SeedFun["L1_DoubleMu_13_6"] = std::bind(&L1AlgoFactory::DoubleMu, this, 13.,6.,true,false);
-  L1SeedFun["L1_DoubleMu_15_5"] = std::bind(&L1AlgoFactory::DoubleMu, this, 15.,5.,true,false);
+  L1SeedFun["L1_DoubleMu0"]       = std::bind(&L1AlgoFactory::DoubleMu , this , 0.  , 0.  , 1 , false);
+  L1SeedFun["L1_DoubleMu_10_0"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 10. , 0.  , 1 , false);
+  L1SeedFun["L1_DoubleMu_10_3p5"] = std::bind(&L1AlgoFactory::DoubleMu , this , 10. , 3.5 , 1 , false);
+  L1SeedFun["L1_DoubleMu_12_5"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 12. , 5.  , 1 , false);
+  L1SeedFun["L1_DoubleMu_11_4"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 11. , 4.  , 1 , false);
+  L1SeedFun["L1_DoubleMu_12_8"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 12. , 8.  , 1 , false);
+  L1SeedFun["L1_DoubleMu_13_6"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 13. , 6.  , 1 , false);
+  L1SeedFun["L1_DoubleMu_15_5"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 5.  , 1 , false);
   L1SeedFun["L1_TripleMu0"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,1);
   L1SeedFun["L1_TripleMuOpen"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,0);
   L1SeedFun["L1_TripleMu_5_5_3"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,5.,3.,1);
@@ -185,10 +199,10 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_IsoEG18er_IsoTau23er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 18.,23.,true);
   L1SeedFun["L1_IsoEG18er_IsoTau25er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 18.,25.,true);
   L1SeedFun["L1_IsoEG18er_IsoTau24er_dEta_Min0p2"] = std::bind(&L1AlgoFactory::IsoEGer_TauJetEta2p17, this, 18.,24.,true);
-  L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,true);
-  L1SeedFun["L1_DoubleMu6_EG16"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,16.,true); // l1t-tsg-v3:  L1_DoubleMu6_EG6
-  L1SeedFun["L1_DoubleMu7_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,true);
-  L1SeedFun["L1_DoubleMu7_EG14"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,14.,true);  // l1t-tsg-v3:  L1_DoubleMu7_EG7
+  L1SeedFun["L1_DoubleMu6_EG6"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,6.,1, false);
+  L1SeedFun["L1_DoubleMu6_EG16"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 6.,16.,1, false); // l1t-tsg-v3:  L1_DoubleMu6_EG6
+  L1SeedFun["L1_DoubleMu7_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,1, false);
+  L1SeedFun["L1_DoubleMu7_EG14"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,14.,1, false);  // l1t-tsg-v3:  L1_DoubleMu7_EG7
   L1SeedFun["L1_Mu5_DoubleEG5"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 5., 5.);
   L1SeedFun["L1_Mu6_DoubleEG10"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 6., 10.);
   L1SeedFun["L1_Mu6_DoubleEG17"] = std::bind(&L1AlgoFactory::Mu_DoubleEG, this, 6., 17.); // l1t-tsg-v3:  L1_Mu6_DoubleEG10
@@ -227,10 +241,10 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_ETM85_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 85., 60., false); 
   L1SeedFun["L1_HTM60_HTT260"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 60., 260.); 
   L1SeedFun["L1_HTM80_HTT220"] = std::bind(&L1AlgoFactory::HTM_HTT, this, 80., 220.); 
-  L1SeedFun["L1_Mu3_JetC35"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 35., false, true); 
-  L1SeedFun["L1_Mu3_JetC16"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 16., false, true); 
-  L1SeedFun["L1_Mu3_JetC60"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 60., false, true); 
-  L1SeedFun["L1_Mu3_JetC120"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 120., false, true); 
+  L1SeedFun["L1_Mu3_JetC35"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 35., false, 3.0); 
+  L1SeedFun["L1_Mu3_JetC16"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 16., false, 3.0); 
+  L1SeedFun["L1_Mu3_JetC60"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 60., false, 3.0); 
+  L1SeedFun["L1_Mu3_JetC120"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 120., false, 3.0); 
   L1SeedFun["L1_MU20_EG15"] = std::bind(&L1AlgoFactory::Mu_EG, this,20, 15, false, 2);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Mass Trigger ~~~~~
@@ -252,6 +266,211 @@ bool L1Menu2016::InitConfig()
   L1SeedFun["L1_DoubleJet30_Mj30j30_360_Mu6"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 360, 6, false, 2); 
   L1SeedFun["L1_DoubleJet30_Mj30j30_360_Mu10"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 360, 10, false, 2); 
   L1SeedFun["L1_DoubleJet_40_30_Mj40j30_540_IsoEG12"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 40, 30., false, 40, 30, false, 540, 12, true, false); 
+
+//**************************************************************************//
+//                           2017 L1Menu Proposals                          //
+//**************************************************************************//
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Top:Halil ~~~~~
+  L1SeedFun["L1_IsoEG24er2p1_Jet26er3p0_dR_Min0p3"] = std::bind(&L1AlgoFactory::EG_Jet, this, 24., 26., 0.3, true, true, true);
+  L1SeedFun["L1_IsoEG26er2p1_Jet34er3p0_dR_Min0p3"] = std::bind(&L1AlgoFactory::EG_Jet, this, 26,  30,  0.3, true, true, true);
+  L1SeedFun["L1_IsoEG28er2p1_Jet34er3p0_dR_Min0p3"] = std::bind(&L1AlgoFactory::EG_Jet, this, 28,  34,  0.3, true, true, true);
+  L1SeedFun["L1_IsoEG30er2p1_Jet34er3p0_dR_Min0p3"] = std::bind(&L1AlgoFactory::EG_Jet, this, 30,  34,  0.3, true, true, true);
+  L1SeedFun["L1_IsoEG24er2p1_HTT100er"] = std::bind(&L1AlgoFactory::EG_HTT, this, 24, 100, true, true);
+  L1SeedFun["L1_IsoEG26er2p1_HTT100er"] = std::bind(&L1AlgoFactory::EG_HTT, this, 26, 100, true, true);
+  L1SeedFun["L1_IsoEG28er2p1_HTT100er"] = std::bind(&L1AlgoFactory::EG_HTT, this, 28, 100, true, true);
+  L1SeedFun["L1_IsoEG30er2p1_HTT100er"] = std::bind(&L1AlgoFactory::EG_HTT, this, 30, 100, true, true);
+  //L1SeedFun["L1_IsoEG24er_TripleJetC26"] = std::bind(&L1AlgoFactory::EGer_TripleJetCentral, this, 24, 26, true, true);
+  L1SeedFun["L1_Mu18_HTT100er"] = std::bind(&L1AlgoFactory::Mu_HTT, this, 18, 100);
+  L1SeedFun["L1_Mu18_Jet24er3p0"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 18, 24, false, true);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Top:Marina ~~~~~
+  L1SeedFun["L1_HTT250er_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 250, 70, 55, 40, 35, 2.5);
+  L1SeedFun["L1_HTT280er_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 280, 70, 55, 40, 35, 2.5);
+  L1SeedFun["L1_HTT300er_QuadJet_70_55_40_35_er2p5"] = std::bind(&L1AlgoFactory::HTT_QuadJet, this, 300, 70, 55, 40, 35, 2.5);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Top:JIRA38 ~~~~~
+  L1SeedFun["L1_DoubleJet100er2p3_dEta_Max1p6"] = std::bind(&L1AlgoFactory::DoubleJet_EtaRes_deltaEta, this, 100, 100, 2.3, 1.6);
+  L1SeedFun["L1_Mu10er2p3_Jet32er2p3_dR_Max0p4_DoubleJet32er2p3_dEta_Max1p6"] = std::bind(&L1AlgoFactory::Mu_DoubleJet_Cor, this, 10, 32, 2.3, 0.4, 1.6);
+  L1SeedFun["L1_Mu12er2p3_Jet40er2p3_dR_Max0p4_DoubleJet40er2p3_dEta_Max1p6"] = std::bind(&L1AlgoFactory::Mu_DoubleJet_Cor, this, 12, 40, 2.3, 0.4, 1.6);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ EXO:JIRA48 ~~~~~
+  L1SeedFun["L1_IsoTau40er_ETM80"] = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 80,  true, true, false);
+  L1SeedFun["L1_IsoTau40er_ETM85"]  = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 85,  true, true, false);
+  L1SeedFun["L1_IsoTau40er_ETM90"]  = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 90,  true, true, false);
+  L1SeedFun["L1_IsoTau40er_ETM95"]  = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 95,  true, true, false);
+  L1SeedFun["L1_IsoTau40er_ETM100"] = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 100, true, true, false);
+  L1SeedFun["L1_IsoTau40er_ETMHF80"] = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 80,  true, true, true);
+  L1SeedFun["L1_IsoTau40er_ETMHF90"] = std::bind(&L1AlgoFactory::Tau_ETM, this, 40, 90,  true, true, true);
+  L1SeedFun["L1_QuadJet36er3p0_IsoTau52er2p1"] = std::bind(&L1AlgoFactory::QuadJetCentral_TauJet, this, 36, 52, true, true);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Higgs:Chiara ~~~~~
+  L1SeedFun["L1_DoubleJet_90_30_DoubleJet30_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 90, 30., false, 30, 30, false, 620); 
+  L1SeedFun["L1_DoubleJet_100_30_DoubleJet30_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 100, 30., false, 30, 30, false, 620); 
+  L1SeedFun["L1_DoubleJet_100_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 100, 35., false, 35, 35, false, 620); 
+  L1SeedFun["L1_DoubleJet_110_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 110, 35., false, 35, 35, false, 620); 
+  L1SeedFun["L1_DoubleJet_110_40_DoubleJet40_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 110, 40., false, 35, 35, false, 620); 
+  L1SeedFun["L1_DoubleJet_115_35_DoubleJet35_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 115, 35., false, 35, 35, false, 620); 
+  L1SeedFun["L1_DoubleJet_115_40_DoubleJet40_Mass_Min620"] = std::bind(&L1AlgoFactory::DoubleJetMass, this, 115, 40., false, 40, 40, false, 620); 
+  L1SeedFun["L1_DoubleJet30_Mass_Min400_Mu10"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 400, 10, false, 2); 
+  L1SeedFun["L1_DoubleJet30_Mass_Min400_Mu6"] = std::bind(&L1AlgoFactory::DoubleJetMass_Mu, this, 30, 30., false, 30, 30, false, 400, 6, false, 2); 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BPH:Sergey ~~~~~
+//
+  L1SeedFun["L1_DoubleMu4_OS_EG12"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 4.,12.,1, true);
+  L1SeedFun["L1_DoubleMu5_OS_EG12"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 5.,12.,1, true);
+  L1SeedFun["L1_DoubleMu6_HighQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 6.  , 6. , 999, 2 , true, 999, 999);
+  //
+  L1SeedFun["L1_DoubleMu0er1p5_SQ_OS_dR_Max1p4"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 0   , 0   , 1.5, 2 , true, 1.4);
+  L1SeedFun["L1_DoubleMu0er1p4_SQ_OS_dR_Max1p4"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 0   , 0   , 1.4, 2 , true, 1.4);
+  L1SeedFun["L1_DoubleMu4_SQ_OS_dR_Max1p2"]      = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 4   , 4   , 999, 2 , true, 1.2);
+  L1SeedFun["L1_DoubleMu4p5_SQ_OS_dR_Max1p2"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 4.5   , 4.5   , 999, 2 , true, 1.2);
+
+  L1SeedFun["L1_DoubleMu4p5er2p0_SQ_OS_Mass7to18"]  = std::bind(&L1AlgoFactory::DoubleMuMass  , this , 4.5 , 4.5 , 2.0, 2 , true, 7,    18);
+  L1SeedFun["L1_DoubleMu5_SQ_OS_Mass7to18"]  = std::bind(&L1AlgoFactory::DoubleMuMass  , this , 5 , 5 , 999, 2 , true, 7,    18);
+  L1SeedFun["L1_DoubleMu_20_2_SQ_Mass_Max20"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 20.  , 2. , 999, 2 , false, 0, 20);
+
+  L1SeedFun["L1_TripleMu_5_0_0_DoubleMu_5_0_OS_Mass_Max17"] = std::bind(&L1AlgoFactory::TripleMu_DoubleMuMass, this, 5, 0, 0, 1, 5, 0, true, 0, 17);
+  L1SeedFun["L1_TripleMu_5_3_0_DoubleMu_5_3_OS_Mass_Max17"] = std::bind(&L1AlgoFactory::TripleMu_DoubleMuMass, this, 5, 3, 0, 1, 5, 3, true, 0, 17);
+  L1SeedFun["L1_TripleMu_5_3p5_2p5_DoubleMu_5_2p5_OS_Mass_5to17"] = std::bind(&L1AlgoFactory::TripleMu_DoubleMuMass, this, 5, 3.5, 2.5, 1, 5, 2.5, true, 5, 17);
+  L1SeedFun["L1_TripleMu_5_4_2p5_DoubleMu_5_2p5_OS_Mass_5to17"] = std::bind(&L1AlgoFactory::TripleMu_DoubleMuMass, this, 5, 4, 2.5, 1, 5, 2.5, true, 5, 17);
+  
+
+  L1SeedFun["L1_DoubleMu0_SQ"]    = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0. , 0. , 999 , 2, false, 999, 999);
+  L1SeedFun["L1_DoubleMu0_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0. , 0. , 999 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu0er1p5_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0. , 0. , 1.5061875 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu4_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4. , 4. , 999 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu4p5_SQ"]    = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.5 , 4.5 , 999 , 2, false, 999, 999);
+  L1SeedFun["L1_DoubleMu4p5_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.5 , 4.5 , 999 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu4p5er2p0_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.5 , 4.5 ,2.0 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu5_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 5 , 5 , 999 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu6_SQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 6 , 6 , 999 , 2, true,  999, 999);
+  L1SeedFun["L1_DoubleMu8_SQ"]    = std::bind(&L1AlgoFactory::DoubleMuMass , this , 8. , 8. , 999 , 2, false, 999, 999);
+
+  L1SeedFun["L1_TripleMu0_OQ"] = std::bind(&L1AlgoFactory::TripleMu, this, 0.,0.,0.,0);
+  L1SeedFun["L1_TripleMu_5_3p5_2p5"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,3.5,2.5,1);
+  L1SeedFun["L1_TripleMu_5_5_5_OQ_OS"] = std::bind(&L1AlgoFactory::TripleMuOS, this, 5., 5, 5, 0, 5, 5, true);
+  L1SeedFun["L1_DoubleMu_12_8_SQ"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 12. , 8.  , 2 , false);
+  L1SeedFun["L1_DoubleMu_15_5_SQ"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 5.  , 2 , false);
+
+  //L1SeedFun["L1_DoubleMu_12_5_OS"]      = std::bind(&L1AlgoFactory::DoubleMuMass , this , 12. , 5. , 999, 1 , true, 999, 999);
+  //L1SeedFun["L1_DoubleMu_9_5_HighQ_OS"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 9.  , 5. , 999, 2 , true, 999, 999);
+  //L1SeedFun["L1_DoubleMu6_OS_M0to9"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 6.  , 6. , 999, 1 , true, 0, 9);
+  //L1SeedFun["L1_DoubleMu5_HighQ_OS_M0to9"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 5.  , 5. , 999, 2 , true, 0, 9);
+  //L1SeedFun["L1_DoubleMu6_HighQ_OS_M0to16"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 6.  , 6. , 999, 2 , true, 0, 16);
+
+  //L1SeedFun["L1_DoubleMu0er1p4_HighQ_OS_M0to9"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0.  , 0. , 1.4, 2 , true, 0, 9);
+  //L1SeedFun["L1_DoubleMu0er1p5_HighQ_OS_M0to9"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 0.  , 0. , 1.5, 2 , true, 0, 9);
+  //L1SeedFun["L1_DoubleMu3er1p6_HighQ_OS_M6to20"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 3.  , 3. , 1.6, 2 , true, 6, 20);
+  //L1SeedFun["L1_DoubleMu3er1p8_HighQ_OS_M6to20"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 3.  , 3. , 1.8, 2 , true, 6, 20);
+  //L1SeedFun["L1_DoubleMu4er1p8_HighQ_OS_M6to20"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.  , 4. , 1.8, 2 , true, 6, 20);
+
+  //L1SeedFun["L1_DoubleMu4p5_HighQ_OS_M0to9"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 4.5  , 4.5 , 999, 2 , true, 0, 9);
+  //L1SeedFun["L1_DoubleMu6_HighQ_OS_M0to20"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 6  , 6 , 999, 2 , true, 0, 20);
+  //L1SeedFun["L1_DoubleMu_7_4_HighQ_OS_M0to9"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 7  , 4 , 999, 2 , true, 0, 9);
+  //L1SeedFun["L1_DoubleMu_7_5_HighQ_OS_M0to20"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 7  , 5 , 999, 2 , true, 0, 20);
+  //L1SeedFun["L1_DoubleMu_9_2_HighQ_OS_M0to9"] = std::bind(&L1AlgoFactory::DoubleMuMass , this , 9  , 2 , 999, 2 , true, 0, 9);
+
+  //L1SeedFun["L1_DoubleMu0er1p4_HighQ_OS_dR_Max1p3"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 0  , 0 , 1.4, 2 , true, 1.3);
+  //L1SeedFun["L1_DoubleMu3er1p6_HighQ_OS_dR_Max2p0"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 3  , 3 , 1.6, 2 , true, 2.0);
+  //L1SeedFun["L1_DoubleMu3er1p8_HighQ_OS_dR_Max2p0"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 3  , 3 , 1.8, 2 , true, 2.0);
+  //L1SeedFun["L1_DoubleMu4er1p8_HighQ_OS_dR_Max2p0"] = std::bind(&L1AlgoFactory::DoubleMudRMax , this , 4  , 4 , 1.8, 2 , true, 2.0);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SUSY:Laurent ~~~~~
+  L1SeedFun["L1_DoubleMu_15_7"]       = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 7. , 1 , false);
+  L1SeedFun["L1_DoubleMu_15_7_SQ"] = std::bind(&L1AlgoFactory::DoubleMu , this , 15. , 7. , 2 , false);
+  L1SeedFun["L1_DoubleMu_15_7_SQ_Mass_Min4"] = std::bind(&L1AlgoFactory::DoubleMuMass, this , 15. , 7. , 999, 2 , false, 4, 999);
+  L1SeedFun["L1_TripleMu3"] = std::bind(&L1AlgoFactory::TripleMu, this, 3.,3.,3.,1);
+  L1SeedFun["L1_TripleMu3_SQ"] = std::bind(&L1AlgoFactory::TripleMu, this, 3.,3.,3.,2);
+  L1SeedFun["L1_TripleMu_5_3_3"] = std::bind(&L1AlgoFactory::TripleMu, this, 5.,3.,3.,1);
+  L1SeedFun["L1_TripleMu_4_4_4"] = std::bind(&L1AlgoFactory::TripleMu, this, 4.,4.,4.,1);
+  L1SeedFun["L1_DoubleMu7_SQ_EG7"] = std::bind(&L1AlgoFactory::DoubleMu_EG, this, 7,7.,2, false);
+
+  L1SeedFun["L1_DoubleEG6_HTT240er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 240.);
+  L1SeedFun["L1_DoubleEG6_HTT250er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 250.);
+  L1SeedFun["L1_DoubleEG6_HTT255er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 255.);
+  L1SeedFun["L1_DoubleEG6_HTT270er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 270.);
+  L1SeedFun["L1_DoubleEG6_HTT300er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 6., 300.);
+  L1SeedFun["L1_DoubleEG8_HTT300er"] = std::bind(&L1AlgoFactory::DoubleEG_HT, this, 8., 300.);
+
+  L1SeedFun["L1_DoubleMu0_ETMHF40_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 0, 0, 1, false, 40, true, 60, 30);
+  L1SeedFun["L1_DoubleMu0_ETMHF50_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 0, 0, 1, false, 50, true, 60, 30);
+  L1SeedFun["L1_DoubleMu0_ETMHF60_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 0, 0, 1, false, 60, true, 60, 30);
+  L1SeedFun["L1_DoubleMu0_ETMHF70_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 0, 0, 1, false, 70, true, 60, 30);
+  L1SeedFun["L1_DoubleMu0_ETMHF80_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 0, 0, 1, false, 80, true, 60, 30);
+  L1SeedFun["L1_DoubleMu3_SQ_ETMHF40_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 3, 3, 2, false, 40, true, 60, 30);
+  L1SeedFun["L1_DoubleMu3_SQ_ETMHF50_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 3, 3, 2, false, 50, true, 60, 30);
+  L1SeedFun["L1_DoubleMu3_SQ_ETMHF60_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 3, 3, 2, false, 60, true, 60, 30);
+  L1SeedFun["L1_DoubleMu3_SQ_ETMHF70_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 3, 3, 2, false, 70, true, 60, 30);
+  L1SeedFun["L1_DoubleMu3_SQ_ETMHF80_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::DoubleMu_ETMHF_Jets, this, 3, 3, 2, false, 80, true, 60, 30);
+
+
+  L1SeedFun["L1_DoubleMu3_SQ_HTT100er"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 3, 3, 2, false, 100);
+  L1SeedFun["L1_DoubleMu3_SQ_HTT200er"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 3, 3, 2, false, 200);
+  L1SeedFun["L1_DoubleMu3_SQ_HTT220er"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 3, 3, 2, false, 220);
+  L1SeedFun["L1_DoubleMu3_SQ_HTT240er"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 3, 3, 2, false, 240);
+  //L1SeedFun["L1_DoubleMu3_SQ_HTT100er"] = std::bind(&L1AlgoFactory::DoubleMu_HTT, this, 0, 0, 2, false, 100);
+
+  L1SeedFun["L1_ETMHF70_Jet60_OR_DoubleJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 70 , true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF75_Jet60_OR_DoubleJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 75 , true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF80_Jet60_OR_DoubleJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 80 , true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF85_Jet60_OR_DoubleJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 85 , true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF90_Jet60_OR_DoubleJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 90 , true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF95_Jet60_OR_DoubleJet30"]  = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 95 , true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF100_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 100, true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF105_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 105, true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF110_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 110, true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF115_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 115, true, 60, 30, 0, false);
+  L1SeedFun["L1_ETMHF120_Jet60_OR_DoubleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 120, true, 60, 30, 0, false);
+
+  L1SeedFun["L1_ETMHF70_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 70, true, 90, 45, 30, false);
+  L1SeedFun["L1_ETMHF80_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 80, true, 90, 45, 30, false);
+  L1SeedFun["L1_ETMHF90_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 90, true, 90, 45, 30, false);
+  L1SeedFun["L1_ETMHF100_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 100, true, 90, 45, 30, false);
+  L1SeedFun["L1_ETMHF110_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 110, true, 90, 45, 30, false);
+  L1SeedFun["L1_ETMHF120_Jet90_OR_DoubleJet45_OR_TripleJet30"] = std::bind(&L1AlgoFactory::ETM_JetsComb, this, 120, true, 90, 45, 30, false);
+
+  L1SeedFun["L1_ETMHF90_HTT60er"]  = std::bind(&L1AlgoFactory::ETM_HTT, this, 90,  60, true);
+  L1SeedFun["L1_ETMHF100_HTT60er"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 100, 60, true);
+  L1SeedFun["L1_ETMHF110_HTT60er"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 110, 60, true);
+  L1SeedFun["L1_ETMHF120_HTT60er"] = std::bind(&L1AlgoFactory::ETM_HTT, this, 120, 60, true);
+  L1SeedFun["L1_DoubleJet30_Mass_Min300_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 300);
+  L1SeedFun["L1_DoubleJet30_Mass_Min320_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 320);
+  L1SeedFun["L1_DoubleJet30_Mass_Min340_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 340);
+  L1SeedFun["L1_DoubleJet30_Mass_Min360_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 360);
+  L1SeedFun["L1_DoubleJet30_Mass_Min380_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 380);
+  L1SeedFun["L1_DoubleJet30_Mass_Min400_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, false, 1.5, 400);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min300_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 300);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min320_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 320);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min340_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 340);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min360_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 360);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min380_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 380);
+  L1SeedFun["L1_DoubleLeadJet30_Mass_Min400_dEta_Max1p5"] = std::bind(&L1AlgoFactory::DoubleJet_dEtaMass, this, 30, 30, 999, true, 1.5, 400);
+
+  L1SeedFun["L1_Mu3_Jet30er2p5"] = std::bind(&L1AlgoFactory::Mu_Jet, this, 3., 30., false, 2.523); 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HIG:Javier ~~~~~
+  L1SeedFun["L1_ETM80_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 80., 60., false); 
+  L1SeedFun["L1_ETM90_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 90., 60., false); 
+  L1SeedFun["L1_ETM100_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 100., 60., false); 
+  L1SeedFun["L1_ETM110_Jet60_dPhi_Min0p4"] = std::bind(&L1AlgoFactory::ETM_Jet, this, 110., 60., false); 
+  L1SeedFun["L1_DoubleJet60er3p0_ETM60"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,60.);
+  L1SeedFun["L1_DoubleJet60er3p0_ETM70"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,70.);
+  L1SeedFun["L1_DoubleJet60er3p0_ETM80"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,80.);
+  L1SeedFun["L1_DoubleJet60er3p0_ETM90"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,90.);
+  L1SeedFun["L1_DoubleJet60er3p0_ETM100"] = std::bind(&L1AlgoFactory::DoubleJetCentral_ETM, this, 60.,60.,100.);
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ HIG:Sumit ~~~~~
+  L1SeedFun["L1_DoubleEG_Iso23_10"] = std::bind(&L1AlgoFactory::DoubleEGIsoPer, this, 23.,10.,true, false, false );
+  L1SeedFun["L1_DoubleEG_Iso24_10"] = std::bind(&L1AlgoFactory::DoubleEGIsoPer, this, 24.,10.,true, false, false );
+  L1SeedFun["L1_TripleEG_Iso20_10_5"] = std::bind(&L1AlgoFactory::TripleEGIsoPer, this, 20, 10, 5, true, false, false);
+  L1SeedFun["L1_DoubleIsoEG22er2p1"] = std::bind(&L1AlgoFactory::DoubleEGIsoPer, this, 22.,22.,true, true, true );
+  L1SeedFun["L1_DoubleMu18er2p1"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 18. , 18.  , 1 , true);
+  L1SeedFun["L1_DoubleMu22er2p1"]   = std::bind(&L1AlgoFactory::DoubleMu , this , 22. , 22.  , 1 , true);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ ECal:Andrea ~~~~~
+  L1SeedFun["L1_IsoEG33_Mt40"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 33.,40., 0, true, false);
+  L1SeedFun["L1_IsoEG33_Mt43"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 33.,43., 0, true, false);
+  L1SeedFun["L1_IsoEG33_Mt47"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 33.,47., 0, true, false);
+  L1SeedFun["L1_IsoEG33_Mt48"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 33.,48., 0, true, false);
+  L1SeedFun["L1_IsoEG33_Mt44"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 33.,44., 0, true, false);
+  L1SeedFun["L1_IsoEG34_Mt46"] = std::bind(&L1AlgoFactory::SingleEGMT, this, 34.,46., 0, true, false);
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Tracker:L1DPG74 ~~~~~
+  L1SeedFun["L1_CDC_3_er1p2_TOP120_DPHI2p618_3p665"] = std::bind(&L1AlgoFactory::MuonCDC_dPhi, this, 3, 0, 1.2, 2.618, 3.665);
+  L1SeedFun["L1_CDC_4_er1p2_TOP120_DPHI2p618_3p665"] = std::bind(&L1AlgoFactory::MuonCDC_dPhi, this, 4, 0, 1.2, 2.618, 3.665);
 
   L1SeedFun["L1_ZeroBias"] = [](){return true;};
   return true;
@@ -370,9 +589,12 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
     temp.comment = comline;
     temp.prescale = prescale;
 
-    if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
+    if (L1Config["doCompuGT"] || (L1Config["SetNoPrescale"] && temp.prescale > 1) )
       temp.prescale = 1;
-      
+
+    if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
+      temp.prescale = 0;
+
     if (pog.length() != 0)
       temp.POG = TokenGroups(pog);
     if (pag.length() != 0)
@@ -402,7 +624,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
   }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Getting the header  ~~~~~
-  boost::char_separator<char> sep(",");
+  boost::char_separator<char> sep(",", "", boost::keep_empty_tokens);
   tokenizer tokens(line, sep);
   std::map<int, std::string> premap;
   std::map<int, std::string> infomap;
@@ -530,7 +752,8 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
         }
         catch (const boost::bad_lexical_cast &)
         {
-          std::cout << "Can't cast prescale " << it<< " to int type in line: " << line << std::endl;
+          std::cout << "Can't cast prescale " << it<< " to int type in line: " << line <<"; set to disable" << std::endl;
+          temp.prescale = 0;
         }
       }
       if (k.second == "Comment")
@@ -550,8 +773,11 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
         temp.PAG = TokenGroups(it);
       }
 
-      if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
+      if (L1Config["doCompuGT"] || (L1Config["SetNoPrescale"] && temp.prescale > 1) )
         temp.prescale = 1;
+
+      if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
+        temp.prescale = 0;
     }
 
     if (writefiles)
@@ -777,7 +1003,7 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
     l1Plot->PreRun(&L1Event, &mL1Seed, L1Ntuple::GetuGTAlias(fl1uGTsel));
   }
 
-  if (L1Config["doPrintPU"])
+  if (L1Config["doPrintPU"] || L1Config["SelectFill"] != -1 )
   {
     ReadDataPU();
   }
@@ -911,6 +1137,10 @@ bool L1Menu2016::Loop()
       if (L1Config["SelectRun"] != -1 && event_->run != L1Config["SelectRun"])
         continue;
 
+      if (L1Config["SelectFill"] != -1 && (DataFillNO.find(event_->run) == DataFillNO.end() 
+            || DataFillNO.at(event_->run)  !=  L1Config["SelectFill"] ))
+          continue;
+
       if (L1Config["SelectEvent"] != -1 && event_->event != L1Config["SelectEvent"])
         continue;
 
@@ -927,11 +1157,22 @@ bool L1Menu2016::Loop()
       if (L1ConfigStr["SelectBX"] != "" && CheckBX(event_->bx) )
         continue;
 
+      //if (L1Config["doBXReweight"] && BXReweightSkip(event_->bx,  L1Config["BXReweight_first"]) )
+        //continue;
+
+      if (L1Config["doBXReweight128"] && !BXReweight_is128(event_->bx))
+        continue;
+      if (L1Config["doBXReweight34567"] && !BXReweight_is34567(event_->bx))
+        continue;
+
+      if (L1Config["doPrintBX"])
+	std::cout << "BX = " << event_->bx << std::endl;
+
       if (L1Config["doScanLS"])
         continue;
     }
 
-    if (i % 200000 == 0)
+    if (i % 1000 == 0)
     {
       std::cout << "Processed " << i << " events." << std::endl;
     }
@@ -1099,7 +1340,9 @@ bool L1Menu2016::BuildRelation()
 bool L1Menu2016::L1SeedFunc()
 {
 #ifdef UTM_MENULIB
-  addFuncFromName(L1SeedFun, upgrade_);
+  std::map<std::string, std::function<bool()>> L1SeedFun_temp;
+  addFuncFromName(L1SeedFun_temp, upgrade_, l1CaloTower_);
+  //addFuncFromName(L1SeedFun_temp, upgrade_);
 #endif
     
   for(auto &L1Seed : mL1Seed)
@@ -1109,6 +1352,13 @@ bool L1Menu2016::L1SeedFunc()
 
     if(ParseL1Seed(L1Seed.first))
       continue;
+
+    if (L1SeedFun_temp.find(L1Seed.first) != L1SeedFun_temp.end())
+    {
+      std::cout << "Add from Menulib " << L1Seed.first << std::endl;
+      L1SeedFun[L1Seed.first] = L1SeedFun_temp[L1Seed.first];
+      continue;
+    }
 
     std::cout << "No function call for " << L1Seed.first <<"; setting to no fire"<< std::endl;
   }
@@ -1270,8 +1520,8 @@ bool L1Menu2016::ParseSingleObject(const std::string SeedName)
   std::string Seedtoken(*tokenit);
 
   std::smatch base_match;
-  std::regex integerobj("Single([^0-9]+)([0-9]+)([^0-9]*)");
-  std::regex integerSum("(ETM|HTT|ETT|HTM)([0-9]+)");
+  std::regex integerobj("Single([^0-9]+)([0-9]+)(er|er2p1|)");
+  std::regex integerSum("(ETMHF|ETM|HTT|ETT|HTM)([0-9]+)(er|)");
   if (std::regex_match(Seedtoken, base_match, integerobj))
   {
 	// The first sub_match is the whole string; the next
@@ -1285,7 +1535,7 @@ bool L1Menu2016::ParseSingleObject(const std::string SeedName)
 	// sub_match is the first parenthesized expression.
     L1object = base_match[1].str();
     pt = std::stoi(base_match[2].str(), nullptr);
-    postfix = "";
+    postfix = base_match[3].str();
   } else if(Seedtoken == "SingleMuOpen")
   {
     L1object = "Mu";
@@ -1336,10 +1586,10 @@ std::function<bool()> L1Menu2016::ParseBptx(const std::string /*Seedtoken*/)
 bool L1Menu2016::ParseDoubleJet(const std::string& SeedName)
 {
   std::smatch base_match;
-  std::regex integer("L1_DoubleJet([C]*)([0-9]+)");
+  std::regex integer("L1_DoubleJet(C|)([0-9]+)(er3p0|)");
   if (std::regex_match(SeedName, base_match, integer))
   {
-    bool isCentral = base_match.length(1) == 1;
+    bool isCentral = base_match.length(1) == 1 || (base_match.length(3) == 5 );
     unsigned int pt = std::stoi(base_match[2].str(), nullptr);
     L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::DoubleJet, this, pt, pt, isCentral);
     return true;
@@ -1354,7 +1604,7 @@ bool L1Menu2016::ParseDoubleJet(const std::string& SeedName)
 bool L1Menu2016::ParseDoubleTau(const std::string& SeedName) 
 {
   std::smatch base_match;
-  std::regex integer("L1_Double(Iso|)Tau([0-9]+)er");
+  std::regex integer("L1_Double(Iso|)Tau([0-9]+)er(2p1|)");
   if (std::regex_match(SeedName, base_match, integer))
   {
     bool isIso = base_match.length(1) == 3;
@@ -1398,11 +1648,11 @@ bool L1Menu2016::ParseQuadJet(const std::string& SeedName)
   bool isCentral = false;
 
   std::smatch base_match;
-  std::regex integer_sys("L1_QuadJet([C]*)([0-9]+)");
+  std::regex integer_sys("L1_QuadJet([C]*)([0-9]+)(er3p0|)");
   std::regex integer_asys("L1_QuadJet([C]*)_([0-9]+)_([0-9]+)_([0-9]+)_([0-9]+)");
   if (std::regex_match(SeedName, base_match, integer_sys))
   {
-    isCentral = base_match.length(1) == 1;
+    isCentral = base_match.length(1) == 1 || base_match.length(3) == 5;
     pt1 = std::stoi(base_match[2].str(), nullptr);
     pt2 = pt3 = pt4 = pt1;
   } else if (std::regex_match(SeedName, base_match, integer_asys))
@@ -1501,12 +1751,12 @@ bool L1Menu2016::ParseEGSum(const std::string& SeedName)
   bool isIsoEG= false;
 
   std::smatch base_match;
-  std::regex integerEGerHTT("L1_(Iso|)EG([0-9]+)er_HTT([0-9]+)");
+  std::regex integerEGerHTT("L1_(Iso|)EG([0-9]+)er(2p1|)_HTT([0-9]+)(er|)");
   if (std::regex_match(SeedName, base_match, integerEGerHTT))
   {
     isIsoEG = base_match.length(1) == 3;
     EGpt =  std::stoi(base_match[2].str(), nullptr);
-    Sumpt = std::stoi(base_match[3].str(), nullptr);
+    Sumpt = std::stoi(base_match[4].str(), nullptr);
     L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::SingleEG_Eta2p1_HTT, this, EGpt, Sumpt, isIsoEG);
     return true;
   }
@@ -1663,12 +1913,12 @@ bool L1Menu2016::ParseMuerTauer(const std::string& SeedName)
   bool isIsoTau = false;
 
   std::smatch base_match;
-  std::regex integer("L1_Mu([0-9]+)er_(Iso|)Tau(Jet|)([0-9]+)er");
+  std::regex integer("L1_Mu([0-9]+)(er|er2p1)_(Iso|)Tau(Jet|)([0-9]+)(er|er2p1)");
   if (std::regex_match(SeedName, base_match, integer))
   {
     Mupt =  std::stoi(base_match[1].str(), nullptr);
-    isIsoTau = base_match.length(2) == 3;
-    Taupt = std::stoi(base_match[4].str(), nullptr);
+    isIsoTau = base_match.length(3) == 3;
+    Taupt = std::stoi(base_match[5].str(), nullptr);
     L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::Muer_TauJetEta2p17, this, Mupt, Taupt, isIsoTau);
     return true;
   }
@@ -1711,8 +1961,8 @@ bool L1Menu2016::ParseMuSum(const std::string& SeedName)
   int Sumpt = -10;
 
   std::smatch base_match;
-  std::regex integerMuHTT("L1_Mu([0-9]+)_HTT([0-9]+)");
-  std::regex integerMuerETM("L1_Mu([0-9]+)er_ETM([0-9]+)");
+  std::regex integerMuHTT("L1_Mu([0-9]+)_HTT([0-9]+)(er|)");
+  std::regex integerMuerETM("L1_Mu([0-9]+)(er|er2p1)_ETM([0-9]+)");
   if (std::regex_match(SeedName, base_match, integerMuHTT))
   {
     Mupt =  std::stoi(base_match[1].str(), nullptr);
@@ -1724,7 +1974,8 @@ bool L1Menu2016::ParseMuSum(const std::string& SeedName)
   if (std::regex_match(SeedName, base_match, integerMuerETM))
   {
     Mupt =  std::stoi(base_match[1].str(), nullptr);
-    Sumpt = std::stoi(base_match[2].str(), nullptr);
+    assert(base_match.length(2) > 0);
+    Sumpt = std::stoi(base_match[3].str(), nullptr);
     L1SeedFun[SeedName] = std::bind(&L1AlgoFactory::Muer_ETM, this, Mupt, Sumpt);
     return true;
   }
@@ -1744,7 +1995,7 @@ bool L1Menu2016::ParseComplexSingleMu(const std::string& SeedName)
     return false;
 
   std::smatch base_match;
-  std::regex integer("L1_Single([^0-9_]+)([0-9]+)([^0-9_]*)(_(EMTF|OMTF|BMTF))*(_Bx([-+0-9]+))*(_(Open|LowQ|HighQ))*");
+  std::regex integer("L1_Single(Mu)([0-9]+)([^0-9_]*)(_(EMTF|OMTF|BMTF))*(_Bx([-+0-9]+))*(_(Open|LowQ|HighQ))*");
   std::string L1object ="";
   std::string postfix = "";
   std::string muonType = "";
@@ -1906,7 +2157,25 @@ bool L1Menu2016::PrintCSV(std::ostream &out)
     col.second->PrintCSV(csvout, scale);
   }
 
- 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Print out additional info ~~~~~
+  std::vector<std::string>::iterator csvt = csvout.begin();
+  ss.str("");
+  ss <<"Type"<<","<<"PAG"<<","<<"Comment";
+  csvt++->append(ss.str());
+  // L1Seeds
+  for(auto sed : vL1Seed)
+  {
+    auto seed = mL1Seed[sed];
+    ss.str("");
+    std::copy(seed.POG.begin(), seed.POG.end(), std::ostream_iterator<std::string>(ss, "|"));
+    ss.seekp(ss.str().length()-1); //remove trailing |
+    ss<<",";
+    std::copy(seed.PAG.begin(), seed.PAG.end(), std::ostream_iterator<std::string>(ss, "|"));
+    ss.seekp(ss.str().length()-1); //remove trailing |
+    ss<<","<<seed.comment;
+    csvt++->append(ss.str());
+  }
+
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Writing out to file ~~~~~
   for(auto i : csvout)
   {
@@ -1932,6 +2201,7 @@ bool L1Menu2016::ReadDataPU()
 
   std::string line;
   DataLSPU.clear();
+  DataFillNO.clear();
   std::getline(csvfile, line); // Skip the first line;
   while (std::getline(csvfile, line))
   {
@@ -1942,6 +2212,7 @@ bool L1Menu2016::ReadDataPU()
     float pileup;
     iss >> Fill >> c >> Run >> c >> LS >> c >> pileup;
     DataLSPU[Run][LS] = pileup;
+    DataFillNO[Run] = Fill;
   }
 
   return true;
@@ -2041,7 +2312,7 @@ bool L1Menu2016::CheckLS(unsigned int currentLumi) const
     if (currentLumi >= p.first && currentLumi <= p.second)
     {
       if (L1Config.at("doScanLS"))
-        std::cout << "LS"<<currentLumi <<" % "<< fChain->GetCurrentFile()->GetName()  << std::endl;
+        std::cout << "LS"<<currentLumi << " within "<< L1ConfigStr.at("SelectLS") << " % "<< fChain->GetCurrentFile()->GetName()  << std::endl;
       return false;
     }
   }
@@ -2064,6 +2335,37 @@ bool L1Menu2016::CheckBX(unsigned int currentBX) const
   return true;
 }       // -----  end of function L1Menu2016::CheckBX  -----
 
+bool L1Menu2016::BXReweightSkip(int currentBX, float firstBX)
+{
+	int diff = currentBX-firstBX;
+	if(diff < 0 || diff % 12 != 0)
+	return true;
+return false;
+}
+
+bool L1Menu2016::BXReweight_is128(int currentBX)
+{
+	int a[] = {46,47,53,58,59,65,70,71,77,82,83,89,121,122,128,133,134,140,145,146,152,157,158,164,172,173,179,184,185,191,196,197,203,208,209,215,223,224,230,235,236,242,247,248,254,259,260,266,274,275,281,286,287,293,298,299,305,310,311,317,349,350,356,361,362,368,373,374,380,385,386,392,400,401,407,412,413,419,424,425,431,436,437,443,451,452,458,463,464,470,475,476,482,487,488,494,502,503,509,514,515,521,526,527,533,538,539,545,577,578,584,589,590,596,601,602,608,613,614,620,628,629,635,640,641,647,652,653,659,664,665,671,679,680,686,691,692,698,703,704,710,715,716,722,730,731,737,742,743,749,754,755,761,766,767,773,826,827,833,838,839,845,850,851,857,862,863,869,877,878,884,889,890,896,901,902,908,913,914,920,928,929,935,940,941,947,952,953,959,964,965,971,1003,1004,1010,1015,1016,1022,1027,1028,1034,1039,1040,1046,1054,1055,1061,1066,1067,1073,1078,1079,1085,1090,1091,1097,1105,1106,1112,1117,1118,1124,1129,1130,1136,1141,1142,1148,1156,1157,1163,1168,1169,1175,1180,1181,1187,1192,1193,1199,1231,1232,1238,1243,1244,1250,1255,1256,1262,1267,1268,1274,1282,1283,1289,1294,1295,1301,1306,1307,1313,1318,1319,1325,1333,1334,1340,1345,1346,1352,1357,1358,1364,1369,1370,1376,1384,1385,1391,1396,1397,1403,1408,1409,1415,1420,1421,1427,1459,1460,1466,1471,1472,1478,1483,1484,1490,1495,1496,1502,1510,1511,1517,1522,1523,1529,1534,1535,1541,1546,1547,1553,1561,1562,1568,1573,1574,1580,1585,1586,1592,1597,1598,1604,1612,1613,1619,1624,1625,1631,1636,1637,1643,1648,1649,1655,1720,1721,1727,1732,1733,1739,1744,1745,1751,1756,1757,1763,1771,1772,1778,1783,1784,1790,1795,1796,1802,1807,1808,1814,1822,1823,1829,1834,1835,1841,1846,1847,1853,1858,1859,1865,1897,1898,1904,1909,1910,1916,1921,1922,1928,1933,1934,1940,1948,1949,1955,1960,1961,1967,1972,1973,1979,1984,1985,1991,1999,2000,2006,2011,2012,2018,2023,2024,2030,2035,2036,2042,2050,2051,2057,2062,2063,2069,2074,2075,2081,2086,2087,2093,2125,2126,2132,2137,2138,2144,2149,2150,2156,2161,2162,2168,2176,2177,2183,2188,2189,2195,2200,2201,2207,2212,2213,2219,2227,2228,2234,2239,2240,2246,2251,2252,2258,2263,2264,2270,2278,2279,2285,2290,2291,2297,2302,2303,2309,2314,2315,2321,2353,2354,2360,2365,2366,2372,2377,2378,2384,2389,2390,2396,2404,2405,2411,2416,2417,2423,2428,2429,2435,2440,2441,2447,2455,2456,2462,2467,2468,2474,2479,2480,2486,2491,2492,2498,2506,2507,2513,2518,2519,2525,2530,2531,2537,2542,2543,2549,2614,2615,2621,2626,2627,2633,2638,2639,2645,2650,2651,2657,2665,2666,2672,2677,2678,2684,2689,2690,2696,2701,2702,2708,2716,2717,2723,2728,2729,2735,2740,2741,2747,2752,2753,2759,2791,2792,2798,2803,2804,2810,2815,2816,2822,2827,2828,2834,2842,2843,2849,2854,2855,2861,2866,2867,2873,2878,2879,2885,2893,2894,2900,2905,2906,2912,2917,2918,2924,2929,2930,2936,2944,2945,2951,2956,2957,2963,2968,2969,2975,2980,2981,2987,3019,3020,3026,3031,3032,3038,3043,3044,3050,3055,3056,3062,3070,3071,3077,3082,3083,3089,3094,3095,3101,3106,3107,3113,3121,3122,3128,3133,3134,3140,3145,3146,3152,3157,3158,3164,3172,3173,3179,3184,3185,3191,3196,3197,3203,3208,3209,3215,3247,3248,3254,3259,3260,3266,3271,3272,3278,3283,3284,3290,3298,3299,3305,3310,3311,3317,3322,3323,3329,3334,3335,3341,3349,3350,3356,3361,3362,3368,3373,3374,3380,3385,3386,3392,3400,3401,3407,3412,3413,3419,3424,3425,3431,3436,3437,3443};
+
+	for(int i = 0; i < 696; i++)
+	{
+		if(currentBX == a[i])
+		return true;
+	}
+return false;
+}
+
+bool L1Menu2016::BXReweight_is34567(int currentBX)
+{
+	int a[] = {48,49,50,51,52,60,61,62,63,64,72,73,74,75,76,84,85,86,87,88,123,124,125,126,127,135,136,137,138,139,147,148,149,150,151,159,160,161,162,163,174,175,176,177,178,186,187,188,189,190,198,199,200,201,202,210,211,212,213,214,225,226,227,228,229,237,238,239,240,241,249,250,251,252,253,261,262,263,264,265,276,277,278,279,280,288,289,290,291,292,300,301,302,303,304,312,313,314,315,316,351,352,353,354,355,363,364,365,366,367,375,376,377,378,379,387,388,389,390,391,402,403,404,405,406,414,415,416,417,418,426,427,428,429,430,438,439,440,441,442,453,454,455,456,457,465,466,467,468,469,477,478,479,480,481,489,490,491,492,493,504,505,506,507,508,516,517,518,519,520,528,529,530,531,532,540,541,542,543,544,579,580,581,582,583,591,592,593,594,595,603,604,605,606,607,615,616,617,618,619,630,631,632,633,634,642,643,644,645,646,654,655,656,657,658,666,667,668,669,670,681,682,683,684,685,693,694,695,696,697,705,706,707,708,709,717,718,719,720,721,732,733,734,735,736,744,745,746,747,748,756,757,758,759,760,768,769,770,771,772,828,829,830,831,832,840,841,842,843,844,852,853,854,855,856,864,865,866,867,868,879,880,881,882,883,891,892,893,894,895,903,904,905,906,907,915,916,917,918,919,930,931,932,933,934,942,943,944,945,946,954,955,956,957,958,966,967,968,969,970,1005,1006,1007,1008,1009,1017,1018,1019,1020,1021,1029,1030,1031,1032,1033,1041,1042,1043,1044,1045,1056,1057,1058,1059,1060,1068,1069,1070,1071,1072,1080,1081,1082,1083,1084,1092,1093,1094,1095,1096,1107,1108,1109,1110,1111,1119,1120,1121,1122,1123,1131,1132,1133,1134,1135,1143,1144,1145,1146,1147,1158,1159,1160,1161,1162,1170,1171,1172,1173,1174,1182,1183,1184,1185,1186,1194,1195,1196,1197,1198,1233,1234,1235,1236,1237,1245,1246,1247,1248,1249,1257,1258,1259,1260,1261,1269,1270,1271,1272,1273,1284,1285,1286,1287,1288,1296,1297,1298,1299,1300,1308,1309,1310,1311,1312,1320,1321,1322,1323,1324,1335,1336,1337,1338,1339,1347,1348,1349,1350,1351,1359,1360,1361,1362,1363,1371,1372,1373,1374,1375,1386,1387,1388,1389,1390,1398,1399,1400,1401,1402,1410,1411,1412,1413,1414,1422,1423,1424,1425,1426,1461,1462,1463,1464,1465,1473,1474,1475,1476,1477,1485,1486,1487,1488,1489,1497,1498,1499,1500,1501,1512,1513,1514,1515,1516,1524,1525,1526,1527,1528,1536,1537,1538,1539,1540,1548,1549,1550,1551,1552,1563,1564,1565,1566,1567,1575,1576,1577,1578,1579,1587,1588,1589,1590,1591,1599,1600,1601,1602,1603,1614,1615,1616,1617,1618,1626,1627,1628,1629,1630,1638,1639,1640,1641,1642,1650,1651,1652,1653,1654,1722,1723,1724,1725,1726,1734,1735,1736,1737,1738,1746,1747,1748,1749,1750,1758,1759,1760,1761,1762,1773,1774,1775,1776,1777,1785,1786,1787,1788,1789,1797,1798,1799,1800,1801,1809,1810,1811,1812,1813,1824,1825,1826,1827,1828,1836,1837,1838,1839,1840,1848,1849,1850,1851,1852,1860,1861,1862,1863,1864,1899,1900,1901,1902,1903,1911,1912,1913,1914,1915,1923,1924,1925,1926,1927,1935,1936,1937,1938,1939,1950,1951,1952,1953,1954,1962,1963,1964,1965,1966,1974,1975,1976,1977,1978,1986,1987,1988,1989,1990,2001,2002,2003,2004,2005,2013,2014,2015,2016,2017,2025,2026,2027,2028,2029,2037,2038,2039,2040,2041,2052,2053,2054,2055,2056,2064,2065,2066,2067,2068,2076,2077,2078,2079,2080,2088,2089,2090,2091,2092,2127,2128,2129,2130,2131,2139,2140,2141,2142,2143,2151,2152,2153,2154,2155,2163,2164,2165,2166,2167,2178,2179,2180,2181,2182,2190,2191,2192,2193,2194,2202,2203,2204,2205,2206,2214,2215,2216,2217,2218,2229,2230,2231,2232,2233,2241,2242,2243,2244,2245,2253,2254,2255,2256,2257,2265,2266,2267,2268,2269,2280,2281,2282,2283,2284,2292,2293,2294,2295,2296,2304,2305,2306,2307,2308,2316,2317,2318,2319,2320,2355,2356,2357,2358,2359,2367,2368,2369,2370,2371,2379,2380,2381,2382,2383,2391,2392,2393,2394,2395,2406,2407,2408,2409,2410,2418,2419,2420,2421,2422,2430,2431,2432,2433,2434,2442,2443,2444,2445,2446,2457,2458,2459,2460,2461,2469,2470,2471,2472,2473,2481,2482,2483,2484,2485,2493,2494,2495,2496,2497,2508,2509,2510,2511,2512,2520,2521,2522,2523,2524,2532,2533,2534,2535,2536,2544,2545,2546,2547,2548,2616,2617,2618,2619,2620,2628,2629,2630,2631,2632,2640,2641,2642,2643,2644,2652,2653,2654,2655,2656,2667,2668,2669,2670,2671,2679,2680,2681,2682,2683,2691,2692,2693,2694,2695,2703,2704,2705,2706,2707,2718,2719,2720,2721,2722,2730,2731,2732,2733,2734,2742,2743,2744,2745,2746,2754,2755,2756,2757,2758,2793,2794,2795,2796,2797,2805,2806,2807,2808,2809,2817,2818,2819,2820,2821,2829,2830,2831,2832,2833,2844,2845,2846,2847,2848,2856,2857,2858,2859,2860,2868,2869,2870,2871,2872,2880,2881,2882,2883,2884,2895,2896,2897,2898,2899,2907,2908,2909,2910,2911,2919,2920,2921,2922,2923,2931,2932,2933,2934,2935,2946,2947,2948,2949,2950,2958,2959,2960,2961,2962,2970,2971,2972,2973,2974,2982,2983,2984,2985,2986,3021,3022,3023,3024,3025,3033,3034,3035,3036,3037,3045,3046,3047,3048,3049,3057,3058,3059,3060,3061,3072,3073,3074,3075,3076,3084,3085,3086,3087,3088,3096,3097,3098,3099,3100,3108,3109,3110,3111,3112,3123,3124,3125,3126,3127,3135,3136,3137,3138,3139,3147,3148,3149,3150,3151,3159,3160,3161,3162,3163,3174,3175,3176,3177,3178,3186,3187,3188,3189,3190,3198,3199,3200,3201,3202,3210,3211,3212,3213,3214,3249,3250,3251,3252,3253,3261,3262,3263,3264,3265,3273,3274,3275,3276,3277,3285,3286,3287,3288,3289,3300,3301,3302,3303,3304,3312,3313,3314,3315,3316,3324,3325,3326,3327,3328,3336,3337,3338,3339,3340,3351,3352,3353,3354,3355,3363,3364,3365,3366,3367,3375,3376,3377,3378,3379,3387,3388,3389,3390,3391,3402,3403,3404,3405,3406,3414,3415,3416,3417,3418,3426,3427,3428,3429,3430,3438,3439,3440,3441,3442};
+
+	for(int i = 0; i < 1160; i++)
+	{
+		if(currentBX == a[i])
+		return true;
+	}
+return false;
+}
 
 // ===  FUNCTION  ============================================================
 //         Name:  L1Menu2016::CalLocalETM
@@ -2110,7 +2412,7 @@ std::vector<std::string> L1Menu2016::TokenGroups(std::string instring) const
   std::vector<std::string>  temp;
   if (instring.empty()) return temp;
 
-  boost::char_separator<char> sep(",.;|-");
+  boost::char_separator<char> sep(",.;|- ");
   tokenizer tokens(instring, sep);
   for(auto &t : tokens)
   {
