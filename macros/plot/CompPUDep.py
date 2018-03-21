@@ -23,25 +23,22 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
-#foldername = "Feb24fill_6358_and_more_col_1.6_core_mu"
-foldername = "Feb24fill_6358_and_more_col_1.6_core_mu_emulator"
-#foldername = "Feb15fill_6358_and_more_col_1.6"
-#foldername = "Feb15fill_6358_and_more_col_1.6_emulator"
-#foldername = "Feb17fill_6358_and_more_col_1.6_IgnorePrescale"
+#foldername = "Mar12fill_6356_6360_Prescale_2018_v0_1_0_Col_1.0_408"
+foldername = "Mar10fill_6356_6360_Prescale_2018_v0_1_0_Col_1.6"
 
 fit_min = 20
 fit_max = 75
 plot_min = 0
 plot_max = 90
-maxy = 10
-PU = 60
+maxy = 500
+PU = 61
 freq = 11245.6
 config = 2017
 
-#fitname = "pol4"
+fitname = "pol4"
 #fitname = "expo"
-fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
-fitname.SetParameters(0.1,0.001);
+#fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
+#fitname.SetParameters(0.1,0.001);
 
 #filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Sep12v2.2_menu_2.2_v96p20_v8_run_301912_to_302029/*Default_PU.csv"
 #filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Aug17v2.2_menu_2.2_v6_v96p20_IgnorePrescale/*Default_PU.csv"
@@ -65,7 +62,7 @@ pubins = np.arange(plot_min,plot_max, 1)
 pumap = collections.defaultdict(list)
 
 PatMap = {  
-    #"L1APhysics" : "L1APhysics",
+    "L1APhysics" : "L1APhysics",
     #"L1_SingleMu25" :  "L1_SingleMu25",
     #"L1_DoubleMu_15_7" : "L1_DoubleMu_15_7",
     #"L1_SingleEG40" : "L1_SingleEG40",
@@ -77,13 +74,21 @@ PatMap = {
     # 'L1_DoubleJet150er2p7': 'L1_DoubleJet150er2p7',
     # 'L1_DoubleMu_15_5_SQ': 'L1_DoubleMu_15_5_SQ',
     # 'L1_HTT320er': 'L1_HTT320er',
+    # 'L1_HTT340er': 'L1_HTT340er',
+    # 'L1_HTT380er': 'L1_HTT380er',
+    # 'L1_HTT400er': 'L1_HTT400er',
     # 'L1_ETMHF120': 'L1_ETMHF120',
     # 'L1_TripleJet_105_85_76_VBF': 'L1_TripleJet_105_85_76_VBF',
     # 'L1_TripleEG_14_10_8': 'L1_TripleEG_14_10_8',
     # 'L1_SingleIsoEG34er2p1': 'L1_SingleIsoEG34er2p1',
     # 'L1_SingleMu22_BMTF': 'L1_SingleMu22_BMTF',
     # 'L1_SingleMu22_EMTF': 'L1_SingleMu22_EMTF',
-     'L1_SingleMu22_OMTF': 'L1_SingleMu22_OMTF',
+    # 'L1_SingleMu22_OMTF': 'L1_SingleMu22_OMTF',
+    # 'L1_SingleEG40er2p5': 'L1_SingleEG40er2p5',
+    # 'L1_SingleIsoEG32er2p5': 'L1_SingleIsoEG32er2p5',
+    # 'L1_EG40er2p1_Tau20er2p1_dR_Min0p3': 'L1_EG40er2p1_Tau20er2p1_dR_Min0p3',
+    # 'L1_TripleMu_0_0_0OQ_DoubleMu_0_0_OS_Mass_5to17': 'L1_TripleMu_0_0_0OQ_DoubleMu_0_0_OS_Mass_5to17',	#Hu Zhen seed 407
+    # 'L1_TripleMu_0SQ_0SQ_0OQ_DoubleMu_0SQ_0SQ_OS_Mass_5to17': 'L1_TripleMu_0SQ_0SQ_0OQ_DoubleMu_0SQ_0SQ_OS_Mass_5to17',	#Hu Zhen seed 408
     # 'DTau': 'L1_DoubleIsoTau\d+er',
 }
 
@@ -152,8 +157,8 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     result_ptr = graph.Fit(fitname, "SQ", "", fit_min, fit_max)
     error_vec = result_ptr.GetConfidenceIntervals()
     #print ("error vec size = %d" % error_vec.size())
-    f2 = graph.GetFunction("fitname").Clone()
-    #f2 = graph.GetFunction(fitname).Clone()
+    #f2 = graph.GetFunction("fitname").Clone()
+    f2 = graph.GetFunction(fitname).Clone()
     f2.SetLineColor(1+count)
     f2.SetLineWidth(2)
     #for i in range (fit_min, fit_max):
@@ -176,7 +181,7 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     f2_2.SetRange(fit_max, plot_max)
     f2_2.SetLineStyle(5)
     f2_2.Draw("same")
-    key = "Rate(PU=%d): %.1f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), minChi)
+    key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(60-fit_min), minChi)
     #tex = ROOT.TLatex(0.15, 0.75, fun)
     #tex.SetNDC()
     #tex.SetTextAlign(13)
@@ -187,10 +192,10 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     # tex.Draw()
 
     if key is not None:
-        tex = ROOT.TLatex(0.6, 0.8, key)
+        tex = ROOT.TLatex(0.3, 0.85, key)
         tex.SetNDC()
         tex.SetTextFont(61)
-        tex.SetTextSize(0.045)
+        tex.SetTextSize(0.055)
         tex.SetTextColor(ROOT.kGreen+2)
         tex.SetLineWidth(2)
         tex.Draw()
@@ -248,7 +253,7 @@ def DrawL1(key, pattern):
 
     c1.Update()
     #c1.SaveAs("plots/%s_%d_%s_PU%d.root" % (key, config, foldername, PU))
-    c1.SaveAs("plots/%s_%d_%s_PU%d_table.png" % (key, config, foldername, PU))
+    c1.SaveAs("plots/%s_%d_%s_PU%d.png" % (key, config, foldername, PU))
     #c1.SaveAs("plots/%s_%d_%s_PU%d.pdf" % (key, config, foldername, PU))
 
 if __name__ == "__main__":
@@ -269,7 +274,7 @@ if __name__ == "__main__":
     ROOT.gStyle.SetOptStat(000000000)
     tdrstyle.setTDRStyle()
     c1 = ROOT.TCanvas("fd","Fdf", 1200, 1000)
-    leg = ROOT.TLegend(0.2,0.75,0.5,0.9)
+    leg = ROOT.TLegend(0.15,0.7,0.45,0.75)
     leg.SetFillColor(0)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)

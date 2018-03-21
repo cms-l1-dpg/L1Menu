@@ -22,11 +22,12 @@ splitline = 50
 DelExe    = 'testMenu2016'
 #OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
 OutDir = '/store/user/huiwang/L1Menu2017'
-Analysis  = 'fill_6358_and_more_col_1.6_core_mu_emulator'
+Analysis  = 'fill_6356_6360_Prescale_2018_v0_1_0_Col_1.0_407'
 #Analysis  = 'v2.2_menu_2.2_v96p20_v8_run_301912_to_302029_ignor_ps'
 MenuFile = [
-  "menu/Prescale_Sets_RUN_306091_col_1.6_core_mu.txt"
-  #"menu/prescale_v2.2_2.2_v8_all_seeds.txt"
+  #"menu/Prescale_Sets_RUN_306091_col_1.6.txt"
+  #"menu/Prescale_2018_v0_col_1.6.txt"
+  "menu/Prescale_2018_v0_1_0_Col_1.0_HuZhen.txt"
 ]
 Ntuplelist = [
 ]
@@ -35,7 +36,7 @@ Ntupledict = {
     # "ntuple/Train_v92p24.list"    : " -u menu/TrainPLTZ.csv ",
     # "ntuple/2017Fill_v96p15.list" : " -u menu/2017_runLumi.csv ",
     # "ntuple/fill_6061_LPC.list" : " -u menu/runlumi_fill_6061.csv ",
-    "ntuple/fill_6358_and_more.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    "ntuple/fill_6356_6360.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
 }
 GlobalOpt =  " "
 #GlobalOpt += " --SelectRun 299380"
@@ -43,8 +44,8 @@ GlobalOpt =  " "
 #GlobalOpt += " --IgnorePrescale"
 #GlobalOpt += " --doScanLS --SelectLS '[151,200]' "
 #GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --IgnorePrescale"
-#GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree"
-GlobalOpt += " --doPlotRate --doPrintPU"
+GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree"
+#GlobalOpt += " --doPlotRate --doPrintPU"
 #GlobalOpt += " --SelectCol 1.8E34 "
 Options = {
   "Default"    : "",

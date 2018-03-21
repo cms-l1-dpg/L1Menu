@@ -589,12 +589,11 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
     temp.comment = comline;
     temp.prescale = prescale;
 
-    if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
+    if (L1Config["doCompuGT"] || (L1Config["SetNoPrescale"] && temp.prescale > 1) )
       temp.prescale = 1;
 
     if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
-      //temp.prescale = 0;	//original code
-      temp.prescale = 1;
+      temp.prescale = 0;
 
     if (pog.length() != 0)
       temp.POG = TokenGroups(pog);
@@ -774,12 +773,11 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
         temp.PAG = TokenGroups(it);
       }
 
-      if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"] )
+      if (L1Config["doCompuGT"] || (L1Config["SetNoPrescale"] && temp.prescale > 1) )
         temp.prescale = 1;
 
       if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
-        //temp.prescale = 0;	//original code
-        temp.prescale = 1;
+        temp.prescale = 0;
     }
 
     if (writefiles)
@@ -1343,8 +1341,8 @@ bool L1Menu2016::L1SeedFunc()
 {
 #ifdef UTM_MENULIB
   std::map<std::string, std::function<bool()>> L1SeedFun_temp;
-  //addFuncFromName(L1SeedFun_temp, upgrade_, l1CaloTower_);
-  addFuncFromName(L1SeedFun_temp, upgrade_);
+  addFuncFromName(L1SeedFun_temp, upgrade_, l1CaloTower_);
+  //addFuncFromName(L1SeedFun_temp, upgrade_);
 #endif
     
   for(auto &L1Seed : mL1Seed)
