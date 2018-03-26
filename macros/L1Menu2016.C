@@ -123,6 +123,7 @@ bool L1Menu2016::InitConfig()
   L1Config["UseuGTDecision"] = 0;
   L1Config["UseUnpackTree"]  = 0;
   L1Config["doScanLS"]       = 0;
+  L1Config["SetL1AcceptPS"]  = 0;
   
   L1ConfigStr["SelectLS"] = "";
   L1ConfigStr["SelectBX"] = "";
@@ -1141,7 +1142,8 @@ bool L1Menu2016::Loop()
 
       if(event_ -> lumi != currentLumi){
         currentLumi = event_ -> lumi;
-        skipLS      = CheckLS(currentLumi);
+        if (L1ConfigStr["SelectLS"] != "" || L1Config["doScanLS"])
+          skipLS      = CheckLS(currentLumi);
         if (!skipLS)
           nLumi.insert(currentLumi);
       } 
@@ -1162,7 +1164,8 @@ bool L1Menu2016::Loop()
     }
 
     //Use Final decision by default, unless for PlotLS
-    if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
+    //In case using L1Accept, don't count the Zerobias Event
+    if (L1Config["SetL1AcceptPS"] !=0 && l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
       continue;
 
     nZeroBiasevents++;
@@ -1415,9 +1418,9 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_, bool print)
 
   if (L1Config["nBunches"] < 0)
   {
-    scale = (-1.*L1Config["nBunches"])/(nLumi.size()*23.31);      
+    scale = (-1.*L1Config["nBunches"] * L1Config["SetL1AcceptPS"])/(nLumi.size()*23.31);      
     if (print)
-      std::cout << "Scale by "   << "("<< -1. * L1Config["nBunches"] <<")/(nLumi*23.31) with nLumi = " << nLumi.size()      << std::endl;
+      std::cout << "Scale by "   << "("<< -1. * L1Config["nBunches"] <<"* L1AcceptPS )/(nLumi*23.31) with L1AcceptPS = "<< L1Config["SetL1AcceptPS"] <<" nLumi = " << nLumi.size()  << std::endl;
   } else {
     scale = 11246.; // ZB per bunch in Hz
     //scale /= nZeroBiasevents*1000.; // in kHz
