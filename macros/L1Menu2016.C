@@ -1165,7 +1165,7 @@ bool L1Menu2016::Loop()
 
     //Use Final decision by default, unless for PlotLS
     //In case using L1Accept, don't count the Zerobias Event
-    if (L1Config["SetL1AcceptPS"] !=0 && l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
+    if (L1Config["SetL1AcceptPS"] ==0 && l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
       continue;
 
     nZeroBiasevents++;
