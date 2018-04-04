@@ -181,7 +181,7 @@ void plot( std::vector<TH1*> plots,
 		  eff->SetMarkerStyle( 21 + iPlot );
 	      eff->GetYaxis()->SetTitleSize(0.14);
           eff->GetYaxis()->SetTitleOffset(0.4);
-		  eff->GetYaxis()->SetRangeUser( .1, 5.);
+		  eff->GetYaxis()->SetRangeUser( .1, 1.5);
 		  eff->GetYaxis()->SetLabelSize( .11);
 		  
 		  eff->Draw( iPlot>1 ? "samePE1" : "PE1" );
