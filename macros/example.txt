@@ -1,3 +1,30 @@
-./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v0_1_0_Col_1.6.txt -l ntuple/fill_6356_6360_test.list -o Prescale_2018_v0_1_0_Col_1.6_test -b 1866 --doPlotRate --doPrintPU --UseUnpackTree
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v0_2_0_Col_1.5.txt -l ntuple/fill_6356_6360.list -o Prescale_2018_v0_2_0_Col_1.5_Rate -b 1866 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306125 --SelectLS '[265,309]' --SetNoPrescale
+//Col 1.5e34 -> PU 57.19. Run 306125, LS 265 (PU 58.2) to LS 309 (PU 56.2)
 
-./testMenu2016 -u menu/runlumi_fill_6358.csv -m menu/Prescale_Sets_RUN_306091_col_1.6.txt -l ntuple/fill_6358_test.list -o fill_6358_LS388_test -b 1866 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306091 --SelectLS '[368,409]' --SetNoPrescale
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v0_2_0_Col_1.5.txt -l ntuple/run_306091_nanodst.list -o Prescale_2018_v0_2_0_Col_1.5_Pure_Rate_nanodst -b 1866 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306091 --SelectLS '[490,535]'
+//Col 1.5e34 -> PU 57.19. Run 306091, LS 490 (PU 57.9) to LS 535 (PU 56.0)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v0_2_0_Col_1.6.txt -l ntuple/fill_6356_6360.list -o Prescale_2018_v0_2_0_Col_1.6_Pure_Rate -b 1866 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306091 --SelectLS '[347,388]'
+//Col 1.6e34 -> PU 61.00. Run 306091, LS 347 (PU 62.0) to LS 388 (PU 60.0)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v1_0_0_Col_2.2.txt -l ntuple/run_306091_nanodst.list -o Prescale_2018_v1_0_0_Col_2.2_Pure_Rate_nanodst -b 2544 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306091 --SelectLS '[338,378]'
+//Col 2.2e34 -> PU 61.52. Run 306091, LS 338 (PU 62.5) to LS 378 (PU 60.5)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v1_0_0_Col_2.0.txt -l ntuple/run_306091_nanodst.list -o Prescale_2018_v1_0_0_Col_2.0_Pure_Rate_nanodst -b 2544 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306091 --SelectLS '[514,563]'
+//Col 2.0e34 -> PU 55.93. Run 306091, LS 514 (PU 56.9) to LS 563 (PU 54.9)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v1_0_0_Col_1.8.txt -l ntuple/run_306092_nanodst.list -o Prescale_2018_v1_0_0_Col_1.8_Pure_Rate_nanodst -b 2544 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 306092 --SelectLS '[26,86]'
+//Col 1.8e34 -> PU 50.33. Run 306092, LS 26 (PU 51.3) to LS 86 (PU 49.3)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v1_0_0_Col_2.0.txt -l ntuple/run_315506.list -o Prescale_2018_v1_0_0_Col_2.0_Pure_Rate_run_315506 -b 2544 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 315506 --SelectLS '[30,73]'
+//avg PU 58. Run 315506, LS 30 (PU 59.5) to LS LS 73 (PU 56.5)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v1_0_0_Col_2.0.txt -l ntuple/run_315506_nanodst.list -o Prescale_2018_v1_0_0_Col_2.0_Pure_Rate_run_315506_nanodst -b 2544 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 315506 --SelectLS '[63,99]'
+//Col 2.0e34 -> PU 55.93. Run 315506, LS 63 (PU 56.9) to LS 99 (PU 54.9)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v1_0_0_Col_2.0.txt -l ntuple/run_316216_nanodst.list -o Prescale_2018_v1_0_0_Col_2.0_Pure_Rate_run_316216_nanodst -b 2544 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 316216 --SelectLS '[53,96]'
+//avg PU 53.5. Run 316216, LS 53 (PU 54.9) to LS 96 (PU 52.1)
+
+./testMenu2016 -u menu/runlumi_fill_6358_and_more.csv -m menu/Prescale_2018_v1_0_0_Col_2.0.txt -l ntuple/run_316216.list -o Prescale_2018_v1_0_0_Col_2.0_Rate_run_316216 -b 2544 --doPlotRate --doPrintPU --UseUnpackTree --SelectRun 316216 --SelectLS '[53,407]' --SetNoPrescale
+//avg PU 49.9. Run 316216, LS 53 (PU 54.9) to LS 407 (PU 44.9)
+

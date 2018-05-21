@@ -23,35 +23,46 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
-#foldername = "Mar12fill_6356_6360_Prescale_2018_v0_1_0_Col_1.0_408"
-foldername = "Mar10fill_6356_6360_Prescale_2018_v0_1_0_Col_1.6"
+#foldername = "Mar27Run_306091_nanodst_Prescale_2018_v0_2_0_Col_1.6"
+#foldername = "Apr22fill_6356_6360_Prescale_2018_v1_0_0_Col_1.8_opt2"
+#foldername = "Apr22fill_6358_nanodst_Prescale_2018_v1_0_0_Col_1.8_opt2"
+foldername = "May20run_316216_nanodst_Prescale_2018_v1_0_0_Col_2.0"
 
-fit_min = 20
-fit_max = 75
+fit_min = 43
+fit_max = 54
 plot_min = 0
 plot_max = 90
-maxy = 500
-PU = 61
+maxx = 70
+maxy = 100
+#PU = 61		#61.00 for col 1.6
+#PU = 57		#57.19 for col 1.5
+#PU = 50		#49.56 for col 1.3
+#PU = 38		#38.12 for col 1.0
+
+####	for 2544 bunches	####
+#PU = 62		#61.52 for col 2.2
+PU = 56		#55.93 for col 2.0
+#PU = 50		#50.33 for col 1.8
+
+
 freq = 11245.6
 config = 2017
+#config = 2018
 
-fitname = "pol4"
+#fitname = "pol4"
 #fitname = "expo"
-#fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
+fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
 #fitname.SetParameters(0.1,0.001);
 
-#filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Sep12v2.2_menu_2.2_v96p20_v8_run_301912_to_302029/*Default_PU.csv"
-#filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Aug17v2.2_menu_2.2_v6_v96p20_IgnorePrescale/*Default_PU.csv"
-#filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Sep19Prescale_Sets_RUN_302485_col_2.0/*Default_PU.csv"
-#filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/Jan21fill_6358_col_1.6_core/*Default_PU.csv"
 filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_PU.csv"
 
-if config == 2016:
-    nBunches = 2208
-    unit = "kHz"
 if config == 2017:
-    #nBunches = 2544
-    nBunches = 1866
+    #nBunches = 1866
+    nBunches = 2544
+    unit = "kHz"
+
+if config == 2018:
+    nBunches = 2544
     unit = "kHz"
 
 if config == 1:
@@ -146,7 +157,7 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     if count == 0:
         graph.Draw("AP")
         graph.GetXaxis().SetTitle("PileUp")
-        graph.GetXaxis().SetLimits(plot_min, plot_max)
+        graph.GetXaxis().SetLimits(plot_min, maxx)
         graph.GetYaxis().SetRangeUser(0, maxy)
         graph.GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit))
     else:
@@ -157,19 +168,19 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     result_ptr = graph.Fit(fitname, "SQ", "", fit_min, fit_max)
     error_vec = result_ptr.GetConfidenceIntervals()
     #print ("error vec size = %d" % error_vec.size())
-    #f2 = graph.GetFunction("fitname").Clone()
-    f2 = graph.GetFunction(fitname).Clone()
+    f2 = graph.GetFunction("fitname").Clone()
+    #f2 = graph.GetFunction(fitname).Clone()
     f2.SetLineColor(1+count)
     f2.SetLineWidth(2)
     #for i in range (fit_min, fit_max):
       #print("bin = %d, Obeserve = %.2f , Expect = %.2f\n" % (i, graph.Eval(i), f2.Eval(i)) )
       #print("bin = %d, Obeserve = %.2f , Expect = %.2f , error %.2f \n" % (i, graph.Eval(i), f2.Eval(i), error_vec.at(i-fit_min)) )
-    if error_vec.size() > 60 - fit_min:
-      #print f2.Eval(50), "+-", error_vec.at(50-fit_min), f2.Eval(60), "+-", error_vec.at(60-fit_min)
-      print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(50), error_vec.at(50-fit_min), f2.Eval(60), error_vec.at(60-fit_min))
-    if error_vec.size() <= 60 - fit_min:
+    #if error_vec.size() >= PU - fit_min:
+      #print f2.Eval(50), "(PU50)+-", error_vec.at(50-fit_min), f2.Eval(56), "(PU56)+-", error_vec.at(56-fit_min), f2.Eval(62), "(PU62)+-", error_vec.at(62-fit_min)
+      #print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(57), error_vec.at(57-fit_min), f2.Eval(61), error_vec.at(61-fit_min))
+    #if error_vec.size() < PU - fit_min:
       #print f2.Eval(50), "+-", 0.00, f2.Eval(60), "+-", 0.00
-      print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(50), 0.00, f2.Eval(60), 0.00)
+      #print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(57), 0.00, f2.Eval(61), 0.00)
     minChi = f2.GetChisquare() / f2.GetNDF()
     #fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
     fun = "Fit = %f*x + %f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
@@ -178,10 +189,16 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     #print("NDF = ", f2.GetNDF())
     #print fun
     f2_2 = f2.Clone("dashline2")
-    f2_2.SetRange(fit_max, plot_max)
+    #f2_2.SetRange(fit_max, plot_max)
+    f2_2.SetRange(plot_min, plot_max)
     f2_2.SetLineStyle(5)
     f2_2.Draw("same")
-    key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(60-fit_min), minChi)
+    if config == 2017:
+        #key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
+        key = "Rate(PU=%d): %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), minChi)
+    if config == 2018:
+	#key = ""
+        key = "Rate: %.2f +- %.2f @PU50, %.2f +- %.2f @PU56, %.2f +- %.2f @PU62" %(f2_2.Eval(50), error_vec.at(50-fit_min), f2_2.Eval(56), error_vec.at(56-fit_min), f2_2.Eval(62), error_vec.at(62-fit_min))
     #tex = ROOT.TLatex(0.15, 0.75, fun)
     #tex.SetNDC()
     #tex.SetTextAlign(13)
@@ -192,7 +209,7 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     # tex.Draw()
 
     if key is not None:
-        tex = ROOT.TLatex(0.3, 0.85, key)
+        tex = ROOT.TLatex(0.15, 0.85, key)
         tex.SetNDC()
         tex.SetTextFont(61)
         tex.SetTextSize(0.055)
@@ -226,15 +243,21 @@ def DrawL1(key, pattern):
         l_PU.SetLineColor(2)
         l_PU.SetLineWidth(2)
         l_PU.Draw()
-        #l56 = ROOT.TLine(50, 0, 50, maxy)
-        #l56.SetLineColor(2)
-        #l56.SetLineWidth(2)
-        #l56.Draw()
-        #l60 = ROOT.TLine(60, 0, 60, maxy)
-        #l60.SetLineColor(2)
-        #l60.SetLineColor(2)
-        #l60.SetLineWidth(2)
-        #l60.Draw()
+
+    if config == 2018:
+        l_1 = ROOT.TLine(50, 0, 50, maxy)
+        l_1.SetLineColor(2)
+        l_1.SetLineWidth(2)
+        l_1.Draw()
+        l_2 = ROOT.TLine(56, 0, 56, maxy)
+        l_2.SetLineColor(2)
+        l_2.SetLineWidth(2)
+        l_2.Draw()
+        l_3 = ROOT.TLine(62, 0, 62, maxy)
+        l_3.SetLineColor(2)
+        l_3.SetLineWidth(2)
+        l_3.Draw()
+
 
     tex = ROOT.TLatex(0.2, 0.3, "%d Thresholds" % config)
     tex.SetNDC()

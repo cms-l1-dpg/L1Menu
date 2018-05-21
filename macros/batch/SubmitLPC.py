@@ -18,25 +18,24 @@ DelDir = None #Auto pick up by CMSSW_BASE
 tempdir = '/uscms_data/d3/huiwang/condor_temp'
 ProjectName = "Menu2017"
 DryRun = False
-splitline = 50
+splitline = 1
 DelExe    = 'testMenu2016'
-#OutDir = '/store/user/benwu/L1MenuStage2/Menu2017'
 OutDir = '/store/user/huiwang/L1Menu2017'
-Analysis  = 'fill_6356_6360_Prescale_2018_v0_1_0_Col_1.0_407'
-#Analysis  = 'v2.2_menu_2.2_v96p20_v8_run_301912_to_302029_ignor_ps'
+Analysis  = 'run_316216_nanodst_Prescale_2018_v1_0_0_Col_2.0'
+#Analysis  = 'fill_6358_nanodst_Prescale_2018_v1_0_0_Col_2.0'
+#Analysis  = 'run_306125_and_306154_zb_Med_Prescale_2018_v0_2_0_Col_1.6'
 MenuFile = [
   #"menu/Prescale_Sets_RUN_306091_col_1.6.txt"
   #"menu/Prescale_2018_v0_col_1.6.txt"
-  "menu/Prescale_2018_v0_1_0_Col_1.0_HuZhen.txt"
+  "menu/Prescale_2018_v1_0_0_Col_2.0.txt"
 ]
 Ntuplelist = [
 ]
 Ntupledict = {
     # "ntuple/Trains_v95p12p2.list" : " --SelectBX \\\"[[714, 761], [1875, 1922]]\\\"  -u menu/TrainPLTZ.csv ",
-    # "ntuple/Train_v92p24.list"    : " -u menu/TrainPLTZ.csv ",
-    # "ntuple/2017Fill_v96p15.list" : " -u menu/2017_runLumi.csv ",
-    # "ntuple/fill_6061_LPC.list" : " -u menu/runlumi_fill_6061.csv ",
-    "ntuple/fill_6356_6360.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    # "ntuple/fill_6356_6360.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+     "ntuple/run_316216_nanodst.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    # "ntuple/run_306125_and_306154_zb_Med.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
 }
 GlobalOpt =  " "
 #GlobalOpt += " --SelectRun 299380"
@@ -70,9 +69,9 @@ Options = {
   #"CaloTower" : "--UseL1CaloTower",
 
 }
-#nBunches = 2544
+nBunches = 2544
 #nBunches = 1909
-nBunches = 1866
+#nBunches = 1866
 
 def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     npro =[ "%s/ntuple.tgz" % tempdir, "%s/menu.tgz" % tempdir]
