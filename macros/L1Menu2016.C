@@ -124,6 +124,7 @@ bool L1Menu2016::InitConfig()
   L1Config["UseuGTDecision"] = 0;
   L1Config["UseUnpackTree"]  = 0;
   L1Config["doScanLS"]       = 0;
+  L1Config["SetL1AcceptPS"]  = 0;
   L1Config["doBXReweight"]       = 0;
   L1Config["doBXReweight128"]       = 0;
   L1Config["doBXReweight34567"]       = 0;
@@ -589,7 +590,7 @@ bool L1Menu2016::ReadMenuTXT(std::ifstream &menufile)
     temp.comment = comline;
     temp.prescale = prescale;
 
-    if (L1Config["doCompuGT"] || (L1Config["SetNoPrescale"] && temp.prescale > 1) )
+    if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"])
       temp.prescale = 1;
 
     if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
@@ -773,7 +774,7 @@ bool L1Menu2016::ReadMenuCSV(std::ifstream &menufile)
         temp.PAG = TokenGroups(it);
       }
 
-      if (L1Config["doCompuGT"] || (L1Config["SetNoPrescale"] && temp.prescale > 1) )
+      if (L1Config["doCompuGT"] || L1Config["SetNoPrescale"])
         temp.prescale = 1;
 
       if (L1Config["IgnorePrescale"] && temp.prescale > 1 )
@@ -1000,7 +1001,10 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
     l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
 			recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_, l1uGTsel_);
     l1Plot->SetTodo(L1Config);
+    std::cout << "line 1004 start" << std::endl;
     l1Plot->PreRun(&L1Event, &mL1Seed, L1Ntuple::GetuGTAlias(fl1uGTsel));
+    //l1Plot->PreRun(&L1Event, &mL1Seed, {});		//temp solution to Aaron's ntuple, sould be commented
+    std::cout << "line 1004 end" << std::endl;
   }
 
   if (L1Config["doPrintPU"] || L1Config["SelectFill"] != -1 )
@@ -1019,14 +1023,18 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
   if (l1unpackuGT_ != NULL)
   {
     l1unpackuGT = new L1uGT( outrootfile, event_, l1unpackuGT_, &L1Event, &mL1Seed);
+    std::cout << "line 1025 start" << std::endl;
     l1unpackuGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1unpackuGT));
+    std::cout << "line 1025 end" << std::endl;
   }
 
   if (L1Config["doCompuGT"] || L1Config["UseuGTDecision"] || L1Config["doPlotuGt"])
   {
     assert(l1uGT_ != NULL);
     l1uGT = new L1uGT( outrootfile, event_, l1uGT_, &L1Event, &mL1Seed);
+    std::cout << "line 1034 start" << std::endl;
     l1uGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1uGT));
+    std::cout << "line 1034 end" << std::endl;
   }
 
 
@@ -1146,7 +1154,9 @@ bool L1Menu2016::Loop()
 
       if(event_ -> lumi != currentLumi){
         currentLumi = event_ -> lumi;
-        skipLS      = CheckLS(currentLumi);
+        //skipLS      = CheckLS(currentLumi);
+	if (L1ConfigStr["SelectLS"] != "" || L1Config["doScanLS"])
+	  skipLS      = CheckLS(currentLumi);
         if (!skipLS)
           nLumi.insert(currentLumi);
       } 
@@ -1178,7 +1188,9 @@ bool L1Menu2016::Loop()
     }
 
     //Use Final decision by default, unless for PlotLS
-    if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
+    //if (l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"]))
+    //In case using L1Accept, don't count the Zerobias Event
+    if (L1Config["SetL1AcceptPS"] ==0 && l1unpackuGT != NULL && !l1unpackuGT->GetuGTDecision("L1_ZeroBias", L1Config["doPlotLS"])) 
       continue;
 
     nZeroBiasevents++;
@@ -1429,9 +1441,11 @@ double L1Menu2016::CalScale(int nEvents_, int nBunches_, bool print)
 
   if (L1Config["nBunches"] < 0)
   {
-    scale = (-1.*L1Config["nBunches"])/(nLumi.size()*23.31);      
+    //scale = (-1.*L1Config["nBunches"])/(nLumi.size()*23.31);
+    scale = (-1.*L1Config["nBunches"] * L1Config["SetL1AcceptPS"])/(nLumi.size()*23.31);
     if (print)
-      std::cout << "Scale by "   << "("<< -1. * L1Config["nBunches"] <<")/(nLumi*23.31) with nLumi = " << nLumi.size()      << std::endl;
+      //std::cout << "Scale by "   << "("<< -1. * L1Config["nBunches"] <<")/(nLumi*23.31) with nLumi = " << nLumi.size()      << std::endl;
+      std::cout << "Scale by "   << "("<< -1. * L1Config["nBunches"] <<"* L1AcceptPS )/(nLumi*23.31) with L1AcceptPS = "<< L1Config["SetL1AcceptPS"] <<" nLumi = " << nLumi.size()  << std::endl;
   } else {
     scale = 11246.; // ZB per bunch in Hz
     //scale /= nZeroBiasevents*1000.; // in kHz
