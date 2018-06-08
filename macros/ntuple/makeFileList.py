@@ -7,7 +7,7 @@ EOS = None
 
 hostname = socket.gethostname()
 if "lxplus" in hostname:
-    EOS = "/afs/cern.ch/project/eos/installation/0.3.84-aquamarine/bin/eos.select"
+    EOS = "eos root://eoscms.cern.ch"
 if "fnal.gov" in hostname:
     EOS = "eos root://cmseos.fnal.gov"
 
