@@ -1,11 +1,11 @@
 L1TMenu
 =======
 
-## HowToL1TriggerMenu twiki: https://twiki.cern.ch/twiki/bin/view/CMS/HowToL1TriggerMenu
+### HowToL1TriggerMenu twiki:
+### https://twiki.cern.ch/twiki/bin/view/CMS/HowToL1TriggerMenu
 You can find useful information, like how to customise seeds, how to make menulib and locations of ntuples and so on
 
 ### Checkout the code
-
 <pre><code>
 cmsrel CMSSW_9_2_15
 cd CMSSW_9_2_15/src
@@ -17,7 +17,6 @@ make -j 8
 ### Pick your preferred ntuple (ntuple location is in the twiki) 
 nanoDST ntuple is recommended for rate study because it has much more statistics
 Need to use ZeroBias ntuple if you want to run emulation 
-
 <pre><code>
  cd ntuple
 ./makeFileList.py your_ntuple_location
@@ -27,7 +26,6 @@ Need to use ZeroBias ntuple if you want to run emulation
 This is important, because 2018 ntuples are produced without json file. So we need to pick our preferred json file to avoid bad LS
 Also, LS vs PU information is stored in this table, which will be used later, in the rate vs PU plots
 Go to the menu folder, edit GetLumi.py with the run number of your ntuple 
-
 <pre><code>
 source GetLumi_setup.sh
 ./GetLumi.py
@@ -54,7 +52,6 @@ some useful argument:
 You can loop up the LS information table for help. For nanoDST ntuple, the LS corresponding to PU 55-57 (for col 2.0e34) sould be enough. If your ntuple does not have that high PU, you can do a linear exreapolation
 
 ### Run the code with arguments
-
 <pre><code>
 ./testMenu2016 -u menu/run_lumi.csv -m menu/Prescale_2018_v1_0_0_Col_2.0.txt -l ntuple/your_ntuple.list -o name_of_output_files -b 2544 --doPlotRate --UseUnpackTree --SelectRun your_run_number --SelectLS '[start_LS,end_LS]'
 </code></pre>
