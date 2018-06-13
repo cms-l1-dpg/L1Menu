@@ -1359,12 +1359,12 @@ bool L1Menu2016::L1SeedFunc()
     
   for(auto &L1Seed : mL1Seed)
   {
-    if (L1SeedFun.find(L1Seed.first) != L1SeedFun.end())
+/*    if (L1SeedFun.find(L1Seed.first) != L1SeedFun.end())
       continue;
 
     if(ParseL1Seed(L1Seed.first))
       continue;
-
+*/	//this part is commented, so that seeds' algo are always added from menulib, NOT L1AlgoFactory
     if (L1SeedFun_temp.find(L1Seed.first) != L1SeedFun_temp.end())
     {
       std::cout << "Add from Menulib " << L1Seed.first << std::endl;
