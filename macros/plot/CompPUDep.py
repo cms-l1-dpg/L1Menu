@@ -23,17 +23,16 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
-#foldername = "Mar27Run_306091_nanodst_Prescale_2018_v0_2_0_Col_1.6"
-#foldername = "Apr22fill_6356_6360_Prescale_2018_v1_0_0_Col_1.8_opt2"
-#foldername = "Apr22fill_6358_nanodst_Prescale_2018_v1_0_0_Col_1.8_opt2"
-foldername = "May20run_316216_nanodst_Prescale_2018_v1_0_0_Col_2.0"
+foldername = "run_316216_nanodst_HATS"
 
 fit_min = 43
 fit_max = 54
 plot_min = 0
-plot_max = 90
+plot_max = 70
 maxx = 70
-maxy = 100
+maxy = 150
+
+####	for 1866 bunches	####
 #PU = 61		#61.00 for col 1.6
 #PU = 57		#57.19 for col 1.5
 #PU = 50		#49.56 for col 1.3
@@ -41,7 +40,7 @@ maxy = 100
 
 ####	for 2544 bunches	####
 #PU = 62		#61.52 for col 2.2
-PU = 56		#55.93 for col 2.0
+PU = 56			#55.93 for col 2.0
 #PU = 50		#50.33 for col 1.8
 
 
@@ -54,7 +53,8 @@ config = 2017
 fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
 #fitname.SetParameters(0.1,0.001);
 
-filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_PU.csv"
+#filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_PU.csv"
+filedir = "/afs/cern.ch/user/h/huwang/public/" + foldername + "/*Default_PU.csv"
 
 if config == 2017:
     #nBunches = 1866
@@ -74,33 +74,7 @@ pumap = collections.defaultdict(list)
 
 PatMap = {  
     "L1APhysics" : "L1APhysics",
-    #"L1_SingleMu25" :  "L1_SingleMu25",
-    #"L1_DoubleMu_15_7" : "L1_DoubleMu_15_7",
-    #"L1_SingleEG40" : "L1_SingleEG40",
-    #"L1_SingleIsoEG32" : "L1_SingleIsoEG32",
-    #"L1_SingleIsoEG30er2p1" : "L1_SingleIsoEG30er2p1",
-    #"L1_DoubleEG_25_14" : "L1_DoubleEG_25_14",
-    #"L1_DoubleIsoTau34er2p1" : "L1_DoubleIsoTau34er2p1",
-    #"L1_SingleJet180" : "L1_SingleJet180",
-    # 'L1_DoubleJet150er2p7': 'L1_DoubleJet150er2p7',
-    # 'L1_DoubleMu_15_5_SQ': 'L1_DoubleMu_15_5_SQ',
-    # 'L1_HTT320er': 'L1_HTT320er',
-    # 'L1_HTT340er': 'L1_HTT340er',
-    # 'L1_HTT380er': 'L1_HTT380er',
-    # 'L1_HTT400er': 'L1_HTT400er',
-    # 'L1_ETMHF120': 'L1_ETMHF120',
-    # 'L1_TripleJet_105_85_76_VBF': 'L1_TripleJet_105_85_76_VBF',
-    # 'L1_TripleEG_14_10_8': 'L1_TripleEG_14_10_8',
-    # 'L1_SingleIsoEG34er2p1': 'L1_SingleIsoEG34er2p1',
-    # 'L1_SingleMu22_BMTF': 'L1_SingleMu22_BMTF',
-    # 'L1_SingleMu22_EMTF': 'L1_SingleMu22_EMTF',
-    # 'L1_SingleMu22_OMTF': 'L1_SingleMu22_OMTF',
-    # 'L1_SingleEG40er2p5': 'L1_SingleEG40er2p5',
-    # 'L1_SingleIsoEG32er2p5': 'L1_SingleIsoEG32er2p5',
-    # 'L1_EG40er2p1_Tau20er2p1_dR_Min0p3': 'L1_EG40er2p1_Tau20er2p1_dR_Min0p3',
-    # 'L1_TripleMu_0_0_0OQ_DoubleMu_0_0_OS_Mass_5to17': 'L1_TripleMu_0_0_0OQ_DoubleMu_0_0_OS_Mass_5to17',	#Hu Zhen seed 407
-    # 'L1_TripleMu_0SQ_0SQ_0OQ_DoubleMu_0SQ_0SQ_OS_Mass_5to17': 'L1_TripleMu_0SQ_0SQ_0OQ_DoubleMu_0SQ_0SQ_OS_Mass_5to17',	#Hu Zhen seed 408
-    # 'DTau': 'L1_DoubleIsoTau\d+er',
+    "L1_AlwaysTrue_copy" : "L1_AlwaysTrue_copy",
 }
 
 def DrawPU(canvas, f, l1seed, count, key=None):
@@ -127,9 +101,6 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 
     ## Draw the plot
     graph = ROOT.TGraphErrors(len(x))
-    #minx = min(x)
-    #maxx = max(x)
-    #maxyy = max(y)
 
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
         # if yy != 0 and yee/yy >0.3:
@@ -141,10 +112,6 @@ def DrawPU(canvas, f, l1seed, count, key=None):
         #print "h1->SetBinContent( %d, %f);" %(xx,yy)
         #print "h1->SetBinError( %d, %f);" %(xx,yee)
         graph.SetPointError(i, 0, yee)
-
-    #fit_p0_init = maxyy / fit_max
-    #print "maxyy = ", maxyy, "fit_p0_init = ", fit_p0_init
-    #fitname.SetParameters(fit_p0_init,0.001);
 
     graph.SetMarkerStyle(20+count)
     graph.SetMarkerSize(1.5)
@@ -167,49 +134,30 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 
     result_ptr = graph.Fit(fitname, "SQ", "", fit_min, fit_max)
     error_vec = result_ptr.GetConfidenceIntervals()
-    #print ("error vec size = %d" % error_vec.size())
+    #print ("error vec size = %d, fitted PU = %d" % (error_vec.size(), fit_max - fit_min + 1))
     f2 = graph.GetFunction("fitname").Clone()
     #f2 = graph.GetFunction(fitname).Clone()
     f2.SetLineColor(1+count)
     f2.SetLineWidth(2)
-    #for i in range (fit_min, fit_max):
-      #print("bin = %d, Obeserve = %.2f , Expect = %.2f\n" % (i, graph.Eval(i), f2.Eval(i)) )
-      #print("bin = %d, Obeserve = %.2f , Expect = %.2f , error %.2f \n" % (i, graph.Eval(i), f2.Eval(i), error_vec.at(i-fit_min)) )
-    #if error_vec.size() >= PU - fit_min:
-      #print f2.Eval(50), "(PU50)+-", error_vec.at(50-fit_min), f2.Eval(56), "(PU56)+-", error_vec.at(56-fit_min), f2.Eval(62), "(PU62)+-", error_vec.at(62-fit_min)
-      #print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(57), error_vec.at(57-fit_min), f2.Eval(61), error_vec.at(61-fit_min))
-    #if error_vec.size() < PU - fit_min:
-      #print f2.Eval(50), "+-", 0.00, f2.Eval(60), "+-", 0.00
-      #print (",%.2f,+-,%.2f,%.2f,+-,%.2f") % (f2.Eval(57), 0.00, f2.Eval(61), 0.00)
+    f2.SetRange(plot_min, fit_min)
+    f2.SetLineStyle(5)
     minChi = f2.GetChisquare() / f2.GetNDF()
     #fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
-    fun = "Fit = %f*x + %f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
-    # f2.Draw("same")
-    #print("chi2 = ", f2.GetChisquare())
-    #print("NDF = ", f2.GetNDF())
+    #fun = "Fit = %f*x + %f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
     #print fun
+    f2.Draw("same")
     f2_2 = f2.Clone("dashline2")
-    #f2_2.SetRange(fit_max, plot_max)
-    f2_2.SetRange(plot_min, plot_max)
-    f2_2.SetLineStyle(5)
+    f2_2.SetRange(fit_max, plot_max)
     f2_2.Draw("same")
     if config == 2017:
-        #key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
-        key = "Rate(PU=%d): %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), minChi)
+        if PU <= fit_max: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
+        else: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.back(), minChi)
     if config == 2018:
 	#key = ""
         key = "Rate: %.2f +- %.2f @PU50, %.2f +- %.2f @PU56, %.2f +- %.2f @PU62" %(f2_2.Eval(50), error_vec.at(50-fit_min), f2_2.Eval(56), error_vec.at(56-fit_min), f2_2.Eval(62), error_vec.at(62-fit_min))
-    #tex = ROOT.TLatex(0.15, 0.75, fun)
-    #tex.SetNDC()
-    #tex.SetTextAlign(13)
-    #tex.SetTextFont(61)
-    #tex.SetTextSize(0.04)
-    #tex.SetTextColor(ROOT.kBlue)
-    #tex.SetLineWidth(2)
-    # tex.Draw()
 
     if key is not None:
-        tex = ROOT.TLatex(0.15, 0.85, key)
+        tex = ROOT.TLatex(0.2, 0.85, key)
         tex.SetNDC()
         tex.SetTextFont(61)
         tex.SetTextSize(0.055)
@@ -217,7 +165,6 @@ def DrawPU(canvas, f, l1seed, count, key=None):
         tex.SetLineWidth(2)
         tex.Draw()
 
-    # leg.Draw()
     canvas.Update()
 
 
@@ -258,17 +205,7 @@ def DrawL1(key, pattern):
         l_3.SetLineWidth(2)
         l_3.Draw()
 
-
-    tex = ROOT.TLatex(0.2, 0.3, "%d Thresholds" % config)
-    tex.SetNDC()
-    tex.SetTextAlign(13)
-    tex.SetTextFont(61)
-    tex.SetTextSize(0.04)
-    tex.SetTextColor(ROOT.kBlue)
-    tex.SetLineWidth(2)
-    # tex.Draw()
     c1.SetGrid()
-
 
     box = ROOT.TBox(10, 8, 70, 12)
     box.SetFillColor(38)
