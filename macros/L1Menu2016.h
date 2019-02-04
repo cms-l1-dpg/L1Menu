@@ -100,6 +100,7 @@ class L1Menu2016 : public L1AlgoFactory
     bool CheckLS(unsigned int currentLumi) const;
     bool CheckBX(unsigned int currentBX) const;
     bool BXReweightSkip(int currentBX, float firstBX);
+    bool BXReweight_is_1_to_6_47_48(int currentBX);
     bool BXReweight_is128(int currentBX);
     bool BXReweight_is34567(int currentBX);
 

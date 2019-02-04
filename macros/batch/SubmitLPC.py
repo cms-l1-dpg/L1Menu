@@ -21,21 +21,22 @@ DryRun = False
 splitline = 1
 DelExe    = 'testMenu2016'
 OutDir = '/store/user/huiwang/L1Menu2017'
-Analysis  = 'run_316216_nanodst_Prescale_2018_v1_0_0_Col_2.0'
-#Analysis  = 'fill_6358_nanodst_Prescale_2018_v1_0_0_Col_2.0'
-#Analysis  = 'run_306125_and_306154_zb_Med_Prescale_2018_v0_2_0_Col_1.6'
+#Analysis  = 'Prescale_2018_v2_0_0_Col_2.0_run_Hcal_319449_and_319450_new'
+Analysis  = 'fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_1.5_48b_test'
+#Analysis  = 'Marco_Official_collision_V3_menu_prescale_Col_2.0_run_317648_and_317649'
 MenuFile = [
   #"menu/Prescale_Sets_RUN_306091_col_1.6.txt"
-  #"menu/Prescale_2018_v0_col_1.6.txt"
-  "menu/Prescale_2018_v1_0_0_Col_2.0.txt"
+  "menu/Prescale_2018_v2_1_0_Col_1.5.txt"
+  #"menu/Marco_Official_collision_V3_menu_prescale_Col_2.0.txt"
 ]
 Ntuplelist = [
 ]
 Ntupledict = {
     # "ntuple/Trains_v95p12p2.list" : " --SelectBX \\\"[[714, 761], [1875, 1922]]\\\"  -u menu/TrainPLTZ.csv ",
     # "ntuple/fill_6356_6360.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
-     "ntuple/run_316216_nanodst.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
-    # "ntuple/run_306125_and_306154_zb_Med.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    # "ntuple/run_316216_nanodst.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    # "ntuple/run_Hcal317527_new.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+     "ntuple/fill_7118_nanoDST_shifter.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
 }
 GlobalOpt =  " "
 #GlobalOpt += " --SelectRun 299380"
@@ -43,7 +44,7 @@ GlobalOpt =  " "
 #GlobalOpt += " --IgnorePrescale"
 #GlobalOpt += " --doScanLS --SelectLS '[151,200]' "
 #GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --IgnorePrescale"
-GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree"
+GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --doBXReweight_1_to_6_47_48"
 #GlobalOpt += " --doPlotRate --doPrintPU"
 #GlobalOpt += " --SelectCol 1.8E34 "
 Options = {
@@ -69,9 +70,10 @@ Options = {
   #"CaloTower" : "--UseL1CaloTower",
 
 }
-nBunches = 2544
-#nBunches = 1909
+#nBunches = 2544
+nBunches = 424
 #nBunches = 1866
+
 
 def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     npro =[ "%s/ntuple.tgz" % tempdir, "%s/menu.tgz" % tempdir]
