@@ -31,6 +31,8 @@ plot_min = 0
 plot_max = 70
 maxx = 70
 maxy = 200
+
+####	for 1866 bunches	####
 #PU = 61		#61.00 for col 1.6
 #PU = 57		#57.19 for col 1.5
 #PU = 50		#49.56 for col 1.3

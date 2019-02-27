@@ -1002,10 +1002,10 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
     l1Plot = new L1Plot(outrootfile, event_, upgrade_, recoJet_,
 			recoSum_, recoEle_, recoMuon_, recoTau_, recoFilter_, l1CaloTower_, recoVtx_, l1uGTsel_);
     l1Plot->SetTodo(L1Config);
-    std::cout << "line 1004 start" << std::endl;
+    //std::cout << "line 1004 start" << std::endl;
     l1Plot->PreRun(&L1Event, &mL1Seed, L1Ntuple::GetuGTAlias(fl1uGTsel));
     //l1Plot->PreRun(&L1Event, &mL1Seed, {});		//temp solution to Aaron's ntuple, sould be commented
-    std::cout << "line 1004 end" << std::endl;
+    //std::cout << "line 1004 end" << std::endl;
   }
 
   if (L1Config["doPrintPU"] || L1Config["SelectFill"] != -1 )
@@ -1024,9 +1024,9 @@ bool L1Menu2016::PreLoop(std::map<std::string, float> &config, std::map<std::str
   if (l1unpackuGT_ != NULL)
   {
     l1unpackuGT = new L1uGT( outrootfile, event_, l1unpackuGT_, &L1Event, &mL1Seed);
-    std::cout << "line 1025 start" << std::endl;
+    //std::cout << "line 1025 start" << std::endl;
     l1unpackuGT->GetTreeAlias(L1Ntuple::GetuGTAlias(fl1unpackuGT));
-    std::cout << "line 1025 end" << std::endl;
+    //std::cout << "line 1025 end" << std::endl;
   }
 
   if (L1Config["doCompuGT"] || L1Config["UseuGTDecision"] || L1Config["doPlotuGt"])
