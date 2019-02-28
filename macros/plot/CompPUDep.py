@@ -23,44 +23,59 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
+foldername = "Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0"
 
-label = "ZeroBias"
-PU = 35
+fit_min = 31
+fit_max = 55
+plot_min = 0
+plot_max = 70
+maxx = 70
+maxy = 200
+
+####	for 1866 bunches	####
+#PU = 61		#61.00 for col 1.6
+#PU = 57		#57.19 for col 1.5
+#PU = 50		#49.56 for col 1.3
+#PU = 38		#38.12 for col 1.0
+
+####	for 2544 bunches	####
+#PU = 62		#61.52 for col 2.2
+PU = 60
+#PU = 56		#55.93 for col 2.0
+#PU = 50		#50.33 for col 1.8
+
+
 freq = 11245.6
 config = 2017
-filedir = "Nov192017EGTT28_v2/*CaloTower_PU.csv"
-maxy = 40
-if config == 2016:
-    nBunches = 2208
-    unit = "kHz"
+#config = 2018
+
+#fitname = "pol4"
+#fitname = "expo"
+fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
+#fitname.SetParameters(0.1,0.001);
+
+filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_PU.csv"
+#filedir = "/uscms_data/d3/huiwang/CMSSW_9_2_2/src/L1TriggerDPG/L1Menu/macros/results/Prescale_2018_v1_0_0_Col_2.0_Pure_Rate_run_Hcal_319449_and_319450_new_v2_emulate_PU.csv"
+
 if config == 2017:
-    nBunches = 2592
+    #nBunches = 1866
+    nBunches = 2544
+    #nBunches = 424
+    unit = "kHz"
+
+if config == 2018:
+    nBunches = 2544
     unit = "kHz"
 
 if config == 1:
     nBunches = 1
     unit = "Hz"
 
-pubins = np.arange(11,60, 1)
+pubins = np.arange(plot_min,plot_max, 1)
 pumap = collections.defaultdict(list)
 
 PatMap = {  
-    # "EG" :  "L1_StrategyEG[34]\d+",
-    "ETM" : "L1_ETM\d+",
-    # "HTT" : "L1_HTT[23]\d+",
-    # "DEGHTT" : "L1_DoubleEG6_HTT.*",
-    # "dPhi80" : "L1_ETM\d+_Jet80_dPhi_Min0p4",
-    # "dPhi60" : "L1_ETM\d+_Jet60_dPhi_Min0p4",
-    # "dETM80" : "L1_ETM80_Jet\d+_dPhi_Min0p4",
-    # "dETM100" : "L1_ETM100_Jet\d+_dPhi_Min0p4",
-    # 'Mu6HTT': 'L1_Mu6_HTT2\d+',
-    # 'Mu8HTT': 'L1_Mu8_HTT2\d+',
-    # 'Mu5EG': 'L1_Mu5_EG2\d+',
-    # 'Mu6EG': 'L1_Mu6_EG2\d+',
-    # 'DMu': 'L1_DoubleMu0er.*_dEta_Max1p8_OS',
-    # 'DEG12': 'L1_DoubleEG_\d+_12',
-    # 'DEG25': 'L1_DoubleEG_25_\d+',
-    # 'DTau': 'L1_DoubleIsoTau\d+er',
+    "L1APhysics" : "L1APhysics",
 }
 
 def DrawPU(canvas, f, l1seed, count, key=None):
@@ -87,13 +102,16 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 
     ## Draw the plot
     graph = ROOT.TGraphErrors(len(x))
-    minx = min(x)
-    maxx = max(x)
 
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
         # if yy != 0 and yee/yy >0.3:
             # continue
+	#if i == 22 or i == 23 or i == 24:
+	    # continue
         graph.SetPoint(i, xx, yy)
+	#print (i,xx,yy,yee)
+        #print "h1->SetBinContent( %d, %f);" %(xx,yy)
+        #print "h1->SetBinError( %d, %f);" %(xx,yee)
         graph.SetPointError(i, 0, yee)
 
     graph.SetMarkerStyle(20+count)
@@ -107,7 +125,7 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     if count == 0:
         graph.Draw("AP")
         graph.GetXaxis().SetTitle("PileUp")
-        graph.GetXaxis().SetLimits(10, 70)
+        graph.GetXaxis().SetLimits(plot_min, maxx)
         graph.GetYaxis().SetRangeUser(0, maxy)
         graph.GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit))
     else:
@@ -115,39 +133,39 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     canvas.Update()
     leg.AddEntry(graph, l1seed, "p")
 
-    ## Pol2
-    fitname = "pol2"
-    graph.Fit(fitname, "Q", "", minx, max(x))
-    f2 = graph.GetFunction(fitname).Clone()
+    result_ptr = graph.Fit(fitname, "SQ", "", fit_min, fit_max)
+    error_vec = result_ptr.GetConfidenceIntervals()
+    print ("error vec size = %d, fitted PU = %d" % (error_vec.size(), fit_max - fit_min + 1))
+    f2 = graph.GetFunction("fitname").Clone()
+    #f2 = graph.GetFunction(fitname).Clone()
     f2.SetLineColor(1+count)
     f2.SetLineWidth(2)
-    fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
-    # f2.Draw("same")
+    f2.SetRange(plot_min, fit_min)
+    f2.SetLineStyle(5)
+    minChi = f2.GetChisquare() / f2.GetNDF()
+    #fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
+    #fun = "Fit = %f*x + %f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
+    #print fun
+    f2.Draw("same")
     f2_2 = f2.Clone("dashline2")
-    f2_2.SetRange(minx, 70)
-    f2_2.SetLineStyle(5)
-    # f2_2.Draw("same")
-    key = "Rate(PU=%d): %.1f" % (PU, f2_2.Eval(PU))
-    tex = ROOT.TLatex(0.15, 0.75, fun)
-    tex.SetNDC()
-    tex.SetTextAlign(13)
-    tex.SetTextFont(61)
-    tex.SetTextSize(0.04)
-    tex.SetTextColor(ROOT.kBlue)
-    tex.SetLineWidth(2)
-    # tex.Draw()
-
+    f2_2.SetRange(fit_max, plot_max)
+    f2_2.Draw("same")
+    if config == 2017:
+        if PU <= fit_max: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
+        else: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.back(), minChi)
+    if config == 2018:
+	#key = ""
+        key = "Rate: %.2f +- %.2f @PU50, %.2f +- %.2f @PU56, %.2f +- %.2f @PU62" %(f2_2.Eval(50), error_vec.at(50-fit_min), f2_2.Eval(56), error_vec.at(56-fit_min), f2_2.Eval(62), error_vec.at(62-fit_min))
 
     if key is not None:
-        tex = ROOT.TLatex(0.55, 0.85, key)
+        tex = ROOT.TLatex(0.2, 0.85, key)
         tex.SetNDC()
         tex.SetTextFont(61)
-        tex.SetTextSize(0.045)
+        tex.SetTextSize(0.055)
         tex.SetTextColor(ROOT.kGreen+2)
         tex.SetLineWidth(2)
-        # tex.Draw()
+        tex.Draw()
 
-    # leg.Draw()
     canvas.Update()
 
 
@@ -161,64 +179,43 @@ def DrawL1(key, pattern):
     for x in [x for x in pd.unique(df.L1Seed)]:
         if pat.match(x):
             inputlist.append(x)
-    print key, " : ",  inputlist
+    #print key, " : ",  inputlist
+    print key,
 
     for i, seed in enumerate(inputlist):
         DrawPU(c1, df, seed, i)
     leg.Draw()
 
-    if config == 2016:
-        l37 = ROOT.TLine(37, 0, 37, maxy)
-        l37.SetLineColor(2)
-        l37.SetLineWidth(2)
-        l37.Draw()
-        l40 = ROOT.TLine(40, 0, 40, maxy)
-        l40.SetLineColor(2)
-        l40.SetLineWidth(2)
-        l40.Draw()
-        l47 = ROOT.TLine(47, 0, 47, maxy)
-        l47.SetLineColor(2)
-        l47.SetLineWidth(2)
-        l47.Draw()
-        l52 = ROOT.TLine(52, 0, 52, maxy)
-        l52.SetLineColor(2)
-        l52.SetLineWidth(2)
-        l52.Draw()
-
     if config == 2017:
-        l47 = ROOT.TLine(47, 0, 47, maxy)
-        l47.SetLineColor(2)
-        l47.SetLineWidth(2)
-        l47.Draw()
-        l55 = ROOT.TLine(55, 0, 55, maxy)
-        l55.SetLineColor(2)
-        l55.SetLineWidth(2)
-        l55.Draw()
-        l60 = ROOT.TLine(60, 0, 60, maxy)
-        l60.SetLineColor(2)
-        l60.SetLineColor(2)
-        l60.SetLineWidth(2)
-        l60.Draw()
+        l_PU = ROOT.TLine(PU, 0, PU, maxy)
+        l_PU.SetLineColor(2)
+        l_PU.SetLineWidth(2)
+        l_PU.Draw()
 
-    tex = ROOT.TLatex(0.2, 0.3, "%d Thresholds" % config)
-    tex.SetNDC()
-    tex.SetTextAlign(13)
-    tex.SetTextFont(61)
-    tex.SetTextSize(0.04)
-    tex.SetTextColor(ROOT.kBlue)
-    tex.SetLineWidth(2)
-    # tex.Draw()
+    if config == 2018:
+        l_1 = ROOT.TLine(50, 0, 50, maxy)
+        l_1.SetLineColor(2)
+        l_1.SetLineWidth(2)
+        l_1.Draw()
+        l_2 = ROOT.TLine(56, 0, 56, maxy)
+        l_2.SetLineColor(2)
+        l_2.SetLineWidth(2)
+        l_2.Draw()
+        l_3 = ROOT.TLine(62, 0, 62, maxy)
+        l_3.SetLineColor(2)
+        l_3.SetLineWidth(2)
+        l_3.Draw()
+
     c1.SetGrid()
-
 
     box = ROOT.TBox(10, 8, 70, 12)
     box.SetFillColor(38)
     box.SetFillStyle(3002)
 
     c1.Update()
-    c1.SaveAs("plots/%s_%d.root" % (key, config))
-    c1.SaveAs("plots/%s_%d.png" % (key, config))
-    c1.SaveAs("plots/%s_%d.pdf" % (key, config))
+    #c1.SaveAs("plots/%s_%d_%s_PU%d.root" % (key, config, foldername, PU))
+    c1.SaveAs("plots/%s_%d_%s_PU%d.png" % (key, config, foldername, PU))
+    #c1.SaveAs("plots/%s_%d_%s_PU%d.pdf" % (key, config, foldername, PU))
 
 if __name__ == "__main__":
     allfiles = glob.glob(filedir)
@@ -233,17 +230,17 @@ if __name__ == "__main__":
     df = pd.concat(flist)
 
     ## Redefine PatMap for each L1Seed in the dataframe
-    # PatMap = {k:k for k in pd.unique(df.L1Seed)}
+    #PatMap = {k:k for k in pd.unique(df.L1Seed)}
 
     ROOT.gStyle.SetOptStat(000000000)
     tdrstyle.setTDRStyle()
     c1 = ROOT.TCanvas("fd","Fdf", 1200, 1000)
-    leg = ROOT.TLegend(0.1711409,0.5412262,0.4714765,0.9238901)
+    leg = ROOT.TLegend(0.15,0.7,0.45,0.75)
     leg.SetFillColor(0)
-    leg.SetBorderSize(0)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)
     leg.SetTextFont(62)
+    leg.SetTextSize(0.05)
     for k, v in PatMap.items():
         DrawL1(k, v)
         # wait()

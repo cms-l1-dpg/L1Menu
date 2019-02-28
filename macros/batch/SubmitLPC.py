@@ -4,103 +4,78 @@
 import os
 import time
 import glob
+import copy
 import re
 import subprocess
 import tarfile
 import time
+import shutil
+from collections import defaultdict
 
 ###############################
 DelDir = None #Auto pick up by CMSSW_BASE
-tempdir =None
-ProjectName = None
+#tempdir = '/uscmst1b_scratch/lpc1/lpctrig/benwu/CondorTemp'
+tempdir = '/uscms_data/d3/huiwang/condor_temp'
+ProjectName = "Menu2017"
 DryRun = False
+splitline = 1
 DelExe    = 'testMenu2016'
-OutDir = '/store/user/benwu/L1MenuStage2/TSGv4'
-Analysis  = 'test'
+OutDir = '/store/user/huiwang/L1Menu2017'
+#Analysis  = 'Prescale_2018_v2_0_0_Col_2.0_run_Hcal_319449_and_319450_new'
+Analysis  = 'fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_1.5_48b_test'
+#Analysis  = 'Marco_Official_collision_V3_menu_prescale_Col_2.0_run_317648_and_317649'
 MenuFile = [
-  #"menu/Menu_MuonStudy.txt",
-  #"menu/Menu_None.txt"
-  #"menu/Menu_259721_TSGv4_Riccardo.txt"
-  # "menu/Menu_259721_TSGv4_Prescales.txt",
-  # "menu/Menu_259721_TSGv3_FixPre_EG.txt",
-  "menu/Menu_259721_TSGv4_FixPre.txt",
-  # "menu/Menu_ETMStudy.txt",
+  #"menu/Prescale_Sets_RUN_306091_col_1.6.txt"
+  "menu/Prescale_2018_v2_1_0_Col_1.5.txt"
+  #"menu/Marco_Official_collision_V3_menu_prescale_Col_2.0.txt"
 ]
 Ntuplelist = [
-  #"ntuple/r259721_tsgv4Latest.list"
-  # "ntuple/r259721_tsgv3.list",
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSG-v4 ~~~~~
-    #"ntuple/MC10PU_tsgv4.list",
-    #"ntuple/MC20PU_tsgv4.list",
-    #"ntuple/MC30PU_tsgv4.list",
-    #"ntuple/MC40PU_tsgv4.list",
-    #"ntuple/MC50PU_tsgv4.list",
-    #"ntuple/r258425_tsgv4.list",
-    #"ntuple/r258427_tsgv4.list",
-    #"ntuple/r258428_tsgv4.list",
-    #"ntuple/r258434_tsgv4.list",
-    #"ntuple/r258440_tsgv4.list",
-    #"ntuple/r258445_tsgv4.list",
-    #"ntuple/r258448_tsgv4.list",
-    #"ntuple/r259626_tsgv4.list",
-    #"ntuple/r259721_tsgv4.list",
-    "ntuple/r259721_tsgv4ZB1.list",
-    # "ntuple/SingleMuZmu_tsgv4.list",
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ TSGv4-METFix ~~~~~
-  #"ntuple/r259721_tsgv4METfix.list",
-  #"ntuple/r259721_tsgv4.list",
-  #"ntuple/r259721_gomber.list",
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Integration v19 ~~~~~
-  #"ntuple/r258440_itgv19Layer1.list",
-  #"ntuple/r258440_itgv19.list",
-  #"ntuple/r259626_itgv19Layer1.list",
-  #"ntuple/r259626_itgv19.list",
-  #"ntuple/r259721_itgv19Layer1.list",
-  # "ntuple/r259721_itgv19.list",
-  # "ntuple/SingleMuZmu_itgv19Layer1.list",
-  # "ntuple/SingleMuZmu_itgv19.list",
 ]
+Ntupledict = {
+    # "ntuple/Trains_v95p12p2.list" : " --SelectBX \\\"[[714, 761], [1875, 1922]]\\\"  -u menu/TrainPLTZ.csv ",
+    # "ntuple/fill_6356_6360.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    # "ntuple/run_316216_nanodst.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    # "ntuple/run_Hcal317527_new.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+     "ntuple/fill_7118_nanoDST_shifter.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+}
 GlobalOpt =  " "
-GlobalOpt += " --doPlotEff"
-GlobalOpt += " --doPlotRate"
-GlobalOpt += " --doPlotTest"
+#GlobalOpt += " --SelectRun 299380"
+#GlobalOpt += " --SetNoPrescale"
+#GlobalOpt += " --IgnorePrescale"
+#GlobalOpt += " --doScanLS --SelectLS '[151,200]' "
+#GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --IgnorePrescale"
+GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --doBXReweight_1_to_6_47_48"
 #GlobalOpt += " --doPlotRate --doPrintPU"
-# GlobalOpt = " --doPrintPU"
+#GlobalOpt += " --SelectCol 1.8E34 "
 Options = {
-  #None:""
-  "test" : "-n 10000"
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Muon ER Study ~~~~~
-  #"MuER0p8" : "--SetMuonER 0.8",
-  #"MuER1p2" : "--SetMuonER 1.25",
-  #"MuER1p5" : "--SetMuonER 1.5",
-  #"MuER1p8" : "--SetMuonER 1.8",
-  #"MuER2p0" : "--SetMuonER 2.0",
-  #"MuER2p1" : "--SetMuonER 2.1",
-  #"MuER2p2" : "--SetMuonER 2.2",
-  #"MuER2p3" : "--SetMuonER 2.3",
-  #"MuER2p4" : "--SetMuonER 2.4",
-  #"MuER2p5" : "--SetMuonER 2.5",
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Muon Turn on Study ~~~~~
-  #"r258425" : "--SelectRun 258425",
-  #"r258427" : "--SelectRun 258427",
-  #"r258428" : "--SelectRun 258428",
-  #"r258434" : "--SelectRun 258434",
-  #"r258440" : "--SelectRun 258440",
-  #"r258445" : "--SelectRun 258445",
-  #"r258448" : "--SelectRun 258448",
-  #"r259626" : "--SelectRun 259626",
-  #"r259721" : "--SelectRun 259721",
+  "Default"    : "",
+  # None:" "
+    #"MenuPU2t"    : " --doPrintPU --IgnorePrescale --SelectCol 2.01 ",
+    # "MenuPU2p2"  : " --doPrintPU --IgnorePrescale --SelectCol 2.20 ",
+    # "MenuPU2"    : " --doPrintPU --IgnorePrescale --SelectCol 2.00 ",
+    #"MenuPU1p8t"  : " --doPrintPU --IgnorePrescale --SelectCol 1.81 ",
+    # "MenuPU1p8"  : " --doPrintPU --IgnorePrescale --SelectCol 1.80 ",
+    # "MenuPU1p81" : " --doPrintPU --IgnorePrescale --SelectCol 1.81 ",
+    # "EmuPU"      : " --doPrintPU --SetNoPrescale  --SelectCol 2.00 ",
+    # "UnpackPU"   : " --doPrintPU --UseUnpackTree --SetNoPrescale  --SelectCol 2.00 ",
+    #"Scan44PU" : " --doScanLS --SelectLS \"[151, 200]\" ",    #44PU
+    # "Scan38PU" : " --doScanLS --SelectLS \\\"[365,395]\\\" ", #38PU
+    # "Scan45PU" : " --doScanLS --SelectLS \\\"[209,233]\\\" ", #45PU
+    # "Scan47PU" : " --doScanLS --SelectLS \\\"[175,193]\\\" ", #47PU
+    # # "Scan50PU" : " --doScanLS --SelectLS \\\"[126,144]\\\" ", #50PU
+    # "Scan33p9PU" : " --doScanLS --SelectLS \\\"[520,530]\\\" ", #33.9PU
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ MET Cross Check ~~~~~
-  #"Default"    : "",
   #"Bitwise"    : "--UseUpgradeLyr1",
   #"CaloTower" : "--UseL1CaloTower",
 
 }
-nBunches = 3963.7
+#nBunches = 2544
+nBunches = 424
+#nBunches = 1866
 
-def CondorSub(Analysis, Menu, Ntuple, Option):
+
+def CondorSub(Analysis, Menu, Ntuple, Option, cnt):
     npro =[ "%s/ntuple.tgz" % tempdir, "%s/menu.tgz" % tempdir]
     npro.append( DelExe )
 
@@ -109,7 +84,9 @@ def CondorSub(Analysis, Menu, Ntuple, Option):
     with open(RunHTFile, "wt") as outfile:
         for line in open("%s/RunExe.csh" % os.path.dirname(os.path.realpath(__file__)), "r"):
             #line = line.replace("DELDIR", os.environ['PWD'])
-            line = line.replace("DELDIR", os.environ['CMSSW_BASE'])
+            #line = line.replace("DELDIR", os.environ['CMSSW_BASE'])
+            line = line.replace("DELSCR", os.environ['SCRAM_ARCH'])
+            line = line.replace("DELDIR", os.environ['CMSSW_VERSION'])
             line = line.replace("DELEXE", DelExe.split('/')[-1])
             line = line.replace("OUTDIR", OutDir)
             outfile.write(line)
@@ -130,7 +107,7 @@ def CondorSub(Analysis, Menu, Ntuple, Option):
        return
 
     tranferfiles = ", ".join(npro)
-    arg = "\nArguments = %s \n Queue\n" % arg
+    arg = "\nArguments = %s \n Queue %d\n" % (arg, cnt)
     ## Prepare the condor file
     condorfile = tempdir + "/" + "condor_" + ProjectName
     with open(condorfile, "wt") as outfile:
@@ -160,7 +137,7 @@ def my_process():
         pass
 
     ProjectName = time.strftime('%b%d') + Analysis
-    tempdir = '/tmp/' + os.getlogin() + "/" + ProjectName +  "/"
+    tempdir += '/' + os.getlogin() + "/" + ProjectName +  "/"
     try:
         os.makedirs(tempdir)
     except OSError:
@@ -168,28 +145,79 @@ def my_process():
     ## Create the output directory
     OutDir = OutDir +  "/" + ProjectName + "/"
     try:
-        os.makedirs(OutDir)
+        #os.makedirs(OutDir)
+	subprocess.call("eos root://cmseos.fnal.gov mkdir -p %s" % OutDir, shell=True)
     except OSError:
         pass
 
     curdir = os.path.abspath(os.path.curdir)
     os.chdir(os.path.dirname(os.path.realpath(__file__)))
     os.chdir("../")
-    subprocess.call("tar -czf %s/ntuple.tgz ntuple/" % tempdir, shell=True)
     subprocess.call("tar -czf %s/menu.tgz menu/" % tempdir, shell=True)
+
+    tupleDict=SplitNtuple()
+    os.chdir(tempdir)
+    subprocess.call("tar -czf %s/ntuple.tgz ntuple" % tempdir, shell=True)
+
     os.chdir(curdir)
 
     for menu in MenuFile:
-        for ntuple in Ntuplelist:
+        for ntuple, nopt in tupleDict.items():
             for opt in Options.items():
-                #print Analysis, menu, ntuple, opt
-                CondorSub(Analysis, menu, ntuple, opt)
+                lopt = list(copy.copy(opt))
+                lopt[1] += nopt["opt"]
+                # print Analysis, menu, ntuple, opt
+                CondorSub(Analysis, menu, ntuple, tuple(lopt), nopt["cnt"])
+
+
+def SplitNtuple():
+    global Ntupledict
+
+    filelistdir = tempdir + '/' + "ntuple"
+    try:
+        os.makedirs(filelistdir)
+    except OSError:
+        pass
+
+    for n in Ntuplelist:
+        Ntupledict[n]=""
+
+
+    if splitline <= 0:
+        for ntuple in Ntupledict.keys():
+            shutil.copyfile(ntuple, "%s/%s" % (tempdir, ntuple))
+        return Ntupledict
+
+    splitedfiles = defaultdict(dict)
+    for ntuple, opt in Ntupledict.items():
+        f = open(ntuple, 'r')
+        lines = f.readlines()
+        lineperfile = splitline
+        fraction = len(lines) / lineperfile
+        key = os.path.splitext(ntuple)[0]
+
+        for i in range(0, fraction):
+            wlines = []
+            if i == fraction - 1 :
+                wlines = lines[lineperfile*i :]
+            else:
+                wlines = lines[lineperfile*i : lineperfile*(i+1)]
+            if len(wlines) > 0:
+                outf = open("%s/%s_%d.list" % (tempdir, key, i), 'w')
+                outf.writelines(wlines)
+            outf.close()
+
+        splitedfiles["%s_$(Process).list" % key] = {
+            "opt" : opt,
+            "cnt" : fraction,
+        }
+    return splitedfiles
 
 def my_CheckFile():
     global DelDir
     global DelExe
     ## Check the Delphes Dir
-    DelDir = "%s/src/L1TriggerDPG/L1Menu/macros/" % os.environ['CMSSW_BASE']
+    DelDir = "%s/src/L1TriggerDPG/L1Menu/macros" % os.environ['CMSSW_BASE']
 
     ## Check DelFill to be execute
     DelExe = DelDir + "/" + DelExe

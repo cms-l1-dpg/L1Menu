@@ -205,18 +205,20 @@ bool L1Plot::BookTestHistogram()
 //**************************************************************************//
 //                                MET Studies                               //
 //**************************************************************************//
-  hTest1F["L1MET"]      = new TH1F("L1MET","L1MET",                                  150, 0,    150);
-  hTest1F["L1METPhi"]   = new TH1F("L1METPhi","L1METPhi",                            160, -4,   4);
-  hTest1F["L1MET60Phi"] = new TH1F("L1MET60Phi","L1METPhi",                          160, -4,   4);
-  hTest1F["PFMET"]      = new TH1F("PFMET","PFMET",                                  150, 0,    150);
-  hTest1F["PFMETPhi"]   = new TH1F("PFMETPhi","PFMETPhi",                            160, -4,   4);
-  hTest1F["PFMET60Phi"] = new TH1F("PFMET60Phi","PFMET60Phi",                        160, -4,   4);
-  hTest1F["L1METPFMET"] = new TH1F("L1METPFMET","L1METPFMET;L1MET/PFMET;Events",     100, 0,    5);
-  hTest1F["PFMETVNoMu"] = new TH1F("PFMETVNoMu","PFMETVNoMu;PFMET-PFMETNoMu;Events", 200, -100, 100);
-  hTest1F["L1METx"]     = new TH1F("L1METx","L1METx",                                100, -50,  50);
-  hTest1F["L1METy"]     = new TH1F("L1METy","L1METy",                                100, -50,  50);
-  hTest1F["PFMETx"]     = new TH1F("PFMETx","PFMETx",                                100, -50,  50);
-  hTest1F["PFMETy"]     = new TH1F("PFMETy","PFMETy",                                100, -50,  50);
+  hTest1F["L1MET"]            = new TH1F("L1MET","L1MET",                                  150, 0,    150);
+  hTest1F["L1METPhi"]         = new TH1F("L1METPhi","L1METPhi",                            160, -4,   4);
+  hTest1F["L1MET60Phi"]       = new TH1F("L1MET60Phi","L1METPhi",                          160, -4,   4);
+  hTest1F["PFMET"]            = new TH1F("PFMET","PFMET",                                  150, 0,    150);
+  hTest1F["PFMETPhi"]         = new TH1F("PFMETPhi","PFMETPhi",                            160, -4,   4);
+  hTest1F["PFMET60Phi"]       = new TH1F("PFMET60Phi","PFMET60Phi",                        160, -4,   4);
+  hTest1F["L1METPFMET"]       = new TH1F("L1METPFMET","L1METPFMET;L1MET/PFMET;Events",     100, 0,    5);
+  hTest1F["PFMETVNoMu"]       = new TH1F("PFMETVNoMu","PFMETVNoMu;PFMET-PFMETNoMu;Events", 200, -100, 100);
+  hTest1F["L1METx"]           = new TH1F("L1METx","L1METx",                                100, -50,  50);
+  hTest1F["L1METy"]           = new TH1F("L1METy","L1METy",                                100, -50,  50);
+  hTest1F["PFMETx"]           = new TH1F("PFMETx","PFMETx",                                100, -50,  50);
+  hTest1F["PFMETy"]           = new TH1F("PFMETy","PFMETy",                                100, -50,  50);
+  hTest1F["L1METvsMETHF"]     = new TH1F("L1METvsMETHF","L1METvsMETHF",                    100, -50,  50);
+  hTest1F["L1METvsMETHFFrac"] = new TH1F("L1METvsMETHFFrac","L1METvsMETHFFrac",            100, -1,   1);
 
   hTest2F["L1METResVsRecoAct"] = new TH2F("L1METResVsRecoAct"," METResVsRecoAct; Reco HT activity; L1MET/PFMET", 20,  0, 1,   50, 0, 5);
   hTest2F["L1METResVsPFMET"]   = new TH2F("L1METResVsPFMET"," METResVsPFMET; Reco PFMET; L1MET/PFMET",           100, 0, 200, 50, 0, 5);
@@ -971,6 +973,7 @@ bool L1Plot::GetRecoFilter() const
 bool L1Plot::TestMETActivity()
 {
   TVector2 L1MET(0, 0);
+  TVector2 L1METHF(0, 0);
   TVector2 PFMET(0, 0);
   if (UseL1CaloTower && l1CaloTower_) {
     L1MET = GetL1METCalo();
@@ -978,10 +981,9 @@ bool L1Plot::TestMETActivity()
     for (unsigned int i = 0; i < upgrade_->sumType.size(); ++i )
     {
       if (upgrade_->sumType.at(i) == EtSumType::ETM && upgrade_->sumBx.at(i) == 0)
-      {
         L1MET.SetMagPhi(upgrade_->sumEt.at(i), upgrade_->sumPhi.at(i));
-        break;
-      }
+      if (upgrade_->sumType.at(i) == EtSumType::ETMHF && upgrade_->sumBx.at(i) == 0)
+        L1METHF.SetMagPhi(upgrade_->sumEt.at(i), upgrade_->sumPhi.at(i));
     }
   }
 
@@ -994,7 +996,10 @@ bool L1Plot::TestMETActivity()
 
   double L1Met=L1MET.Mod();
   double PFMet=PFMET.Mod();
+  double L1MHF=L1METHF.Mod();
   double RecoAct =TestRecoAct(1.6);
+  hTest1F["L1METvsMETHF"]->Fill(L1Met -L1MHF);
+  hTest1F["L1METvsMETHFFrac"]->Fill((L1Met -L1MHF)/L1Met);
 
   hTest2F["L1METResVsRecoAct"]->Fill(RecoAct, L1Met/PFMet);
   hTest2F["PFMETxVsRecoAct"] -> Fill(RecoAct, PFMET.Px());
@@ -1113,12 +1118,17 @@ bool L1Plot::TestMuon()
   
   for(UInt_t imu=0; imu < upgrade_->nMuons; imu++) {
     if (upgrade_->muonQual.at(imu) < 12) continue;
+#ifdef  L1NTUPLE_MUONCORATVTX
+    Float_t eta = upgrade_->muonEtaAtVtx.at(imu);        
+#else      // -----  not L1NTUPLE_MUONCORATVTX  -----
+    Float_t eta = upgrade_->muonEta.at(imu);        
+#endif     // -----  not L1NTUPLE_MUONCORATVTX  -----
     if(upgrade_->muonEt.at(imu) > 5)  
-      hTest2F["Mu5BxEta"] -> Fill(upgrade_->muonEta.at(imu), upgrade_->muonBx.at(imu));
+      hTest2F["Mu5BxEta"] -> Fill(eta, upgrade_->muonBx.at(imu));
     if(upgrade_->muonEt.at(imu) > 16)  
-      hTest2F["Mu16BxEta"] -> Fill(upgrade_->muonEta.at(imu), upgrade_->muonBx.at(imu));
+      hTest2F["Mu16BxEta"] -> Fill(eta, upgrade_->muonBx.at(imu));
     if(upgrade_->muonEt.at(imu) > 25)  
-      hTest2F["Mu25BxEta"] -> Fill(upgrade_->muonEta.at(imu), upgrade_->muonBx.at(imu));
+      hTest2F["Mu25BxEta"] -> Fill(eta, upgrade_->muonBx.at(imu));
   }
 
   return true;
@@ -1200,8 +1210,15 @@ float L1Plot::SingleMuEta(float ptCut, unsigned int qualmin) const
       iMuMaxPt = imu;
     }
   }
+
+  if (iMuMaxPt == -10) return -10;
   
-  return maxPt>ptCut ? upgrade_ -> muonEta.at(iMuMaxPt) : -10.; 
+#ifdef  L1NTUPLE_MUONCORATVTX
+    Float_t eta = upgrade_->muonEtaAtVtx.at(iMuMaxPt);        
+#else      // -----  not L1NTUPLE_MUONCORATVTX  -----
+    Float_t eta = upgrade_->muonEta.at(iMuMaxPt);        
+#endif     // -----  not L1NTUPLE_MUONCORATVTX  -----
+  return maxPt>ptCut ? eta : -10.; 
 }       // -----  end of function L1Plot::SingleMuEta  -----
 
 
@@ -1240,13 +1257,20 @@ float L1Plot::FillRateDoubleMu(float pt2Cut, unsigned int qualmin, float pt1Cut)
   if (mu1idx == mu2idx || mu1idx == -1 || mu2idx == -1 || mu1ptmax < pt1Cut || mu2ptmax < pt2Cut)
     return false;
 
+#ifdef  L1NTUPLE_MUONCORATVTX
+    Float_t eta1 = upgrade_->muonEtaAtVtx.at(mu1idx);        
+    Float_t eta2 = upgrade_->muonEtaAtVtx.at(mu2idx);        
+#else      // -----  not L1NTUPLE_MUONCORATVTX  -----
+    Float_t eta1 = upgrade_->muonEta.at(mu1idx);        
+    Float_t eta2 = upgrade_->muonEta.at(mu2idx);        
+#endif     // -----  not L1NTUPLE_MUONCORATVTX  -----
   if (mu2ptmax >= 0)
-    hRate1F["nDiMu0VsEta"]->Fill(upgrade_->muonEta.at(mu2idx));
+    hRate1F["nDiMu0VsEta"]->Fill(eta2);
   if (mu2ptmax >= 3)
-    hRate1F["nDiMu0VsEta"]->Fill(upgrade_->muonEta.at(mu2idx));
+    hRate1F["nDiMu0VsEta"]->Fill(eta2);
 
   hRate2F["nDiMuIdx1VsIdx2"]->Fill(upgrade_->muonTfMuonIdx.at(mu1idx), upgrade_->muonTfMuonIdx.at(mu2idx));
-  hRate2F["nDiMuEta1VsEta2"]->Fill(upgrade_->muonEta.at(mu1idx), upgrade_->muonEta.at(mu2idx));
+  hRate2F["nDiMuEta1VsEta2"]->Fill(eta1, eta2);
   return true;
 
 }       // -----  end of function L1Plot::FillRateDoubleMu  -----
@@ -1264,8 +1288,8 @@ float L1Plot::SingleEGEta(float ptCut, bool doIso) const
   for (UInt_t ue=0; ue < upgrade_ -> nEGs; ue++) {
     Int_t bx = upgrade_ -> egBx.at(ue);        		
     if (bx != 0) continue;
-    Bool_t iso = upgrade_ -> egIso.at(ue);
-    if (!iso && doIso) continue;
+    Int_t iso = upgrade_ -> egIso.at(ue);
+    if (doIso && ( iso & 1 ) == 0)  continue;
     Float_t pt = upgrade_ -> egEt.at(ue);
     if ( pt >= maxPt) 
     {

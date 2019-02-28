@@ -99,6 +99,10 @@ class L1Menu2016 : public L1AlgoFactory
     bool InitOutput();
     bool CheckLS(unsigned int currentLumi) const;
     bool CheckBX(unsigned int currentBX) const;
+    bool BXReweightSkip(int currentBX, float firstBX);
+    bool BXReweight_is_1_to_6_47_48(int currentBX);
+    bool BXReweight_is128(int currentBX);
+    bool BXReweight_is34567(int currentBX);
 
 
     bool ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_, 
@@ -196,6 +200,7 @@ class L1Menu2016 : public L1AlgoFactory
 
     // Seed, PU, count
     std::map<unsigned, std::map<unsigned, double> > DataLSPU; // mapping of PU for data
+    std::map<unsigned, unsigned> DataFillNO; // mapping of run and fill for data. Can't find fill info in L1Ntuple
 
     std::map<std::string, std::vector<int> > POGMap;
     std::map<std::string, std::vector<int> > PAGMap;
