@@ -23,14 +23,21 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
+#12b to 8b4e and 48b to 8b43
+#foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_8b"
+#foldername = "Feb02fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0_48b_test"
+
+#12b (all/5 to 10) to 48b and 48b
+#foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0"
+#foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_5to10"
 foldername = "Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0"
 
 fit_min = 31
 fit_max = 55
 plot_min = 0
-plot_max = 70
+plot_max = 60
 maxx = 70
-maxy = 200
+maxy = 100
 
 ####	for 1866 bunches	####
 #PU = 61		#61.00 for col 1.6
@@ -40,8 +47,8 @@ maxy = 200
 
 ####	for 2544 bunches	####
 #PU = 62		#61.52 for col 2.2
-PU = 60
-#PU = 56		#55.93 for col 2.0
+#PU = 100
+PU = 56		#55.93 for col 2.0
 #PU = 50		#50.33 for col 1.8
 
 
@@ -60,7 +67,7 @@ filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_
 if config == 2017:
     #nBunches = 1866
     nBunches = 2544
-    #nBunches = 424
+    #nBunches = 24
     unit = "kHz"
 
 if config == 2018:
@@ -76,6 +83,7 @@ pumap = collections.defaultdict(list)
 
 PatMap = {  
     "L1APhysics" : "L1APhysics",
+#    "SingleMu22" : "L1_SingleMu22",
 }
 
 def DrawPU(canvas, f, l1seed, count, key=None):
@@ -110,8 +118,8 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 	    # continue
         graph.SetPoint(i, xx, yy)
 	#print (i,xx,yy,yee)
-        #print "h1->SetBinContent( %d, %f);" %(xx,yy)
-        #print "h1->SetBinError( %d, %f);" %(xx,yee)
+        print "h1->SetBinContent( %d, %f);" %(xx,yy)
+        print "h1->SetBinError( %d, %f);" %(xx,yee)
         graph.SetPointError(i, 0, yee)
 
     graph.SetMarkerStyle(20+count)
@@ -150,12 +158,11 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     f2_2 = f2.Clone("dashline2")
     f2_2.SetRange(fit_max, plot_max)
     f2_2.Draw("same")
-    if config == 2017:
-        if PU <= fit_max: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
-        else: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.back(), minChi)
-    if config == 2018:
-	#key = ""
-        key = "Rate: %.2f +- %.2f @PU50, %.2f +- %.2f @PU56, %.2f +- %.2f @PU62" %(f2_2.Eval(50), error_vec.at(50-fit_min), f2_2.Eval(56), error_vec.at(56-fit_min), f2_2.Eval(62), error_vec.at(62-fit_min))
+    #if config == 2017:
+    #    if len(error_vec) >= PU-fit_min: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
+    #    else: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.back(), minChi)
+    #if config == 2018:
+    #    key = "Rate: %.2f +- %.2f @PU50, %.2f +- %.2f @PU56, %.2f +- %.2f @PU62" %(f2_2.Eval(50), error_vec.at(50-fit_min), f2_2.Eval(56), error_vec.at(56-fit_min), f2_2.Eval(62), error_vec.at(62-fit_min))
 
     if key is not None:
         tex = ROOT.TLatex(0.2, 0.85, key)
@@ -234,7 +241,7 @@ if __name__ == "__main__":
 
     ROOT.gStyle.SetOptStat(000000000)
     tdrstyle.setTDRStyle()
-    c1 = ROOT.TCanvas("fd","Fdf", 1200, 1000)
+    c1 = ROOT.TCanvas("fd","Fdf", 800, 800)
     leg = ROOT.TLegend(0.15,0.7,0.45,0.75)
     leg.SetFillColor(0)
     leg.SetBorderSize(0)
