@@ -27,6 +27,12 @@ from Config import DualMap, S1S2Map, S2S1Map
 
 #ROOT.gROOT.ForceStyle()
 
+plot_min = 31
+plot_max = 55
+fit_min = 0.
+fit_max = 60.
+ymax = 180
+
 def GetPUGraph(f, l1seed):
     df = pd.DataFrame()
     flist = [ ]
@@ -70,7 +76,7 @@ def GetPUGraph(f, l1seed):
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
         # if yy != 0 and yee/yy >0.3:
             # continue
-	if xx < 31 or xx > 55:
+	if xx < plot_min or xx > plot_max:
 		continue
         graph.SetPoint(i, xx, yy)
         graph.SetPointError(i, 0, yee)
@@ -89,7 +95,7 @@ def FittingGraphs(graph, fittype =""):
 
     if fittype == "pol2_c0":
         fitname = pol2_c0
-        graph.Fit(fitname, "QF0", "", 0.0, 60.0)
+        graph.Fit(fitname, "QF0", "", fit_min, fit_max)
         f2 = graph.GetFunction(fittype).Clone()
         if f2.GetChisquare() / f2.GetNDF() < minChi:
             minChi = f2.GetChisquare() / f2.GetNDF() 
@@ -138,7 +144,7 @@ def DrawGraphs(pad, gMap, fittype=""):
 
     mg = ROOT.TMultiGraph()
     color = 1
-    ymax = 0
+    #ymax = 0
     seedname = ""
     for k,v  in gMap.items():
         if color == 3:
@@ -149,19 +155,20 @@ def DrawGraphs(pad, gMap, fittype=""):
         v.SetMarkerSize(1)
         seedname = v.GetTitle()
         color +=1
-        ymax = max(ymax, v.Eval(60))
+        #ymax = max(ymax, v.Eval(60))
         mg.Add(v.Clone())
 
     mg.Draw("AP")
-    mg.GetXaxis().SetRangeUser(0, 60)
+    #mg.GetXaxis().SetRangeUser(0, plot_max)
     #mg.GetYaxis().SetRangeUser(0, ymax * 1.5)
-    mg.GetYaxis().SetRangeUser(0, 220)
+    mg.GetYaxis().SetRangeUser(0, ymax)
     mg.GetXaxis().SetTitle("PileUp")
-    #mg.GetXaxis().SetLimits(0, 60)
+    mg.GetXaxis().SetLimits(fit_min, fit_max)
     #print("object mg1 is called")
     #c.Update()
-    mg.GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit) )
-    mg.GetYaxis().SetTitleOffset(1.28)
+    #mg.GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit) )
+    mg.GetYaxis().SetTitle("Rate [kHz]")
+    mg.GetYaxis().SetTitleOffset(1.3)
     # mg.GetYaxis().SetRangeUser(0, 50)
     ROOT.SetOwnership(mg, False)
     pad.Update()
@@ -170,7 +177,8 @@ def DrawGraphs(pad, gMap, fittype=""):
         formular, rate, minChi =FittingGraphs(v, fittype)
         print ",%s,%f" %(k, rate),
         #newleg = "%s : %s [%s]" % (k, formular, v.GetTitle())
-        newleg = "%s: #bf{%s,  #chi^{2}/NDF=%.2f}" % (k, formular, minChi)
+        #newleg = "%s: #bf{%s,  #chi^{2}/NDF=%.2f}" % (k, formular, minChi)
+        newleg = "%s: #bf{%s}" % (k, formular)
         leg.AddEntry(v, newleg, 'p')
     leg.Draw()
 
@@ -178,16 +186,12 @@ def DrawGraphs(pad, gMap, fittype=""):
     tex.SetNDC()
     tex.SetTextAlign(13)
     # tex.SetTextFont(61)
-    tex.SetTextSize(0.035)
     #tex.SetTextColor(ROOT.kBlack)
     #tex.SetLineWidth(2)
-    if seedname == "L1_ETM80":
-        tex.DrawLatex(0.45, 0.92, "L1 ETM #geq 80 GeV")
-    elif seedname == "L1_HTT220":
-        tex.DrawLatex(0.45, 0.82, "L1 H_{T} #geq 220 GeV")
-    else:
-        tex.DrawLatex(0.1, 0.93, "CMS #bf{Preliminary}")
-        tex.DrawLatex(0.63, 0.93, "#bf{2018 Data (13TeV)}")
+    tex.SetTextSize(0.03)
+    tex.DrawLatex(0.11,0.935,"#scale[1.5]{CMS}")
+    tex.SetTextSize(0.035)
+    tex.DrawLatex(0.63, 0.93, "#bf{2018 Data (13TeV)}")
     #CMS_lumi.CMS_lumi(pad, 13, 11, 0)
 
 
@@ -233,7 +237,7 @@ def DrawRatios(dpad, glist, denlabel="MC"):
         v.SetLineColor(glist[k].GetLineColor())
         v.SetMarkerStyle(21)
         v.SetMarkerSize(1)
-        ymax = max(ymax, v.Eval(60))
+        #ymax = max(ymax, v.Eval(60))
         mg2.Add(v)
         leg.AddEntry(v, k, 'p')
 
@@ -259,7 +263,7 @@ def DrawRatios(dpad, glist, denlabel="MC"):
 freq = 11245.6
 unit = "kHz"
 nBunches = 2544
-pubins = np.arange(0, 70, 1)
+pubins = np.arange(0, 120, 1)
 pumap = collections.defaultdict(list)
 
 filedir = {
@@ -267,9 +271,9 @@ filedir = {
     "1.5E34":"/eos/uscms/store/user/huiwang/L1Menu2017/Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_1.5/*_Default_PU.csv",
     "1.7E34":"/eos/uscms/store/user/huiwang/L1Menu2017/Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_1.7/*_Default_PU.csv",
     "2.0E34":"/eos/uscms/store/user/huiwang/L1Menu2017/Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0/*_Default_PU.csv",
-    #"1.5E34":"/eos/uscms/store/user/huiwang/L1Menu2017/Feb02fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_1.5_48b_test/*_Default_PU.csv",
-    #"1.7E34":"/eos/uscms/store/user/huiwang/L1Menu2017/Feb02fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_1.7_48b_test/*_Default_PU.csv",
-    #"2.0E34":"/eos/uscms/store/user/huiwang/L1Menu2017/Feb02fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0_48b_test/*_Default_PU.csv",
+    #"simulated 8b":"/eos/uscms/store/user/huiwang/L1Menu2017/Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_8b/*_Default_PU.csv",
+    #"origin 12b":"/eos/uscms/store/user/huiwang/L1Menu2017/Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0/*_Default_PU.csv",
+    #"bx 5 to 10":"/eos/uscms/store/user/huiwang/L1Menu2017/Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_5to10/*_Default_PU.csv",
 }
 
 
@@ -299,6 +303,7 @@ seedMap = {
 if __name__ == "__main__":
     c = ROOT.TCanvas("fd","Fdf", 600, 600 )
     ROOT.gStyle.SetOptStat(000000000)
+    c.SetLeftMargin(0.11);
     #tdrstyle.setTDRStyle()
     doRatio = True
     doRatio = False
@@ -342,11 +347,11 @@ if __name__ == "__main__":
             # DrawRatios(dpad, glist, denlabel="2016 Unp Obj")
 	c.SetGrid()
         c.Update()
-        outdir = "TS1PU"
+        outdir = "plots"
         if not os.path.exists(outdir):
             os.mkdir(outdir)
-        # c.SaveAs("%s/%s.root" % (outdir, seed))
+        c.SaveAs("%s/%s.root" % (outdir, seed))
         c.SaveAs("%s/%s.png" % (outdir, seed))
-        # c.SaveAs("%s/%s.pdf" % (outdir, seed))
+        c.SaveAs("%s/%s.pdf" % (outdir, seed))
         c.SaveAs("%s/%s.C" % (outdir, seed))
 

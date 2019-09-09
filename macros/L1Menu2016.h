@@ -99,10 +99,13 @@ class L1Menu2016 : public L1AlgoFactory
     bool InitOutput();
     bool CheckLS(unsigned int currentLumi) const;
     bool CheckBX(unsigned int currentBX) const;
-    bool BXReweightSkip(int currentBX, float firstBX);
+    bool Found_BX_in_48b(int targetBX, int currentBX);
+    bool Found_BX_in_12b(int targetBX, int currentBX);
     bool BXReweight_is_1_to_6_47_48(int currentBX);
     bool BXReweight_is128(int currentBX);
     bool BXReweight_is34567(int currentBX);
+    bool BXReweight_is_1_to_6_11_12(int currentBX);
+    bool BXReweight_is_5_to_10(int currentBX);
 
 
     bool ConfigOutput(bool writetext_, bool writecsv_, bool writeplot_, 

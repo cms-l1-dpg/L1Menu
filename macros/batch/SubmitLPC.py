@@ -15,18 +15,21 @@ from collections import defaultdict
 ###############################
 DelDir = None #Auto pick up by CMSSW_BASE
 #tempdir = '/uscmst1b_scratch/lpc1/lpctrig/benwu/CondorTemp'
+
+#bx_id =11
+
 tempdir = '/uscms_data/d3/huiwang/condor_temp'
 ProjectName = "Menu2017"
 DryRun = False
-splitline = 1
+splitline = 5
 DelExe    = 'testMenu2016'
 OutDir = '/store/user/huiwang/L1Menu2017'
-#Analysis  = 'Prescale_2018_v2_0_0_Col_2.0_run_Hcal_319449_and_319450_new'
-Analysis  = 'fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_1.5_48b_test'
+Analysis  = 'fill_7118_and_7131_nanoDST_Prescale_2018_v2_1_0_Col_2.0_HATS'
+#Analysis  = 'fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_BX%d' %bx_id
 #Analysis  = 'Marco_Official_collision_V3_menu_prescale_Col_2.0_run_317648_and_317649'
 MenuFile = [
   #"menu/Prescale_Sets_RUN_306091_col_1.6.txt"
-  "menu/Prescale_2018_v2_1_0_Col_1.5.txt"
+  "menu/Prescale_2018_v2_1_0_Col_2.0_HATS.txt"
   #"menu/Marco_Official_collision_V3_menu_prescale_Col_2.0.txt"
 ]
 Ntuplelist = [
@@ -35,17 +38,16 @@ Ntupledict = {
     # "ntuple/Trains_v95p12p2.list" : " --SelectBX \\\"[[714, 761], [1875, 1922]]\\\"  -u menu/TrainPLTZ.csv ",
     # "ntuple/fill_6356_6360.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
     # "ntuple/run_316216_nanodst.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
-    # "ntuple/run_Hcal317527_new.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
-     "ntuple/fill_7118_nanoDST_shifter.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+     "ntuple/fill_7118_and_7131_nanoDST_LPC.list" : " -u menu/runlumi_fill_6358_and_more.csv ",
+    # "ntuple/fill_7358_nanoDST.list" : " -u menu/PU_12b/PU_bx_%d.csv" % bx_id,
 }
 GlobalOpt =  " "
 #GlobalOpt += " --SelectRun 299380"
 #GlobalOpt += " --SetNoPrescale"
 #GlobalOpt += " --IgnorePrescale"
 #GlobalOpt += " --doScanLS --SelectLS '[151,200]' "
-#GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --IgnorePrescale"
-GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --doBXReweight_1_to_6_47_48"
-#GlobalOpt += " --doPlotRate --doPrintPU"
+#GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree --Select_BX_in_12b %d" % bx_id
+GlobalOpt += " --doPlotRate --doPrintPU --UseUnpackTree"
 #GlobalOpt += " --SelectCol 1.8E34 "
 Options = {
   "Default"    : "",
@@ -70,8 +72,8 @@ Options = {
   #"CaloTower" : "--UseL1CaloTower",
 
 }
-#nBunches = 2544
-nBunches = 424
+nBunches = 2544
+#nBunches = 24
 #nBunches = 1866
 
 

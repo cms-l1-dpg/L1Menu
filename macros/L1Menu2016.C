@@ -125,11 +125,13 @@ bool L1Menu2016::InitConfig()
   L1Config["UseUnpackTree"]  = 0;
   L1Config["doScanLS"]       = 0;
   L1Config["SetL1AcceptPS"]  = 0;
-  L1Config["doBXReweight"]       = 0;
+  L1Config["Select_BX_in_48b"]       = -1;
+  L1Config["Select_BX_in_12b"]       = -1;
   L1Config["doBXReweight_1_to_6_47_48"]       = 0;
   L1Config["doBXReweight128"]       = 0;
   L1Config["doBXReweight34567"]       = 0;
-  L1Config["BXReweight_first"]       = 1;
+  L1Config["doBXReweight_1_to_6_11_12"]       = 0;
+  L1Config["doBXReweight_5_to_10"]       = 0;
   
   L1ConfigStr["SelectLS"] = "";
   L1ConfigStr["SelectBX"] = "";
@@ -1168,14 +1170,19 @@ bool L1Menu2016::Loop()
       if (L1ConfigStr["SelectBX"] != "" && CheckBX(event_->bx) )
         continue;
 
-      //if (L1Config["doBXReweight"] && BXReweightSkip(event_->bx,  L1Config["BXReweight_first"]) )
-        //continue;
-
+      if (L1Config["Select_BX_in_48b"] != -1 && !Found_BX_in_48b(L1Config["Select_BX_in_48b"], event_->bx))
+        continue;
+      if (L1Config["Select_BX_in_12b"] != -1 && !Found_BX_in_12b(L1Config["Select_BX_in_12b"], event_->bx))
+        continue;
       if (L1Config["doBXReweight_1_to_6_47_48"] && !BXReweight_is_1_to_6_47_48(event_->bx))
         continue;
       if (L1Config["doBXReweight128"] && !BXReweight_is128(event_->bx))
         continue;
       if (L1Config["doBXReweight34567"] && !BXReweight_is34567(event_->bx))
+        continue;
+      if (L1Config["doBXReweight_1_to_6_11_12"] && !BXReweight_is_1_to_6_11_12(event_->bx))
+        continue;
+      if (L1Config["doBXReweight_5_to_10"] && !BXReweight_is_5_to_10(event_->bx))
         continue;
 
       if (L1Config["doPrintBX"])
@@ -2352,14 +2359,6 @@ bool L1Menu2016::CheckBX(unsigned int currentBX) const
   return true;
 }       // -----  end of function L1Menu2016::CheckBX  -----
 
-bool L1Menu2016::BXReweightSkip(int currentBX, float firstBX)
-{
-	int diff = currentBX-firstBX;
-	if(diff < 0 || diff % 12 != 0)
-	return true;
-return false;
-}
-
 // this function selects the first 6 and last 2 bx in 2018 48b
 bool L1Menu2016::BXReweight_is_1_to_6_47_48(int currentBX)
 {
@@ -2393,6 +2392,54 @@ bool L1Menu2016::BXReweight_is34567(int currentBX)
 	for(int i = 0; i < 1160; i++)
 	{
 		if(currentBX == a[i])
+		return true;
+	}
+return false;
+}
+
+// this function selects the first 6 and last 2 bx in 2018 12b (Fill 7358)
+bool L1Menu2016::BXReweight_is_1_to_6_11_12(int currentBX)
+{
+	int a[] = {750, 751, 752, 753, 754, 755, 760, 761, 1644, 1645, 1646, 1647, 1648, 1649, 1654, 1655};
+	for(int i = 0; i < 16; i++)
+	{
+		if(currentBX == a[i])
+		return true;
+	}
+return false;
+}
+
+// this function selects bx 5 to 10 in 2018 12b (Fill 7358)
+bool L1Menu2016::BXReweight_is_5_to_10(int currentBX)
+{
+	int a[] = {754, 755, 756, 757, 758, 759, 1648, 1649, 1650, 1651, 1652, 1653};
+	for(int i = 0; i < 12; i++)
+	{
+		if(currentBX == a[i])
+		return true;
+	}
+return false;
+}
+
+// this function selects target BX in 2018 48b (Fill 7118)
+bool L1Menu2016::Found_BX_in_48b(int targetBX, int currentBX)
+{
+	int a[] = {62,117,196,251,306,385,440,495,574,629,684,767,822,901,956,1011,1090,1145,1200,1279,1334,1389,1468,1523,1578,1661,1716,1795,1850,1905,1984,2039,2094,2173,2228,2283,2362,2417,2472,2555,2610,2689,2744,2799,2878,2933,2988,3067,3122,3177,3256,3311,3366};
+	for(int i = 0; i < 53; i++)
+	{
+		if(currentBX == a[i] + targetBX)
+		return true;
+	}
+return false;
+}
+
+// this function selects target BX in 2018 12b (Fill 7358)
+bool L1Menu2016::Found_BX_in_12b(int targetBX, int currentBX)
+{
+	int a[] = {750, 1644};
+	for(int i = 0; i < 2; i++)
+	{
+		if(currentBX == a[i] + targetBX)
 		return true;
 	}
 return false;

@@ -23,11 +23,6 @@ from rootpy.io import root_open
 from matplotlib import pyplot as plt
 from Config import DualMap, S1S2Map, S2S1Map
 
-foldername = "Sep07fill_7118_and_7131_nanoDST_Prescale_2018_v2_1_0_Col_2.0_HATS"
-
-#BX = "BX0"
-#foldername = "Aug25fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_%s" %BX
-
 #12b to 8b4e and 48b to 8b43
 #foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_8b"
 #foldername = "Feb02fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0_48b_test"
@@ -35,18 +30,15 @@ foldername = "Sep07fill_7118_and_7131_nanoDST_Prescale_2018_v2_1_0_Col_2.0_HATS"
 #12b (all/5 to 10) to 48b and 48b
 #foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0"
 #foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_5to10"
-#foldername = "Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0"
+foldername = "Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0"
 
-fit_min = 22
+fit_min = 31
 fit_max = 55
-plot_min = 0		#min of x axis
-plot_max = 80		#max of x axis
-minx = 20		#minx of points
-maxx = 80		#maxx of points
-maxy = 8
+plot_min = 0
+plot_max = 60
+maxx = 60
 miny = 0
-set_logy = False
-if(set_logy): miny = 0.01
+maxy = 8
 
 ####	for 1866 bunches	####
 #PU = 61		#61.00 for col 1.6
@@ -87,15 +79,22 @@ if config == 1:
     nBunches = 1
     unit = "Hz"
 
-pubins = np.arange(minx,maxx, 1)
+pubins = np.arange(plot_min,plot_max, 1)
 pumap = collections.defaultdict(list)
 
 PatMap = {  
-#    "L1APhysics" : "L1APhysics",
-   "L1_DoubleJet_110_35_DoubleJet35_Mass_Min620" : "L1_DoubleJet_110_35.*_DoubleJet35.*_Mass_Min620",
-#    "L1_SingleJet_FWD3p0" : "L1_SingleJet\d+_FWD3p0",
-#    "L1_ETM120" : "L1_ETM.*120",
-#    "SingleMu22" : "L1_SingleMu22",
+    #"L1APhysics" : "L1APhysics",
+#    "L1_SingleLooseIsoEG28er2p5" : "L1_SingleLooseIsoEG28er2p5",
+#    "L1_DoubleIsoTau32er2p1" : "L1_DoubleIsoTau32er2p1",
+#    "L1_SingleMu22" : "L1_SingleMu22",
+#    "L1_DoubleEG_25_12_er2p5" : "L1_DoubleEG_25_12_er2p5",
+#    "L1_DoubleMu_15_7" : "L1_DoubleMu_15_7",
+
+    "L1_SingleJet180" : "L1_SingleJet180",
+    "L1_DoubleJet150er2p5" : "L1_DoubleJet150er2p5",
+    "L1_TripleJet_95_75_65_DoubleJet_75_65_er2p5" : "L1_TripleJet_95_75_65_DoubleJet_75_65_er2p5",
+    "L1_ETMHF100" : "L1_ETMHF100",
+    "L1_HTT360er" : "L1_HTT360er",
 }
 
 def DrawPU(canvas, f, l1seed, count, key=None):
@@ -122,12 +121,13 @@ def DrawPU(canvas, f, l1seed, count, key=None):
 
     ## Draw the plot
     graph = ROOT.TGraphErrors(len(x))
+    graph.SetTitle(l1seed)
 
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
         # if yy != 0 and yee/yy >0.3:
             # continue
-	#if i == 22 or i == 23 or i == 24:
-	    # continue
+	if i < 15 or i > 37:
+	     continue
         graph.SetPoint(i, xx, yy)
 	#print (i,xx,yy,yee)
         #print "h1->SetBinContent( %d, %f);" %(xx,yy)
@@ -135,20 +135,22 @@ def DrawPU(canvas, f, l1seed, count, key=None):
         graph.SetPointError(i, 0, yee)
 
     graph.SetMarkerStyle(20+count)
-    graph.SetMarkerSize(1.5)
+    graph.SetMarkerSize(1.2)
     graph.SetMarkerColor(1+count)
+    if count == 9: graph.SetMarkerColor(28)
     graph.SetLineColor(1+count)
+    if count == 9: graph.SetLineColor(28)
     graph.SetLineWidth(2)
     tdrstyle.setTDRStyle()
     canvas.cd()
     canvas.Update()
     if count == 0:
         graph.Draw("AP")
-        #graph.SetTitle(BX)
         graph.GetXaxis().SetTitle("PileUp")
-        graph.GetXaxis().SetLimits(plot_min, plot_max)
+        graph.GetXaxis().SetLimits(plot_min, maxx)
         graph.GetYaxis().SetRangeUser(miny, maxy)
-        graph.GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit))
+        #graph.GetYaxis().SetTitle("Rate (nBunches = %d) [%s]" % (nBunches, unit))
+        graph.GetYaxis().SetTitle("Rate [kHz]")
     else:
         graph.Draw("P")
     canvas.Update()
@@ -165,49 +167,57 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     f2.SetLineStyle(5)
     minChi = f2.GetChisquare() / f2.GetNDF()
     #fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
-    #fun = "Fit = %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
-    fun = "Fit = exp(%.2f + %.3f*x)" % (f2.GetParameter(0), f2.GetParameter(1) )
+    #fun = "Fit = %f*x + %f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
     #print fun
     f2.Draw("same")
-    #graph.Write()
+
+    graph.Write()
+
     f2_2 = f2.Clone("dashline2")
     f2_2.SetRange(fit_max, plot_max)
     f2_2.Draw("same")
-
-    #if len(error_vec) >= PU-fit_min: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
-    #else: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.back(), minChi)
-    #key = "%s, chi2/NDF=%.2f" %(fun, minChi)
+    #if config == 2017:
+    #    if len(error_vec) >= PU-fit_min: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
+    #    else: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.back(), minChi)
+    #if config == 2018:
+    #    key = "Rate: %.2f +- %.2f @PU50, %.2f +- %.2f @PU56, %.2f +- %.2f @PU62" %(f2_2.Eval(50), error_vec.at(50-fit_min), f2_2.Eval(56), error_vec.at(56-fit_min), f2_2.Eval(62), error_vec.at(62-fit_min))
 
     if key is not None:
-        tex = ROOT.TLatex(0.2, 0.9, key)
+        tex = ROOT.TLatex(0.2, 0.85, key)
         tex.SetNDC()
         tex.SetTextFont(61)
-        tex.SetTextSize(0.045)
+        tex.SetTextSize(0.055)
         tex.SetTextColor(ROOT.kGreen+2)
         tex.SetLineWidth(2)
         tex.Draw()
 
     canvas.Update()
 
-
-def DrawL1(key, pattern):
-    c1.Clear()
-    leg.Clear()
+#def DrawL1(key, pattern):
+def DrawL1():
+    #c1.Clear()
+    #leg.Clear()
 
     inputlist = []
-    pat = re.compile('^%s$' % pattern)
+    for key, pattern in PatMap.items():
+        inputlist.append(pattern)
+    #pat = re.compile('^%s$' % pattern)
 
-    for x in [x for x in pd.unique(df.L1Seed)]:
-        if pat.match(x):
-            inputlist.append(x)
+    #for x in [x for x in pd.unique(df.L1Seed)]:
+    #    if pat.match(x):
+    #        inputlist.append(x)
     #print key, " : ",  inputlist
-    print key,
+    #key = "linear_seeds"
+    key = "nonlinear_seeds"
+    print inputlist
 
-    #out_file = ROOT.TFile("plots_for_Olivier/%s_%s.root" % (key, foldername),"RECREATE")
+    out_file = ROOT.TFile(key + ".root","RECREATE")
+
     for i, seed in enumerate(inputlist):
         DrawPU(c1, df, seed, i)
     leg.Draw()
-    #out_file.close()
+
+    out_file.close()
 
     if config == 2017:
         l_PU = ROOT.TLine(PU, 0, PU, maxy)
@@ -230,17 +240,17 @@ def DrawL1(key, pattern):
         l_3.Draw()
 
     c1.SetGrid()
+    #c1.SetLogy()
 
     box = ROOT.TBox(10, 8, 70, 12)
     box.SetFillColor(38)
     box.SetFillStyle(3002)
 
-    if(set_logy): c1.SetLogy()
     c1.Update()
-    #c1.SaveAs("plots_for_Olivier/%s_%s.root" % (key, foldername))
-    #c1.SaveAs("plots_for_Olivier/%s_%s.C" % (key, foldername))
-    c1.SaveAs("plots/%s_%s.png" % (key, foldername))
-    #c1.SaveAs("plots/%s_%s.pdf" % (key, foldername))
+    c1.SaveAs("plots/%s_%d_%s_PU%d.C" % (key, config, foldername, PU))
+    c1.SaveAs("plots/%s_%d_%s_PU%d.root" % (key, config, foldername, PU))
+    c1.SaveAs("plots/%s_%d_%s_PU%d.png" % (key, config, foldername, PU))
+    c1.SaveAs("plots/%s_%d_%s_PU%d.pdf" % (key, config, foldername, PU))
 
 if __name__ == "__main__":
     allfiles = glob.glob(filedir)
@@ -259,13 +269,13 @@ if __name__ == "__main__":
 
     ROOT.gStyle.SetOptStat(000000000)
     tdrstyle.setTDRStyle()
-    c1 = ROOT.TCanvas("fd","Fdf", 800, 800)
-    leg = ROOT.TLegend(0.15,0.6,0.45,0.85)
+    c1 = ROOT.TCanvas("fd","Fdf", 600, 600)
+    leg = ROOT.TLegend(0.13,0.5,0.5,0.95)
     leg.SetFillColor(0)
     leg.SetBorderSize(0)
     leg.SetFillStyle(0)
     leg.SetTextFont(62)
-    leg.SetTextSize(0.05)
-    for k, v in PatMap.items():
-        DrawL1(k, v)
+    leg.SetTextSize(0.03)
+    #for k, v in PatMap.items():
+    DrawL1()
         # wait()

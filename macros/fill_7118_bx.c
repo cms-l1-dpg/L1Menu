@@ -8,15 +8,18 @@ for (int i = 62; i < 3500; i++)
 {
 	if (i == 62)
 		//std::cout << "bx 1,2 and 8 in 8b4e" << std::endl;
-		std::cout << "bx 1_to_6_47_48 in 48b" << std::endl;
+		//std::cout << "bx 1_to_6_47_48 in 48b" << std::endl;
+		std::cout << "bx 1 in 48b" << std::endl;
 	if ( a[i] > 0 && a[i-1] == 0 )
 	{
 	count++;
 	//std::cout << i << "," << i+1 << "," << i+7 << ",";
-	std::cout << i << "," << i+1 << "," << i+2 << "," << i+3 << "," << i+4 << "," << i+5 << "," << i+46 << "," << i+47 << ",";
+	//std::cout << i << "," << i+1 << "," << i+2 << "," << i+3 << "," << i+4 << "," << i+5 << "," << i+46 << "," << i+47 << ",";
+	std::cout << i << "," ;
 	}
 }
 
 //return 3*count;
-return 8*count;
+//return 8*count;
+return count;
 }

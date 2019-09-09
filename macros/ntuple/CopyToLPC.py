@@ -16,7 +16,7 @@ from multiprocessing import Pool
 
 
 #filename = "CERN_file_list/run_316380.list"
-filename = "CERN_file_list/run_317087.list"
+filename = "CERN_file_list/fill_7131_nanoDST_shifter.list"
 
 def fwork(cmd):
     return subprocess.call(cmd, shell=True)
