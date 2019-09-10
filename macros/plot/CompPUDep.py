@@ -25,17 +25,6 @@ from Config import DualMap, S1S2Map, S2S1Map
 
 foldername = "Sep07fill_7118_and_7131_nanoDST_Prescale_2018_v2_1_0_Col_2.0_HATS"
 
-#BX = "BX0"
-#foldername = "Aug25fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_%s" %BX
-
-#12b to 8b4e and 48b to 8b43
-#foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_8b"
-#foldername = "Feb02fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0_48b_test"
-
-#12b (all/5 to 10) to 48b and 48b
-#foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0"
-#foldername = "Mar13fill_7358_nanoDST_Prescale_2018_v2_1_0_Col_2.0_5to10"
-#foldername = "Dec11fill_7118_nanoDST_shifter_Prescale_2018_v2_1_0_Col_2.0"
 
 fit_min = 22
 fit_max = 55
@@ -48,44 +37,16 @@ miny = 0
 set_logy = False
 if(set_logy): miny = 0.01
 
-####	for 1866 bunches	####
-#PU = 61		#61.00 for col 1.6
-#PU = 57		#57.19 for col 1.5
-#PU = 50		#49.56 for col 1.3
-#PU = 38		#38.12 for col 1.0
-
-####	for 2544 bunches	####
-#PU = 62		#61.52 for col 2.2
-#PU = 100
-PU = 56		#55.93 for col 2.0
-#PU = 50		#50.33 for col 1.8
-
 
 freq = 11245.6
-config = 2017
-#config = 2018
+nBunches = 2544
+unit = "kHz"
 
 #fitname = "pol4"
 #fitname = "expo"
 fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
-#fitname.SetParameters(0.1,0.001);
 
 filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_PU.csv"
-#filedir = "/uscms_data/d3/huiwang/CMSSW_9_2_2/src/L1TriggerDPG/L1Menu/macros/results/Prescale_2018_v1_0_0_Col_2.0_Pure_Rate_run_Hcal_319449_and_319450_new_v2_emulate_PU.csv"
-
-if config == 2017:
-    #nBunches = 1866
-    nBunches = 2544
-    #nBunches = 24
-    unit = "kHz"
-
-if config == 2018:
-    nBunches = 2544
-    unit = "kHz"
-
-if config == 1:
-    nBunches = 1
-    unit = "Hz"
 
 pubins = np.arange(minx,maxx, 1)
 pumap = collections.defaultdict(list)
@@ -124,14 +85,7 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     graph = ROOT.TGraphErrors(len(x))
 
     for i, (xx, yy, yee) in enumerate(zip(x, y, yerr)):
-        # if yy != 0 and yee/yy >0.3:
-            # continue
-	#if i == 22 or i == 23 or i == 24:
-	    # continue
         graph.SetPoint(i, xx, yy)
-	#print (i,xx,yy,yee)
-        #print "h1->SetBinContent( %d, %f);" %(xx,yy)
-        #print "h1->SetBinError( %d, %f);" %(xx,yee)
         graph.SetPointError(i, 0, yee)
 
     graph.SetMarkerStyle(20+count)
@@ -144,7 +98,6 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     canvas.Update()
     if count == 0:
         graph.Draw("AP")
-        #graph.SetTitle(BX)
         graph.GetXaxis().SetTitle("PileUp")
         graph.GetXaxis().SetLimits(plot_min, plot_max)
         graph.GetYaxis().SetRangeUser(miny, maxy)
@@ -155,8 +108,6 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     leg.AddEntry(graph, l1seed, "p")
 
     result_ptr = graph.Fit(fitname, "SQ", "", fit_min, fit_max)
-    error_vec = result_ptr.GetConfidenceIntervals()
-    print ("error vec size = %d, fitted PU = %d" % (error_vec.size(), fit_max - fit_min + 1))
     f2 = graph.GetFunction("fitname").Clone()
     #f2 = graph.GetFunction(fitname).Clone()
     f2.SetLineColor(1+count)
@@ -165,18 +116,14 @@ def DrawPU(canvas, f, l1seed, count, key=None):
     f2.SetLineStyle(5)
     minChi = f2.GetChisquare() / f2.GetNDF()
     #fun = "Fit = %.2f + %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1), f2.GetParameter(2) )
-    #fun = "Fit = %.2f*x + %.3f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
-    fun = "Fit = exp(%.2f + %.3f*x)" % (f2.GetParameter(0), f2.GetParameter(1) )
-    #print fun
+    fun = "Fit = %.3f*x + %.4f*x^2" % (f2.GetParameter(0), f2.GetParameter(1) )
+    #fun = "Fit = exp(%.2f + %.3f*x)" % (f2.GetParameter(0), f2.GetParameter(1) )
+    print "%s, Chi2/NDF = %.2f" % (fun, minChi)
     f2.Draw("same")
     #graph.Write()
     f2_2 = f2.Clone("dashline2")
     f2_2.SetRange(fit_max, plot_max)
     f2_2.Draw("same")
-
-    #if len(error_vec) >= PU-fit_min: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.at(PU-fit_min), minChi)
-    #else: key = "Rate(PU=%d): %.2f +- %.2f, chi2/NDF=%.2f" %(PU, f2_2.Eval(PU), error_vec.back(), minChi)
-    #key = "%s, chi2/NDF=%.2f" %(fun, minChi)
 
     if key is not None:
         tex = ROOT.TLatex(0.2, 0.9, key)
@@ -200,34 +147,11 @@ def DrawL1(key, pattern):
     for x in [x for x in pd.unique(df.L1Seed)]:
         if pat.match(x):
             inputlist.append(x)
-    #print key, " : ",  inputlist
     print key,
 
-    #out_file = ROOT.TFile("plots_for_Olivier/%s_%s.root" % (key, foldername),"RECREATE")
     for i, seed in enumerate(inputlist):
         DrawPU(c1, df, seed, i)
     leg.Draw()
-    #out_file.close()
-
-    if config == 2017:
-        l_PU = ROOT.TLine(PU, 0, PU, maxy)
-        l_PU.SetLineColor(2)
-        l_PU.SetLineWidth(2)
-        #l_PU.Draw()
-
-    if config == 2018:
-        l_1 = ROOT.TLine(50, 0, 50, maxy)
-        l_1.SetLineColor(2)
-        l_1.SetLineWidth(2)
-        l_1.Draw()
-        l_2 = ROOT.TLine(56, 0, 56, maxy)
-        l_2.SetLineColor(2)
-        l_2.SetLineWidth(2)
-        l_2.Draw()
-        l_3 = ROOT.TLine(62, 0, 62, maxy)
-        l_3.SetLineColor(2)
-        l_3.SetLineWidth(2)
-        l_3.Draw()
 
     c1.SetGrid()
 
@@ -237,8 +161,8 @@ def DrawL1(key, pattern):
 
     if(set_logy): c1.SetLogy()
     c1.Update()
-    #c1.SaveAs("plots_for_Olivier/%s_%s.root" % (key, foldername))
-    #c1.SaveAs("plots_for_Olivier/%s_%s.C" % (key, foldername))
+    #c1.SaveAs("plots/%s_%s.root" % (key, foldername))
+    #c1.SaveAs("plots/%s_%s.C" % (key, foldername))
     c1.SaveAs("plots/%s_%s.png" % (key, foldername))
     #c1.SaveAs("plots/%s_%s.pdf" % (key, foldername))
 
