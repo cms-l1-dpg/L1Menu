@@ -227,10 +227,10 @@ L1_SingleJet120er2p5		319		0
 L1_SingleJet140er2p5		320		0
 L1_SingleJet160er2p5		321		0
 L1_SingleJet180er2p5		322		1
-L1_SingleJet35_FWD3p0		324		1
-L1_SingleJet60_FWD3p0		325		1
-L1_SingleJet90_FWD3p0		326		1
-L1_SingleJet120_FWD3p0		327		1
+L1_SingleJet35_FWD3p0		324		103000
+L1_SingleJet60_FWD3p0		325		770
+L1_SingleJet90_FWD3p0		326		250
+L1_SingleJet120_FWD3p0		327		40
 L1_SingleJet8erHE		329		0
 L1_SingleJet10erHE		330		0
 L1_SingleJet12erHE		331		0
@@ -282,7 +282,7 @@ L1_HTT450er		406		1
 L1_ETT1200		410		0
 L1_ETT1600		411		0
 L1_ETT2000		412		1
-L1_ETM120		416		1
+L1_ETM120		416		0
 L1_ETM150		417		1
 L1_ETMHF100		421		1
 L1_ETMHF110		422		1
@@ -304,6 +304,7 @@ L1_ETMHF110_HTT60er_NotSecondBunchInTrain		444		0
 #L1_SingleJet20er2p5_NotBptxOR_3BX		451		0
 #L1_SingleJet43er2p5_NotBptxOR_3BX		452		1
 #L1_SingleJet46er2p5_NotBptxOR_3BX		453		1
+L1_AlwaysTrue_copy		457		1000
 L1_AlwaysTrue		458		0
 L1_ZeroBias		459		17881
 L1_ZeroBias_copy		460		0
