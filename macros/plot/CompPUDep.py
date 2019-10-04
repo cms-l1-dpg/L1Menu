@@ -46,7 +46,8 @@ unit = "kHz"
 #fitname = "expo"
 fitname = ROOT.TF1("fitname","[0]*x + [1]*x*x",0,80);
 
-filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_PU.csv"
+filedir = "/eos/uscms/store/user/huiwang/L1Menu2017/" + foldername + "/*Default_PU.csv"		#for LPC
+filedir = "/afs/cern.ch/user/h/huwang/public/" + foldername + "/*Default_PU.csv"		#for lxplus
 
 pubins = np.arange(minx,maxx, 1)
 pumap = collections.defaultdict(list)
