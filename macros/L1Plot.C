@@ -582,7 +582,8 @@ std::vector<TLorentzVector> L1Plot::GetRecoJet(bool isCent) const
     if (isCent && fabs(recoJet_->eta.at(i)) > jetERcut )
       continue;
 
-    if (!recoJet_->isPF.at(i)) continue;
+    //following to L1JetRecoTreeProducer.h, jet_data (which recoJet_ is) is filled with PF jets first, and nJets is the number of PF jets, so running from 0 to nJets gives only PF jets, and this line can be removed
+    //if (!recoJet_->isPF.at(i)) continue;
     
     TLorentzVector temp(0, 0, 0, 0);
 
@@ -636,7 +637,7 @@ std::vector<TLorentzVector> L1Plot::GetRecoHTLocal() const
 
   for (int i = 0; i < recoJet_->nJets; ++i)
   {
-    if (!recoJet_->isPF.at(i)) continue;
+    //if (!recoJet_->isPF.at(i)) continue;
     if (fabs(recoJet_->eta.at(i)) > 3) continue;
     if (recoJet_->etCorr.at(i) < 30) continue;
     ht += recoJet_->etCorr.at(i);
@@ -1099,7 +1100,7 @@ float L1Plot::TestRecoAct(float eta) const
 
   for (int i = 0; i < recoJet_->nJets; ++i)
   {
-    if (!recoJet_->isPF.at(i)) continue;
+    //if (!recoJet_->isPF.at(i)) continue;
     totHT += recoJet_->etCorr.at(i);
 
     if (fabs(recoJet_->eta.at(i)) >= eta && fabs(recoJet_->eta.at(i)) <= 3.0 ) 
